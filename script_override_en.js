@@ -499,7 +499,7 @@ const TEMPLATE = {
       "https://cloudflare-dns.com/dns-query#👉 手动切换"
     ],
     "nameserver-policy": {
-      "rule-set:proxy@direct,cn,echs_cn,echs_direct": [
+      "rule-set:proxy@direct,cn,echs_direct": [
         "https://dns.alidns.com/dns-query#DIRECT"
       ],
       "rule-set:private": [
@@ -521,7 +521,6 @@ const TEMPLATE = {
       "rule-set:fakeip-filter_domain",
       "rule-set:private",
       "rule-set:cn",
-      "rule-set:echs_cn",
       "rule-set:echs_direct",
       "rule-set:googlefcm",
       "rule-set:applications",
@@ -802,22 +801,6 @@ const TEMPLATE = {
       "url": "https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/cnip.mrs",
       "path": "./ruleset/cncidr.mrs"
     },
-    "echs_cn": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "domain",
-      "format": "mrs",
-      "url": "https://raw.githubusercontent.com/echs-top/proxy/main/mrs/domain/cn.mrs",
-      "path": "./ruleset/echs_cn.mrs"
-    },
-    "echs_cn_ip": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "ipcidr",
-      "format": "mrs",
-      "url": "https://raw.githubusercontent.com/echs-top/proxy/main/mrs/ip/cn.mrs",
-      "path": "./ruleset/echs_cn_ip.mrs"
-    },
     "echs_direct": {
       "type": "http",
       "interval": 86400,
@@ -1026,8 +1009,6 @@ const TEMPLATE = {
     "RULE-SET,apple,🍎 海外苹果",
     "RULE-SET,apple_ip,🍎 海外苹果,no-resolve",
     "RULE-SET,applications,DIRECT",
-    "RULE-SET,echs_cn,DIRECT",
-    "RULE-SET,echs_cn_ip,DIRECT,no-resolve",
     "RULE-SET,echs_direct,DIRECT",
     "RULE-SET,echs_direct_ip,DIRECT,no-resolve",
     "RULE-SET,cn,DIRECT",
