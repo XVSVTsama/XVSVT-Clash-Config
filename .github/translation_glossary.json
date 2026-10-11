@@ -25,7 +25,7 @@
   "本文详细拆解了 hosts 虚假/真实映射、私有 DoH 解析、DNS 策略以及 fake-ip-filter 的各自职责，以及它们如何在同一条节点解析链中相互配合。面向希望编写或理解节点解析覆写脚本的读者，文中不包含任何真实节点、密码、UUID 或订阅凭据。": "This document breaks down the distinct roles of `hosts` fake/real mappings, private DoH resolution, DNS policy, and the fake-IP filter, and how all four cooperate within the same node-resolution chain. It is aimed at people who want to write or understand node-resolution override scripts, and contains no real nodes, passwords, UUIDs, or subscription credentials.",
   "开启后，三个国内入口节点全部加入同一个代理组。": "Master switch: when enabled, only the first enabled operator in Telecom > Unicom > Mobile order takes effect.",
   "IPv6优先": "IPv6 Preference",
-  "👉 手动切换": "👉 Manual Select",
+  "👉 手动切换": "👉 Manual Switch",
   "AdGuard 公共 DNS": "AdGuard Public DNS",
   "Google 公共 DNS": "Google Public DNS",
   "IBM Quad9 公共 DNS": "IBM Quad9 Public DNS",
