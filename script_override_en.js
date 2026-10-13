@@ -11,7 +11,7 @@ const Compatible_With_Bettbox = {
     '📲 Telegram',
     '🎮 Games-Global',
     '🍎 海外苹果',
-    '🌐 海外微软',
+    '💠 海外微软',
     '🎮 Steam平台（非下载/CDN）',
     '✖️ Twitter',
     '🤖 AI大模型',
@@ -93,7 +93,7 @@ const ruleOptionsEnable = {
   '📲 Telegram': true,     // Telegram messaging software policy group
   '🎮 Games-Global': true, // Game strategy group
   '🍎 海外苹果': true,     // Overseas Apple platform services
-  '🌐 海外微软': true,     // Overseas Microsoft platform services
+  '💠 海外微软': true,     // Overseas Microsoft platform services
   '🎮 Steam平台（非下载/CDN）': true, // Steam platform service, not responsible for downloads/CDN
   '✖️ Twitter': true,      // Twitter Social Platforms Strategy Group
   '🤖 AI大模型': true,     // AI large model strategy group
@@ -500,7 +500,8 @@ const TEMPLATE = {
     ],
     "nameserver-policy": {
       "rule-set:proxy@direct,cn,echs_direct": [
-        "https://dns.alidns.com/dns-query#DIRECT"
+        "https://dns.alidns.com/dns-query#DIRECT",
+        "https://doh.pub/dns-query#DIRECT"
       ],
       "rule-set:private": [
         "system"
@@ -604,8 +605,8 @@ const TEMPLATE = {
       "proxies": null
     },
     {
-      "name": "🌐 海外微软",
-      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-AIsouler-MyClash-Microsoft.svg",
+      "name": "💠 海外微软",
+      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/self-Microsoft.svg",
       "type": "select",
       "proxies": null
     },
@@ -1004,8 +1005,8 @@ const TEMPLATE = {
     "RULE-SET,microsoft@cn,DIRECT",
     "RULE-SET,apple@cn,DIRECT",
     "RULE-SET,games-cn,DIRECT",
-    "RULE-SET,microsoft,🌐 海外微软",
-    "RULE-SET,microsoft_ip,🌐 海外微软,no-resolve",
+    "RULE-SET,microsoft,💠 海外微软",
+    "RULE-SET,microsoft_ip,💠 海外微软,no-resolve",
     "RULE-SET,apple,🍎 海外苹果",
     "RULE-SET,apple_ip,🍎 海外苹果,no-resolve",
     "RULE-SET,applications,DIRECT",
@@ -1050,7 +1051,6 @@ const TEMPLATE = {
     "DOMAIN,cdn.usefathom.com,🤖 AI大模型",
     "DOMAIN,registry.npmjs.org,🤖 AI大模型",
     "DOMAIN,storage.googleapis.com,🤖 AI大模型",
-    "DOMAIN,raw.githubusercontent.com,🤖 AI大模型",
     "DOMAIN,formulae.brew.sh,🤖 AI大模型",
     "DOMAIN,http-intake.logs.us5.datadoghq.com,🤖 AI大模型",
     "DOMAIN,browser-intake-us5-datadoghq.com,🤖 AI大模型",
@@ -1938,7 +1938,7 @@ function main(config, profileName) {
     }
 
     let fixedProxies = [];
-    if (group.name === '🍎 海外苹果' || group.name === '🌐 海外微软') {
+    if (group.name === '🍎 海外苹果' || group.name === '💠 海外微软') {
       fixedProxies = [
         '👉 手动切换',
         '♻️ 自动选择',
