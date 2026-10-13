@@ -41,10 +41,6 @@
   <a href="#disclaimer">免责声明</a>
 </p>
 
-<p align="center">
-  中文 | <a href="README_en.md">English</a>
-</p>
-
 ---
 
 > ⚠️ **避坑指南 & 核心声明**
@@ -57,20 +53,14 @@
 
 [<kbd>建立私人配置仓库</kbd>](https://github.com/new?template_name=XVSVT-Clash-Config&template_owner=XVSVTsama)
 
-> 复制仓库后会生成双语仓库：`mihomo.yaml`、`mihomo_en.yaml`、`script_override.js`、`script_override_en.js` 与 `assets/avatar.png` 会保留；完整说明会保存为 `README_full.md` 和 `README_full_en.md`，并生成简化中文 `README.md` 与简化英文 `README_en.md`。你的永久配置链接为 `https://raw.githubusercontent.com/<你的用户名>/<你的仓库名>/main/<文件名>`。
+> 通过上方按钮创建仓库时，GitHub 会复制本仓库当前文件，包括配置、覆写脚本、README、文档、资源及代码检查工作流；不会自动删除模板专用文件，也不会生成英文版本。创建后请按需清理或修改。配置文件的永久链接格式为 `https://raw.githubusercontent.com/<你的用户名>/<你的仓库名>/main/<文件名>`。
 
-   默认远程覆写脚本地址（代码块右上角可直接复制）：
+   默认远程覆写脚本地址（中文注释；代码块右上角可直接复制）：
 
 中文注释：
 
 ```text
 https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
-```
-
-英文注释（可能比前者落后）：
-
-```text
-https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override_en.js
 ```
 
    在 Bettbox / FlClash 系客户端中给订阅挂上该脚本即可：
@@ -86,9 +76,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
    - 脚本首行为 Bettbox 兼容声明（`Compatible_With_Bettbox`）：Bettbox 客户端约定在脚本开头识别该声明（并非全量读取），脚本需遵循此约定，声明必须保持置顶，否则"自定义规则开关"入口不显示。
    - `policyGroupOptions`：`Compatible_With_Bettbox` 声明中的字段，声明了归入 Bettbox 策略组开关分类的 12 个策略组（🌍 PROXY、🔄 负载均衡、👉 手动切换、♻️ 自动选择、📲 Telegram、🎮 Games-Global、🍎 海外苹果、🌐 海外微软、🎮 Steam平台（非下载/CDN）、✖️ Twitter、🤖 AI大模型、🎵 TikTok）。
 
-   脚本内嵌的标准模板与仓库 [mihomo.yaml](https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/mihomo.yaml) 保持同步(如遇差异，以js为准)。
-
-   中英文同步只翻译实际注释和 README 说明。策略组名及其引用、开关键、字符串值、URL、节点过滤正则等功能内容保留中文源中的原值；同步检查会拒绝这些内容的变化，包括含中文的功能值。字符串、正则、模板字符串和 YAML 块标量中的注释符号不会被当作可翻译注释。
+   脚本内嵌了标准模板，对应仓库中的 [mihomo.yaml](https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/mihomo.yaml)。仓库不提供自动同步流程；修改配置后请人工核对两者，如有差异，以脚本内嵌模板为准。
 
 ## 节点域名与 DNS 联动模型
 
@@ -125,7 +113,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 * **激进的 DNS 解析体验**：采用 `fake-ip` 增强模式。内置基于国内直连与 DoH/DoT 混合的智能 DNS 策略，精准防止 DNS 污染。
 * **模块化规则集 (Rule Providers)**：全面拥抱 `mrs` 格式的远程规则集（感谢 [DustinWin](https://github.com/DustinWin/ruleset_geodata/releases)、[MetaCubeX](https://github.com/MetaCubeX/meta-rules-dat/tree/meta)、[echs-top](https://github.com/echs-top/proxy)、[reddishJade](https://github.com/reddishJade/private_proxy) 等维护者），剥离本地规则，实现自动无感更新。
 * **强迫症级场景分流**：
-    * **🤖 AI大模型 / ✖️ Twitter / 🎵 TikTok**：独立分流组，使用功能性正则匹配住宅/美国系节点（住宅/家宽/家庭宽带/residential/home broadband/🇺🇸/美国/美國/U.S. 等多种命名变体），并排除香港/新加坡相关节点（🇭🇰/香港/Hong Kong/HK/🇸🇬/新加坡/Singapore/SG）；英文配置保留同一过滤表达式。
+    * **🤖 AI大模型 / ✖️ Twitter / 🎵 TikTok**：独立分流组，使用功能性正则匹配住宅/美国系节点（住宅/家宽/家庭宽带/residential/home broadband/🇺🇸/美国/美國/U.S. 等多种命名变体），并排除香港/新加坡相关节点（🇭🇰/香港/Hong Kong/HK/🇸🇬/新加坡/Singapore/SG）。
     * **🍎 海外苹果 / 🌐 海外微软**：国内规则强制直连，海外域名与 IP 规则分流到各自的手动策略组。
     * **🎮 游戏 / Steam**：保留 `games-cn` 直连与 `games` 国际游戏代理；Steam 平台另设默认 `DIRECT` 的「非下载/CDN」策略组。
 * **高级广告/隐私拦截**：
@@ -163,7 +151,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 由于这是自用配置，`proxies: ~` 处为空。你必须自己完成以下操作：
 1. **注入节点**：推荐直接使用上面的覆写脚本——订阅里的真实节点会自动填入 `proxies`、纯节点占位组以及海外苹果/微软/Steam 组（保留固定策略项后追加节点），订阅自带的 `proxy-providers` 也会被保留；如果不用脚本，则需要手动把节点列表或 `proxy-providers` 填入本配置（`proxies: ~` 处默认留空）。
-2. **修改节点过滤规则 (Filter)**：中英文配置默认使用长正则：匹配住宅/美国系命名节点（住宅/家宽/家庭宽带/residential/home broadband/🇺🇸/美国/美國/U.S. 等多种命名变体），并排除香港/新加坡相关节点（🇭🇰/香港/Hong Kong/HK/🇸🇬/新加坡/Singapore/SG）。如果订阅节点名称中没有包含上述任何住宅或美国标识，或节点名称带有香港/新加坡字样，请修改中文源文件中对应策略组的 `filter` 字段，再同步到英文配置。
+2. **修改节点过滤规则 (Filter)**：配置默认使用长正则匹配住宅/美国系命名节点（住宅/家宽/家庭宽带/residential/home broadband/🇺🇸/美国/美國/U.S. 等多种命名变体），并排除香港/新加坡相关节点（🇭🇰/香港/Hong Kong/HK/🇸🇬/新加坡/Singapore/SG）。如果订阅节点名称不符合这些条件，请按实际情况修改 `mihomo.yaml` 和覆写脚本内嵌模板中对应策略组的 `filter` 字段，并人工核对两处内容。
 3. **按需删减规则**：如果你不需要屏蔽番茄小说海外版的广告，建议删除 `sub-rules` 中 `fanqie` 相关的规则，以节省性能。
 
 ---
@@ -197,7 +185,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 - [DustinWin/ruleset_geodata](https://github.com/DustinWin/ruleset_geodata)：规则项目提供的策略组图标。
 - [AIsouler/MyClash](https://github.com/AIsouler/MyClash)：Apple、Microsoft、Steam 等 SVG 图标。
 - [Clash Verge](https://www.clashverge.dev/)：部分策略组图标资源。
-- 荷兰国旗图标由本项目自行绘制，并托管于 [`assets/icons/Netherlands.png`](assets/icons/Netherlands.png)。
+- 荷兰国旗图标由本项目自行绘制，并托管于 [`assets/icons/self-Netherlands.png`](assets/icons/self-Netherlands.png)。
 
 图标副本统一托管在 `assets/icons/` 并通过 jsDelivr 引用。DustinWin/ruleset_geodata、Clash Verge 和 AIsouler/MyClash 的相关资源分别遵循其上游声明的 GPL-3.0 或 MIT 许可；Koolson/Qure 与 MiToverG422/Qure 未提供可识别的 SPDX 许可证文件，转载时请注明来源，商业使用前请向相关权利人确认授权。对应的 GPL/MIT 许可证副本保留在 `assets/icons/licenses/`。
 
