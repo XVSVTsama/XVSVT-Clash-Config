@@ -86,26 +86,44 @@ const ruleOptionsEnable = {
  */
 
   // --- 代理组（策略组）单独控制开关 ---
-  '🌍 PROXY': true,        // 主代理策略组
-  '🔄 负载均衡': true,     // 负载均衡策略组
-  '👉 手动切换': true,    // 手动选择策略组
-  '♻️ 自动选择': true,     // 延迟自动选择策略组
-  '📲 Telegram': true,     // Telegram 通讯软件策略组
-  '🎮 Games-Global': true, // 游戏策略组
-  '🍎 海外苹果': true,     // 海外 Apple 平台服务
-  '💠 海外微软': true,     // 海外 Microsoft 平台服务
-  '🎮 Steam平台（非下载/CDN）': true, // Steam 平台服务，不负责下载/CDN
-  '✖️ Twitter': true,      // Twitter 社交平台策略组
-  '🤖 AI大模型': true,     // AI 大模型策略组
-  '🎵 TikTok': true,       // TikTok 视频平台策略组
+  // 主代理策略组
+  '🌍 PROXY': true,
+  // 负载均衡策略组
+  '🔄 负载均衡': true,
+  // 手动选择策略组
+  '👉 手动切换': true,
+  // 延迟自动选择策略组
+  '♻️ 自动选择': true,
+  // Telegram 通讯软件策略组
+  '📲 Telegram': true,
+  // 游戏策略组
+  '🎮 Games-Global': true,
+  // 海外 Apple 平台服务
+  '🍎 海外苹果': true,
+  // 海外 Microsoft 平台服务
+  '💠 海外微软': true,
+  // Steam 平台服务，不负责下载/CDN
+  '🎮 Steam平台（非下载/CDN）': true,
+  // Twitter 社交平台策略组
+  '✖️ Twitter': true,
+  // AI 大模型策略组
+  '🤖 AI大模型': true,
+  // TikTok 视频平台策略组
+  '🎵 TikTok': true,
 
   // --- 节点与网络功能开关 ---
-  '强制证书验证': false,   // 开启时统一把订阅节点 skip-cert-verify 置为 false（强制校验证书）；关闭时不干预，保留订阅节点原有设置。对全部节点一视同仁
-  '启用 Reality 增强': true, // 是否为带非空 public-key/short-id 的 Reality 节点启用 support-x25519mlkem768（X25519MLKEM768 后量子密钥协商）
-  'IPv6优先': false,         // 开启后按节点 ip-version 优先使用 IPv6
-  'FCM直连': true,          // 默认打开：隐藏组 FCM 仅含 DIRECT；关闭后优先使用 👉 手动切换，若该组已关闭则回退到 🌍 PROXY，再回退到 DIRECT（不移除 FCM 组）。开关图标取自 FCM 代理组的 icon 字段。
-  'TGDC实验分流': false,     // 开启 Telegram DC/地区实验分流；关闭时不改变原 Telegram 规则、策略组和规则集。
-  '入口解析': false,         // 开启后，三个国内入口节点全部加入同一个代理组。
+  // 开启时统一把订阅节点 skip-cert-verify 置为 false（强制校验证书）；关闭时不干预，保留订阅节点原有设置。对全部节点一视同仁
+  '强制证书验证': false,
+  // 是否为带非空 public-key/short-id 的 Reality 节点启用 support-x25519mlkem768（X25519MLKEM768 后量子密钥协商）
+  '启用 Reality 增强': true,
+  // 开启后按节点 ip-version 优先使用 IPv6
+  'IPv6优先': false,
+  // 默认打开：隐藏组 FCM 仅含 DIRECT；关闭后优先使用 👉 手动切换，若该组已关闭则回退到 🌍 PROXY，再回退到 DIRECT（不移除 FCM 组）。开关图标取自 FCM 代理组的 icon 字段。
+  'FCM直连': true,
+  // 开启 Telegram DC/地区实验分流；关闭时不改变原 Telegram 规则、策略组和规则集。
+  'TGDC实验分流': false,
+  // 开启后，三个国内入口节点全部加入同一个代理组。
+  '入口解析': false,
 };
 
 // 出现同一个域名规则 key 时，订阅原始配置(true) 还是模板(false) 优先（模板目前未配置

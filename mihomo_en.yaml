@@ -245,7 +245,8 @@ proxy-groups:
   - name: 🔄 负载均衡
     icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-clash-verge-rev-balance.svg"
     type: load-balance
-    proxies: # Here are all single nodes (automatically populated by the override script with all subscription nodes)
+    # Here are all single nodes (automatically populated by the override script with all subscription nodes)
+    proxies:
     url: 'https://www.gstatic.com/generate_204'
     interval: 300
     lazy: true
@@ -253,14 +254,16 @@ proxy-groups:
   - name: 👉 手动切换
     icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-select.png"
     type: select
-    proxies: # Here are all single nodes (automatically populated by the override script with all subscription nodes)
+    # Here are all single nodes (automatically populated by the override script with all subscription nodes)
+    proxies:
   - name: ♻️ 自动选择
     icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-auto.png"
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    proxies: # Here are all single nodes (automatically populated by the override script with all subscription nodes)
+    # Here are all single nodes (automatically populated by the override script with all subscription nodes)
+    proxies:
   - name: 🍎 海外苹果
     icon: https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-AIsouler-MyClash-Apple.svg
     type: select
@@ -277,11 +280,13 @@ proxy-groups:
   - name: 📲 Telegram
     icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-telegram.png"
     type: select
-    proxies: # Here are all single nodes (automatically populated by the override script with all subscription nodes)
+    # Here are all single nodes (automatically populated by the override script with all subscription nodes)
+    proxies:
   - name: 🎮 Games-Global
     icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-games-cn.png"
     type: select
-    proxies: # Here are all single nodes (automatically populated by the override script with all subscription nodes)
+    # Here are all single nodes (automatically populated by the override script with all subscription nodes)
+    proxies:
 
   - name: ✖️ Twitter
     icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-clash-verge-rev-twitter.svg"

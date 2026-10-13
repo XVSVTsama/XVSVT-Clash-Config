@@ -86,26 +86,44 @@ const ruleOptionsEnable = {
  */
 
   // --- Agent group (policy group) individual control switch ---
-  '🌍 PROXY': true,        // Master Agent Policy Group
-  '🔄 负载均衡': true,     // Load balancing policy group
-  '👉 手动切换': true,    // Manually select a policy group
-  '♻️ 自动选择': true,     // Delay automatic selection of policy groups
-  '📲 Telegram': true,     // Telegram messaging software policy group
-  '🎮 Games-Global': true, // Game strategy group
-  '🍎 海外苹果': true,     // Overseas Apple platform services
-  '💠 海外微软': true,     // Overseas Microsoft platform services
-  '🎮 Steam平台（非下载/CDN）': true, // Steam platform service, not responsible for downloads/CDN
-  '✖️ Twitter': true,      // Twitter Social Platforms Strategy Group
-  '🤖 AI大模型': true,     // AI large model strategy group
-  '🎵 TikTok': true,       // TikTok Video Platform Strategy Group
+  // Master Agent Policy Group
+  '🌍 PROXY': true,
+  // Load balancing policy group
+  '🔄 负载均衡': true,
+  // Manually select a policy group
+  '👉 手动切换': true,
+  // Delay automatic selection of policy groups
+  '♻️ 自动选择': true,
+  // Telegram messaging software policy group
+  '📲 Telegram': true,
+  // Game strategy group
+  '🎮 Games-Global': true,
+  // Overseas Apple platform services
+  '🍎 海外苹果': true,
+  // Overseas Microsoft platform services
+  '💠 海外微软': true,
+  // Steam platform service, not responsible for downloads/CDN
+  '🎮 Steam平台（非下载/CDN）': true,
+  // Twitter Social Platforms Strategy Group
+  '✖️ Twitter': true,
+  // AI large model strategy group
+  '🤖 AI大模型': true,
+  // TikTok Video Platform Strategy Group
+  '🎵 TikTok': true,
 
   // --- Node and network function switch ---
-  '强制证书验证': false,   // When it is turned on, skip-cert-verify of the subscription node is set to false (forced certificate verification); when it is turned off, there is no intervention and the original settings of the subscription node are retained. Treat all nodes equally
-  '启用 Reality 增强': true, // Whether to enable support-x25519mlkem768 (X25519MLKEM768 post-quantum key negotiation) for Reality nodes with non-empty public-key/short-id
-  'IPv6优先': false,         // After enabling, IPv6 will be used first according to the node ip-version.
-  'FCM直连': true,          // Open by default: Hide group FCM only contains DIRECT; after closing, use 👉 manual switching first. If the group is closed, fall back to 🌍 PROXY, and then fall back to DIRECT (without removing the FCM group). The switch icon is taken from the icon field of the FCM agent group.
-  'TGDC实验分流': false,     // Enables the Telegram DC/regional experiment; when disabled, the original Telegram rules, policy groups, and rule providers are left unchanged.
-  '入口解析': false,         // Master switch: when enabled, only the first enabled operator in Telecom > Unicom > Mobile order takes effect.
+  // When it is turned on, skip-cert-verify of the subscription node is set to false (forced certificate verification); when it is turned off, there is no intervention and the original settings of the subscription node are retained. Treat all nodes equally
+  '强制证书验证': false,
+  // Whether to enable support-x25519mlkem768 (X25519MLKEM768 post-quantum key negotiation) for Reality nodes with non-empty public-key/short-id
+  '启用 Reality 增强': true,
+  // After enabling, IPv6 will be used first according to the node ip-version.
+  'IPv6优先': false,
+  // Open by default: Hide group FCM only contains DIRECT; after closing, use 👉 manual switching first. If the group is closed, fall back to 🌍 PROXY, and then fall back to DIRECT (without removing the FCM group). The switch icon is taken from the icon field of the FCM agent group.
+  'FCM直连': true,
+  // Enables the Telegram DC/regional experiment; when disabled, the original Telegram rules, policy groups, and rule providers are left unchanged.
+  'TGDC实验分流': false,
+  // Master switch: when enabled, only the first enabled operator in Telecom > Unicom > Mobile order takes effect.
+  '入口解析': false,
 };
 
 // When the same domain name rule key appears, whether to subscribe to the original configuration (true) or the template (false) takes precedence (the template is currently not configured
