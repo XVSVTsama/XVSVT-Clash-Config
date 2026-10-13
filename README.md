@@ -118,36 +118,36 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 ### 内核与客户端
 
-- [Mihomo](https://github.com/MetaCubeX/mihomo)：提供配置所依赖的核心能力。
-- [Bettbox](https://github.com/appshubcc/Bettbox)：图形化客户端，以及本项目覆写脚本适配参考。
-- [FlClash](https://github.com/chen08209/FlClash)：Mihomo 图形化客户端。
+- [Mihomo](https://github.com/MetaCubeX/mihomo)
+- [Bettbox](https://github.com/appshubcc/Bettbox)
+- [FlClash](https://github.com/chen08209/FlClash)
 
 ### 规则集作者与原项目
 
-- [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat)：GeoSite、GeoIP 等规则数据。
-- [DustinWin/ruleset_geodata](https://github.com/DustinWin/ruleset_geodata)：Mihomo 格式规则集及相关图标资源。
-- [echs-top/proxy](https://github.com/echs-top/proxy)：国内、直连及代理等域名/IP 规则集。
-- [appshubcc/bett-rules](https://github.com/appshubcc/bett-rules)：Apple、Microsoft、Steam、Douyin 等规则数据。
-- [reddishJade/private_proxy](https://github.com/reddishJade/private_proxy)：Telegram IP 等规则集。
-- [Accademia/Additional_Rule_For_Clash](https://github.com/Accademia/Additional_Rule_For_Clash)：Gemini、Grok 等补充规则。
-- [Loyalsoldier/clash-rules](https://github.com/Loyalsoldier/clash-rules)：曾引用的 applications、Google、LAN、private 等规则。
-- [blackmatrix7/ios_rule_script](https://github.com/blackmatrix7/ios_rule_script)：曾引用的 Twitter 规则。
+- [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat)
+- [DustinWin/ruleset_geodata](https://github.com/DustinWin/ruleset_geodata)
+- [echs-top/proxy](https://github.com/echs-top/proxy)
+- [appshubcc/bett-rules](https://github.com/appshubcc/bett-rules)
+- [reddishJade/private_proxy](https://github.com/reddishJade/private_proxy)
+- [Accademia/Additional_Rule_For_Clash](https://github.com/Accademia/Additional_Rule_For_Clash)
+- [Loyalsoldier/clash-rules](https://github.com/Loyalsoldier/clash-rules)（曾引用）
+- [blackmatrix7/ios_rule_script](https://github.com/blackmatrix7/ios_rule_script)（曾引用）
 
 ### 图标作者与原项目
 
-- [Koolson/Qure](https://github.com/Koolson/Qure) 与 [MiToverG422/Qure](https://github.com/MiToverG422/Qure)：策略组及地区图标。
-- [DustinWin/ruleset_geodata](https://github.com/DustinWin/ruleset_geodata)：规则项目提供的策略组图标。
-- [AIsouler/MyClash](https://github.com/AIsouler/MyClash)：Apple、Microsoft、Steam 等 SVG 图标。
-- [Clash Verge](https://www.clashverge.dev/)：部分策略组图标资源。
+- [Koolson/Qure](https://github.com/Koolson/Qure) 与 [MiToverG422/Qure](https://github.com/MiToverG422/Qure)
+- [DustinWin/ruleset_geodata](https://github.com/DustinWin/ruleset_geodata)
+- [AIsouler/MyClash](https://github.com/AIsouler/MyClash)
+- [Clash Verge](https://www.clashverge.dev/)
 - 荷兰国旗图标由本项目自行绘制，并托管于 [`assets/icons/self-Netherlands.png`](assets/icons/self-Netherlands.png)。
 
 图标副本统一托管在 `assets/icons/` 并通过 jsDelivr 引用。
 
 ### 脚本与配置参考
 
-- [AIsouler/MyClash](https://github.com/AIsouler/MyClash)：脚本、配置结构与 README 呈现方式参考。
-- [echs-top/proxy](https://github.com/echs-top/proxy)：脚本思路与规则组织参考。
-- [HenryChiao/MIHOMO_YAMLS](https://github.com/HenryChiao/MIHOMO_YAMLS)：Mihomo YAML 配置与规则组织参考。
+- [AIsouler/MyClash](https://github.com/AIsouler/MyClash)
+- [echs-top/proxy](https://github.com/echs-top/proxy)
+- [HenryChiao/MIHOMO_YAMLS](https://github.com/HenryChiao/MIHOMO_YAMLS)
 
 以上参考均用于学习与对照，具体实现以本仓库代码为准。
 
