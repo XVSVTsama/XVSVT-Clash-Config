@@ -33,7 +33,6 @@
 
 <p align="center">
   <a href="#remote-override">远程覆写js</a> ·
-  <a href="#core-features">核心特性</a> ·
   <a href="#proxy-groups">分流组结构</a> ·
   <a href="#before-use">使用前必改</a> ·
   <a href="#acknowledgments">致谢</a> ·
@@ -77,42 +76,6 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 [<kbd>在线阅读：节点域名、Hosts 与私有 DNS 联动模型</kbd>](https://XVSVTsama.github.io/XVSVT-Clash-Config/proxy-infrastructure-domain-protection-model.html)
 
 > 本文档拆解了配置中 `hosts` 真假映射、私有 DoH 解析、DNS policy 与 fake-IP filter 的各自职责，以及四者如何在同一条节点解析链路里协同生效。它面向想要编写或理解节点解析覆写脚本的人，不包含任何真实节点、密码、UUID 或订阅凭据。（本节及其中关于 `dns.use-hosts` 生效效果的说明由 AI 撰写。）
-
-## 推荐学习参考，订阅转换项目与客户端
-   [寻找真正可学习的参考?](https://t.me/xvsvts/152)
-
-   强烈建议使用私人订阅转换前后端，杜绝任何互联网公用在线转换，将极大的降低敏感的节点信息泄漏：
-   
-   [sublinkpro](https://github.com/ZeroDeng01/sublinkPro)  已测试可用🦜
-   
-   [Sub-Store](https://github.com/sub-store-org/Sub-Store)  🔥热门🔥
-
-   上述转换搭建太麻烦？还有本地转换🎁
-   
-   [SubCase](https://github.com/sionnx/SubCase)  app化/Sub-Store支持🍃
-   
-   [flclash-converter](https://github.com/JINXPIL/flclash-converter)  🟢简单易用🟢/🔴非Flclash项目
-附属🔴
-
-   该配置必须使用在原生mihomo内核的非魔改🎭客户端上，否则可以出现未知错误，推荐如
-   [Bettbox](https://github.com/appshubcc/Bettbox/releases)的优秀下游GUI
-
-<a id="core-features"></a>
-
-## ✨ 核心特性 (为什么这么配？)
-
-本配置集成了模块化远程规则（Rule Providers）以及精细化的应用层级分流策略，完全为满足我个人的网络环境与使用痛点而生：
-
-* **使用规则TUN**：默认开启 `tun` 模式，采用 `mips` 协议栈，实现全设备/全协议接管，解决部分软件不走系统代理的问题。
-* **激进的 DNS 解析体验**：采用 `fake-ip` 增强模式。内置基于国内直连与 DoH/DoT 混合的智能 DNS 策略，精准防止 DNS 污染。
-* **模块化规则集 (Rule Providers)**：全面拥抱 `mrs` 格式的远程规则集（感谢 [DustinWin](https://github.com/DustinWin/ruleset_geodata/releases)、[MetaCubeX](https://github.com/MetaCubeX/meta-rules-dat/tree/meta)、[echs-top](https://github.com/echs-top/proxy)、[reddishJade](https://github.com/reddishJade/private_proxy) 等维护者），剥离本地规则，实现自动无感更新。
-* **强迫症级场景分流**：
-    * **🤖 AI大模型 / ✖️ Twitter / 🎵 TikTok**：独立分流组，使用功能性正则匹配住宅/美国系节点（住宅/家宽/家庭宽带/residential/home broadband/🇺🇸/美国/美國/U.S. 等多种命名变体），并排除香港/新加坡相关节点（🇭🇰/香港/Hong Kong/HK/🇸🇬/新加坡/Singapore/SG）。
-    * **🍎 海外苹果 / 🌐 海外微软**：国内规则强制直连，海外域名与 IP 规则分流到各自的手动策略组。
-    * **🎮 游戏 / Steam**：保留 `games-cn` 直连与 `games` 国际游戏代理；Steam 平台另设默认 `DIRECT` 的「非下载/CDN」策略组。
-* **高级广告/隐私拦截**：
-    * 拦截 WebRTC / 语音 / 实时通信常用的 UDP 端口（3478-3479、5349-5350、19302-19309），防止其绕过分流策略。
-    * **SUB-RULE 进程级拦截**：针对特定海外阅读应用（如番茄小说海外版 `com.dragon.read.oversea.gp`）写死了深度的去广告与隐私追踪拦截规则。
 
 <a id="proxy-groups"></a>
 
