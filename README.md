@@ -144,7 +144,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 - [Clash Verge](https://www.clashverge.dev/)：部分策略组图标资源。
 - 荷兰国旗图标由本项目自行绘制，并托管于 [`assets/icons/self-Netherlands.png`](assets/icons/self-Netherlands.png)。
 
-图标副本统一托管在 `assets/icons/` 并通过 jsDelivr 引用。DustinWin/ruleset_geodata、Clash Verge 和 AIsouler/MyClash 的相关资源分别遵循其上游声明的 GPL-3.0 或 MIT 许可；Koolson/Qure 与 MiToverG422/Qure 未提供可识别的 SPDX 许可证文件，转载时请注明来源，商业使用前请向相关权利人确认授权。对应的 GPL/MIT 许可证副本保留在 `assets/icons/licenses/`。
+图标副本统一托管在 `assets/icons/` 并通过 jsDelivr 引用。
 
 ### 脚本与配置参考
 
