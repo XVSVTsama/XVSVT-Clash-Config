@@ -1034,6 +1034,18 @@ const TEMPLATE = {
     "RULE-SET,telegram_domain,📲 Telegram",
     // Manus AI：覆盖 Manus Desktop、Manus Helper 及 Android 客户端进程
     "PROCESS-NAME-REGEX,(?i).*(manus|tech\\.butterfly\\.app).*,🤖 AI大模型",
+    // Muse：覆盖 Muse Android 客户端进程及官网与后端域名
+    "DOMAIN-SUFFIX,muse.ai,🤖 AI大模型",
+    "DOMAIN,hatch-api.meta.ai,🤖 AI大模型",
+    "DOMAIN,api.meta.ai,🤖 AI大模型",
+    "DOMAIN,agent.meta.ai,🤖 AI大模型",
+    "DOMAIN-SUFFIX,metaaivm.com,🤖 AI大模型",
+    "DOMAIN,auth.meta.com,🤖 AI大模型",
+    "DOMAIN,meta.graph.meta.com,🤖 AI大模型",
+    "DOMAIN,edge-metaclaw-http.c10r.facebook.com,🤖 AI大模型",
+    "DOMAIN,shortwave.facebook.com,🤖 AI大模型",
+    "DOMAIN,node.hatch.one,🤖 AI大模型",
+    "PROCESS-NAME,com.facebook.aura,🤖 AI大模型",
     "PROCESS-NAME-REGEX,(?i).*claude.*,🤖 AI大模型",
     "PROCESS-NAME-REGEX,(?i).*anthropic.*,🤖 AI大模型",
     "DOMAIN,api.anthropic.com,🤖 AI大模型",
