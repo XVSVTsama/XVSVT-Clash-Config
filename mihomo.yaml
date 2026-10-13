@@ -456,6 +456,17 @@ rules:
   # Manus AI：覆盖 Manus Desktop、Manus Helper 及 Android 客户端进程
   - PROCESS-NAME-REGEX,(?i).*(manus|tech\.butterfly\.app).*,🤖 AI大模型
   # Claude / Anthropic：进程命中优先，覆盖 Claude Desktop、Claude Code 等客户端
+  - DOMAIN-SUFFIX,muse.ai,🤖 AI大模型
+  - DOMAIN,hatch-api.meta.ai,🤖 AI大模型
+  - DOMAIN,api.meta.ai,🤖 AI大模型
+  - DOMAIN,agent.meta.ai,🤖 AI大模型
+  - DOMAIN-SUFFIX,metaaivm.com,🤖 AI大模型
+  - DOMAIN,auth.meta.com,🤖 AI大模型
+  - DOMAIN,meta.graph.meta.com,🤖 AI大模型
+  - DOMAIN,edge-metaclaw-http.c10r.facebook.com,🤖 AI大模型
+  - DOMAIN,shortwave.facebook.com,🤖 AI大模型
+  - DOMAIN,node.hatch.one,🤖 AI大模型
+  - PROCESS-NAME,com.facebook.aura,🤖 AI大模型
   - PROCESS-NAME-REGEX,(?i).*claude.*,🤖 AI大模型
   - PROCESS-NAME-REGEX,(?i).*anthropic.*,🤖 AI大模型
   # Claude / Anthropic：官方 API、网页登录、OAuth、MCP、CLI 更新和插件依赖
