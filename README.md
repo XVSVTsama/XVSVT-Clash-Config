@@ -69,13 +69,13 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
    - 脚本首行为 Bettbox 兼容声明（`Compatible_With_Bettbox`）：Bettbox 客户端约定在脚本开头识别该声明（并非全量读取），脚本需遵循此约定，声明必须保持置顶，否则"自定义规则开关"入口不显示。
    - `policyGroupOptions`：`Compatible_With_Bettbox` 声明中的字段，声明了归入 Bettbox 策略组开关分类的 12 个策略组（🌍 PROXY、🔄 负载均衡、👉 手动切换、♻️ 自动选择、📲 Telegram、🎮 Games-Global、🍎 海外苹果、🌐 海外微软、🎮 Steam平台（非下载/CDN）、✖️ Twitter、🤖 AI大模型、🎵 TikTok）。
 
-   脚本内嵌了标准模板，对应仓库中的 [mihomo.yaml](https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/mihomo.yaml)。仓库不提供自动同步流程；修改配置后请人工核对两者，如有差异，以脚本内嵌模板为准。
+   覆写脚本会将订阅配置与内嵌模板合并，生成最终配置。
 
 ## 节点域名与 DNS 联动模型
 
 [<kbd>在线阅读：节点域名、Hosts 与私有 DNS 联动模型</kbd>](https://XVSVTsama.github.io/XVSVT-Clash-Config/proxy-infrastructure-domain-protection-model.html)
 
-> 本文档拆解了配置中 `hosts` 真假映射、私有 DoH 解析、DNS policy 与 fake-IP filter 的各自职责，以及四者如何在同一条节点解析链路里协同生效。它面向想要编写或理解节点解析覆写脚本的人，不包含任何真实节点、密码、UUID 或订阅凭据。（本节及其中关于 `dns.use-hosts` 生效效果的说明由 AI 撰写。）
+> 本文档拆解了配置中 `hosts` 真假映射、私有 DoH 解析、DNS policy 与 fake-IP filter 的各自职责，以及四者如何在同一条节点解析链路里协同生效。它面向想要编写或理解节点解析覆写脚本的人，不包含任何真实节点、密码、UUID 或订阅凭据。
 
 <a id="proxy-groups"></a>
 
@@ -108,7 +108,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 由于这是自用配置，`proxies: ~` 处为空。你必须自己完成以下操作：
 1. **注入节点**：推荐直接使用上面的覆写脚本——订阅里的真实节点会自动填入 `proxies`、纯节点占位组以及海外苹果/微软/Steam 组（保留固定策略项后追加节点），订阅自带的 `proxy-providers` 也会被保留；如果不用脚本，则需要手动把节点列表或 `proxy-providers` 填入本配置（`proxies: ~` 处默认留空）。
-2. **修改节点过滤规则 (Filter)**：配置默认使用长正则匹配住宅/美国系命名节点（住宅/家宽/家庭宽带/residential/home broadband/🇺🇸/美国/美國/U.S. 等多种命名变体），并排除香港/新加坡相关节点（🇭🇰/香港/Hong Kong/HK/🇸🇬/新加坡/Singapore/SG）。如果订阅节点名称不符合这些条件，请按实际情况修改 `mihomo.yaml` 和覆写脚本内嵌模板中对应策略组的 `filter` 字段，并人工核对两处内容。
+2. **节点过滤规则 (Filter)**：配置默认使用长正则匹配住宅/美国系命名节点（住宅/家宽/家庭宽带/residential/home broadband/🇺🇸/美国/美國/U.S. 等多种命名变体），并排除香港/新加坡相关节点（🇭🇰/香港/Hong Kong/HK/🇸🇬/新加坡/Singapore/SG）。如果订阅节点名称不符合这些条件，可根据实际情况调整相关策略组的 `filter` 正则。
 3. **按需删减规则**：如果你不需要屏蔽番茄小说海外版的广告，建议删除 `sub-rules` 中 `fanqie` 相关的规则，以节省性能。
 
 ---
@@ -117,7 +117,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 ## 🙏 致谢
 
-本项目建立在开源内核、客户端、规则集与图标资源之上。以下致谢依据当前配置及仓库历史中的引用记录整理；引用或参考不代表这些项目与本仓库存在合作或背书关系。具体资源请以各上游项目的说明和许可为准。
+本项目建立在开源内核、客户端、规则集与图标资源之上。以下列出本项目使用或参考的相关项目；引用或参考不代表这些项目与本仓库存在合作或背书关系。具体资源请以各上游项目的说明和许可为准。
 
 ### 内核与客户端
 

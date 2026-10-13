@@ -32,8 +32,6 @@ const Compatible_With_Bettbox = {
  *    https://github.com/XVSVTsama/XVSVT-Clash-Config
  *    作者：
  *    https://github.com/XVSVTsama
- *    最新内容（GitHub 提交）：
- *    https://github.com/XVSVTsama/XVSVT-Clash-Config/commits/main/script_override.js
  *    用法：本脚本可直接作为 Bettbox / FlClash 系客户端的远程覆写脚本加载
  *         （文件首行为 Bettbox 兼容声明，请勿删除）。
  *
@@ -316,7 +314,7 @@ const TGDC_RULES = [
 ];
 
 // ============================================================================
-// 标准模板配置（与仓库 mihomo.yaml 保持同步，等价于该 yaml 文件的 JSON 表示）
+// 标准模板配置（mihomo.yaml 的 JSON 表示）
 // ============================================================================
 
 const TEMPLATE = {
@@ -1127,7 +1125,7 @@ const TEMPLATE = {
 
 // Bettbox 的可视化开关图标：客户端会读取全局 serviceConfigs（name 对应 ruleOptionsEnable 的 key，
 // icon 为该开关行显示的图标）。上面只覆盖代理组；功能开关的图标来源：
-// FCM直连 从 FCM 代理组的 icon 字段派生（改代理组 icon 一处即可同步）；
+// FCM直连 从 FCM 代理组的 icon 字段派生；
 // 其余功能开关（强制证书验证、启用 Reality 增强、IPv6优先）在此直接指定固定图标。
 const serviceConfigs = TEMPLATE['proxy-groups']
   .filter(
