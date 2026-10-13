@@ -5,7 +5,7 @@
 <h1 align="center">XVSVT's Mihomic Config</h1>
 
 <p align="center">
-  <strong>高度定制自用版</strong> · 路由配置 · 远程覆写脚本
+  <strong>自用</strong> · 路由配置 · 远程覆写脚本
 </p>
 
 <p align="center">
