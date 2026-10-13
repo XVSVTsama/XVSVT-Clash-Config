@@ -51,9 +51,7 @@
 
 ## 远程覆写js
 
-   默认远程覆写脚本地址（中文注释；代码块右上角可直接复制）：
-
-中文注释：
+   默认远程覆写脚本地址（代码块右上角可直接复制）：
 
 ```text
 https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
