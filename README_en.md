@@ -2,7 +2,7 @@
   <img src="assets/avatar.png" alt="XVSVTsama" width="120" />
 </p>
 
-<h1 align="center">Mihomo (Clash Meta) Configuration Template </h1>
+<h1 align="center">XVSVT's Mihomic Config</h1>
 
 <p align="center">
   <strong>Extreme Personal Tailored Edition</strong> · Routing configuration · Remote override script
