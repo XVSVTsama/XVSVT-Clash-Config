@@ -51,10 +51,6 @@
 
 ## 远程覆写js
 
-[<kbd>建立私人配置仓库</kbd>](https://github.com/new?template_name=XVSVT-Clash-Config&template_owner=XVSVTsama)
-
-> 通过上方按钮创建仓库时，GitHub 会复制本仓库当前文件，包括配置、覆写脚本、README、文档、资源及代码检查工作流；不会自动删除模板专用文件，也不会生成英文版本。创建后请按需清理或修改。配置文件的永久链接格式为 `https://raw.githubusercontent.com/<你的用户名>/<你的仓库名>/main/<文件名>`。
-
    默认远程覆写脚本地址（中文注释；代码块右上角可直接复制）：
 
 中文注释：
