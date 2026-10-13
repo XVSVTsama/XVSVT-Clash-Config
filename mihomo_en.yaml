@@ -232,7 +232,7 @@ hosts                             :
 proxies: ~
 proxy-groups:
   - name: 🌍 PROXY
-    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-DustinWin-ruleset_geodata-proxy.png"
+    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-proxy.png"
     type: select
     proxies:
         - 👉 手动切换
@@ -240,7 +240,7 @@ proxy-groups:
         - 🔄 负载均衡
         - DIRECT
   - name: 🔄 负载均衡
-    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-clash-verge-rev-balance.svg"
+    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-clash-verge-rev-balance.svg"
     type: load-balance
     proxies: # Here are all single nodes (automatically populated by the override script with all subscription nodes)
     url: 'https://www.gstatic.com/generate_204'
@@ -248,50 +248,50 @@ proxy-groups:
     lazy: true
     strategy: sticky-sessions
   - name: 👉 手动切换
-    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-DustinWin-ruleset_geodata-select.png"
+    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-select.png"
     type: select
     proxies: # Here are all single nodes (automatically populated by the override script with all subscription nodes)
   - name: ♻️ 自动选择
-    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-DustinWin-ruleset_geodata-auto.png"
+    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-auto.png"
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
     proxies: # Here are all single nodes (automatically populated by the override script with all subscription nodes)
   - name: 🍎 海外苹果
-    icon: https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-AIsouler-MyClash-Apple.svg
+    icon: https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-AIsouler-MyClash-Apple.svg
     type: select
     proxies: null
   - name: 🌐 海外微软
-    icon: https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-AIsouler-MyClash-Microsoft.svg
+    icon: https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-AIsouler-MyClash-Microsoft.svg
     type: select
     proxies: null
   - name: 🎮 Steam平台（非下载/CDN）
-    icon: https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-AIsouler-MyClash-Steam.svg
+    icon: https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-AIsouler-MyClash-Steam.svg
     type: select
     default-selected: DIRECT
     proxies: null
   - name: 📲 Telegram
-    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-DustinWin-ruleset_geodata-telegram.png"
+    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-telegram.png"
     type: select
     proxies: # Here are all single nodes (automatically populated by the override script with all subscription nodes)
   - name: 🎮 Games-Global
-    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-DustinWin-ruleset_geodata-games-cn.png"
+    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-games-cn.png"
     type: select
     proxies: # Here are all single nodes (automatically populated by the override script with all subscription nodes)
 
   - name: ✖️ Twitter
-    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-clash-verge-rev-twitter.svg"
+    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-clash-verge-rev-twitter.svg"
     type: select
     filter: '(?i)^(?!.*(?:🇭🇰|香港|Hong\s*Kong|\bHK\b|🇸🇬|新加坡|Singapore|\bSG\b)).*(?:住宅|家宽|家寬|家庭宽带|家庭寬頻|原生住宅|住宅\s*IP|residential|home\s*broadband|home\s*internet|🇺🇸|美国|美國|\bUnited\s+States\b|\bU\.?S\.?(?:A\.?)?\b).*$'
     include-all-proxies: true
   - name: 🤖 AI大模型
-    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-DustinWin-ruleset_geodata-ai.png"
+    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-ai.png"
     type: select
     filter: '(?i)^(?!.*(?:🇭🇰|香港|Hong\s*Kong|\bHK\b|🇸🇬|新加坡|Singapore|\bSG\b)).*(?:住宅|家宽|家寬|家庭宽带|家庭寬頻|原生住宅|住宅\s*IP|residential|home\s*broadband|home\s*internet|🇺🇸|美国|美國|\bUnited\s+States\b|\bU\.?S\.?(?:A\.?)?\b).*$'
     include-all-proxies: true
   - name: 🎵 TikTok
-    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-DustinWin-ruleset_geodata-tiktok.png"
+    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-tiktok.png"
     type: select
     filter: '(?i)^(?!.*(?:🇭🇰|香港|Hong\s*Kong|\bHK\b|🇸🇬|新加坡|Singapore|\bSG\b)).*(?:住宅|家宽|家寬|家庭宽带|家庭寬頻|原生住宅|住宅\s*IP|residential|home\s*broadband|home\s*internet|🇺🇸|美国|美國|\bUnited\s+States\b|\bU\.?S\.?(?:A\.?)?\b).*$'
     include-all-proxies: true
@@ -302,7 +302,7 @@ proxy-groups:
   # making it convenient for users who need it without directly modifying the configuration file.
   # The switch icon is taken from this group's icon field, and changing the icon only requires modifying it here.
   - name: FCM
-    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-MiToverG422-Qure-fcm.png"
+    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-MiToverG422-Qure-fcm.png"
     # hidden: true  # Hide this group in the script to keep the UI clean; keep it visible in the template to indicate that the group actually exists
     type: select
     proxies:

@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   cleanup:
-    if: github.repository != 'XVSVTsama/mihomo-config-self' && github.run_number == 1 && github.ref == 'refs/heads/main'
+    if: github.repository != 'XVSVTsama/XVSVT-Clash-Config' && github.run_number == 1 && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -34,7 +34,7 @@ jobs:
           - `script_override.js` · `script_override_en.js`
           - `assets/avatar.png`
 
-          源仓库：https://github.com/XVSVTsama/mihomo-config-self
+          源仓库：https://github.com/XVSVTsama/XVSVT-Clash-Config
 
           源作者：https://github.com/XVSVTsama
 
@@ -57,7 +57,7 @@ jobs:
           - `script_override.js` · `script_override_en.js`
           - `assets/avatar.png`
 
-          Source repository: https://github.com/XVSVTsama/mihomo-config-self
+          Source repository: https://github.com/XVSVTsama/XVSVT-Clash-Config
 
           Source author: https://github.com/XVSVTsama
 

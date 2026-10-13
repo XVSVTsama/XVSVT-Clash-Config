@@ -25,15 +25,15 @@ const Compatible_With_Bettbox = {
  *
  *  来源：
  *    JS 脚本：
- *    https://raw.githubusercontent.com/XVSVTsama/mihomo-config-self/refs/heads/main/script_override.js
+ *    https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
  *    模板：
- *    https://raw.githubusercontent.com/XVSVTsama/mihomo-config-self/refs/heads/main/mihomo.yaml
+ *    https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/mihomo.yaml
  *    仓库：
- *    https://github.com/XVSVTsama/mihomo-config-self
+ *    https://github.com/XVSVTsama/XVSVT-Clash-Config
  *    作者：
  *    https://github.com/XVSVTsama
  *    最新内容（GitHub 提交）：
- *    https://github.com/XVSVTsama/mihomo-config-self/commits/main/script_override.js
+ *    https://github.com/XVSVTsama/XVSVT-Clash-Config/commits/main/script_override.js
  *    用法：本脚本可直接作为 Bettbox / FlClash 系客户端的远程覆写脚本加载
  *         （文件首行为 Bettbox 兼容声明，请勿删除）。
  *
@@ -147,19 +147,19 @@ const ENTRY_RESOLUTION_OPTIONS = [
     key: '电信入口解析',
     proxyName: '国内入口解析-电信',
     proxy: DOMESTIC_ENTRY_PROXIES.telecom,
-    icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-Koolson-Qure-China.png'
+    icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-Koolson-Qure-China.png'
   },
   {
     key: '联通入口解析',
     proxyName: '国内入口解析-联通',
     proxy: DOMESTIC_ENTRY_PROXIES.unicom,
-    icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-Koolson-Qure-China_Map.png'
+    icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-Koolson-Qure-China_Map.png'
   },
   {
     key: '移动入口解析',
     proxyName: '国内入口解析-移动',
     proxy: DOMESTIC_ENTRY_PROXIES.mobile,
-    icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-Koolson-Qure-Server.png'
+    icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-Koolson-Qure-Server.png'
   }
 ];
 
@@ -238,19 +238,19 @@ const TGDC_PROXY_GROUP_DEFINITIONS = [
   {
     name: '📲 Telegram-DC1-DC3-Miami',
     filter: '(?i)🇺🇸|美国|迈阿密|miami|\\bMIA\\b|\\bUSA\\b|united\\s*states',
-    icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-Koolson-Qure-United_States.png',
+    icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-Koolson-Qure-United_States.png',
   },
   {
     name: '📲 Telegram-DC2-DC4-Amsterdam',
     filter: '(?i)🇳🇱|荷兰|阿姆斯特丹|amsterdam|\\bAMS\\b|\\bNL\\b|netherlands',
     // Qure 无荷兰原生图标，此为按 Qure 风格自绘的荷兰旗，托管于本仓库 assets/icons。
-    icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/self-Netherlands.png',
+    icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/self-Netherlands.png',
   },
   {
     name: '📲 Telegram-DC5-SG',
     // 根据实际互联情况，DC5 组同时纳入香港与新加坡节点。
     filter: '(?i)🇸🇬|🇭🇰|新加坡|狮城|香港|singapore|hong\\s*kong|\\bSG\\b|\\bSGP\\b|\\bHK\\b|\\bHKG\\b',
-    icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-Koolson-Qure-Singapore.png',
+    icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-Koolson-Qure-Singapore.png',
   },
 ];
 
@@ -564,7 +564,7 @@ const TEMPLATE = {
   "proxy-groups": [
     {
       "name": "🌍 PROXY",
-      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-DustinWin-ruleset_geodata-proxy.png",
+      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-proxy.png",
       "type": "select",
       "proxies": [
         "👉 手动切换",
@@ -575,7 +575,7 @@ const TEMPLATE = {
     },
     {
       "name": "🔄 负载均衡",
-      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-clash-verge-rev-balance.svg",
+      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-clash-verge-rev-balance.svg",
       "type": "load-balance",
       "proxies": null,
       "url": "https://www.gstatic.com/generate_204",
@@ -585,13 +585,13 @@ const TEMPLATE = {
     },
     {
       "name": "👉 手动切换",
-      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-DustinWin-ruleset_geodata-select.png",
+      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-select.png",
       "type": "select",
       "proxies": null
     },
     {
       "name": "♻️ 自动选择",
-      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-DustinWin-ruleset_geodata-auto.png",
+      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-auto.png",
       "type": "url-test",
       "url": "https://www.gstatic.com/generate_204",
       "interval": 300,
@@ -600,59 +600,59 @@ const TEMPLATE = {
     },
     {
       "name": "🍎 海外苹果",
-      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-AIsouler-MyClash-Apple.svg",
+      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-AIsouler-MyClash-Apple.svg",
       "type": "select",
       "proxies": null
     },
     {
       "name": "💠 海外微软",
-      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/self-Microsoft.svg",
+      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/self-Microsoft.svg",
       "type": "select",
       "proxies": null
     },
     {
       "name": "🎮 Steam平台（非下载/CDN）",
-      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-AIsouler-MyClash-Steam.svg",
+      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-AIsouler-MyClash-Steam.svg",
       "type": "select",
       "default-selected": "DIRECT",
       "proxies": null
     },
     {
       "name": "📲 Telegram",
-      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-DustinWin-ruleset_geodata-telegram.png",
+      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-telegram.png",
       "type": "select",
       "proxies": null
     },
     {
       "name": "🎮 Games-Global",
-      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-DustinWin-ruleset_geodata-games-cn.png",
+      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-games-cn.png",
       "type": "select",
       "proxies": null
     },
     {
       "name": "✖️ Twitter",
-      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-clash-verge-rev-twitter.svg",
+      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-clash-verge-rev-twitter.svg",
       "type": "select",
       "filter": "(?i)^(?!.*(?:🇭🇰|香港|Hong\\s*Kong|\\bHK\\b|🇸🇬|新加坡|Singapore|\\bSG\\b)).*(?:住宅|家宽|家寬|家庭宽带|家庭寬頻|原生住宅|住宅\\s*IP|residential|home\\s*broadband|home\\s*internet|🇺🇸|美国|美國|\\bUnited\\s+States\\b|\\bU\\.?S\\.?(?:A\\.?)?\\b).*$",
       "include-all-proxies": true
     },
     {
       "name": "🤖 AI大模型",
-      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-DustinWin-ruleset_geodata-ai.png",
+      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-ai.png",
       "type": "select",
       "filter": "(?i)^(?!.*(?:🇭🇰|香港|Hong\\s*Kong|\\bHK\\b|🇸🇬|新加坡|Singapore|\\bSG\\b)).*(?:住宅|家宽|家寬|家庭宽带|家庭寬頻|原生住宅|住宅\\s*IP|residential|home\\s*broadband|home\\s*internet|🇺🇸|美国|美國|\\bUnited\\s+States\\b|\\bU\\.?S\\.?(?:A\\.?)?\\b).*$",
       "include-all-proxies": true
     },
     {
       "name": "🎵 TikTok",
-      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-DustinWin-ruleset_geodata-tiktok.png",
+      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-tiktok.png",
       "type": "select",
       "filter": "(?i)^(?!.*(?:🇭🇰|香港|Hong\\s*Kong|\\bHK\\b|🇸🇬|新加坡|Singapore|\\bSG\\b)).*(?:住宅|家宽|家寬|家庭宽带|家庭寬頻|原生住宅|住宅\\s*IP|residential|home\\s*broadband|home\\s*internet|🇺🇸|美国|美國|\\bUnited\\s+States\\b|\\bU\\.?S\\.?(?:A\\.?)?\\b).*$",
       "include-all-proxies": true
     },
     {
       "hidden": true,
-      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-MiToverG422-Qure-fcm.png",
+      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-MiToverG422-Qure-fcm.png",
       "name": "FCM",
       "proxies": [
         "👉 手动切换",
@@ -1129,23 +1129,23 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     },
     {
       name: '强制证书验证',
-      icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-MiToverG422-Qure-SSL.png'
+      icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-MiToverG422-Qure-SSL.png'
     },
     {
       name: '启用 Reality 增强',
-      icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-MiToverG422-Qure-Spark.png'
+      icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-MiToverG422-Qure-Spark.png'
     },
     {
       name: 'IPv6优先',
-      icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-Koolson-Qure-Global.png'
+      icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-Koolson-Qure-Global.png'
     },
     {
       name: 'TGDC实验分流',
-      icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-Koolson-Qure-Telegram.png'
+      icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-Koolson-Qure-Telegram.png'
     },
     {
       name: '入口解析',
-      icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-Koolson-Qure-Domestic.png'
+      icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-Koolson-Qure-Domestic.png'
     }
   ]);
 
@@ -1288,7 +1288,7 @@ function applyEntryResolution(result) {
     type: 'select',
     proxies: proxyNames,
     url: 'https://g.cn/generate_204',
-    icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-Koolson-Qure-Domestic.png'
+    icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-Koolson-Qure-Domestic.png'
   };
   const existingDisplayGroup = (result['proxy-groups'] || []).find(
     (group) => group && group.name === groupName

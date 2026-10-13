@@ -9,6 +9,6 @@
 ## 步骤
 
 - [x] 核实图标 URL、源仓库及素材许可；下载所有静态图标到 `assets/icons/`，保留来源与许可信息。
-- [x] 按约定命名，更新所有实际图标 URL 为 `https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/<filename>`。
+- [x] 按约定命名，更新所有实际图标 URL 为 `https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/<filename>`。
 - [x] 运行 YAML/JS 语法、模板同步和图标完整性校验；审查 diff，确认非图标远程 URL 未被误改。
 - [x] 创建分支、提交变更并创建 PR。

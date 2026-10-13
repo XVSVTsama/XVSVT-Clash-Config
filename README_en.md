@@ -9,10 +9,10 @@
 </p>
 
 <p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/XVSVTsama/mihomo-config-self?style=flat-square&label=License&color=informational" alt="License"></a>
-  <a href="https://github.com/XVSVTsama/mihomo-config-self/commits/main"><img src="https://img.shields.io/github/last-commit/XVSVTsama/mihomo-config-self?style=flat-square&label=Last%20Commit&color=informational" alt="Last Commit"></a>
-  <a href="https://github.com/XVSVTsama/mihomo-config-self"><img src="https://img.shields.io/github/repo-size/XVSVTsama/mihomo-config-self?style=flat-square&label=Repo%20Size&color=informational" alt="Repo Size"></a>
-  <a href="https://github.com/XVSVTsama/mihomo-config-self/stargazers"><img src="https://img.shields.io/github/stars/XVSVTsama/mihomo-config-self?style=flat-square&label=Stars&color=informational" alt="Stars"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/XVSVTsama/XVSVT-Clash-Config?style=flat-square&label=License&color=informational" alt="License"></a>
+  <a href="https://github.com/XVSVTsama/XVSVT-Clash-Config/commits/main"><img src="https://img.shields.io/github/last-commit/XVSVTsama/XVSVT-Clash-Config?style=flat-square&label=Last%20Commit&color=informational" alt="Last Commit"></a>
+  <a href="https://github.com/XVSVTsama/XVSVT-Clash-Config"><img src="https://img.shields.io/github/repo-size/XVSVTsama/XVSVT-Clash-Config?style=flat-square&label=Repo%20Size&color=informational" alt="Repo Size"></a>
+  <a href="https://github.com/XVSVTsama/XVSVT-Clash-Config/stargazers"><img src="https://img.shields.io/github/stars/XVSVTsama/XVSVT-Clash-Config?style=flat-square&label=Stars&color=informational" alt="Stars"></a>
   <a href="https://github.com/XVSVTsama"><img src="https://img.shields.io/badge/XVSVTsama-Homepage-informational?style=flat-square" alt="Homepage"></a>
 </p>
 
@@ -25,11 +25,11 @@
 
 <p align="center">
   <a href="mihomo.yaml"><img src="https://img.shields.io/badge/YAML-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6-yellow?style=flat-square&logo=yaml&logoColor=white" alt="YAML"></a>
-  <a href="https://github.com/XVSVTsama/mihomo-config-self/actions/workflows/yaml-syntax.yml"><img src="https://img.shields.io/github/actions/workflow/status/XVSVTsama/mihomo-config-self/yaml-syntax.yml?style=flat-square&label=YAML%20Syntax&color=informational" alt="YAML Syntax"></a>
+  <a href="https://github.com/XVSVTsama/XVSVT-Clash-Config/actions/workflows/yaml-syntax.yml"><img src="https://img.shields.io/github/actions/workflow/status/XVSVTsama/XVSVT-Clash-Config/yaml-syntax.yml?style=flat-square&label=YAML%20Syntax&color=informational" alt="YAML Syntax"></a>
   <a href="script_override.js"><img src="https://img.shields.io/badge/JavaScript-%E8%A6%86%E5%86%99%E8%84%9A%E6%9C%AC-yellow?style=flat-square&logo=javascript&logoColor=black" alt="JavaScript"></a>
-  <a href="https://github.com/XVSVTsama/mihomo-config-self/actions/workflows/js-syntax.yml"><img src="https://img.shields.io/github/actions/workflow/status/XVSVTsama/mihomo-config-self/js-syntax.yml?style=flat-square&label=JS%20Syntax&color=informational" alt="JavaScript Syntax"></a>
-  <a href="https://github.com/XVSVTsama/mihomo-config-self/actions/workflows/template-sync.yml"><img src="https://img.shields.io/github/actions/workflow/status/XVSVTsama/mihomo-config-self/template-sync.yml?style=flat-square&label=Template%20Sync&color=informational" alt="Template Sync"></a>
-  <a href="https://github.com/XVSVTsama/mihomo-config-self/actions/workflows/mihomo-check.yml"><img src="https://img.shields.io/github/actions/workflow/status/XVSVTsama/mihomo-config-self/mihomo-check.yml?style=flat-square&label=Mihomo%20Real%20Core&color=informational" alt="Mihomo Real Core"></a>
+  <a href="https://github.com/XVSVTsama/XVSVT-Clash-Config/actions/workflows/js-syntax.yml"><img src="https://img.shields.io/github/actions/workflow/status/XVSVTsama/XVSVT-Clash-Config/js-syntax.yml?style=flat-square&label=JS%20Syntax&color=informational" alt="JavaScript Syntax"></a>
+  <a href="https://github.com/XVSVTsama/XVSVT-Clash-Config/actions/workflows/template-sync.yml"><img src="https://img.shields.io/github/actions/workflow/status/XVSVTsama/XVSVT-Clash-Config/template-sync.yml?style=flat-square&label=Template%20Sync&color=informational" alt="Template Sync"></a>
+  <a href="https://github.com/XVSVTsama/XVSVT-Clash-Config/actions/workflows/mihomo-check.yml"><img src="https://img.shields.io/github/actions/workflow/status/XVSVTsama/XVSVT-Clash-Config/mihomo-check.yml?style=flat-square&label=Mihomo%20Real%20Core&color=informational" alt="Mihomo Real Core"></a>
 </p>
 
 <p align="center">
@@ -49,14 +49,14 @@
 ---
 
 > ⚠️ **Pitfall Guide & Core Disclaimer**
-> This warehouse provides a copy of**Highly adaptable to personal usage habits**Mihomo (formerly Clash Meta) [routing configuration file](https://raw.githubusercontent.com/XVSVTsama/mihomo-config-self/refs/heads/main/mihomo.yaml)。
+> This warehouse provides a copy of**Highly adaptable to personal usage habits**Mihomo (formerly Clash Meta) [routing configuration file](https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/mihomo.yaml)。
 > it**no**A universal fool-proof template that works right out of the box. If you are not familiar with Mihomo's core mechanism, TUN mode, Fake-IP, and policy group regular expressions (filters), please**Copy with caution**. Before copying the assignment, please be sure to read the instructions below!
 
 <a id="remote-override"></a>
 
 ## Remote Override JS
 
-[<kbd>Create a private configuration repository</kbd>](https://github.com/new?template_name=mihomo-config-self&template_owner=XVSVTsama)
+[<kbd>Create a private configuration repository</kbd>](https://github.com/new?template_name=XVSVT-Clash-Config&template_owner=XVSVTsama)
 
 > After copying the warehouse, a bilingual warehouse will be generated:`mihomo.yaml`、`mihomo_en.yaml`、`script_override.js`、`script_override_en.js` and `assets/avatar.png` will be retained; the full description will be saved as `README_full.md` and `README_full_en.md`, and generate simplified Chinese `README.md` with simplified English `README_en.md`. Your permanent configuration link is `https://raw.githubusercontent.com/<你的用户名>/<你的仓库名>/main/<文件名>`。
 
@@ -65,13 +65,13 @@
 Chinese note:
 
 ```text
-https://raw.githubusercontent.com/XVSVTsama/mihomo-config-self/refs/heads/main/script_override.js
+https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
 ```
 
 English annotation (maybe lagging behind the former):
 
 ```text
-https://raw.githubusercontent.com/XVSVTsama/mihomo-config-self/refs/heads/main/script_override_en.js
+https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override_en.js
 ```
 
    Just attach this script to the subscription in the Bettbox / FlClash client:
@@ -87,13 +87,13 @@ https://raw.githubusercontent.com/XVSVTsama/mihomo-config-self/refs/heads/main/s
    - The first line of the script is the Bettbox compatibility statement (`Compatible_With_Bettbox`): The Bettbox client agrees to identify the statement at the beginning of the script (not to read it in full). The script must follow this convention and the statement must remain on top, otherwise the "custom rule switch" entry will not be displayed.
    - `policyGroupOptions`：`Compatible_With_Bettbox` The fields in the statement declare the 12 policy groups classified into the Bettbox policy group switch classification (🌍 PROXY, 🔄 Load balancing, 👉 Manual switching, ♻️ Automatic selection, 📲 Telegram, 🎮 Games-Global, 🍎 Overseas Apple, 🌐 Overseas Microsoft, 🎮 Steam platform (non-download/CDN), ✖️ Twitter, 🤖 AI large model, 🎵 TikTok).
 
-   Standard templates and repositories embedded in scripts [mihomo.yaml](https://raw.githubusercontent.com/XVSVTsama/mihomo-config-self/refs/heads/main/mihomo.yaml) Keep in sync (in case of discrepancies, js shall prevail).
+   Standard templates and repositories embedded in scripts [mihomo.yaml](https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/mihomo.yaml) Keep in sync (in case of discrepancies, js shall prevail).
 
    Only the actual comments and README instructions are translated into Chinese and English simultaneously. The policy group name and its references, switch keys, string values, URLs, node filtering rules and other functional contents retain the original values ​​in the Chinese source; the synchronization check will reject changes in these contents, including functional values ​​containing Chinese. Comment symbols in strings, regexes, template strings, and YAML block scalars are not treated as translatable comments.
 
 ## Node domain name and DNS linkage model
 
-[<kbd>Read online: Node domain name, Hosts and private DNS linkage model</kbd>](https://XVSVTsama.github.io/mihomo-config-self/proxy-infrastructure-domain-protection-model.html)
+[<kbd>Read online: Node domain name, Hosts and private DNS linkage model</kbd>](https://XVSVTsama.github.io/XVSVT-Clash-Config/proxy-infrastructure-domain-protection-model.html)
 
 > This document disassembles the configuration `hosts` The respective responsibilities of true and false mapping, private DoH resolution, DNS policy and fake-IP filter, and how the four work together in the same node resolution link. It is intended for people who want to write or understand node resolution override scripts and does not contain any real nodes, passwords, UUIDs or subscription credentials. (This section and its related `dns.use-hosts` The description of the effective effect is written by AI. )
 
@@ -214,7 +214,7 @@ The above references are for learning and comparison. The specific implementatio
 
 ## ⭐ Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=XVSVTsama/mihomo-config-self&type=Date)](https://star-history.com/#XVSVTsama/mihomo-config-self&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=XVSVTsama/XVSVT-Clash-Config&type=Date)](https://star-history.com/#XVSVTsama/XVSVT-Clash-Config&Date)
 
 <a id="disclaimer"></a>
 
