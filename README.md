@@ -42,10 +42,6 @@
 
 ---
 
-> ⚠️ **避坑指南 & 核心声明**
-> 本仓库提供的是一份**高度贴合个人使用习惯**的 Mihomo (原 Clash Meta) [路由配置文件](https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/mihomo.yaml)。
-> 它**不是**一份开箱即用的通用傻瓜式模板。如果您不熟悉 Mihomo 的核心机制、TUN 模式、Fake-IP 以及策略组正则表达式（filter），请**谨慎照搬**。抄作业前，请务必阅读下方说明！
-
 <a id="remote-override"></a>
 
 ## 远程覆写js
@@ -106,7 +102,9 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 ## 🛠️ 使用前必改 (抄作业必看)
 
-由于这是自用配置，`proxies: ~` 处为空。你必须自己完成以下操作：
+本配置按个人使用习惯定制，并非开箱即用的通用模板。使用前请完成以下必要设置；如不熟悉 Mihomo、TUN、Fake-IP 或策略组过滤规则，请先了解相关机制再使用。
+
+配置中的 `proxies: ~` 为空，你需要完成以下操作：
 1. **注入节点**：推荐直接使用上面的覆写脚本——订阅里的真实节点会自动填入 `proxies`、纯节点占位组以及海外苹果/微软/Steam 组（保留固定策略项后追加节点），订阅自带的 `proxy-providers` 也会被保留；如果不用脚本，则需要手动把节点列表或 `proxy-providers` 填入本配置（`proxies: ~` 处默认留空）。
 2. **节点过滤规则 (Filter)**：配置默认使用长正则匹配住宅/美国系命名节点（住宅/家宽/家庭宽带/residential/home broadband/🇺🇸/美国/美國/U.S. 等多种命名变体），并排除香港/新加坡相关节点（🇭🇰/香港/Hong Kong/HK/🇸🇬/新加坡/Singapore/SG）。如果订阅节点名称不符合这些条件，可根据实际情况调整相关策略组的 `filter` 正则。
 3. **按需删减规则**：如果你不需要屏蔽番茄小说海外版的广告，建议删除 `sub-rules` 中 `fanqie` 相关的规则，以节省性能。
