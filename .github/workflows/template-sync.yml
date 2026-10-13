@@ -37,7 +37,21 @@ jobs:
         env:
           CHECK_ENFORCE: ${{ github.event.inputs.enforce || vars.TEMPLATE_SYNC_ENFORCE || '' }}
           CHECK_PER_COMMIT: ${{ github.event.inputs.per_commit || vars.TEMPLATE_SYNC_PER_COMMIT || '' }}
-        run: python .github/scripts/run_check.py --file mihomo.yaml --file script_override.js -- python .github/scripts/check_template_sync.py
+        run: |
+          # Template Generate runs after a script-only push and publishes the
+          # derived YAML. Do not fail this check during that intentional window;
+          # the generated commit is checked normally when it arrives.
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            BEFORE="${{ github.event.before }}"
+            AFTER="${{ github.event.after }}"
+            FILES="$(git diff --name-only "$BEFORE" "$AFTER")"
+            if echo "$FILES" | grep -qE '(^|/)script_override\.js$' && \
+               ! echo "$FILES" | grep -qE '(^|/)mihomo\.yaml$'; then
+              echo "::notice::Skipping enforcement for a script-only push; Template Generate will publish mihomo.yaml."
+              export CHECK_ENFORCE=false
+            fi
+          fi
+          python .github/scripts/run_check.py --file mihomo.yaml --file script_override.js -- python .github/scripts/check_template_sync.py
       - name: Explain how to fix template drift
         # Only a push tells us which side moved; on PRs the diff already shows it.
         if: failure() && github.event_name == 'push'

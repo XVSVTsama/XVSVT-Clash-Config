@@ -66,6 +66,8 @@ class RepositoryArtifactTests(unittest.TestCase):
     """The committed English YAML must stay functionally identical to Chinese."""
 
     def test_english_yaml_matches_chinese(self):
+        if os.environ.get("SKIP_REPOSITORY_ARTIFACT_TEST") == "1":
+            self.skipTest("English artifacts are validated after translation")
         source = (ROOT / "mihomo.yaml").read_text(encoding="utf-8")
         english = (ROOT / "mihomo_en.yaml").read_text(encoding="utf-8")
         self.assertEqual(yaml_signature(source), yaml_signature(english))

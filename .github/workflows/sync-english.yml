@@ -56,6 +56,10 @@ jobs:
       - name: Install YAML dependencies
         run: pip install pyyaml ruamel.yaml
       - name: Test translation boundaries
+        env:
+          # The source YAML is allowed to be ahead of mihomo_en.yaml here;
+          # the generated artifact is checked after translation below.
+          SKIP_REPOSITORY_ARTIFACT_TEST: "1"
         run: python -m unittest discover -s .github/scripts/tests -p 'test_*.py'
       - name: Detect relevant changes
         id: changes
