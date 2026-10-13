@@ -51,12 +51,12 @@ const Compatible_With_Bettbox = {
  * 2. proxies: Use the real node list in the original subscription configuration (this item in the template is originally empty,
  *Just a placeholder).
  *
- * 3. Pure node placeholder group in proxy-groups (proxies: null: 👉 manual switching, ♻️ automatic selection,
- * 🔄 Load Balancing, 📲 Telegram, 🎮 Games-Global) will automatically fill in all node names in the subscription;
- * 🍎 Overseas Apple, 🌐 Overseas Microsoft, 🎮 Steam platform (non-download/CDN) also use null placeholder,
- * However, when running, each fixed policy item will be retained first, and then all subscription nodes will be added. If you subscribe, you will also get
- * proxy-providers, these placeholder groups will write use to reference all providers at the same time. remaining groups
- * Keep the template as is and will not be overwritten or supplemented by subscribed nodes.
+    * 3. Pure node placeholder group in proxy-groups (proxies: null: 👉 manual switching, ♻️ automatic selection,
+    * 🔄 Load Balancing, 📲 Telegram, 🎮 Games-Global) will automatically fill in all node names in the subscription;
+    * 🍎 Overseas Apple, 💠 Overseas Microsoft, 🎮 Steam platform (non-download/CDN) also use null placeholder,
+    * However, when running, each fixed policy item will be retained first, and then all subscription nodes will be added. If you subscribe, you will also get
+    * proxy-providers, these placeholder groups will write use to reference all providers at the same time. remaining groups
+    * Keep the template as is and will not be overwritten or supplemented by subscribed nodes.
  *
  * 4.【Special handling】DNS and hosts:
  * - hosts only if dns.use-hosts=true and dns.listen is related to the DNS endpoint actually participating in node resolution
@@ -85,7 +85,7 @@ const ruleOptionsEnable = {
  * There are also function switches (such as FCM direct connection): only the nodes in the group are adjusted, and the startup and shutdown of the policy group are not involved.
  */
 
-  // --- Agent group (policy group) independent control switch ---
+  // --- Agent group (policy group) individual control switch ---
   '🌍 PROXY': true,        // Master Agent Policy Group
   '🔄 负载均衡': true,     // Load balancing policy group
   '👉 手动切换': true,    // Manually select a policy group
@@ -99,10 +99,10 @@ const ruleOptionsEnable = {
   '🤖 AI大模型': true,     // AI large model strategy group
   '🎵 TikTok': true,       // TikTok Video Platform Strategy Group
 
-  // ---Node and network function switches ---
+  // --- Node and network function switch ---
   '强制证书验证': false,   // When it is turned on, skip-cert-verify of the subscription node is set to false (forced certificate verification); when it is turned off, there is no intervention and the original settings of the subscription node are retained. Treat all nodes equally
   '启用 Reality 增强': true, // Whether to enable support-x25519mlkem768 (X25519MLKEM768 post-quantum key negotiation) for Reality nodes with non-empty public-key/short-id
-  'IPv6优先': false,         // After turning on, IPv6 will be used first according to the node ip-version.
+  'IPv6优先': false,         // After enabling, IPv6 will be used first according to the node ip-version.
   'FCM直连': true,          // Open by default: Hide group FCM only contains DIRECT; after closing, use 👉 manual switching first. If the group is closed, fall back to 🌍 PROXY, and then fall back to DIRECT (without removing the FCM group). The switch icon is taken from the icon field of the FCM agent group.
   'TGDC实验分流': false,     // Enables the Telegram DC/regional experiment; when disabled, the original Telegram rules, policy groups, and rule providers are left unchanged.
   '入口解析': false,         // Master switch: when enabled, only the first enabled operator in Telecom > Unicom > Mobile order takes effect.
@@ -1034,7 +1034,7 @@ const TEMPLATE = {
     "RULE-SET,telegram_domain,📲 Telegram",
     // Manus AI: Covers Manus Desktop, Manus Helper and Android client processes
     "PROCESS-NAME-REGEX,(?i).*(manus|tech\\.butterfly\\.app).*,🤖 AI大模型",
-    // Muse: Covers the Muse Android client process and the official website and backend domains
+    // Muse: Covers the Muse Android client process and official website and backend domain names
     "DOMAIN-SUFFIX,muse.ai,🤖 AI大模型",
     "DOMAIN,hatch-api.meta.ai,🤖 AI大模型",
     "DOMAIN,api.meta.ai,🤖 AI大模型",
@@ -1967,7 +1967,7 @@ function main(config, profileName) {
     }
 
     if (fixedProxies.length > 0) {
-      // The policy group comes first and the subscription node comes last; closed nested groups are not added back.
+      // The policy group comes first and the subscription node comes last; closed nested groups are not added back again.
       const enabledFixedProxies = fixedProxies.filter(
         (name) => !disabledGroupNames.has(name)
       );

@@ -151,6 +151,7 @@ sniffer:
     - 210.2.4.8/32
     - 101.226.4.6/32
     - 218.30.118.6/32
+
 dns:
   enable: true                                             
   cache-algorithm: arc
@@ -172,12 +173,12 @@ dns:
   direct-nameserver-follow-policy: true
   nameserver:
     - https://cloudflare-dns.com/dns-query#👉 手动切换
-  # - https://dns.adguard-dns.com/dns-query     # AdGuard Public DNS  # 94.140.14.14        94.140.15.15
-  # - https://dns.google/dns-query             # Google Public DNS   # 8.8.8.8             8.8.4.4
-  # - https://dns.quad9.net/dns-query           # IBM Quad9 Public DNS # 9.9.9.11            149.112.112.11
-  # - https://doh.opendns.com/dns-query         # OpenDNS Public DNS  # 208.67.220.220      208.67.222.222
-  # - https://doh.dns.sb/dns-query              # DNS.SB Public DNS   # 185.222.222.222     45.11.45.11
-  # - https://dns.twnic.tw/dns-query            # Quad101 Public DNS  # 101.101.101.10      101.102.103.10
+  # - https://dns.adguard-dns.com/dns-query # AdGuard Public DNS # 94.140.14.14 94.140.15.15
+  # - https://dns.google/dns-query # Google Public DNS # 8.8.8.8 8.8.4.4
+  # - https://dns.quad9.net/dns-query # IBM Quad9 Public DNS # 9.9.9.11 149.112.112.11
+  # - https://doh.opendns.com/dns-query # OpenDNS Public DNS # 208.67.220.220 208.67.222.222
+  # - https://doh.dns.sb/dns-query # DNS.SB Public DNS # 185.222.222.222 45.11.45.11
+  # - https://dns.twnic.tw/dns-query # Quad101 Public DNS # 101.101.101.10 101.102.103.10
   nameserver-policy:
     'rule-set:douyin':
     - system
@@ -187,6 +188,7 @@ dns:
     - system
     'rule-set:proxy@direct,cn,echs_direct':
     - https://dns.alidns.com/dns-query#DIRECT
+    - https://doh.pub/dns-query#DIRECT
   prefer-h3: false
   respect-rules: false                                            
   enhanced-mode: fake-ip                  
@@ -202,6 +204,7 @@ dns:
     - rule-set:applications
     - rule-set:pixiv
     - pixshaft.com
+
 hosts                             :                                            
   '+.clash.dev'               : [ '127.0.0.1'          ]                
   'services.googleapis.cn'    : [ 'services.googleapis.com' ]
@@ -209,12 +212,12 @@ hosts                             :
   '+.mcdn.bilivideo.cn'       : [ '0.0.0.0'            ]
   'mtalk.google.com'          : [ '142.250.107.188'    , '108.177.125.188'    ]
   'dns.msftncsi.com'          : [ '131.107.255.255'    , 'fd3e:4f5a:5b81::1'  ]
-  #'dns.alidns.com'            : [ '223.5.5.5'          , '223.6.6.6'          ] # 🇨🇳 阿里 DNS
-  #'pdns.dnspod.cn'            : [ '119.29.29.29'       , '119.28.28.28'       ] # 🇨🇳 腾讯 DNS
-  #'dns.pub'                   : [ '119.29.29.29'       ]           # 🇨🇳 腾讯 DNS  
-  #'doh.pub'                   : [ '1.12.12.12'         , '120.53.53.53'       ] # 🇨🇳 腾讯 DNS
-  #'dot.pub'                   : [ '1.12.12.12'         , '120.53.53.53'       ] # 🇨🇳 腾讯 DNS
-  #'one.one.one.one'           : [ '1.0.0.1'            , '1.1.1.1'            ] # 🇺🇸 Cloudflare 公共 DNS
+  #'dns.alidns.com' : [ '223.5.5.5' , '223.6.6.6' ] # 🇨🇳 Ali DNS
+  #'pdns.dnspod.cn' : [ '119.29.29.29' , '119.28.28.28' ] # 🇨🇳 Tencent DNS
+  #'dns.pub' : [ '119.29.29.29' ] # 🇨🇳 Tencent DNS  
+  #'doh.pub' : [ '1.12.12.12' , '120.53.53.53' ] # 🇨🇳 Tencent DNS
+  #'dot.pub' : [ '1.12.12.12' , '120.53.53.53' ] # 🇨🇳 Tencent DNS
+  #'one.one.one.one' : [ '1.0.0.1' , '1.1.1.1' ] # 🇺🇸 Cloudflare Public DNS
   '*.pangolin-sdk-toutiao': 0.0.0.0
   '*.pangolin-sdk-toutiao.*': 0.0.0.0
   '*.pstatp.com': 0.0.0.0
@@ -228,7 +231,7 @@ hosts                             :
 
 
 
-# Public template configuration (anchor definitions)
+# Public template configuration (anchor definition)
 proxies: ~
 proxy-groups:
   - name: 🌍 PROXY
@@ -262,8 +265,8 @@ proxy-groups:
     icon: https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-AIsouler-MyClash-Apple.svg
     type: select
     proxies: null
-  - name: 🌐 海外微软
-    icon: https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-AIsouler-MyClash-Microsoft.svg
+  - name: 💠 海外微软
+    icon: https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/self-Microsoft.svg
     type: select
     proxies: null
   - name: 🎮 Steam平台（非下载/CDN）
@@ -295,19 +298,20 @@ proxy-groups:
     type: select
     filter: '(?i)^(?!.*(?:🇭🇰|香港|Hong\s*Kong|\bHK\b|🇸🇬|新加坡|Singapore|\bSG\b)).*(?:住宅|家宽|家寬|家庭宽带|家庭寬頻|原生住宅|住宅\s*IP|residential|home\s*broadband|home\s*internet|🇺🇸|美国|美國|\bUnited\s+States\b|\bU\.?S\.?(?:A\.?)?\b).*$'
     include-all-proxies: true
-  # FCM: Google FCM domain traffic splitting target (routes to this group after hitting RULE-SET,googlefcm,FCM).
-  # This group is not hidden in the template to indicate that this proxy group actually exists and is a real traffic splitting target in the configuration;
-  # Hiding it in the override script is for a cleaner UI: the script leverages the Bettbox custom script UI adaptation,
-  # using the FCM Direct switch to control this group's proxies: field (on = DIRECT only, off = 👉 Manual Select only),
-  # making it convenient for users who need it without directly modifying the configuration file.
-  # The switch icon is taken from this group's icon field, and changing the icon only requires modifying it here.
+  # FCM: Google FCM domain name diversion target (enter this group after hitting the rule RULE-SET,googlefcm,FCM).
+  # This group is not hidden in the template to indicate that this proxy group does exist and is the real diversion target in the configuration;
+  # Setting hidden in the override script is for simplicity of interface: the script uses Bettbox custom script UI adaptation.
+  # Use the FCM direct switch to control the proxies: field of this group (on = DIRECT only, off = 👉 manual switching only),
+  # It is convenient for users who need it but don’t want to change the configuration file directly.
+  # The switch icon is taken from the icon field of this group. To change the icon, you only need to change this place.
   - name: FCM
     icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-MiToverG422-Qure-fcm.png"
-    # hidden: true  # Hide this group in the script to keep the UI clean; keep it visible in the template to indicate that the group actually exists
+    # hidden: true #Hide the group in the script to keep the interface simple; the template remains visible to indicate that the group does exist
     type: select
     proxies:
       - 👉 手动切换
       - DIRECT
+
 .templates:
   domain_mrs: &domain_mrs { type: http, interval: 86400, behavior: domain, format: mrs }
   ipcidr_mrs: &ipcidr_mrs { type: http, interval: 86400, behavior: ipcidr, format: mrs }
@@ -315,7 +319,7 @@ proxy-groups:
   ipcidr_yaml: &ipcidr_yaml { type: http, interval: 86400, behavior: ipcidr }
   classical_yaml: &classical_yaml { type: http, interval: 86400, behavior: classical }
 
-# Rule provider configuration
+# Rule set configuration
 rule-providers:
   Gemini_Domain: { <<: *domain_yaml, url: 'https://cdn.jsdelivr.net/gh/Accademia/Additional_Rule_For_Clash@master/Gemini/Gemini_Domain.yaml', path: ./ruleset/Gemini_Domain.yaml }
   Grok_Domain: { <<: *domain_yaml, url: 'https://raw.githubusercontent.com/Accademia/Additional_Rule_For_Clash/refs/heads/main/Grok/Grok_Domain.yaml', path: ./ruleset/Grok_Domain.yaml }
@@ -354,6 +358,7 @@ rule-providers:
   twitter-x-blackmatrix7-No_Resolve: { <<: *classical_yaml, format: yaml, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Twitter/Twitter_No_Resolve.yaml', path: ./ruleset/twitter-x-blackmartix7-noreslove.mrs }
   twitter-x-domain: { <<: *domain_mrs, url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/twitter.mrs', path: ./ruleset/twitter/x-domain.mrs }
   twitter-x-ip: { <<: *ipcidr_mrs, url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/twitter.mrs', path: ./ruleset/twitter/x-ip.mrs }
+
 sub-rules:
   fanqie:
     - DOMAIN,p6-ad-sign.byteimg.com,REJECT
@@ -390,7 +395,7 @@ sub-rules:
     - IP-CIDR,101.36.166.16/32,REJECT,no-resolve
     - IP-CIDR,180.96.2.114/32,REJECT,no-resolve
 
-  # URL 重写 Host 提取
+  # URL rewriting Host extraction
     - DOMAIN-WILDCARD,*.pangolin-sdk-toutiao.com,REJECT
     - DOMAIN-WILDCARD,*.pglstatp-toutiao.com,REJECT
     - DOMAIN-WILDCARD,*.pstatp.com,REJECT
@@ -398,7 +403,7 @@ sub-rules:
     - DOMAIN-WILDCARD,*.byteimg.com,REJECT
     - DOMAIN-WILDCARD,*.snssdk.com,REJECT
 
-  # MITM 主机
+  # MITM host
     - DOMAIN-WILDCARD,*.pangolin-sdk-toutiao,REJECT
     - DOMAIN-WILDCARD,*.pangolin-sdk-toutiao.*,REJECT
     - DOMAIN-WILDCARD,*.pstatp.com.*,REJECT
@@ -415,8 +420,8 @@ rules:
   - RULE-SET,microsoft@cn,DIRECT
   - RULE-SET,apple@cn,DIRECT
   - RULE-SET,games-cn,DIRECT
-  - RULE-SET,microsoft,🌐 海外微软
-  - RULE-SET,microsoft_ip,🌐 海外微软,no-resolve
+  - RULE-SET,microsoft,💠 海外微软
+  - RULE-SET,microsoft_ip,💠 海外微软,no-resolve
   - RULE-SET,apple,🍎 海外苹果
   - RULE-SET,apple_ip,🍎 海外苹果,no-resolve
   - RULE-SET,applications,DIRECT
@@ -434,26 +439,37 @@ rules:
 
   - DOMAIN-WILDCARD,*.deepseek.com,DIRECT
   - DOMAIN-WILDCARD,*.portal101.cn,DIRECT
-  # 华为云 CDN 的分发域名
+  # Distribution domain name of Huawei Cloud CDN
   - DOMAIN-SUFFIX,cdnhwcqwg14.com,DIRECT
   - DOMAIN-SUFFIX,cdnhwcxcy07.com,DIRECT
-  # 阿里云 CDN 的分发域名
+  # Alibaba Cloud CDN distribution domain name
   - DOMAIN-SUFFIX,cdngslb.com,DIRECT
-  # Akamai CDN 的分发域名
+  # Akamai CDN distribution domain name
   - DOMAIN-SUFFIX,edgekey.net,DIRECT
-  # Amazon CloudFront 分发域名 (api 接口 CDN)
+  # Amazon CloudFront distribution domain name (api interface CDN)
   - DOMAIN-SUFFIX,cloudfront.net,DIRECT
 
   - PROCESS-NAME-REGEX,.*nagram.*,📲 Telegram
   - "PROCESS-NAME-REGEX,.*telegram.*,📲 Telegram"
   - RULE-SET,telegramcidr,📲 Telegram,no-resolve
   - RULE-SET,telegram_domain,📲 Telegram
-  # Manus AI: Covers Manus Desktop, Manus Helper, and the Android client process
+  # Manus AI: Covers Manus Desktop, Manus Helper and Android client processes
   - PROCESS-NAME-REGEX,(?i).*(manus|tech\.butterfly\.app).*,🤖 AI大模型
-  # // Claude / Anthropic: process matches take precedence and cover Claude Desktop, Claude Code, etc.
+  # Claude / Anthropic: process hit priority, covering clients such as Claude Desktop and Claude Code
+  - DOMAIN-SUFFIX,muse.ai,🤖 AI大模型
+  - DOMAIN,hatch-api.meta.ai,🤖 AI大模型
+  - DOMAIN,api.meta.ai,🤖 AI大模型
+  - DOMAIN,agent.meta.ai,🤖 AI大模型
+  - DOMAIN-SUFFIX,metaaivm.com,🤖 AI大模型
+  - DOMAIN,auth.meta.com,🤖 AI大模型
+  - DOMAIN,meta.graph.meta.com,🤖 AI大模型
+  - DOMAIN,edge-metaclaw-http.c10r.facebook.com,🤖 AI大模型
+  - DOMAIN,shortwave.facebook.com,🤖 AI大模型
+  - DOMAIN,node.hatch.one,🤖 AI大模型
+  - PROCESS-NAME,com.facebook.aura,🤖 AI大模型
   - PROCESS-NAME-REGEX,(?i).*claude.*,🤖 AI大模型
   - PROCESS-NAME-REGEX,(?i).*anthropic.*,🤖 AI大模型
-  # // Claude / Anthropic: official API, web login, OAuth, MCP, CLI updates, and plugin dependencies.
+  # Claude / Anthropic: Official API, web login, OAuth, MCP, CLI updates and plugin dependencies
   - DOMAIN,api.anthropic.com,🤖 AI大模型
   - DOMAIN,console.anthropic.com,🤖 AI大模型
   - DOMAIN,statsig.anthropic.com,🤖 AI大模型
@@ -469,7 +485,6 @@ rules:
   - DOMAIN,cdn.usefathom.com,🤖 AI大模型
   - DOMAIN,registry.npmjs.org,🤖 AI大模型
   - DOMAIN,storage.googleapis.com,🤖 AI大模型
-  - DOMAIN,raw.githubusercontent.com,🤖 AI大模型
   - DOMAIN,formulae.brew.sh,🤖 AI大模型
   - DOMAIN,http-intake.logs.us5.datadoghq.com,🤖 AI大模型
   - DOMAIN,browser-intake-us5-datadoghq.com,🤖 AI大模型
@@ -488,20 +503,20 @@ rules:
   - RULE-SET,Gemini_Domain,🤖 AI大模型
 
   - RULE-SET,Grok_Domain,🤖 AI大模型
- # - RULE-SET,Grok_IP,🤖 AI大模型
+ # - RULE-SET,Grok_IP,🤖 AI large model
   - IP-CIDR,17.253.4.0/23,🤖 AI大模型,no-resolve
 
-  # CDN 和静态资源
+  # CDN and static resources
   - DOMAIN,anthropic.com.cdn.cloudflare.net,🤖 AI大模型
-  # 认证 / 内容
+  # Certification/Content
   - DOMAIN,anthropic-com.ghost.io,🤖 AI大模型
-  # 监控和遥测
+  # Monitoring and telemetry
   - DOMAIN-SUFFIX,sentry.io,🤖 AI大模型
   - DOMAIN-SUFFIX,statsigapi.net,🤖 AI大模型
   - DOMAIN,browser-intake-us5-datadoghq.com,🤖 AI大模型
   - DOMAIN-KEYWORD,datadog,🤖 AI大模型
   - DOMAIN-KEYWORD,sift,🤖 AI大模型
-  # 兼容旧版 AI 规则中的第三方监控条目
+  # Compatible with third-party monitoring entries in legacy AI rules
   - RULE-SET,ai-1,🤖 AI大模型
   - RULE-SET,ai-2,🤖 AI大模型
 

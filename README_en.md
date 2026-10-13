@@ -80,7 +80,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
    - Dynamically merge DNS `proxy-server-nameserver-policy`(Subject to the script, the template does not preset this key);
    - Available via script top `ruleOptionsEnable` The switch disables policy groups individually and automatically cleans up related references.
    - 🍎 Overseas Apple / 🌐 Overseas Microsoft: Domestic Apple and Microsoft rules are mandatory `DIRECT`; Overseas domain names/IPs are entered into independent groups respectively, and manual switching, automatic selection, load balancing, etc. are provided within the group.`DIRECT` and all subscribe to a single node.
-   - 🎮 Steam platform (non-download/CDN): Steam domain name/IP rules enter the independent group, selected by default `DIRECT`；`games-cn` Still connected directly,`games` Still entering 🎮 Games-Global.
+   - 🎮 Steam platform (non-download/CDN): Steam domain name/IP rules enter the independent group, selected by default `DIRECT`；`games-cn` Still directly connected,`games` Still entering 🎮 Games-Global.
    - `FCM直连` Function switch: enabled by default, hidden group FCM only contains `DIRECT`; Prioritize use after closing `👉 手动切换`, if the policy group is closed, fall back to `🌍 PROXY`, if the group has also been closed, fall back to `DIRECT`(The FCM group is not removed).
    - `TGDC实验分流` Function switch: off by default. Once enabled, the script will prioritize Telegram traffic according to IP rules. `📲 Telegram-DC1-DC3-Miami`、`📲 Telegram-DC2-DC4-Amsterdam` and `📲 Telegram-DC5-SG` Three experimental groups; among them, the DC5 group matches nodes in Singapore and Hong Kong at the same time, because both places can serve as interconnection candidates for the DC. Three experimental groups used `include-all-proxies` Add name filtering to match node names such as the United States/Miami, Netherlands/Amsterdam, Singapore/Hong Kong, etc. If there are no matching regional nodes in an experimental group, the script will explicitly include all qualified nodes in the subscription (only exceptions, built-in/rejection/rematching and prompt information nodes are excluded; free, low-magnification, and high-magnification nodes are no longer excluded) for manual selection.`empty-fallback` for `COMPATIBLE`. After opening, the original `📲 Telegram` Group renamed `📲 Telegram(兜底)`, the original Telegram process, domain name and CIDR rules are uniformly pointed to this group, and the experimental DC/region IP rules are inserted first. When closed, no experimental groups, rule sets or rules are injected, and the original Telegram configuration remains unchanged.
    - `入口解析` Function switch: off by default; when turned on, all three entry nodes of China Telecom, China Unicom, and China Mobile will be added `国内入口解析` A proxy group in which the user manually selects the actual ingress node to use and applies the selected ingress to resolve DNS for the end node. There is no automatic script priority among the three; the order in the configuration does not mean automatic switching or priority. This function will introduce time-sensitive domestic public nodes and is an experimental capability for testing purposes only.
@@ -108,7 +108,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
    Is the above conversion setup too troublesome? There is also local conversion🎁
    
-   [SubCase](https://github.com/sionnx/SubCase)  Appization/Sub-Store support🍃
+   [SubCase](https://github.com/sionnx/SubCase)  appization/Sub-Store support🍃
    
    [flclash-converter](https://github.com/JINXPIL/flclash-converter)  🟢Easy to use🟢/🔴non-Flclash project
 Attached 🔴
@@ -141,20 +141,20 @@ This configuration integrates modular remote rules (Rule Providers) and refined 
 | :--- | :--- | :--- |
 | **🌍 PROXY** | All default overseas traffic that misses | Optional manual, automatic or load balancing |
 | **🔄 Load balancing** | use `sticky-sessions` (sticky session) strategy | Ensure that the IP of the same domain name remains unchanged within a short period of time |
-| **👉 Manual Select** | Manually select specific nodes | / |
+| **👉 Manual Switch** | Manually select specific nodes | / |
 | **♻️ Automatic selection** | `url-test` Automatically test and select the node with the lowest latency | Tolerance set to 50ms |
-| **🍎 Overseas Apple** | Overseas Apple domain name/IP rules | Domestic Apple rules enforcement `DIRECT`; Optional manual, automatic, load balancing,`DIRECT` and all nodes |
-| **🌐 Overseas Microsoft** | Overseas Microsoft domain name/IP rules | Domestic Microsoft rules enforcement `DIRECT`; Optional manual, automatic, load balancing,`DIRECT` and all nodes |
-| **🎮 Steam Platform (Non-Download/CDN)** | Steam Domain/IP Rules | Default selection `DIRECT`；`games-cn` Still connected directly,`games` Still Go Games-Global |
+| **Overseas Apple** | Overseas Apple domain name/IP rules | Domestic Apple rules enforcement `DIRECT`; Optional manual, automatic, load balancing,`DIRECT` and all nodes |
+| **Overseas Microsoft** | Overseas Microsoft domain name/IP rules | Domestic Microsoft rules enforcement `DIRECT`; Optional manual, automatic, load balancing,`DIRECT` and all nodes |
+| **Steam Platform (Non-Download/CDN)** | Steam Domain/IP Rules | Default selection `DIRECT`；`games-cn` Still directly connected,`games` Still Go Games-Global |
 | **📲 Telegram** | When TGDC is closed, it will use the proxy by default to prevent disconnection. | Match the process name with a specific IP range; change the name after turning on TGDC `📲 Telegram(兜底)` |
 | **📲 Telegram-DC1-DC3-Miami** | When TGDC is enabled, match the US/Miami nodes | Prioritize hits according to Telegram DC IP rules; if there is no region matching, all qualified nodes will be listed for manual selection. |
 | **📲 Telegram-DC2-DC4-Amsterdam** | When TGDC is enabled, matches Netherlands/Amsterdam nodes | Prioritize hits according to Telegram DC IP rules; if there is no region matching, all qualified nodes will be listed for manual selection. |
 | **📲 Telegram-DC5-SG** | When TGDC is turned on, match Singapore/Hong Kong nodes | DC5 experimental candidate group; when there is no region matching, all qualified nodes are listed for manual selection |
 | **🎮 Games-Global** | International server game traffic | / |
 | **✖️ Twitter** | Match residential/American named nodes, exclude Hong Kong/Singapore nodes | 🚨 **Inconsistent node naming will cause this policy group to be empty!** |
-| **🤖 AI** | Match residential/American named nodes, exclude Hong Kong/Singapore nodes | 🚨 **Inconsistent node naming will cause this policy group to be empty!** |
+| **AI Large Models** | Match residential/American named nodes, exclude Hong Kong/Singapore nodes | 🚨 **Inconsistent node naming will cause this policy group to be empty!** |
 | **🎵 TikTok** | Match residential/American named nodes, exclude Hong Kong/Singapore nodes | 🚨 **Inconsistent node naming will cause this policy group to be empty!** |
-| **FCM** | Google FCM related domain names (`hidden` hidden group) | Depend on `FCM直连` Switch control: On=`DIRECT`;Off=manual group, fallback to when manual group is disabled `🌍 PROXY` or `DIRECT` |
+| **FCM** | Google FCM related domain names (`hidden` hidden group) | Depend on `FCM直连` Switch control: On =`DIRECT`;Off=manual group, fallback to when manual group is disabled `🌍 PROXY` or `DIRECT` |
 
 > Note: 🔄 Load balancing / 👉 Manual switching / ♻️ Automatic selection / 📲 Telegram / 🎮 Games-Global is a pure node placeholder group; 🍎 Overseas Apple / 🌐 Overseas Microsoft / 🎮 Steam platform (non-download/CDN) will first retain fixed policy items, and then the overwrite script will additionally subscribe to all single nodes. Nodes need to be populated manually when not using scripts.
 
@@ -163,7 +163,7 @@ This configuration integrates modular remote rules (Rule Providers) and refined 
 ## 🛠️ Must be modified before use (must read when copying homework)
 
 Since this is a self-configuration,`proxies: ~` Everywhere is empty. You must do the following yourself:
-1. **Inject node**: It is recommended to use the above override script directly - the real nodes in the subscription will be automatically filled in `proxies`, pure node placeholder group and overseas Apple/Microsoft/Steam group (retain fixed policy items and then add nodes), subscribe to the included `proxy-providers` will also be retained; if no script is used, you need to manually add the node list or `proxy-providers` Fill in this configuration (`proxies: ~` is left blank by default).
+1. **Inject node**: It is recommended to use the above override script directly - the real nodes in the subscription will be automatically filled in `proxies`, pure node placeholder group and overseas Apple/Microsoft/Steam group (retain fixed policy items and then add nodes), subscribe to the ones that come with it `proxy-providers` will also be retained; if no script is used, you need to manually add the node list or `proxy-providers` Fill in this configuration (`proxies: ~` is left blank by default).
 2. **Modify node filtering rules (Filter)**: Chinese and English configurations use long regular expressions by default: match residential/US named nodes (residential/home broadband/🇺🇸/USA/USA/U.S. and other naming variants), and exclude Hong Kong/Singapore related nodes (🇭🇰/香港/Hong Kong/HK/🇸🇬/ Singapore/Singapore/SG). If the subscription node name does not contain any of the above residential or US identifiers, or the node name contains the words Hong Kong/Singapore, please modify the corresponding policy group in the Chinese source file. `filter` field, and then synchronize it to the English configuration.
 3. **Delete rules as needed**: If you don’t need to block ads for the overseas version of Tomato Novels, it is recommended to delete them. `sub-rules` middle `fanqie` Related rules to save performance.
 
@@ -200,7 +200,7 @@ This project is built on the open source kernel, client, ruleset and icon resour
 - [Clash Verge](https://www.clashverge.dev/): Some policy group icon resources.
 - The Dutch flag icon was drawn by this project itself and hosted on [`assets/icons/Netherlands.png`](assets/icons/Netherlands.png)。
 
-Icon copies are hosted in `assets/icons/` and referenced through jsDelivr. The relevant assets from DustinWin/ruleset_geodata, Clash Verge, and AIsouler/MyClash follow the GPL-3.0 or MIT licenses declared by their upstream projects. Koolson/Qure and MiToverG422/Qure do not provide an identifiable SPDX license file; attribution is required when redistributing them, and commercial use should be confirmed with the relevant rights holders first. Copies of the applicable GPL/MIT licenses are retained in `assets/icons/licenses/`.
+Icon copies are hosted uniformly on `assets/icons/` And referenced through jsDelivr. DustinWin/ruleset_The related resources of geodata, Clash Verge and AIsouler/MyClash respectively comply with the GPL-3.0 or MIT license declared by their upstream; Koolson/Qure and MiToverG422/Qure do not provide identifiable SPDX license files. Please indicate the source when reprinting, and please confirm authorization with the relevant rights holder before commercial use. A copy of the corresponding GPL/MIT license is retained at `assets/icons/licenses/`。
 
 ### Scripting and Configuration Reference
 
@@ -222,4 +222,4 @@ The above references are for learning and comparison. The specific implementatio
 
 1. This repository contains configuration files, override scripts and instructions related to Mihomo. The specific capabilities, uses and operating results depend on the usage environment, client and user settings. Please understand and make your own judgment before use.
 2. The configuration includes DNS, Fake-IP, domain name/IP diversion and interception rules, which may affect some applications or network connections. When encountering an exception, please troubleshoot by yourself based on Mihomo official documentation and local configuration.
-3. Users should evaluate the risks involved in using, modifying or disseminating the contents of this warehouse and comply with applicable laws and regulations in their region. The consequences arising from the use of the contents of this warehouse shall be borne by the user himself.
+3. Users should evaluate the risks involved in using, modifying or disseminating the contents of this warehouse and abide by the applicable laws and regulations in their region. The consequences arising from the use of the contents of this warehouse shall be borne by the user himself.
