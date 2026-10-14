@@ -52,32 +52,9 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 ## 🧱 YAML 模板（`mihomo.yaml`）
 
-`mihomo.yaml` 是本仓库的基准配置模板，同时也是覆写脚本合并时使用的内嵌模板：一份不含任何节点的完整配置骨架。使用它的方式有两种：
+`mihomo.yaml` 是本仓库的基准配置模板，同时也是覆写脚本合并时使用的内嵌模板：一份不含任何节点的完整配置骨架。直接使用它的方式：
 
-- **直接导入**：把模板导入客户端，节点由 YAML 自己提供——替换 `proxies: ~`，或按需配置 `proxy-providers`；此方式不会从订阅自动导入节点，填写要求见 [使用前必改](#before-use)。
-- **配合覆写脚本**：把页首地址挂到订阅上，由脚本把订阅节点与真实配置写进模板，无需手动维护节点列表，见 [覆写脚本](#script-override)。
-
-模板内除 `dns` / `hosts` 与 `proxy-groups` 外的配置块：
-
-- **`mode` 与端口**：`mode: rule`、`mixed-port` / `port` / `socks-port`、`external-controller` 与 `external-ui`。
-- **`tun`**：TUN 入站，含 `device`、`stack`、`dns-hijack` 与 `route-address` 路由范围。
-- **`sniffer` 与 `ntp`**：域名嗅探与时间同步。
-- **`.templates`、`rule-providers`、`sub-rules`、`rules`**：规则集锚点定义、规则集来源、子规则与主规则表。
-
-### 🧬 DNS 结构
-
-```mermaid
-flowchart TD
-  DNS["dns（域名解析总入口）<br/>enable, listen, ipv6, cache-algorithm, prefer-h3"]
-  DNS --> A["解析来源<br/>① default-nameserver：兜底与引导解析<br/>② proxy-server-nameserver：节点域名解析（全局兜底）<br/>③ direct-nameserver（+ follow-policy）：直连流量解析<br/>④ nameserver：普通域名解析"]
-  DNS --> B["策略<br/>nameserver-policy<br/>rule-set:douyin / private<br/>rule-set:proxy@direct,cn,echs_direct"]
-  DNS --> C["开关<br/>use-hosts: true<br/>use-system-hosts: false<br/>respect-rules: false"]
-  DNS --> D["fake-ip<br/>enhanced-mode: fake-ip<br/>fake-ip-range / fake-ip-range6<br/>fake-ip-filter-mode: blacklist<br/>fake-ip-filter：7 个规则集"]
-  HOSTS["hosts（与 dns 平级的顶层块）"]
-  HOSTS --> H["真假映射：域名 → IP / 域名 / 0.0.0.0<br/>仅 dns.use-hosts: true 时参与解析"]
-```
-
-> 这里用 `flowchart` 而不是目录树类型：Mermaid 的 `treeView-beta` 当前会把节点文字写死为黑色且不跟随主题，深色模式下与背景同色而不可读（上游 [mermaid-js/mermaid#8369](https://github.com/mermaid-js/mermaid/issues/8369)，v12.1.0 仍存在）。
+- **直接导入**：先在 `mihomo.yaml` 里把 `proxies: ~` 替换为自己的节点列表，或按需配置 `proxy-providers`，再把这份配置导入客户端；节点全部由 YAML 自己提供，不会从订阅自动导入，填写要求见 [使用前必改](#before-use)。
 
 <a id="proxy-groups"></a>
 
@@ -188,9 +165,11 @@ flowchart TD
 
 > 情形三里之所以先改写 `server` 再处理 policy，是因为部分订阅把 `proxy-server-nameserver` 写成 `udp://127.0.0.1:xxxx` 并依赖本机 hosts 回环；直接改写节点 `server` 可以绕开这条依赖，同时把原域名上的解析策略按需迁移到最终域名。
 
-### 🗂 代理组（脚本合并后）
+### 🗂 代理组与 Bettbox 开关（脚本合并后）
 
-脚本合并后，属于 Bettbox 可视化开关分类的策略组如下，每个同名开关默认开启；关闭时该组会被移除，其他组与 `rules` 中的引用同步清理或改指向全局兜底：
+脚本合并后，策略组由 Bettbox 的图形化开关控制：与策略组同名的 12 个开关默认全开，关闭即移除该组并清理其他组与 `rules` 中的引用（`🌍 PROXY` 关闭时其余引用回退到 `DIRECT`）；另有 6 个功能开关改写节点字段、规则或 DNS。
+
+**由同名开关控制的策略组（12 个）**
 
 | 策略组名称 | Bettbox 开关 | 默认 |
 | :--- | :--- | :--- |
@@ -207,7 +186,7 @@ flowchart TD
 | **🤖 AI大模型** | `🤖 AI大模型` | 开启 |
 | **🎵 TikTok** | `🎵 TikTok` | 开启 |
 
-不在同名开关分类内、由功能开关决定存在形态的组：
+**由功能开关决定的组**
 
 | 策略组名称 | 控制方式 | 默认 | 说明 |
 | :--- | :--- | :--- | :--- |
@@ -217,27 +196,6 @@ flowchart TD
 | **📲 Telegram-DC2-DC4-Amsterdam** | `TGDC实验分流` | 关闭 | 同上，对应荷兰/阿姆斯特丹节点 |
 | **📲 Telegram-DC5-SG** | `TGDC实验分流` | 关闭 | 同上，DC5 同时匹配新加坡与香港节点 |
 | **国内入口解析** | `入口解析` | 关闭 | 开关开启时注入电信/联通/移动三个入口节点并建立该组，由用户手动选择入口；排列顺序不代表优先级 |
-
-### 🎚 Bettbox 开关
-
-脚本的开关分两类：与策略组同名的 12 个开关决定策略组存废，6 个功能开关改写节点字段、规则或 DNS。
-
-**策略组同名开关（12 个，默认全开）**
-
-| 开关 | 默认 | 关闭后的行为 |
-| :--- | :--- | :--- |
-| `🌍 PROXY` | 开启 | 移除该组；其他组与 `rules` 的引用回退到 `DIRECT` |
-| `🔄 负载均衡` | 开启 | 移除该组并清理引用 |
-| `👉 手动切换` | 开启 | 移除该组并清理引用 |
-| `♻️ 自动选择` | 开启 | 移除该组并清理引用 |
-| `📲 Telegram` | 开启 | 移除该组并清理引用；TGDC 开启时该开关同时管 `📲 Telegram(兜底)` |
-| `🎮 Games-Global` | 开启 | 移除该组并清理引用 |
-| `🍎 海外苹果` | 开启 | 移除该组并清理引用 |
-| `💠 海外微软` | 开启 | 移除该组并清理引用 |
-| `🎮 Steam平台（非下载/CDN）` | 开启 | 移除该组并清理引用 |
-| `✖️ Twitter` | 开启 | 移除该组并清理引用 |
-| `🤖 AI大模型` | 开启 | 移除该组并清理引用 |
-| `🎵 TikTok` | 开启 | 移除该组并清理引用 |
 
 **功能开关（6 个）**
 
@@ -254,11 +212,9 @@ flowchart TD
 
 ## 🧮 规则集重合关系（额外说明）
 
-本小节不属于 YAML 或脚本单方面的说明。本仓库的规则集来自多个上游，彼此存在**规则集与规则集之间**的覆盖重合，分三类：同一目标下的多来源规则集、跨目标与跨模块的同域重合、规则集之外的域名重复（`hosts` 与 `sub-rules`）。
+本小节不属于 YAML 或脚本单方面的说明：本仓库引用的规则集来自多个上游，彼此存在规则集与规则集之间的覆盖重合。下面按重合的集合分组，全部用韦恩图说明。
 
-> 一张韦恩图只能表达三个集合，无法覆盖全部重合关系；下面先用韦恩图展示最典型的一组，再用表把其余关系连同依据（`rules:` 实际引用、YAML 注释、DNS 侧引用）列全。
-
-**最典型的一组：三个“国内直连”规则集**
+**1. 国内直连的三个来源**
 
 ```mermaid
 venn-beta
@@ -271,42 +227,60 @@ venn-beta
   union E,C,A
 ```
 
-- 三者交集与两两交集：同一批国内直连域名被三套来源分别收录，在 `rules` 的直连段依次命中、统一走 `DIRECT`——重合不产生冲突，只影响匹配顺序与规则集体积。
-- `cn` 与 `applications` 是包含关系：国内域名总集覆盖国内应用域名。
+三者交集与两两交集是同一批国内直连域名，在 `rules` 的直连段依次命中、统一走 `DIRECT`。
 
-**一、同一目标下的多来源规则集（`rules:` 直接可见）**
+**2. 直连规则集与海外组规则集**
 
-| 目标 | 规则集 | 重合情况 |
-| :--- | :--- | :--- |
-| `REJECT` | `HijackingPlus` | 劫持防护单独一套；同一条 `AND` 规则又引用 `cncidr`、`cn`、`applications`、`games`、`echs_direct` 作为排除条件，同一批规则集同时服务于分流与排除 |
-| `DIRECT` | `applications`、`echs_direct`、`echs_direct_ip`、`cn`、`cncidr`、`private`、`lancidr` | 7 条同目标：`applications` / `echs_direct` / `cn` 三个域名集覆盖高度重合，其余为 IP 侧补充 |
-| `🍎 海外苹果` | `apple`、`apple_ip` | 同平台的域名集与 IP 集配对，互补而非重复 |
-| `💠 海外微软` | `microsoft`、`microsoft_ip` | 同上 |
-| `🎮 Steam平台（非下载/CDN）` | `steam`、`steam_ip` | 同上 |
-| `📲 Telegram` | `telegram_domain`、`telegramcidr` | 同上 |
-| `FCM` | `googlefcm` | 单来源，DNS 侧的 `fake-ip-filter` 再次引用 |
-| `🌍 PROXY` | `google`、`google-cn`、`proxy`、`proxy@direct`、`gfw` | 5 条同目标；`google-cn` 是 `google` 的国内部分（互补关系），`proxy` 与 `gfw` 覆盖同类的"需代理域名" |
-| `🤖 AI大模型` | `Gemini_Domain`、`Grok_Domain`、`ai-1`、`ai-2` + 手写域名/IP | 同一目标下规则集与手写条目并存；两套 AI 规则集来源不同却覆盖同类站点 |
-| `✖️ Twitter` | `twitter-x-domain`、`twitter-x-ip`、`twitter-x-blackmatrix7-No_Resolve` | 同一平台三套来源；blackmatrix7 的 `No_Resolve` 集同时含域名与 IP，与 MetaCubeX 的两套重合 |
-| `🎵 TikTok` | `TikTok` | 单来源 |
+```mermaid
+venn-beta
+  set E["echs_direct"]
+  set P["apple（bett-rules）"]
+  set M["microsoft（bett-rules）"]
+  union E,P
+  union E,M
+```
 
-**二、跨目标与跨模块的重合（注释与 DNS 引用可见）**
+`apple` / `microsoft` 的国内部分落在 `echs_direct` 里，`rules` 把 `echs_direct` 排在海外组之前，重合部分先走 `DIRECT`；`games` 与 `echs_direct` 同理。
 
-| 重合关系 | 依据 | 影响 |
-| :--- | :--- | :--- |
-| `echs_direct` 与 `apple` / `microsoft` / `games` 的国内部分重合 | 注释「国内 Apple、Microsoft、Games 分类直连统一交给 `echs_direct`」、注释「通用直连规则优先，剩余 Apple / Microsoft 域名和 IP 再进入海外组」；`rules` 中 `echs_direct` 排在 `microsoft` / `apple` / `games` 之前 | 重合部分先命中 `DIRECT`，海外组只收到"剩余"域名——顺序不能调换 |
-| `games` 同时用于分流与排除 | `rules` 的 `AND` 规则用 `RULE-SET,games` 作 `NOT` 条件，同一集又指向 `🎮 Games-Global` | 同一规则集参与两个判断 |
-| `ai-1` 与 `ai-2` 重复覆盖 | 注释「兼容旧版 AI 规则中的第三方监控条目」；`rules` 两条同指向 `🤖 AI大模型` | 两套来源保存同类站点 |
-| 规则集在 DNS 侧被再次引用 | `dns.fake-ip-filter` 引用 `fakeip-filter_domain`、`private`、`cn`、`echs_direct`、`googlefcm`、`applications`、`pixiv`；`dns.nameserver-policy` 引用 `douyin`、`private`、`cn`、`echs_direct`、`proxy@direct` | 同一份规则集数据同时决定"是否 fake-IP"与"用哪条 DNS 解析" |
-| `douyin` 与 `TikTok` | `douyin` 只出现在 `nameserver-policy`，`TikTok` 只出现在 `rules` | 同一平台（字节系）分属 DNS 与分流两处 |
+**3. 出海域名集的多个来源**
 
-**三、规则集之外的域名重复：`hosts` 与 `sub-rules`**
+```mermaid
+venn-beta
+  set X["proxy（DustinWin 代理域名集）"]
+  set G["gfw（GFW 域名集）"]
+  set O["google（Loyalsoldier Google 域名集）"]
+  union X,G
+  union X,O
+  union G,O
+```
 
-| 重复的域名 | 依据 | 影响 |
-| :--- | :--- | :--- |
-| `*.pangolin-sdk-toutiao`、`*.pstatp.com`、`gurd.snssdk.com`、`*.pglstatp-toutiao.com`、`*default.ixigua.com` 等 | `hosts` 中映射为 `0.0.0.0`，`sub-rules.fanqie` 中同时以 `REJECT` 拦截（注释「URL 重写 Host 提取」「MITM 主机」） | 同一批域名被两处独立拦截，属于重复配置 |
+三者覆盖的都是"需要走代理的域名"，在 `rules` 中同指 `🌍 PROXY`。
 
-> 以上依据全部取自 `mihomo.yaml` 的现有内容；重合程度按覆盖范围与来源判断，未逐条比对规则内容，需要精确交集数字时可单独跑一次集合比对。
+**4. Twitter 的三套规则集**
+
+```mermaid
+venn-beta
+  set D["twitter-x-domain（MetaCubeX）"]
+  set I["twitter-x-ip（MetaCubeX）"]
+  set B["twitter-x-blackmatrix7-No_Resolve"]
+  union D,B
+  union I,B
+```
+
+blackmatrix7 的 `No_Resolve` 集同时包含域名与 IP，与 MetaCubeX 的两套各自重合。
+
+**5. 两套 AI 规则集**
+
+```mermaid
+venn-beta
+  set A1["ai-1（DustinWin ai.mrs）"]
+  set A2["ai-2（MetaCubeX category-ai-!cn）"]
+  union A1,A2
+```
+
+两套来源不同却覆盖同类站点，在 `rules` 中同指 `🤖 AI大模型`。
+
+> 以上重合关系按各规则集的覆盖范围与来源判断（依据取自 `mihomo.yaml` 的 `rules:` 引用与注释），未逐条比对规则内容；需要精确交集数字时可单独跑一次集合比对。
 
 <a id="render-check"></a>
 
