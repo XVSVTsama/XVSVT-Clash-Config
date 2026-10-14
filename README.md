@@ -131,7 +131,7 @@ flowchart TD
 ```mermaid
 flowchart TD
   B1["订阅原始状态<br/>节点 server 是真实域名，hosts 为空表"]
-  B1 --> B2["私有 DoH 出现在订阅的节点解析来源里"]
+  B1 --> B2["私有 DoH 出现在订阅的节点解析来源里<br/>按优先级取值：proxy-server-nameserver-policy &gt; proxy-server-nameserver（仅私有）&gt; nameserver-policy &gt; nameserver（仅私有）"]
   B2 --> B3["脚本把它整理进最终配置的 dns.proxy-server-nameserver-policy"]
   B3 --> B4["节点域名由私有 DoH 解析"]
   B4 --> B5["未命中 policy 的域名仍由模板全局 proxy-server-nameserver 兜底"]
