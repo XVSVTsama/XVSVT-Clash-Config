@@ -199,7 +199,13 @@ flowchart TD
 | **📲 Telegram-DC5-SG** | `TGDC实验分流` | 关闭 | 同上，DC5 同时匹配新加坡与香港节点 |
 | **国内入口解析** | `入口解析` | 关闭 | 开关开启时注入电信/联通/移动三个入口节点并建立该组，由用户手动选择入口；排列顺序不代表优先级 |
 
-另有 3 个开关同样不在 `policyGroupOptions` 里，也不对应任何策略组：`强制证书验证`（默认关，开启时统一把订阅节点的 `skip-cert-verify` 置为 `false`）、`启用 Reality 增强`（默认开，为带非空 `public-key` / `short-id` 的 Reality 节点启用 X25519MLKEM768）、`IPv6优先`（默认关，按节点 `ip-version` 优先 IPv6）。
+**同样不在 `policyGroupOptions`、也不对应任何策略组的开关（3 个）**
+
+| 开关 | 默认 | 作用 |
+| :--- | :--- | :--- |
+| `强制证书验证` | 关闭 | 开启时统一把订阅节点的 `skip-cert-verify` 置为 `false`；关闭时不干预订阅节点原有设置 |
+| `启用 Reality 增强` | 开启 | 为带非空 `public-key` / `short-id` 的 Reality 节点启用 X25519MLKEM768 后量子密钥协商 |
+| `IPv6优先` | 关闭 | 按节点 `ip-version` 优先使用 IPv6：`ipv6` 保持不变，`ipv6-prefer` 及以上改为 `ipv6`，其余设为 `ipv6-prefer` |
 
 > **关于客户端**：这套图形化开关由 Bettbox 原生支持——脚本开头的 `Compatible_With_Bettbox` 声明就是给 Bettbox 识别用的。换到其他客户端分两种情况：
 >
