@@ -726,22 +726,6 @@ const TEMPLATE = {
       "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs",
       "path": "./ruleset/ai-2.mrs"
     },
-    "apple@cn": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "domain",
-      "format": "mrs",
-      "url": "https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/apple@cn.mrs",
-      "path": "./ruleset/apple@cn.mrs"
-    },
-    "microsoft@cn": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "domain",
-      "format": "mrs",
-      "url": "https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/microsoft@cn.mrs",
-      "path": "./ruleset/microsoft@cn.mrs"
-    },
     "microsoft": {
       "type": "http",
       "interval": 86400,
@@ -852,14 +836,6 @@ const TEMPLATE = {
       "format": "mrs",
       "url": "https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/games.mrs",
       "path": "./ruleset/games.mrs"
-    },
-    "games-cn": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "domain",
-      "format": "mrs",
-      "url": "https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/games-cn.mrs",
-      "path": "./ruleset/games-cn.mrs"
     },
     "gfw": {
       "type": "http",
@@ -1017,22 +993,21 @@ const TEMPLATE = {
     ]
   },
   "rules": [
-    "AND,((NETWORK,UDP),(DST-PORT,3478-3479/5349-5350/19302-19309),(NOT,((RULE-SET,cncidr))),(NOT,((RULE-SET,cn))),(NOT,((RULE-SET,applications))),(NOT,((RULE-SET,games))),(NOT,((RULE-SET,games-cn)))),REJECT",
+    "AND,((NETWORK,UDP),(DST-PORT,3478-3479/5349-5350/19302-19309),(NOT,((RULE-SET,cncidr))),(NOT,((RULE-SET,cn))),(NOT,((RULE-SET,applications))),(NOT,((RULE-SET,games))),(NOT,((RULE-SET,echs_direct)))),REJECT",
     "RULE-SET,HijackingPlus,REJECT",
     "SUB-RULE,(PROCESS-NAME,com.dragon.read.oversea.gp),fanqie",
     "DOMAIN-KEYWORD,ikuuu,🌍 PROXY",
-    "RULE-SET,microsoft@cn,DIRECT",
-    "RULE-SET,apple@cn,DIRECT",
-    "RULE-SET,games-cn,DIRECT",
-    "RULE-SET,microsoft,💠 海外微软",
-    "RULE-SET,microsoft_ip,💠 海外微软,no-resolve",
-    "RULE-SET,apple,🍎 海外苹果",
-    "RULE-SET,apple_ip,🍎 海外苹果,no-resolve",
     "RULE-SET,applications,DIRECT",
+    // 国内 Apple、Microsoft、Games 分类直连统一交给 echs_direct。
     "RULE-SET,echs_direct,DIRECT",
     "RULE-SET,echs_direct_ip,DIRECT,no-resolve",
     "RULE-SET,cn,DIRECT",
     "RULE-SET,cncidr,DIRECT,no-resolve",
+    // 通用直连规则优先，剩余 Apple / Microsoft 域名和 IP 再进入海外组。
+    "RULE-SET,microsoft,💠 海外微软",
+    "RULE-SET,microsoft_ip,💠 海外微软,no-resolve",
+    "RULE-SET,apple,🍎 海外苹果",
+    "RULE-SET,apple_ip,🍎 海外苹果,no-resolve",
     "RULE-SET,googlefcm,FCM",
     "DOMAIN,clash.razord.top,DIRECT",
     "DOMAIN,yacd.haishan.me,DIRECT",

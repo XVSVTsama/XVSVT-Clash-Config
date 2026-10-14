@@ -57,8 +57,8 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
    - 订阅自带的 `proxy-providers` 会被原样保留；
    - 动态合并 DNS 的 `proxy-server-nameserver-policy`（以脚本为准，模板不预置该键）；
    - 可通过脚本顶部 `ruleOptionsEnable` 开关单独禁用策略组，并自动清理相关引用。
-   - 🍎 海外苹果 / 🌐 海外微软：国内 Apple、Microsoft 规则强制 `DIRECT`；海外域名/IP 分别进入独立组，组内提供手动切换、自动选择、负载均衡、`DIRECT` 和全部订阅单节点。
-   - 🎮 Steam平台（非下载/CDN）：Steam 域名/IP 规则进入独立组，默认选择 `DIRECT`；`games-cn` 仍直连，`games` 仍进入 🎮 Games-Global。Games 组嵌套该 Steam 组，并通过 `default-selected` 默认选择它，同时保留全部订阅节点。
+   - 🍎 海外苹果 / 🌐 海外微软：不再单独引用 `apple@cn`、`microsoft@cn`、`games-cn`；国内分类直连交由 `echs_direct` 维护，现有通用直连规则优先匹配，剩余 Apple、Microsoft 域名/IP 分别进入独立组，组内提供手动切换、自动选择、负载均衡、`DIRECT` 和全部订阅单节点。UDP 豁免中原 `games-cn` 引用同步改为 `echs_direct`。
+   - 🎮 Steam平台（非下载/CDN）：Steam 域名/IP 规则进入独立组，默认选择 `DIRECT`；命中前置 `echs_direct` 等直连规则的国内游戏/下载会提前直连，`games` 仍进入 🎮 Games-Global。Games 组嵌套该 Steam 组，并通过 `default-selected` 默认选择它，同时保留全部订阅节点。
    - `FCM直连` 功能开关：默认开启，隐藏组 FCM 仅含 `DIRECT`；关闭后优先使用 `👉 手动切换`，若该策略组已关闭则回退到 `🌍 PROXY`，若该组也已关闭则回退到 `DIRECT`（不移除 FCM 组）。
    - `TGDC实验分流` 功能开关：默认关闭。开启后，脚本会把 Telegram 流量按 IP 规则优先分到 `📲 Telegram-DC1-DC3-Miami`、`📲 Telegram-DC2-DC4-Amsterdam` 和 `📲 Telegram-DC5-SG` 三个实验组；其中 DC5 组同时匹配新加坡与香港节点，因为两地均可作为该 DC 的互联候选。三个实验组使用 `include-all-proxies` 加名称过滤，分别匹配美国/迈阿密、荷兰/阿姆斯特丹、新加坡/香港等节点名称。若某个实验组没有匹配地区节点，脚本会把订阅中全部合格节点（仅排除异常、内置/拒绝/重匹配和提示信息节点；免费、低倍率、高倍率节点不再排除）显式列入该组供手动选择，`empty-fallback` 为 `COMPATIBLE`。开启后，原 `📲 Telegram` 组更名为 `📲 Telegram(兜底)`，原 Telegram 进程、域名和 CIDR 规则统一指向该组，实验性 DC/地区 IP 规则则优先插入。关闭时不注入实验组、规则集或规则，原 Telegram 配置保持不变。
    - `入口解析` 功能开关：默认关闭；开启后会将电信、联通、移动三个入口节点全部加入 `国内入口解析` 代理组，由用户在该组中手动选择实际使用的入口节点，并为最终节点解析 DNS 应用所选入口。三者没有脚本自动优先级；配置中的排列顺序不代表自动切换或优先选用。该功能会引入有时效性的国内公共节点，属于实验性能力，仅供测试使用。
@@ -83,9 +83,9 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 | **🔄 负载均衡** | 采用 `sticky-sessions` (粘性会话) 策略 | 保证同一域名短时间内 IP 不变 |
 | **👉 手动切换** | 手动选择特定节点 | / |
 | **♻️ 自动选择** | `url-test` 自动测试并选择延迟最低的节点 | 容差设置为 50ms |
-| **🍎 海外苹果** | 海外 Apple 域名/IP 规则 | 国内 Apple 规则强制 `DIRECT`；可选手动、自动、负载均衡、`DIRECT` 和全部节点 |
-| **🌐 海外微软** | 海外 Microsoft 域名/IP 规则 | 国内 Microsoft 规则强制 `DIRECT`；可选手动、自动、负载均衡、`DIRECT` 和全部节点 |
-| **🎮 Steam平台（非下载/CDN）** | Steam 域名/IP 规则 | 默认选择 `DIRECT`；`games-cn` 仍直连，`games` 仍走 Games-Global |
+| **🍎 海外苹果** | 未被前置直连规则匹配的 Apple 域名/IP | `echs_direct` 等通用直连规则优先；可选手动、自动、负载均衡、`DIRECT` 和全部节点 |
+| **🌐 海外微软** | 未被前置直连规则匹配的 Microsoft 域名/IP | `echs_direct` 等通用直连规则优先；可选手动、自动、负载均衡、`DIRECT` 和全部节点 |
+| **🎮 Steam平台（非下载/CDN）** | Steam 域名/IP 规则 | 默认选择 `DIRECT`；命中前置直连规则的国内游戏/下载会提前直连，`games` 仍走 Games-Global |
 | **📲 Telegram** | TGDC 关闭时默认走代理，防止断联 | 匹配进程名与特定 IP 段；开启 TGDC 后更名为 `📲 Telegram(兜底)` |
 | **📲 Telegram-DC1-DC3-Miami** | TGDC 开启时，匹配美国/迈阿密节点 | 按 Telegram DC IP 规则优先命中；无地区匹配时列出全部合格节点供手动选择 |
 | **📲 Telegram-DC2-DC4-Amsterdam** | TGDC 开启时，匹配荷兰/阿姆斯特丹节点 | 按 Telegram DC IP 规则优先命中；无地区匹配时列出全部合格节点供手动选择 |
