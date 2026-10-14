@@ -54,8 +54,6 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 `mihomo.yaml` 是本仓库的基准配置模板，同时也是覆写脚本合并时使用的内嵌模板：一份不含任何节点的完整配置骨架。直接使用它的方式：
 
-- **直接导入**：先在 `mihomo.yaml` 里把 `proxies: ~` 替换为自己的节点列表，或按需配置 `proxy-providers`，再把这份配置导入客户端；节点全部由 YAML 自己提供，不会从订阅自动导入，填写要求见 [使用前必改](#before-use)。
-
 <a id="proxy-groups"></a>
 
 ### 🗂 分流组结构（按 `mihomo.yaml` 定义）
