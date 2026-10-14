@@ -167,9 +167,9 @@ flowchart TD
 
 ### 🗂 代理组与 Bettbox 开关（脚本合并后）
 
-脚本合并后，策略组由 Bettbox 的图形化开关控制：与策略组同名的 12 个开关默认全开，关闭即移除该组并清理其他组与 `rules` 中的引用（`🌍 PROXY` 关闭时其余引用回退到 `DIRECT`）；另有 6 个功能开关改写节点字段、规则或 DNS。
+脚本开头的 `Compatible_With_Bettbox` 声明用 `policyGroupOptions` 划定了"策略组开关"分类：只列进去的组出现在该分类下，没列进去的组不受它控制，改由脚本的 `ruleOptionsEnable` 决定存在形态（两者都在脚本顶部可查）。
 
-**由同名开关控制的策略组（12 个）**
+**列入 `policyGroupOptions` 的策略组（12 个）**
 
 | 策略组名称 | Bettbox 开关 | 默认 |
 | :--- | :--- | :--- |
@@ -186,9 +186,11 @@ flowchart TD
 | **🤖 AI大模型** | `🤖 AI大模型` | 开启 |
 | **🎵 TikTok** | `🎵 TikTok` | 开启 |
 
-**由功能开关决定的组**
+这 12 个开关默认全部开启，关闭即移除该组，并清理其他组与 `rules` 中的引用（`🌍 PROXY` 关闭时其余引用回退到 `DIRECT`；TGDC 开启时 `📲 Telegram` 开关同时管 `📲 Telegram(兜底)`）。
 
-| 策略组名称 | 控制方式 | 默认 | 说明 |
+**未列入 `policyGroupOptions` 的组**
+
+| 策略组名称 | 由哪个开关决定 | 默认 | 说明 |
 | :--- | :--- | :--- | :--- |
 | **FCM** | `FCM直连` | 开启 | 开关不移除本组，只改写组内节点：开启=`DIRECT`；关闭且 `👉 手动切换` 已禁用时回退到全局兜底。脚本内嵌模板把本组标记为隐藏组（`hidden`） |
 | **📲 Telegram(兜底)** | `TGDC实验分流` | 关闭 | 该开关开启时由 `📲 Telegram` 更名而来，承接 Telegram 进程、域名与 CIDR 规则 |
@@ -197,16 +199,7 @@ flowchart TD
 | **📲 Telegram-DC5-SG** | `TGDC实验分流` | 关闭 | 同上，DC5 同时匹配新加坡与香港节点 |
 | **国内入口解析** | `入口解析` | 关闭 | 开关开启时注入电信/联通/移动三个入口节点并建立该组，由用户手动选择入口；排列顺序不代表优先级 |
 
-**功能开关（6 个）**
-
-| 开关 | 默认 | 作用 |
-| :--- | :--- | :--- |
-| `强制证书验证` | 关闭 | 开启时统一把订阅节点的 `skip-cert-verify` 置为 `false`；关闭时不干预订阅节点原有设置 |
-| `启用 Reality 增强` | 开启 | 为带非空 `public-key` / `short-id` 的 Reality 节点启用 X25519MLKEM768 后量子密钥协商 |
-| `IPv6优先` | 关闭 | 按节点 `ip-version` 优先使用 IPv6：`ipv6` 保持不变，`ipv6-prefer` 及以上改为 `ipv6`，其余设为 `ipv6-prefer` |
-| `FCM直连` | 开启 | 只改写 FCM 组内节点：开启=`DIRECT`；关闭且 `👉 手动切换` 已禁用时回退到全局兜底；不移除 FCM 组 |
-| `TGDC实验分流` | 关闭 | 注入三个 DC/地区组与内联规则集，DC IP 规则优先插入，`📲 Telegram` 更名为 `📲 Telegram(兜底)` |
-| `入口解析` | 关闭 | 注入电信/联通/移动三个入口节点与 `国内入口解析` 组，并为最终节点域名追加 `#国内入口解析` 的 DNS 策略 |
+另有 3 个开关同样不在 `policyGroupOptions` 里，也不对应任何策略组：`强制证书验证`（默认关，开启时统一把订阅节点的 `skip-cert-verify` 置为 `false`）、`启用 Reality 增强`（默认开，为带非空 `public-key` / `short-id` 的 Reality 节点启用 X25519MLKEM768）、`IPv6优先`（默认关，按节点 `ip-version` 优先 IPv6）。
 
 <a id="ruleset-overlap"></a>
 
