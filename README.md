@@ -30,6 +30,7 @@
   <a href="#before-use">使用前必改</a> ·
   <a href="#dns-model">DNS 联动模型</a> ·
   <a href="#script-override">覆写脚本</a> ·
+  <a href="#ruleset-overlap">规则集重合</a> ·
   <a href="#acknowledgments">致谢</a> ·
   <a href="#star-history">Star History</a> ·
   <a href="#disclaimer">免责声明</a>
@@ -209,7 +210,9 @@ venn-beta
 
 > 上图为 `venn-beta`（Mermaid 11.12.3+ 才有），需要 GitHub 当前渲染版本支持，见文末 [渲染自检](#render-check)；若渲染失败将改用树状图描述。
 
-### 🧮 规则集重合关系（额外说明）
+<a id="ruleset-overlap"></a>
+
+## 🧮 规则集重合关系（额外说明）
 
 同一批规则集会被不同位置引用，下面按“引用方”展示重合关系（`dns` 与 `rules` 共同的引用是本配置里最需要保持一致的部分）：
 
@@ -229,11 +232,11 @@ venn-beta
 - `rules` 引用：`applications`、`echs_direct`、`echs_direct_ip`、`cn`、`cncidr`、`microsoft`、`microsoft_ip`、`apple`、`apple_ip`、`googlefcm`、`proxy@direct`、`private`、`lancidr`、`telegramcidr`、`telegram_domain`、`Gemini_Domain`、`Grok_Domain`、`ai-1`、`ai-2`、`google`、`google-cn`、`twitter-x-domain`、`twitter-x-ip`、`twitter-x-blackmatrix7-No_Resolve`、`steam`、`steam_ip`、`games`、`TikTok`、`proxy`、`gfw`
 - 三者共同引用：`cn`、`echs_direct`、`private`——改动这三个规则集或它们的优先级时需同时确认 DNS 与规则两侧。
 
-> 同 `venn-beta` 说明：待 GitHub 渲染验证，见 [渲染自检](#render-check)。
+> 本小节不属于 YAML 或脚本单方面的说明，而是两份配置共同引用同一批规则集时的一致性提示。图示为 `venn-beta`，待 GitHub 渲染验证，见 [渲染自检](#render-check)。
 
 <a id="render-check"></a>
 
-### 🧪 渲染自检（临时内容，合并前删除）
+## 🧪 渲染自检（临时内容，合并前删除）
 
 本小节用于确认 GitHub 当前的 Mermaid 版本，以及两个 beta 图类型是否可用；确认后再决定正文树状图与韦恩图的最终写法。
 
