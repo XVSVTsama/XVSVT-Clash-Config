@@ -17,13 +17,6 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/MetaCubeX/mihomo"><img src="https://img.shields.io/badge/Mihomo-Rule--based_Tunnel-000000?style=flat-square" alt="Mihomo"></a>
-  <a href="https://github.com/MetaCubeX/mihomo"><img src="https://img.shields.io/badge/Mihomo_Core-Client_or_Server-000000?style=flat-square" alt="Mihomo Core"></a>
-  <a href="https://github.com/appshubcc/Bettbox"><img src="https://img.shields.io/badge/Bettbox-Client/GUI-000000?style=flat-square" alt="Bettbox"></a>
-  <a href="https://github.com/chen08209/FlClash"><img src="https://img.shields.io/badge/FlClash-Client/GUI-000000?style=flat-square" alt="FlClash"></a>
-</p>
-
-<p align="center">
   <a href="mihomo.yaml"><img src="https://img.shields.io/badge/YAML-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6-yellow?style=flat-square&logo=yaml&logoColor=white" alt="YAML"></a>
   <a href="https://github.com/XVSVTsama/XVSVT-Clash-Config/actions/workflows/yaml-syntax.yml"><img src="https://img.shields.io/github/actions/workflow/status/XVSVTsama/XVSVT-Clash-Config/yaml-syntax.yml?style=flat-square&label=YAML%20Syntax&color=informational" alt="YAML Syntax"></a>
   <a href="script_override.js"><img src="https://img.shields.io/badge/JavaScript-%E8%A6%86%E5%86%99%E8%84%9A%E6%9C%AC-yellow?style=flat-square&logo=javascript&logoColor=black" alt="JavaScript"></a>
@@ -32,9 +25,12 @@
 </p>
 
 <p align="center">
-  <a href="#remote-override">远程覆写js</a> ·
+  <a href="#remote-override">远程覆写地址</a> ·
+  <a href="#yaml-config">YAML 模板</a> ·
   <a href="#proxy-groups">分流组结构</a> ·
   <a href="#before-use">使用前必改</a> ·
+  <a href="#script-override">覆写脚本</a> ·
+  <a href="#dns-model">DNS 联动模型</a> ·
   <a href="#acknowledgments">致谢</a> ·
   <a href="#star-history">Star History</a> ·
   <a href="#disclaimer">免责声明</a>
@@ -44,7 +40,7 @@
 
 <a id="remote-override"></a>
 
-## 远程覆写js
+## 🔗 远程覆写脚本地址
 
    默认远程覆写脚本地址（代码块右上角可直接复制）：
 
@@ -52,26 +48,23 @@
 https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
 ```
 
-   在 Bettbox / FlClash 系客户端中给订阅挂上该脚本即可：
-   - 订阅里的真实节点自动填入 `proxies` 与纯单节点占位组（👉 手动切换、♻️ 自动选择、🔄 负载均衡、📲 Telegram）；🍎 海外苹果、🌐 海外微软、🎮 Steam平台（非下载/CDN）、🎮 Games-Global 则保留固定策略项并追加订阅单节点；
-   - 订阅自带的 `proxy-providers` 会被原样保留；
-   - 动态合并 DNS 的 `proxy-server-nameserver-policy`（以脚本为准，模板不预置该键）；
-   - 可通过脚本顶部 `ruleOptionsEnable` 开关单独禁用策略组，并自动清理相关引用。
-   - 🍎 海外苹果 / 🌐 海外微软：不再单独引用 `apple@cn`、`microsoft@cn`、`games-cn`；国内分类直连交由 `echs_direct` 维护，现有通用直连规则优先匹配，剩余 Apple、Microsoft 域名/IP 分别进入独立组，组内提供手动切换、自动选择、负载均衡、`DIRECT` 和全部订阅单节点。UDP 豁免中原 `games-cn` 引用同步改为 `echs_direct`。
-   - 🎮 Steam平台（非下载/CDN）：Steam 域名/IP 规则进入独立组，默认选择 `DIRECT`；命中前置 `echs_direct` 等直连规则的国内游戏/下载会提前直连，`games` 仍进入 🎮 Games-Global。Games 组嵌套该 Steam 组，并通过 `default-selected` 默认选择它，同时保留全部订阅节点。
-   - `FCM直连` 功能开关：默认开启，隐藏组 FCM 仅含 `DIRECT`；关闭后优先使用 `👉 手动切换`，若该策略组已关闭则回退到 `🌍 PROXY`，若该组也已关闭则回退到 `DIRECT`（不移除 FCM 组）。
-   - `TGDC实验分流` 功能开关：默认关闭。开启后，脚本会把 Telegram 流量按 IP 规则优先分到 `📲 Telegram-DC1-DC3-Miami`、`📲 Telegram-DC2-DC4-Amsterdam` 和 `📲 Telegram-DC5-SG` 三个实验组；其中 DC5 组同时匹配新加坡与香港节点，因为两地均可作为该 DC 的互联候选。三个实验组使用 `include-all-proxies` 加名称过滤，分别匹配美国/迈阿密、荷兰/阿姆斯特丹、新加坡/香港等节点名称。若某个实验组没有匹配地区节点，脚本会把订阅中全部合格节点（仅排除异常、内置/拒绝/重匹配和提示信息节点；免费、低倍率、高倍率节点不再排除）显式列入该组供手动选择，`empty-fallback` 为 `COMPATIBLE`。开启后，原 `📲 Telegram` 组更名为 `📲 Telegram(兜底)`，原 Telegram 进程、域名和 CIDR 规则统一指向该组，实验性 DC/地区 IP 规则则优先插入。关闭时不注入实验组、规则集或规则，原 Telegram 配置保持不变。
-   - `入口解析` 功能开关：默认关闭；开启后会将电信、联通、移动三个入口节点全部加入 `国内入口解析` 代理组，由用户在该组中手动选择实际使用的入口节点，并为最终节点解析 DNS 应用所选入口。三者没有脚本自动优先级；配置中的排列顺序不代表自动切换或优先选用。该功能会引入有时效性的国内公共节点，属于实验性能力，仅供测试使用。
-   - 脚本首行为 Bettbox 兼容声明（`Compatible_With_Bettbox`）：Bettbox 客户端约定在脚本开头识别该声明（并非全量读取），脚本需遵循此约定，声明必须保持置顶，否则"自定义规则开关"入口不显示。
-   - `policyGroupOptions`：`Compatible_With_Bettbox` 声明中的字段，声明了归入 Bettbox 策略组开关分类的 12 个策略组（🌍 PROXY、🔄 负载均衡、👉 手动切换、♻️ 自动选择、📲 Telegram、🎮 Games-Global、🍎 海外苹果、🌐 海外微软、🎮 Steam平台（非下载/CDN）、✖️ Twitter、🤖 AI大模型、🎵 TikTok）。
+<a id="yaml-config"></a>
 
-   覆写脚本会将订阅配置与内嵌模板合并，生成最终配置。
+## 🧱 YAML 模板（`mihomo.yaml`）
 
-## 节点域名与 DNS 联动模型
+`mihomo.yaml` 是本仓库的基准配置模板，同时也是覆写脚本合并时使用的内嵌模板：一份不含任何节点的完整配置骨架。使用它的方式有两种：
 
-[<kbd>在线阅读：节点域名、Hosts 与私有 DNS 联动模型</kbd>](https://XVSVTsama.github.io/XVSVT-Clash-Config/proxy-infrastructure-domain-protection-model.html)
+- **直接导入**：把模板导入客户端，节点由 YAML 自己提供——替换 `proxies: ~`，或按需配置 `proxy-providers`；此方式不会从订阅自动导入节点，填写要求见 [使用前必改](#before-use)。
+- **配合覆写脚本**：把页首地址挂到订阅上，由脚本把订阅节点与真实配置写进模板，无需手动维护节点列表，见 [覆写脚本](#script-override)。
 
-> 本文档拆解了配置中 `hosts` 真假映射、私有 DoH 解析、DNS policy 与 fake-IP filter 的各自职责，以及四者如何在同一条节点解析链路里协同生效。它面向想要编写或理解节点解析覆写脚本的人，不包含任何真实节点、密码、UUID 或订阅凭据。
+模板内的主要配置块：
+
+- **`mode` 与端口**：`mode: rule`、`mixed-port` / `port` / `socks-port`、`external-controller` 与 `external-ui`。
+- **`tun`**：TUN 入站，含 `device`、`stack`、`dns-hijack` 与 `route-address` 路由范围。
+- **`dns` 与顶层 `hosts`**：`proxy-server-nameserver`、`nameserver-policy`、fake-IP filter 与真假 hosts 映射，细节见 [节点域名与 DNS 联动模型](#dns-model)。
+- **`sniffer` 与 `ntp`**：域名嗅探与时间同步。
+- **`proxy-groups`**：分流组结构，见 [分流组结构](#proxy-groups)。
+- **`.templates`、`rule-providers`、`sub-rules`、`rules`**：规则集锚点定义、规则集来源、子规则与主规则表。
 
 <a id="proxy-groups"></a>
 
@@ -107,6 +100,32 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 1. **直接使用 YAML (`mihomo.yaml`)**：不使用 JavaScript 覆写脚本时，在 `mihomo.yaml` 中将 `proxies: ~` 替换为自己的节点列表，或按需配置 `proxy-providers`。此方式由 YAML 文件提供节点，不会从订阅自动导入。
 2. **节点过滤规则 (Filter)**：配置默认使用长正则匹配住宅/美国系命名节点（住宅/家宽/家庭宽带/residential/home broadband/🇺🇸/美国/美國/U.S. 等多种命名变体），并排除香港/新加坡相关节点（🇭🇰/香港/Hong Kong/HK/🇸🇬/新加坡/Singapore/SG）。如果订阅节点名称不符合这些条件，可根据实际情况调整相关策略组的 `filter` 正则。
 3. **按需删减规则**：如果你不需要屏蔽番茄小说海外版的广告，建议删除 `sub-rules` 中 `fanqie` 相关的规则，以节省性能。
+
+<a id="script-override"></a>
+
+## ⚙️ 覆写脚本（`script_override.js`）
+
+覆写脚本会把订阅配置与本仓库维护的内嵌模板合并成最终配置，脚本地址见页首 [远程覆写脚本地址](#remote-override)。在 Bettbox / FlClash 系客户端中给订阅挂上该脚本即可：
+
+- 订阅里的真实节点自动填入 `proxies` 与纯单节点占位组（👉 手动切换、♻️ 自动选择、🔄 负载均衡、📲 Telegram）；🍎 海外苹果、🌐 海外微软、🎮 Steam平台（非下载/CDN）、🎮 Games-Global 则保留固定策略项并追加订阅单节点；
+- 订阅自带的 `proxy-providers` 会被原样保留；
+- 动态合并 DNS 的 `proxy-server-nameserver-policy`（以脚本为准，模板不预置该键）；
+- 可通过脚本顶部 `ruleOptionsEnable` 开关单独禁用策略组，并自动清理相关引用。
+- 🍎 海外苹果 / 🌐 海外微软：不再单独引用 `apple@cn`、`microsoft@cn`、`games-cn`；国内分类直连交由 `echs_direct` 维护，现有通用直连规则优先匹配，剩余 Apple、Microsoft 域名/IP 分别进入独立组，组内提供手动切换、自动选择、负载均衡、`DIRECT` 和全部订阅单节点。UDP 豁免中原 `games-cn` 引用同步改为 `echs_direct`。
+- 🎮 Steam平台（非下载/CDN）：Steam 域名/IP 规则进入独立组，默认选择 `DIRECT`；命中前置 `echs_direct` 等直连规则的国内游戏/下载会提前直连，`games` 仍进入 🎮 Games-Global。Games 组嵌套该 Steam 组，并通过 `default-selected` 默认选择它，同时保留全部订阅节点。
+- `FCM直连` 功能开关：默认开启，隐藏组 FCM 仅含 `DIRECT`；关闭后优先使用 `👉 手动切换`，若该策略组已关闭则回退到 `🌍 PROXY`，若该组也已关闭则回退到 `DIRECT`（不移除 FCM 组）。
+- `TGDC实验分流` 功能开关：默认关闭。开启后，脚本会把 Telegram 流量按 IP 规则优先分到 `📲 Telegram-DC1-DC3-Miami`、`📲 Telegram-DC2-DC4-Amsterdam` 和 `📲 Telegram-DC5-SG` 三个实验组；其中 DC5 组同时匹配新加坡与香港节点，因为两地均可作为该 DC 的互联候选。三个实验组使用 `include-all-proxies` 加名称过滤，分别匹配美国/迈阿密、荷兰/阿姆斯特丹、新加坡/香港等节点名称。若某个实验组没有匹配地区节点，脚本会把订阅中全部合格节点（仅排除异常、内置/拒绝/重匹配和提示信息节点；免费、低倍率、高倍率节点不再排除）显式列入该组供手动选择，`empty-fallback` 为 `COMPATIBLE`。开启后，原 `📲 Telegram` 组更名为 `📲 Telegram(兜底)`，原 Telegram 进程、域名和 CIDR 规则统一指向该组，实验性 DC/地区 IP 规则则优先插入。关闭时不注入实验组、规则集或规则，原 Telegram 配置保持不变。
+- `入口解析` 功能开关：默认关闭；开启后会将电信、联通、移动三个入口节点全部加入 `国内入口解析` 代理组，由用户在该组中手动选择实际使用的入口节点，并为最终节点解析 DNS 应用所选入口。三者没有脚本自动优先级；配置中的排列顺序不代表自动切换或优先选用。该功能会引入有时效性的国内公共节点，属于实验性能力，仅供测试使用。
+- 脚本首行为 Bettbox 兼容声明（`Compatible_With_Bettbox`）：Bettbox 客户端约定在脚本开头识别该声明（并非全量读取），脚本需遵循此约定，声明必须保持置顶，否则"自定义规则开关"入口不显示。
+- `policyGroupOptions`：`Compatible_With_Bettbox` 声明中的字段，声明了归入 Bettbox 策略组开关分类的 12 个策略组（🌍 PROXY、🔄 负载均衡、👉 手动切换、♻️ 自动选择、📲 Telegram、🎮 Games-Global、🍎 海外苹果、🌐 海外微软、🎮 Steam平台（非下载/CDN）、✖️ Twitter、🤖 AI大模型、🎵 TikTok）。
+
+<a id="dns-model"></a>
+
+## 🌐 节点域名与 DNS 联动模型
+
+[<kbd>在线阅读：节点域名、Hosts 与私有 DNS 联动模型</kbd>](https://XVSVTsama.github.io/XVSVT-Clash-Config/proxy-infrastructure-domain-protection-model.html)
+
+> 本文档拆解了配置中 `hosts` 真假映射、私有 DoH 解析、DNS policy 与 fake-IP filter 的各自职责，以及四者如何在同一条节点解析链路里协同生效。它面向想要编写或理解节点解析覆写脚本的人，不包含任何真实节点、密码、UUID 或订阅凭据。
 
 ---
 
