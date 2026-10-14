@@ -67,22 +67,37 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 ### 🧬 DNS 结构
 
 ```mermaid
-flowchart TD
-  DNS["dns（域名解析总入口）"]
-  DNS --> F1["enable / listen / ipv6 / cache-algorithm / prefer-h3"]
-  DNS --> F2["use-hosts: true / use-system-hosts: false"]
-  DNS --> F3["default-nameserver<br/>兜底与引导解析"]
-  DNS --> F4["proxy-server-nameserver<br/>节点域名解析（全局兜底）"]
-  DNS --> F5["direct-nameserver<br/>直连流量解析 + direct-nameserver-follow-policy"]
-  DNS --> F6["nameserver<br/>普通域名解析"]
-  DNS --> F7["nameserver-policy<br/>按规则集分别指定解析"]
-  DNS --> F8["enhanced-mode: fake-ip"]
-  F8 --> F8a["fake-ip-range / fake-ip-range6"]
-  F8 --> F8b["fake-ip-filter-mode: blacklist<br/>fake-ip-filter（按规则集豁免）"]
-  DNS --> F9["respect-rules: false"]
-  HOSTS["hosts（与 dns 平级的顶层块）"]
-  HOSTS --> H1["真假映射：域名 → IP / 域名 / 0.0.0.0"]
-  HOSTS --> H2["仅 dns.use-hosts 为 true 时参与解析"]
+treeView-beta
+    dns/
+        enable, listen, ipv6, cache-algorithm, prefer-h3
+        use-hosts: true
+        use-system-hosts: false
+        default-nameserver/
+            兜底与引导解析
+        proxy-server-nameserver/
+            节点域名解析入口（全局兜底）
+        direct-nameserver/
+            直连流量解析
+            direct-nameserver-follow-policy: true
+        nameserver/
+            普通域名解析
+        nameserver-policy/
+            rule-set:douyin
+            rule-set:private
+            rule-set:proxy@direct,cn,echs_direct
+        enhanced-mode: fake-ip/
+            fake-ip-range: 198.18.0.1/16
+            fake-ip-range6: fdfe:dcba:9876::1/64
+            fake-ip-filter-mode: blacklist
+            fake-ip-filter/
+                rule-set:fakeip-filter_domain
+                rule-set:private, rule-set:cn
+                rule-set:echs_direct, rule-set:googlefcm
+                rule-set:applications, rule-set:pixiv
+        respect-rules: false
+    hosts/
+        真假映射：域名 → IP, 域名, 0.0.0.0
+        仅 dns.use-hosts: true 时参与解析
 ```
 
 <a id="proxy-groups"></a>
@@ -142,24 +157,57 @@ flowchart TD
 
 ### 🔀 hosts / DNS 处理流程
 
+订阅原始配置可能是三种形态：只有 hosts 真假映射、只有私有 DoH、或两者同时存在（背景与判定条件见 [节点域名与 DNS 联动模型](#dns-model)）。脚本对每个节点域名分别判定，最终都归纳为一件事：**hosts 决定要解析哪个名字，节点 DNS 优先级决定这个名字从哪里拿到地址**。
+
+**情形一：只有 hosts 真假映射（订阅未提供私有 DoH）**
+
 ```mermaid
 flowchart TD
-  A["订阅读取原始配置"] --> B["收集 DNS 来源<br/>nameserver / nameserver-policy<br/>proxy-server-nameserver / proxy-server-nameserver-policy"]
-  B --> C{"hosts 是否参与？<br/>use-hosts=true 且 dns.listen 与节点解析 DNS 成闭环"}
-  C -->|"是"| D["改写节点 server<br/>映射到 IP 直接替换；映射到域名则沿映射链跟随；成环则跳过"]
-  C -->|"否"| E["不改写节点 server"]
-  D --> F["记录映射前域名（识别可迁移策略）<br/>与实际仍参与解析的域名"]
-  E --> F
-  F --> G["按优先级写入最终 proxy-server-nameserver-policy"]
-  G --> G1["1. proxy-server-nameserver-policy"]
-  G --> G2["2. proxy-server-nameserver（仅私有）"]
-  G --> G3["3. nameserver-policy"]
-  G --> G4["4. nameserver（仅私有）"]
-  G1 --> H["命中映射前域名的策略，为最终域名补精确条目"]
-  F --> I["公共 DNS 仅用于识别私有 DNS，不进入节点解析"]
-  F --> J["模板全局 proxy-server-nameserver 始终保留，作为最终兜底"]
-  F --> K["入口解析开关：为最终解析域名追加 #国内入口解析 策略"]
+  A1["订阅原始状态<br/>节点 server 指向 hosts 左侧的假域名"]
+  A1 --> A2{"生效条件满足？<br/>use-hosts=true，且 dns.listen 与节点解析入口同端口形成回环"}
+  A2 -->|"不满足"| A3["hosts 不参与，server 保持原样"]
+  A2 -->|"满足"| A4["逐节点匹配 hosts 左侧"]
+  A4 -->|"右侧是 IP"| A5["server 改写为 IP<br/>该节点不再需要 DNS"]
+  A4 -->|"右侧是域名"| A6["server 改写为右侧真域名<br/>之后仍需 DNS"]
+  A4 -->|"未命中"| A3
+  A5 --> A7["解析来源只剩公共 DNS 与本机回环<br/>脚本不写入私有 policy"]
+  A6 --> A7
+  A3 --> A7
+  A7 --> A8["最终由模板全局 proxy-server-nameserver 兜底解析剩余域名"]
 ```
+
+**情形二：只有私有 DoH（订阅未使用 hosts 映射）**
+
+```mermaid
+flowchart TD
+  B1["订阅原始状态<br/>节点 server 是真实域名，hosts 为空表"]
+  B1 --> B2["收集订阅的解析来源<br/>proxy-server-nameserver(-policy) 与 nameserver(-policy)"]
+  B2 --> B3["按公共 DNS 名单区分私有与公共<br/>常见公共 DNS 与本机回环只用于识别，不进入节点解析"]
+  B3 --> B4{"私有来源出现在哪个字段？"}
+  B4 -->|"proxy-server-nameserver（作用于全部节点）"| B5["为每个节点域名写入<br/>proxy-server-nameserver-policy"]
+  B4 -->|"proxy-server-nameserver-policy（指定域名）"| B6["命中节点域名的条目写入最终 policy"]
+  B4 -->|"nameserver-policy 或 nameserver（普通解析来源）"| B7["命中节点域名的条目迁移为节点专用 policy"]
+  B5 --> B8["模板全局 proxy-server-nameserver 保留为兜底"]
+  B6 --> B8
+  B7 --> B8
+```
+
+**情形三：hosts 真假映射与私有 DoH 同时存在**
+
+```mermaid
+flowchart TD
+  C1["订阅原始状态<br/>假域名与私有 DoH 同时存在"]
+  C1 --> C2["① 定名字：hosts 命中则改写节点 server<br/>映射到 IP 直接替换，映射到域名沿映射链跟随，成环则跳过"]
+  C2 --> C3["② 定范围：只保留最终仍需要 DNS 的域名<br/>已被改写成 IP 的节点不再写 policy"]
+  C3 --> C4["③ 定路径：按节点 DNS 优先级迁移私有来源<br/>节点专用 policy &gt; 节点专用 DNS &gt; 普通 policy &gt; 普通 DNS"]
+  C4 --> C5{"原域名的解析策略覆盖最终域名？"}
+  C5 -->|"覆盖"| C6["保留原条目不变"]
+  C5 -->|"只命中映射前的域名"| C7["为最终域名补一条精确 policy"]
+  C6 --> C8["④ 兜底：模板全局 proxy-server-nameserver 始终保留<br/>未命中 policy 的域名走它"]
+  C7 --> C8
+```
+
+> 情形三里之所以先改写 `server` 再处理 policy，是因为部分订阅把 `proxy-server-nameserver` 写成 `udp://127.0.0.1:xxxx` 并依赖本机 hosts 回环；直接改写节点 `server` 可以绕开这条依赖，同时把原域名上的解析策略按需迁移到最终域名。
 
 ### 🗂 代理组（脚本合并后）
 
@@ -193,83 +241,44 @@ flowchart TD
 
 ### 🎚 Bettbox 开关
 
-脚本把开关分成“12 个策略组同名开关”与“功能开关”两类，后者按改写的配置部位区分：
-
-```mermaid
-venn-beta
-  set G["策略组结构（增删组 / 改组内节点）"]
-  set R["规则与规则集（rules / rule-providers 指向）"]
-  set D["DNS 与节点字段（dns policy / 节点字段）"]
-  union G,R
-  union G,D
-  union R,D
-```
-
 - **策略组同名开关（12 个，默认全开）**：🌍 PROXY、🔄 负载均衡、👉 手动切换、♻️ 自动选择、📲 Telegram、🎮 Games-Global、🍎 海外苹果、💠 海外微软、🎮 Steam平台（非下载/CDN）、✖️ Twitter、🤖 AI大模型、🎵 TikTok。关闭即移除该组，并把其他组与 `rules` 中的引用改指向全局兜底。
 - **功能开关（6 个）**：`强制证书验证`（默认关，开启时统一把订阅节点 `skip-cert-verify` 置为 `false`）、`启用 Reality 增强`（默认开，为带 `public-key`/`short-id` 的 Reality 节点开启 X25519MLKEM768）、`IPv6优先`（默认关，按节点 `ip-version` 优先 IPv6）、`FCM直连`（默认开，仅改写 FCM 组内节点）、`TGDC实验分流`（默认关，注入 DC/地区组、规则集与规则）、`入口解析`（默认关，注入入口节点、代理组与 DNS 策略）。
-
-> 上图为 `venn-beta`（Mermaid 11.12.3+ 才有），需要 GitHub 当前渲染版本支持，见文末 [渲染自检](#render-check)；若渲染失败将改用树状图描述。
 
 <a id="ruleset-overlap"></a>
 
 ## 🧮 规则集重合关系（额外说明）
 
-同一批规则集会被不同位置引用，下面按“引用方”展示重合关系（`dns` 与 `rules` 共同的引用是本配置里最需要保持一致的部分）：
+本小节不属于 YAML 或脚本单方面的说明：本仓库同时引用多个上游的规则集，而这些规则集之间存在**规则集与规则集之间**的覆盖重合。下面用三个“国内直连”性质的规则集展示这种重合：
 
 ```mermaid
 venn-beta
-  set F["fake-ip-filter 引用"]
-  set P["nameserver-policy 引用"]
-  set R["rules 引用"]
-  union F,P
-  union F,R
-  union P,R
-  union F,P,R
+  set E["echs_direct（echs-top 直连域名集）"]
+  set C["cn（DustinWin 国内域名集）"]
+  set A["applications（Loyalsoldier 国内应用域名集）"]
+  union E,C
+  union E,A
+  union C,A
+  union E,C,A
 ```
 
-- `fake-ip-filter` 引用：`fakeip-filter_domain`、`private`、`cn`、`echs_direct`、`googlefcm`、`applications`、`pixiv`
-- `nameserver-policy` 引用：`douyin`、`private`、`cn`、`echs_direct`、`proxy@direct`
-- `rules` 引用：`applications`、`echs_direct`、`echs_direct_ip`、`cn`、`cncidr`、`microsoft`、`microsoft_ip`、`apple`、`apple_ip`、`googlefcm`、`proxy@direct`、`private`、`lancidr`、`telegramcidr`、`telegram_domain`、`Gemini_Domain`、`Grok_Domain`、`ai-1`、`ai-2`、`google`、`google-cn`、`twitter-x-domain`、`twitter-x-ip`、`twitter-x-blackmatrix7-No_Resolve`、`steam`、`steam_ip`、`games`、`TikTok`、`proxy`、`gfw`
-- 三者共同引用：`cn`、`echs_direct`、`private`——改动这三个规则集或它们的优先级时需同时确认 DNS 与规则两侧。
+- **三者交集**：同一批国内直连域名被三套各自独立维护的来源同时收录，因此 `rules` 里依次命中、统一走 `DIRECT`——重合不产生冲突，只影响匹配顺序与规则集体积。
+- **`echs_direct` ∩ `cn`**：国内域名总集与直连域名集的重合；两者都排在 `rules` 的直连段，`applications → echs_direct → cn` 的先后决定谁先命中，结果同为 `DIRECT`。
+- **`echs_direct` ∩ `applications`**：国内应用域名同时出现在两套里，是"同一批直连域名的两种来源"。
+- **`cn` ∩ `applications`**：国内域名总集覆盖国内应用域名，属于包含关系。
+- **另一处顺序敏感的重合**：`apple` / `microsoft`（bett-rules）与 `echs_direct` 的国内部分重合——`rules` 把 `echs_direct` 放在海外组之前，重合部分先命中直连，剩余域名才进入 `🍎 海外苹果` / `💠 海外微软`。
+- **同平台多来源的重合**：`twitter-x-domain` / `twitter-x-ip` / `twitter-x-blackmatrix7-No_Resolve` 是同一平台的三套规则集；`ai-1` / `ai-2` 是两套 AI 规则集。
+- 规则集来源：`MetaCubeX/meta-rules-dat`、`DustinWin/ruleset_geodata`、`echs-top/proxy`、`appshubcc/bett-rules`、`Loyalsoldier/clash-rules`、`Accademia/Additional_Rule_For_Clash`、`blackmatrix7/ios_rule_script`、`reddishJade/private_proxy`，与文末致谢一致。
 
-> 本小节不属于 YAML 或脚本单方面的说明，而是两份配置共同引用同一批规则集时的一致性提示。图示为 `venn-beta`，待 GitHub 渲染验证，见 [渲染自检](#render-check)。
+> 重合关系按各规则集的覆盖范围与来源说明，未逐条比对规则内容；需要精确交集时可单独跑一次集合比对。
 
 <a id="render-check"></a>
 
 ## 🧪 渲染自检（临时内容，合并前删除）
 
-本小节用于确认 GitHub 当前的 Mermaid 版本，以及两个 beta 图类型是否可用；确认后再决定正文树状图与韦恩图的最终写法。
+GitHub 当前渲染版本已确认为 **Mermaid v12.1.0**，正文使用的 `treeView-beta`（Mermaid 11.14.0+）与 `venn-beta`（Mermaid 11.12.3+）都在该版本范围内。保留下面的版本自检块，便于日后复核；本小节在合并回 `main` 前删除。
 
 ```mermaid
   info
-```
-
-`treeView-beta`（Mermaid 11.14.0+）目录树：
-
-```mermaid
-treeView-beta
-    mihomo.yaml
-        dns
-            default-nameserver
-            nameserver-policy
-        hosts
-        proxy-groups
-            🌍 PROXY
-            💠 海外微软
-        rules
-```
-
-`venn-beta`（Mermaid 11.12.3+）集合图：
-
-```mermaid
-venn-beta
-  set A["fake-ip-filter"]
-  set B["nameserver-policy"]
-  set C["rules"]
-  union A,B
-  union A,C
-  union B,C
-  union A,B,C
 ```
 
 ---
