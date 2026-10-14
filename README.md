@@ -52,7 +52,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 ## 🧱 YAML 模板（`mihomo.yaml`）
 
-`mihomo.yaml` 是本仓库的基准配置模板，同时也是覆写脚本合并时使用的内嵌模板：一份不含任何节点的完整配置骨架。直接使用它的方式：
+`mihomo.yaml` 是本仓库的基准配置模板，同时也是覆写脚本合并时使用的内嵌模板：一份不含任何节点的完整配置骨架，不可直接使用它。
 
 <a id="proxy-groups"></a>
 
