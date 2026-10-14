@@ -201,6 +201,11 @@ flowchart TD
 
 另有 3 个开关同样不在 `policyGroupOptions` 里，也不对应任何策略组：`强制证书验证`（默认关，开启时统一把订阅节点的 `skip-cert-verify` 置为 `false`）、`启用 Reality 增强`（默认开，为带非空 `public-key` / `short-id` 的 Reality 节点启用 X25519MLKEM768）、`IPv6优先`（默认关，按节点 `ip-version` 优先 IPv6）。
 
+> **关于客户端**：这套图形化开关由 Bettbox 原生支持——脚本开头的 `Compatible_With_Bettbox` 声明就是给 Bettbox 识别用的。换到其他客户端分两种情况：
+>
+> - 支持 JS 覆写脚本、但没有开关面板的客户端（例如 FlClash）：需要自行打开 `script_override.js`，把 `ruleOptionsEnable` 里对应开关的值改成 `true` 或 `false`，保存后重新加载订阅即可生效；
+> - 不支持 JS 覆写脚本的客户端：没有这个入口，只能改用 `mihomo.yaml` 模板自行维护策略组。
+
 <a id="ruleset-overlap"></a>
 
 ## 🧮 规则集重合关系（额外说明）
