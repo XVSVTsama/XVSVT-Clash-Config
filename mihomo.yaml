@@ -285,8 +285,10 @@ proxy-groups:
   - name: 🎮 Games-Global
     icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-games-cn.png"
     type: select
-    # 此处为所有单节点（由覆写脚本自动填入订阅全部节点）
+    default-selected: 🎮 Steam平台（非下载/CDN）
+    # 保留 Steam 嵌套组；覆写脚本会追加订阅全部节点
     proxies:
+      - 🎮 Steam平台（非下载/CDN）
 
   - name: ✖️ Twitter
     icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-clash-verge-rev-twitter.svg"

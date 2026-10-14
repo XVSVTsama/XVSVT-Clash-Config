@@ -50,10 +50,10 @@ const Compatible_With_Bettbox = {
  *       只是占位）。
  *
     *    3. proxy-groups 中的纯节点占位组（proxies: null：👉 手动切换、♻️ 自动选择、
-    *       🔄 负载均衡、📲 Telegram、🎮 Games-Global）会自动填入订阅里全部节点名；
-    *       🍎 海外苹果、💠 海外微软、🎮 Steam平台（非下载/CDN）也使用 null 占位，
-    *       但运行时会先保留各自固定策略项，再追加全部订阅节点。若订阅还带
-    *       proxy-providers，这些占位组会同时写入 use 引用全部 provider。其余分组
+    *       🔄 负载均衡、📲 Telegram）会自动填入订阅里全部节点名；
+    *       🍎 海外苹果、💠 海外微软、🎮 Steam平台（非下载/CDN）、🎮 Games-Global
+    *       则在运行时先保留各自固定策略项，再追加全部订阅节点。若订阅还带
+    *       proxy-providers，这些动态分组会同时写入 use 引用全部 provider。其余分组
     *       保持模板原样，不会被订阅节点覆盖或补充。
  *
  *    4.【特别处理】DNS 与 hosts：
@@ -643,7 +643,10 @@ const TEMPLATE = {
       "name": "🎮 Games-Global",
       "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-games-cn.png",
       "type": "select",
-      "proxies": null
+      "default-selected": "🎮 Steam平台（非下载/CDN）",
+      "proxies": [
+        "🎮 Steam平台（非下载/CDN）"
+      ]
     },
     {
       "name": "✖️ Twitter",
@@ -1946,6 +1949,9 @@ function main(config, profileName) {
   const fallbackTarget = activeGroupNames.has('🌍 PROXY') ? '🌍 PROXY' : 'DIRECT';
 
   result['proxy-groups'].forEach(group => {
+    if (disabledGroupNames.has(group['default-selected'])) {
+      delete group['default-selected'];
+    }
     if (Array.isArray(group.proxies)) {
       group.proxies = group.proxies.filter(p => !disabledGroupNames.has(p));
       // 如果剔除后列表空了，填入保底策略（优先 🌍 PROXY，其次 DIRECT）
@@ -1955,13 +1961,13 @@ function main(config, profileName) {
     }
   });
 
-  // ---- 5. 把标记为"此处为所有单节点"的分组，填入订阅的真实节点名 ----
+  // ---- 5. 为单节点占位组和 Games 组追加订阅的真实节点名 ----
   const allNodeNames = originalProxies
     .map((p) => p && p.name)
     .filter((name) => typeof name === 'string' && name.length > 0);
 
   result['proxy-groups'].forEach((group) => {
-    if (!isAllNodesPlaceholder(group)) {
+    if (!isAllNodesPlaceholder(group) && group.name !== '🎮 Games-Global') {
       return;
     }
 
@@ -1980,6 +1986,8 @@ function main(config, profileName) {
         '♻️ 自动选择',
         '🔄 负载均衡'
       ];
+    } else if (group.name === '🎮 Games-Global') {
+      fixedProxies = group.proxies.slice();
     }
 
     if (fixedProxies.length > 0) {
