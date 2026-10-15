@@ -159,13 +159,21 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 <a id="dns-model"></a>
 
-## 🌐 节点域名与 DNS 联动模型
+<br>
+
+<h2 align="center">🌐 节点域名与 DNS 联动模型</h2>
+
+<br>
 
 [<kbd>在线阅读：节点域名、Hosts 与私有 DNS 联动模型</kbd>](https://XVSVTsama.github.io/XVSVT-Clash-Config/proxy-infrastructure-domain-protection-model.html)
 
 <a id="ruleset-overlap"></a>
 
-## 🧮 规则集重合关系（额外说明）
+<br>
+
+<h2 align="center">🧮 规则集重合关系（额外说明）</h2>
+
+<br>
 
 本小节不属于 YAML 或脚本单方面的说明：本仓库引用的规则集来自多个上游，彼此存在规则集与规则集之间的覆盖重合。下面按重合的集合分组，全部用韦恩图说明。
 
@@ -241,7 +249,11 @@ venn-beta
 
 <a id="acknowledgments"></a>
 
-## 🙏 致谢
+<br>
+
+<h2 align="center">🙏 致谢</h2>
+
+<br>
 
 本项目建立在开源内核、客户端、规则集与图标资源之上。以下列出本项目使用或参考的相关项目；引用或参考不代表这些项目与本仓库存在合作或背书关系。具体资源请以各上游项目的说明和许可为准。
 
@@ -282,13 +294,21 @@ venn-beta
 
 <a id="star-history"></a>
 
-## ⭐ Star History
+<br>
+
+<h2 align="center">⭐ Star History</h2>
+
+<br>
 
 [![Star History Chart](https://api.star-history.com/svg?repos=XVSVTsama/XVSVT-Clash-Config&type=Date)](https://star-history.com/#XVSVTsama/XVSVT-Clash-Config&Date)
 
 <a id="disclaimer"></a>
 
-## ⚠️ 免责声明
+<br>
+
+<h2 align="center">⚠️ 免责声明</h2>
+
+<br>
 
 1. 本仓库的YAML模板与JS脚本设计并非完美，或可能有代码质量问题，也不一定适合所有环境，尤其是 DNS 与路由规则。
 2. 使用者应自行评估使用、修改或传播本仓库内容所涉及的风险，并遵守所在地区适用的法律法规。因使用本仓库内容产生的后果，由使用者自行承担。
