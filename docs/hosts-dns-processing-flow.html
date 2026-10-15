@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="说明 Mihomo JS 覆写脚本 script_override.js 如何处理 hosts 真假映射、私有 DoH 与节点 DNS。">
-  <title>JS 覆写脚本 hosts / DNS 处理流程（手机适配）</title>
+  <title>JS 覆写脚本 hosts / DNS 处理流程</title>
   <style>
     :root {
       color-scheme: light;
@@ -224,7 +224,7 @@
   <main>
     <header>
       <h1>JS 覆写脚本：hosts / DNS 处理流程</h1>
-      <p class="lead">本页说明 Mihomo JS 覆写脚本 <code>script_override.js</code> 在三种订阅输入状态下处理 hosts 与节点 DNS 的步骤。每一步使用可自动换行的 HTML 文本卡片，不依赖 Mermaid 图形缩放。</p>
+      <p class="lead">本页说明 Mihomo JS 覆写脚本 <code>script_override.js</code> 在三种订阅输入状态下处理 hosts 与节点 DNS 的步骤。</p>
       <p class="principle"><strong>核心原则：</strong><code>hosts</code> 决定要解析哪个名字；节点 DNS 优先级决定这个名字从哪里取得地址。</p>
       <nav aria-label="跳转到处理场景">
         <ul class="jump-links">
@@ -271,7 +271,6 @@
 
     <footer>
       <p>以上流程概括 JS 覆写脚本 <code>script_override.js</code> 对 hosts 与节点 DNS 的处理目标结果；实际生效仍取决于订阅字段、hosts 命中条件和目标客户端的解析行为。</p>
-      <p>源码：<a href="https://github.com/XVSVTsama/XVSVT-Clash-Config/blob/main/docs/hosts-dns-processing-flow.html">docs/hosts-dns-processing-flow.html</a></p>
     </footer>
   </main>
 </body>
