@@ -26,7 +26,8 @@
 
 <p align="center">
   <a href="#remote-override">远程覆写地址</a> ·
-  <a href="#configuration-docs">配置说明</a>（<a href="#yaml-config">YAML</a> · <a href="#script-override">JavaScript</a>） ·
+  <a href="#yaml-config">YAML 说明</a> ·
+  <a href="#script-override">JavaScript 说明</a> ·
   <a href="#dns-model">DNS 联动模型</a> ·
   <a href="#ruleset-overlap">规则集重合</a> ·
   <a href="#acknowledgments">致谢</a> ·
@@ -46,17 +47,11 @@
 https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
 ```
 
-<a id="configuration-docs"></a>
-
-## ⚙️ 配置说明
-
-本仓库的配置分为两部分：`mihomo.yaml` 提供基础模板，`script_override.js` 负责将订阅内容与模板合并。下文分别说明两者及其从属主题。
-
 <a id="yaml-config"></a>
 
 <br>
 
-<h3 align="center">🧱 YAML 说明：模板（<code>mihomo.yaml</code>）</h3>
+<h2 align="center">🧱 YAML 说明</h2>
 
 <br>
 
@@ -64,7 +59,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 <a id="proxy-groups"></a>
 
-#### 🗂 分流组结构（按 `mihomo.yaml` 定义）
+### 🗂 分流组结构（按 `mihomo.yaml` 定义）
 
 | 策略组名称 | 默认行为 / 触发条件 | 注意事项 |
 | :--- | :--- | :--- |
@@ -86,7 +81,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 <a id="before-use"></a>
 
-#### 🛠️ 使用前必改 (抄作业必看)
+### 🛠️ 使用前必改 (抄作业必看)
 
 本配置按个人使用习惯定制，并非开箱即用的通用模板，尤其是对于直接导入 YAML 的使用形式。使用前请完成以下必要设置；如不熟悉 Mihomo、TUN、DNS 或策略组过滤规则，请先了解相关机制再使用。
 
@@ -98,7 +93,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 <br>
 
-<h3 align="center">⚙️ JavaScript 说明：覆写脚本（<code>script_override.js</code>）</h3>
+<h2 align="center">⚙️ JavaScript 说明</h2>
 
 <br>
 
@@ -111,11 +106,11 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 - **DNS**：动态合并出 `dns.proxy-server-nameserver-policy`（模板不预置该键，以脚本计算结果为准），细节见下方流程图。
 - **开关声明**：脚本首行的 `Compatible_With_Bettbox` 兼容声明必须置顶——Bettbox 只在脚本开头识别该声明，删除或下移会导致"自定义规则开关"入口不显示；声明中的 `policyGroupOptions` 列出归入图形化开关分类的 12 个策略组，`ruleOptionsEnable` 则是实际生效的开关表，键名需与声明保持一致。
 
-#### 🔀 hosts / DNS 处理流程
+### 🔀 hosts / DNS 处理流程
 
 [<kbd>在线查看：hosts / DNS 三种处理流程</kbd>](https://XVSVTsama.github.io/XVSVT-Clash-Config/hosts-dns-processing-flow.html)
 
-#### 🗂 代理组与 Bettbox 开关（脚本合并后）
+### 🗂 代理组与 Bettbox 开关（脚本合并后）
 
 脚本开头的 `Compatible_With_Bettbox` 声明用 `policyGroupOptions` 划定了"策略组开关"分类：只列进去的组出现在该分类下，没列进去的组不受它控制，改由脚本的 `ruleOptionsEnable` 决定存在形态（两者都在脚本顶部可查）。
 
