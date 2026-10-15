@@ -111,42 +111,15 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 ### 🔀 hosts / DNS 处理流程
 
-订阅原始配置可能是三种形态：只有 hosts 真假映射、只有私有 DoH、或两者同时存在（背景与判定条件见 [节点域名与 DNS 联动模型](#dns-model)）。下面只画每种形态下脚本要达到的目标结果：**hosts 决定要解析哪个名字，节点 DNS 优先级决定这个名字从哪里拿到地址**。
+订阅原始配置可能是三种形态：只有 hosts 真假映射、只有私有 DoH、或两者同时存在（背景与判定条件见 [节点域名与 DNS 联动模型](#dns-model)）。详细步骤改由独立的手机适配页面展示；核心原则仍是：**hosts 决定要解析哪个名字，节点 DNS 优先级决定这个名字从哪里拿到地址**。
 
-**情形一：只有 hosts 真假映射（订阅未提供私有 DoH）**
+**[在线查看：hosts / DNS 三种处理流程（手机适配）](https://XVSVTsama.github.io/XVSVT-Clash-Config/hosts-dns-processing-flow.html)**
 
-```mermaid
-flowchart TD
-  A1["订阅原始状态<br/>节点 server 是 hosts 左侧的假域名"]
-  A1 --> A2["生效条件成立<br/>use-hosts=true，dns.listen 与节点解析入口同端口形成回环"]
-  A2 --> A3["hosts 命中，节点 server 改写成右侧的真域名"]
-  A3 --> A4["最终 server 仍是域名，继续走 DNS 解析"]
-  A4 --> A5["订阅没有私有 DoH，解析交给模板全局 proxy-server-nameserver"]
-```
+网页源码同仓库托管于 [`docs/hosts-dns-processing-flow.html`](docs/hosts-dns-processing-flow.html)。
 
-**情形二：只有私有 DoH（订阅未使用 hosts 映射）**
+页面分别说明只有 hosts 真假映射、只有私有 DoH、以及两者同时存在时的处理步骤、DNS 优先级和兜底关系。
 
-```mermaid
-flowchart TD
-  B1["订阅原始状态<br/>节点 server 是真实域名，hosts 为空表"]
-  B1 --> B2["私有 DoH 出现在订阅的节点解析来源里<br/>按优先级取值：proxy-server-nameserver-policy &gt; proxy-server-nameserver（仅私有）&gt; nameserver-policy &gt; nameserver（仅私有）"]
-  B2 --> B3["脚本把它整理进最终配置的 dns.proxy-server-nameserver-policy"]
-  B3 --> B4["节点域名由私有 DoH 解析"]
-  B4 --> B5["未命中 policy 的域名仍由模板全局 proxy-server-nameserver 兜底"]
-```
-
-**情形三：hosts 真假映射与私有 DoH 同时存在**
-
-```mermaid
-flowchart TD
-  C1["订阅原始状态<br/>假域名与私有 DoH 同时存在"]
-  C1 --> C2["① 名字：hosts 命中后，节点 server 改写成最终要连接的域名"]
-  C2 --> C3["② 范围：只有最终仍是域名的节点需要 policy"]
-  C3 --> C4["③ 路径：私有来源按节点 DNS 优先级迁移到这些域名<br/>节点专用 policy &gt; 节点专用 DNS &gt; 普通 policy &gt; 普通 DNS"]
-  C4 --> C5["④ 兜底：模板全局 proxy-server-nameserver 始终保留"]
-```
-
-> 情形三里之所以先改写 `server` 再处理 policy，是因为部分订阅把 `proxy-server-nameserver` 写成 `udp://127.0.0.1:xxxx` 并依赖本机 hosts 回环；直接改写节点 `server` 可以绕开这条依赖，同时把原域名上的解析策略按需迁移到最终域名。
+> 流程页的[情形三](https://XVSVTsama.github.io/XVSVT-Clash-Config/hosts-dns-processing-flow.html#case-both)之所以先改写 `server` 再处理 policy，是因为部分订阅把 `proxy-server-nameserver` 写成 `udp://127.0.0.1:xxxx` 并依赖本机 hosts 回环；直接改写节点 `server` 可以绕开这条依赖，同时把原域名上的解析策略按需迁移到最终域名。
 
 ### 🗂 代理组与 Bettbox 开关（脚本合并后）
 

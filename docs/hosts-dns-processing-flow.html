@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="hosts 真假映射与私有 DoH 在节点域名解析中的三种处理流程。">
+  <title>hosts / DNS 处理流程（手机适配）</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --page: #f4f7fb;
+      --surface: #ffffff;
+      --surface-soft: #f8fbff;
+      --ink: #172033;
+      --muted: #516176;
+      --line: #d7e1ed;
+      --accent: #1558b0;
+      --accent-soft: #e9f2ff;
+      --note: #fff8e7;
+      --note-line: #d78a10;
+      --shadow: 0 8px 24px rgb(15 42 78 / 6%);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+      font-size: 1rem;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+    a { color: var(--accent); text-underline-offset: .2em; }
+    a:focus-visible { outline: 3px solid #f59e0b; outline-offset: 3px; border-radius: 3px; }
+    main {
+      width: 100%;
+      max-width: 1040px;
+      margin-inline: auto;
+      padding: 28px clamp(16px, 4vw, 44px) 56px;
+    }
+    .back-link { display: inline-block; margin-bottom: 18px; font-size: .95rem; }
+    h1 {
+      margin: 0;
+      color: #102c50;
+      font-size: clamp(1.8rem, 5vw, 2.55rem);
+      line-height: 1.25;
+      letter-spacing: -.025em;
+    }
+    .lead {
+      max-width: 76ch;
+      margin: 16px 0 22px;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+    .principle {
+      margin: 0 0 26px;
+      padding: 14px 16px;
+      border-left: 4px solid var(--accent);
+      border-radius: 0 10px 10px 0;
+      background: var(--accent-soft);
+    }
+    .jump-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 30px;
+      padding: 0;
+      list-style: none;
+    }
+    .jump-links a {
+      display: inline-block;
+      padding: 7px 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      text-decoration: none;
+      font-size: .92rem;
+    }
+    .scenario {
+      margin: 26px 0;
+      padding: clamp(16px, 3vw, 28px);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      scroll-margin-top: 16px;
+    }
+    .scenario h2 {
+      margin: 0;
+      color: #123e70;
+      font-size: clamp(1.22rem, 3.5vw, 1.55rem);
+      line-height: 1.4;
+    }
+    .scenario-intro { margin: 8px 0 0; color: var(--muted); }
+    .steps {
+      display: grid;
+      gap: 26px;
+      width: 100%;
+      max-width: 740px;
+      margin: 24px auto 0;
+      padding: 0;
+      list-style: none;
+    }
+    .step {
+      position: relative;
+      display: grid;
+      grid-template-columns: 2.25rem minmax(0, 1fr);
+      align-items: start;
+      gap: 12px;
+      min-width: 0;
+      padding: 15px;
+      border: 1px solid #c8d8eb;
+      border-radius: 12px;
+      background: var(--surface-soft);
+    }
+    .step:not(:last-child)::after {
+      position: absolute;
+      bottom: -24px;
+      left: 50%;
+      color: var(--accent);
+      content: "↓";
+      font-size: 1.2rem;
+      font-weight: 700;
+      line-height: 1;
+      transform: translateX(-50%);
+    }
+    .step-number {
+      display: grid;
+      width: 2.1rem;
+      height: 2.1rem;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: .9rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .step-copy { min-width: 0; }
+    .step h3 {
+      margin: 0 0 4px;
+      color: #163d69;
+      font-size: 1.04rem;
+      line-height: 1.45;
+    }
+    .step p { margin: 0; }
+    code {
+      max-width: 100%;
+      padding: .08em .28em;
+      border-radius: 4px;
+      background: #eaf0f7;
+      color: #7a2340;
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: .9em;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+    .priority-list {
+      margin: 9px 0 0;
+      padding-left: 1.35rem;
+    }
+    .priority-list li { margin: 5px 0; padding-left: 3px; }
+    .note {
+      margin: 20px 0 0;
+      padding: 14px 16px;
+      border-left: 4px solid var(--note-line);
+      border-radius: 0 9px 9px 0;
+      background: var(--note);
+    }
+    .note p { margin: 0; }
+    footer {
+      margin-top: 32px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    @media (max-width: 600px) {
+      main { padding: 20px 14px 40px; }
+      .scenario { margin: 18px 0; padding: 16px 13px; border-radius: 12px; }
+      .step { grid-template-columns: 2rem minmax(0, 1fr); gap: 9px; padding: 13px 11px; }
+      .step-number { width: 1.85rem; height: 1.85rem; font-size: .82rem; }
+      .step h3 { font-size: 1rem; }
+      .priority-list { padding-left: 1.15rem; }
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        color-scheme: dark;
+        --page: #0d1420;
+        --surface: #151f2e;
+        --surface-soft: #182538;
+        --ink: #e6edf6;
+        --muted: #b1bfd0;
+        --line: #34445a;
+        --accent: #8fc0ff;
+        --accent-soft: #1b304a;
+        --note: #302916;
+        --note-line: #e9ad42;
+        --shadow: 0 8px 24px rgb(0 0 0 / 18%);
+      }
+      h1, .scenario h2, .step h3 { color: #c5ddff; }
+      .step { border-color: #3a506b; }
+      .step-number { background: #245e9e; }
+      code { background: #253348; color: #ffb7cd; }
+      .jump-links a { color: var(--accent); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+    @media print {
+      :root { color-scheme: light; }
+      body { background: #fff; color: #111; }
+      main { max-width: none; padding: 0; }
+      .back-link, .jump-links { display: none; }
+      .scenario { break-inside: avoid; box-shadow: none; }
+      .step { background: #fff; }
+      a { color: inherit; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="back-link" href="https://github.com/XVSVTsama/XVSVT-Clash-Config#dns-model">← 返回 README 的 DNS 联动模型</a>
+    <header>
+      <h1>hosts / DNS 处理流程</h1>
+      <p class="lead">下面按订阅输入状态拆成三条独立流程。每一步使用可自动换行的 HTML 文本卡片，不依赖 Mermaid 图形缩放。</p>
+      <p class="principle"><strong>核心原则：</strong><code>hosts</code> 决定要解析哪个名字；节点 DNS 优先级决定这个名字从哪里取得地址。</p>
+      <nav aria-label="跳转到处理场景">
+        <ul class="jump-links">
+          <li><a href="#case-hosts">情形一：仅 hosts</a></li>
+          <li><a href="#case-doh">情形二：仅私有 DoH</a></li>
+          <li><a href="#case-both">情形三：两者并存</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <section class="scenario" id="case-hosts" aria-labelledby="title-hosts">
+      <h2 id="title-hosts">情形一：只有 hosts 真假映射</h2>
+      <p class="scenario-intro">订阅未提供私有 DoH；节点原始 <code>server</code> 使用 hosts 左侧的假域名。</p>
+      <ol class="steps" aria-label="只有 hosts 真假映射时的处理步骤">
+        <li class="step"><span class="step-number" aria-hidden="true">1</span><div class="step-copy"><h3>检查生效条件</h3><p>需满足 <code>use-hosts=true</code>，且 <code>dns.listen</code> 与节点解析入口在对应端口形成回环。</p></div></li>
+        <li class="step"><span class="step-number" aria-hidden="true">2</span><div class="step-copy"><h3>命中 hosts 映射</h3><p>节点 <code>server</code> 从左侧假域名改写为右侧真域名。</p></div></li>
+        <li class="step"><span class="step-number" aria-hidden="true">3</span><div class="step-copy"><h3>确认最终目标仍是域名</h3><p>改写后的 <code>server</code> 仍需继续进行 DNS 解析。</p></div></li>
+        <li class="step"><span class="step-number" aria-hidden="true">4</span><div class="step-copy"><h3>使用模板全局解析器</h3><p>订阅没有私有 DoH，因此节点域名由模板全局 <code>proxy-server-nameserver</code> 解析。</p></div></li>
+      </ol>
+    </section>
+
+    <section class="scenario" id="case-doh" aria-labelledby="title-doh">
+      <h2 id="title-doh">情形二：只有私有 DoH</h2>
+      <p class="scenario-intro">订阅未使用 hosts 映射；节点原始 <code>server</code> 是真实域名。</p>
+      <ol class="steps" aria-label="只有私有 DoH 时的处理步骤">
+        <li class="step"><span class="step-number" aria-hidden="true">1</span><div class="step-copy"><h3>选择节点解析来源</h3><p>按以下顺序取值，优先级从高到低：</p><ol class="priority-list"><li><code>proxy-server-nameserver-policy</code></li><li><code>proxy-server-nameserver</code>（仅私有）</li><li><code>nameserver-policy</code></li><li><code>nameserver</code>（仅私有）</li></ol></div></li>
+        <li class="step"><span class="step-number" aria-hidden="true">2</span><div class="step-copy"><h3>写入最终节点 policy</h3><p>脚本把选出的私有解析来源整理到 <code>dns.proxy-server-nameserver-policy</code>。</p></div></li>
+        <li class="step"><span class="step-number" aria-hidden="true">3</span><div class="step-copy"><h3>解析节点域名</h3><p>需要私有解析的节点域名由对应的私有 DoH 解析。</p></div></li>
+        <li class="step"><span class="step-number" aria-hidden="true">4</span><div class="step-copy"><h3>保留全局兜底</h3><p>没有命中 policy 的域名仍由模板全局 <code>proxy-server-nameserver</code> 解析。</p></div></li>
+      </ol>
+    </section>
+
+    <section class="scenario" id="case-both" aria-labelledby="title-both">
+      <h2 id="title-both">情形三：hosts 与私有 DoH 同时存在</h2>
+      <p class="scenario-intro">订阅同时包含假域名映射和私有 DoH；先确定最终域名，再迁移适用的解析策略。</p>
+      <ol class="steps" aria-label="hosts 与私有 DoH 同时存在时的处理步骤">
+        <li class="step"><span class="step-number" aria-hidden="true">1</span><div class="step-copy"><h3>先改写节点名称</h3><p>hosts 命中后，将节点 <code>server</code> 改写成最终要连接的域名。</p></div></li>
+        <li class="step"><span class="step-number" aria-hidden="true">2</span><div class="step-copy"><h3>确定 policy 覆盖范围</h3><p>只有改写后最终仍是域名的节点，才需要相应的 DNS policy。</p></div></li>
+        <li class="step"><span class="step-number" aria-hidden="true">3</span><div class="step-copy"><h3>迁移私有解析来源</h3><p>按节点 DNS 优先级，将订阅中的私有来源关联到最终域名：</p><ol class="priority-list"><li>节点专用 policy</li><li>节点专用 DNS</li><li>普通 policy</li><li>普通 DNS</li></ol></div></li>
+        <li class="step"><span class="step-number" aria-hidden="true">4</span><div class="step-copy"><h3>保留模板全局兜底</h3><p>模板全局 <code>proxy-server-nameserver</code> 始终保留，用于没有命中 policy 的域名。</p></div></li>
+      </ol>
+      <aside class="note"><p><strong>为什么先改写 <code>server</code> 再处理 policy？</strong>部分订阅把 <code>proxy-server-nameserver</code> 写成 <code>udp://127.0.0.1:xxxx</code> 并依赖本机 hosts 回环。直接改写节点 <code>server</code> 可以绕开这条依赖，同时把原域名上的解析策略按需迁移到最终域名。</p></aside>
+    </section>
+
+    <footer>
+      <p>以上流程概括 README 所述脚本目标结果；实际生效仍取决于订阅字段、hosts 命中条件和目标客户端的解析行为。</p>
+      <p>源码：<a href="https://github.com/XVSVTsama/XVSVT-Clash-Config/blob/main/docs/hosts-dns-processing-flow.html">docs/hosts-dns-processing-flow.html</a></p>
+    </footer>
+  </main>
+</body>
+</html>
