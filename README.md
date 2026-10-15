@@ -28,7 +28,7 @@
   <a href="#remote-override">远程覆写地址</a> ·
   <a href="#yaml-config">YAML 说明</a> ·
   <a href="#script-override">JavaScript 说明</a> ·
-  <a href="#dns-model">DNS 联动模型</a> ·
+  <a href="#dns-model">dns-host背景说明</a> ·
   <a href="#ruleset-overlap">规则集重合</a> ·
   <a href="#acknowledgments">致谢</a> ·
   <a href="#star-history">Star History</a> ·
@@ -161,7 +161,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 <br>
 
-<h2 align="center">🌐 节点域名与 DNS 联动模型</h2>
+<h2 align="center">hosts真假域名映射-私有DoH复合DNS流程</h2>
 
 <br>
 
