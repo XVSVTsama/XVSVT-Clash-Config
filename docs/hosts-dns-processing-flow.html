@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="hosts 真假映射与私有 DoH 在节点域名解析中的三种处理流程。">
-  <title>hosts / DNS 处理流程（手机适配）</title>
+  <meta name="description" content="说明 Mihomo JS 覆写脚本 script_override.js 如何处理 hosts 真假映射、私有 DoH 与节点 DNS。">
+  <title>JS 覆写脚本 hosts / DNS 处理流程（手机适配）</title>
   <style>
     :root {
       color-scheme: light;
@@ -40,7 +40,6 @@
       margin-inline: auto;
       padding: 28px clamp(16px, 4vw, 44px) 56px;
     }
-    .back-link { display: inline-block; margin-bottom: 18px; font-size: .95rem; }
     h1 {
       margin: 0;
       color: #102c50;
@@ -214,7 +213,7 @@
       :root { color-scheme: light; }
       body { background: #fff; color: #111; }
       main { max-width: none; padding: 0; }
-      .back-link, .jump-links { display: none; }
+      .jump-links { display: none; }
       .scenario { break-inside: avoid; box-shadow: none; }
       .step { background: #fff; }
       a { color: inherit; }
@@ -223,10 +222,9 @@
 </head>
 <body>
   <main>
-    <a class="back-link" href="https://github.com/XVSVTsama/XVSVT-Clash-Config#dns-model">← 返回 README 的 DNS 联动模型</a>
     <header>
-      <h1>hosts / DNS 处理流程</h1>
-      <p class="lead">下面按订阅输入状态拆成三条独立流程。每一步使用可自动换行的 HTML 文本卡片，不依赖 Mermaid 图形缩放。</p>
+      <h1>JS 覆写脚本：hosts / DNS 处理流程</h1>
+      <p class="lead">本页说明 Mihomo JS 覆写脚本 <code>script_override.js</code> 在三种订阅输入状态下处理 hosts 与节点 DNS 的步骤。每一步使用可自动换行的 HTML 文本卡片，不依赖 Mermaid 图形缩放。</p>
       <p class="principle"><strong>核心原则：</strong><code>hosts</code> 决定要解析哪个名字；节点 DNS 优先级决定这个名字从哪里取得地址。</p>
       <nav aria-label="跳转到处理场景">
         <ul class="jump-links">
@@ -272,7 +270,7 @@
     </section>
 
     <footer>
-      <p>以上流程概括 README 所述脚本目标结果；实际生效仍取决于订阅字段、hosts 命中条件和目标客户端的解析行为。</p>
+      <p>以上流程概括 JS 覆写脚本 <code>script_override.js</code> 对 hosts 与节点 DNS 的处理目标结果；实际生效仍取决于订阅字段、hosts 命中条件和目标客户端的解析行为。</p>
       <p>源码：<a href="https://github.com/XVSVTsama/XVSVT-Clash-Config/blob/main/docs/hosts-dns-processing-flow.html">docs/hosts-dns-processing-flow.html</a></p>
     </footer>
   </main>

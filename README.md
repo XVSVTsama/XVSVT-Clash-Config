@@ -94,8 +94,6 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 > 本文档拆解了配置中 `hosts` 真假映射、私有 DoH 解析、DNS policy 与 fake-IP filter 的各自职责，以及四者如何在同一条节点解析链路里协同生效。它面向想要编写或理解节点解析覆写脚本的人，不包含任何真实节点、密码、UUID 或订阅凭据。
 
-网页源码同仓库托管于 [`docs/proxy-infrastructure-domain-protection-model.html`](docs/proxy-infrastructure-domain-protection-model.html)。
-
 <a id="script-override"></a>
 
 ## ⚙️ 覆写脚本（`script_override.js`）
@@ -111,15 +109,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 ### 🔀 hosts / DNS 处理流程
 
-订阅原始配置可能是三种形态：只有 hosts 真假映射、只有私有 DoH、或两者同时存在（背景与判定条件见 [节点域名与 DNS 联动模型](#dns-model)）。详细步骤改由独立的手机适配页面展示；核心原则仍是：**hosts 决定要解析哪个名字，节点 DNS 优先级决定这个名字从哪里拿到地址**。
-
-**[在线查看：hosts / DNS 三种处理流程（手机适配）](https://XVSVTsama.github.io/XVSVT-Clash-Config/hosts-dns-processing-flow.html)**
-
-网页源码同仓库托管于 [`docs/hosts-dns-processing-flow.html`](docs/hosts-dns-processing-flow.html)。
-
-页面分别说明只有 hosts 真假映射、只有私有 DoH、以及两者同时存在时的处理步骤、DNS 优先级和兜底关系。
-
-> 流程页的[情形三](https://XVSVTsama.github.io/XVSVT-Clash-Config/hosts-dns-processing-flow.html#case-both)之所以先改写 `server` 再处理 policy，是因为部分订阅把 `proxy-server-nameserver` 写成 `udp://127.0.0.1:xxxx` 并依赖本机 hosts 回环；直接改写节点 `server` 可以绕开这条依赖，同时把原域名上的解析策略按需迁移到最终域名。
+[<kbd>在线查看：hosts / DNS 三种处理流程（手机适配）</kbd>](https://XVSVTsama.github.io/XVSVT-Clash-Config/hosts-dns-processing-flow.html)
 
 ### 🗂 代理组与 Bettbox 开关（脚本合并后）
 
