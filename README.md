@@ -54,7 +54,11 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 <a id="yaml-config"></a>
 
-### 🧱 YAML 说明：模板（`mihomo.yaml`）
+<br>
+
+<h3 align="center">🧱 YAML 说明：模板（<code>mihomo.yaml</code>）</h3>
+
+<br>
 
 `mihomo.yaml` 是本仓库的基准配置模板，同时也是覆写脚本合并时使用的内嵌模板：一份不含任何节点的完整配置骨架，不可直接使用它。
 
@@ -92,7 +96,11 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 <a id="script-override"></a>
 
-### ⚙️ JavaScript 说明：覆写脚本（`script_override.js`）
+<br>
+
+<h3 align="center">⚙️ JavaScript 说明：覆写脚本（<code>script_override.js</code>）</h3>
+
+<br>
 
 覆写脚本把订阅配置与本仓库维护的内嵌模板合并成最终配置：模板中已写好的字段（`dns`、`rules`、`rule-providers`、`sniffer`、`tun`、`proxy-groups` 分组结构等）以模板为准，节点与订阅自带 `proxy-providers` 来自订阅。脚本地址见页首 [远程覆写脚本地址](#remote-override)，在 Bettbox / FlClash 系客户端中给订阅挂上即可。
 
