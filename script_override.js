@@ -1769,7 +1769,7 @@ function applyTelegramDcExperiment(result, originalProxies) {
   }
   result['rule-providers'] = providersWithTelegramDc;
 
-  // 原 📲 Telegram 组改为兜底组；优先在兜底组之前插入三个 DC/地区组，找不到时回退到“♻️ 自动选择”之后；有地区节点时保持筛选，无地区节点时展示全部合格保底节点。
+  // 显示位置按最终仍启用的组回退：Telegram 兜底组前；否则依次在自动选择、手动切换、负载均衡之后；都不可用则追加到底部。
   const telegramFallback = (result['proxy-groups'] || []).find(
     (group) => group && group.name === '📲 Telegram'
   );
@@ -1781,12 +1781,29 @@ function applyTelegramDcExperiment(result, originalProxies) {
   const autoSelectIndex = proxyGroups.findIndex(
     (group) => group && group.name === '♻️ 自动选择'
   );
+  const manualSwitchIndex = proxyGroups.findIndex(
+    (group) => group && group.name === '👉 手动切换'
+  );
+  const loadBalanceIndex = proxyGroups.findIndex(
+    (group) => group && group.name === '🔄 负载均衡'
+  );
   const fallbackIndex = proxyGroups.findIndex(
     (group) => group && group.name === '📲 Telegram(兜底)'
   );
-  const insertIndex = fallbackIndex >= 0
-    ? fallbackIndex
-    : (autoSelectIndex >= 0 ? autoSelectIndex + 1 : proxyGroups.length);
+  const telegramFallbackEnabled = ruleOptionsEnable['📲 Telegram'] !== false;
+  const autoSelectEnabled = ruleOptionsEnable['♻️ 自动选择'] !== false;
+  const manualSwitchEnabled = ruleOptionsEnable['👉 手动切换'] !== false;
+  const loadBalanceEnabled = ruleOptionsEnable['🔄 负载均衡'] !== false;
+  let insertIndex = proxyGroups.length;
+  if (telegramFallbackEnabled && fallbackIndex >= 0) {
+    insertIndex = fallbackIndex;
+  } else if (autoSelectEnabled && autoSelectIndex >= 0) {
+    insertIndex = autoSelectIndex + 1;
+  } else if (manualSwitchEnabled && manualSwitchIndex >= 0) {
+    insertIndex = manualSwitchIndex + 1;
+  } else if (loadBalanceEnabled && loadBalanceIndex >= 0) {
+    insertIndex = loadBalanceIndex + 1;
+  }
   proxyGroups.splice(
     insertIndex,
     0,
