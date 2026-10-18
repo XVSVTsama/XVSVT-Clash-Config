@@ -995,24 +995,15 @@ const TEMPLATE = {
   "rules": [
     "AND,((NETWORK,UDP),(DST-PORT,3478-3479/5349-5350/19302-19309),(NOT,((RULE-SET,cncidr))),(NOT,((RULE-SET,cn))),(NOT,((RULE-SET,applications))),(NOT,((RULE-SET,games))),(NOT,((RULE-SET,echs_direct)))),REJECT",
     "RULE-SET,HijackingPlus,REJECT",
-    "SUB-RULE,(PROCESS-NAME,com.dragon.read.oversea.gp),fanqie",
-    "DOMAIN-KEYWORD,ikuuu,🌍 PROXY",
     "RULE-SET,applications,DIRECT",
     // 国内 Apple、Microsoft、Games 分类直连统一交给 echs_direct。
-    "RULE-SET,echs_direct,DIRECT",
     "RULE-SET,echs_direct_ip,DIRECT,no-resolve",
-    "RULE-SET,cn,DIRECT",
+    "RULE-SET,echs_direct,DIRECT",
     "RULE-SET,cncidr,DIRECT,no-resolve",
-    // 通用直连规则优先，剩余 Apple / Microsoft 域名和 IP 再进入海外组。
-    "RULE-SET,microsoft,💠 海外微软",
-    "RULE-SET,microsoft_ip,💠 海外微软,no-resolve",
-    "RULE-SET,apple,🍎 海外苹果",
-    "RULE-SET,apple_ip,🍎 海外苹果,no-resolve",
-    "RULE-SET,googlefcm,FCM",
+    "RULE-SET,cn,DIRECT",
     "DOMAIN,clash.razord.top,DIRECT",
     "DOMAIN,yacd.haishan.me,DIRECT",
     "PROCESS-NAME,svchost.exe,DIRECT",
-    "RULE-SET,proxy@direct,🌍 PROXY",
     "RULE-SET,private,DIRECT,no-resolve",
     "RULE-SET,lancidr,DIRECT,no-resolve",
     "DOMAIN-WILDCARD,*.deepseek.com,DIRECT",
@@ -1022,6 +1013,15 @@ const TEMPLATE = {
     "DOMAIN-SUFFIX,cdngslb.com,DIRECT",
     "DOMAIN-SUFFIX,edgekey.net,DIRECT",
     "DOMAIN-SUFFIX,cloudfront.net,DIRECT",
+    "RULE-SET,googlefcm,FCM",
+    "SUB-RULE,(PROCESS-NAME,com.dragon.read.oversea.gp),fanqie",
+    "DOMAIN-KEYWORD,ikuuu,🌍 PROXY",
+    // 通用直连规则优先，剩余 Apple / Microsoft 域名和 IP 再进入海外组。
+    "RULE-SET,microsoft_ip,💠 海外微软,no-resolve",
+    "RULE-SET,microsoft,💠 海外微软",
+    "RULE-SET,apple_ip,🍎 海外苹果,no-resolve",
+    "RULE-SET,apple,🍎 海外苹果",
+    "RULE-SET,proxy@direct,🌍 PROXY",
     "PROCESS-NAME-REGEX,.*nagram.*,📲 Telegram",
     "PROCESS-NAME-REGEX,.*telegram.*,📲 Telegram",
     "RULE-SET,telegramcidr,📲 Telegram,no-resolve",
@@ -1072,9 +1072,9 @@ const TEMPLATE = {
     "DOMAIN-SUFFIX,modelcontextprotocol.io,🤖 AI大模型",
     "IP-CIDR,160.79.104.0/21,🤖 AI大模型,no-resolve",
     "IP-CIDR6,2607:6bc0::/48,🤖 AI大模型,no-resolve",
+    "IP-CIDR,17.253.4.0/23,🤖 AI大模型,no-resolve",
     "RULE-SET,Gemini_Domain,🤖 AI大模型",
     "RULE-SET,Grok_Domain,🤖 AI大模型",
-    "IP-CIDR,17.253.4.0/23,🤖 AI大模型,no-resolve",
     "DOMAIN,anthropic.com.cdn.cloudflare.net,🤖 AI大模型",
     "DOMAIN,anthropic-com.ghost.io,🤖 AI大模型",
     "DOMAIN-SUFFIX,sentry.io,🤖 AI大模型",
@@ -1087,11 +1087,11 @@ const TEMPLATE = {
     "RULE-SET,google,🌍 PROXY",
     "RULE-SET,google-cn,🌍 PROXY",
     "PROCESS-NAME-REGEX,.*twitter.*,✖️ Twitter",
-    "RULE-SET,twitter-x-domain,✖️ Twitter",
     "RULE-SET,twitter-x-ip,✖️ Twitter,no-resolve",
+    "RULE-SET,twitter-x-domain,✖️ Twitter",
     "RULE-SET,twitter-x-blackmatrix7-No_Resolve,✖️ Twitter",
-    "RULE-SET,steam,🎮 Steam平台（非下载/CDN）",
     "RULE-SET,steam_ip,🎮 Steam平台（非下载/CDN）,no-resolve",
+    "RULE-SET,steam,🎮 Steam平台（非下载/CDN）",
     "PROCESS-NAME,bf6.exe,🎮 Games-Global",
     "RULE-SET,games,🎮 Games-Global",
     "RULE-SET,TikTok,🎵 TikTok",
@@ -1769,7 +1769,7 @@ function applyTelegramDcExperiment(result, originalProxies) {
   }
   result['rule-providers'] = providersWithTelegramDc;
 
-  // 原 📲 Telegram 组改为兜底组，并在“♻️ 自动选择”之后插入三个 DC/地区组；有地区节点时保持筛选，无地区节点时展示全部合格保底节点。
+  // 原 📲 Telegram 组改为兜底组；优先在兜底组之前插入三个 DC/地区组，找不到时回退到“♻️ 自动选择”之后；有地区节点时保持筛选，无地区节点时展示全部合格保底节点。
   const telegramFallback = (result['proxy-groups'] || []).find(
     (group) => group && group.name === '📲 Telegram'
   );
@@ -1784,9 +1784,9 @@ function applyTelegramDcExperiment(result, originalProxies) {
   const fallbackIndex = proxyGroups.findIndex(
     (group) => group && group.name === '📲 Telegram(兜底)'
   );
-  const insertIndex = autoSelectIndex >= 0
-    ? autoSelectIndex + 1
-    : (fallbackIndex >= 0 ? fallbackIndex : proxyGroups.length);
+  const insertIndex = fallbackIndex >= 0
+    ? fallbackIndex
+    : (autoSelectIndex >= 0 ? autoSelectIndex + 1 : proxyGroups.length);
   proxyGroups.splice(
     insertIndex,
     0,
