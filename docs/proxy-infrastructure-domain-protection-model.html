@@ -58,6 +58,13 @@ proxies:
 <tr><td>没有被更高优先级规则抵消</td><td>没有其他同名 hosts、policy 或客户端规则覆盖它</td><td>最终结果可能不是右侧值</td></tr>
 </tbody></table>
 <p>因此，“左侧假目标 → 右侧真入口”描述的是 YAML 设计意图；“什么时候真正生效”取决于 hosts 开关、左侧域名是否实际被使用、右侧值是否有效、客户端是否让 hosts 参与解析，以及是否存在覆盖规则。</p>
+<h4 id="mihomo-native-hosts">Mihomo 原生节点解析行为（补充）</h4>
+<table><thead><tr><th>映射情况</th><th>节点解析行为</th></tr></thead><tbody>
+<tr><td>节点域名 → IP，或旧域名 → 新域名 → IP。</td><td>hosts 映射最终指向 IP，节点直接使用该 IP。</td></tr>
+<tr><td>旧域名 → 新域名，且最终仍是域名。<br><span style="color:var(--blue)">（约束：不依赖 DNS 模块。）</span></td><td>hosts 不会把查询名切换为新域名；仍需进行 DNS 查询，查询名为旧域名。</td></tr>
+<tr><td>旧域名 → 新域名，且最终仍是域名。<br><span style="color:var(--blue)">（约束：依赖 DNS 模块。）</span></td><td>查询名按 hosts 映射切换为新域名，继续 DNS 查询，响应中包含 CNAME。</td></tr>
+</tbody></table>
+
 
 <h3>2. 仅有私有 DoH 解析</h3>
 <p>私有 DoH 是机场提供的一个以 HTTPS 传输的 DNS 端点，用于为节点域名提供解析。它与 hosts 在配置中同时存在，但作为解析来源独立于 hosts 的映射关系：无论节点域名是否发生 hosts 替换，私有 DoH 都只是被选中的一条解析来源。本节只看私有 DoH 这一侧，下表列出它可能落入的典型配置字段。</p>
