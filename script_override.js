@@ -49,12 +49,10 @@ const Compatible_With_Bettbox = {
  *    2. proxies：使用订阅原始配置里的真实节点列表（模板里这一项本来就是空的，
  *       只是占位）。
  *
-    *    3. proxy-groups 中的纯节点占位组（proxies: null：👉 手动切换、♻️ 自动选择、
-    *       🔄 负载均衡、📲 Telegram）会自动填入订阅里全部节点名；
-    *       🍎 海外苹果、💠 海外微软、🎮 Steam平台（非下载/CDN）、🎮 Games-Global
-    *       则在运行时先保留各自固定策略项，再追加全部订阅节点。若订阅还带
-    *       proxy-providers，这些动态分组会同时写入 use 引用全部 provider。其余分组
-    *       保持模板原样，不会被订阅节点覆盖或补充。
+ *    3. proxy-groups 使用 Mihomo 原生 include-all / include-all-proxies
+ *       动态引入订阅节点和代理提供者；🍎 海外苹果、💠 海外微软、🎮 Steam平台（非下载/CDN）、
+ *       🎮 Games-Global 保留模板中显式列出的固定策略项。带 filter 的分组继续由 Mihomo
+ *       原生筛选。TGDC 实验组在没有地区节点时仍由脚本显式生成保底节点列表。
  *
  *    4.【特别处理】DNS 与 hosts：
  *       - hosts 仅在 dns.use-hosts=true 且 dns.listen 与真正参与节点解析的 DNS 端点
@@ -593,7 +591,7 @@ const TEMPLATE = {
       "name": "🔄 负载均衡",
       "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-clash-verge-rev-balance.svg",
       "type": "load-balance",
-      "proxies": null,
+      "include-all": true,
       "url": "https://www.gstatic.com/generate_204",
       "interval": 300,
       "lazy": true,
@@ -603,7 +601,7 @@ const TEMPLATE = {
       "name": "👉 手动切换",
       "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-select.png",
       "type": "select",
-      "proxies": null
+      "include-all": true
     },
     {
       "name": "♻️ 自动选择",
@@ -612,32 +610,50 @@ const TEMPLATE = {
       "url": "https://www.gstatic.com/generate_204",
       "interval": 300,
       "tolerance": 50,
-      "proxies": null
+      "include-all": true
     },
     {
       "name": "🍎 海外苹果",
       "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-AIsouler-MyClash-Apple.svg",
       "type": "select",
-      "proxies": null
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
+      "include-all": true
     },
     {
       "name": "💠 海外微软",
       "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/self-Microsoft.svg",
       "type": "select",
-      "proxies": null
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
+      "include-all": true
     },
     {
       "name": "🎮 Steam平台（非下载/CDN）",
       "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-AIsouler-MyClash-Steam.svg",
       "type": "select",
       "default-selected": "DIRECT",
-      "proxies": null
+      "proxies": [
+        "DIRECT",
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡"
+      ],
+      "include-all": true
     },
     {
       "name": "📲 Telegram",
       "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-telegram.png",
       "type": "select",
-      "proxies": null
+      "include-all": true
     },
     {
       "name": "🎮 Games-Global",
@@ -646,7 +662,8 @@ const TEMPLATE = {
       "default-selected": "🎮 Steam平台（非下载/CDN）",
       "proxies": [
         "🎮 Steam平台（非下载/CDN）"
-      ]
+      ],
+      "include-all": true
     },
     {
       "name": "✖️ Twitter",
@@ -1150,15 +1167,6 @@ const serviceConfigs = TEMPLATE['proxy-groups']
 // 深拷贝：避免多次调用 main() 时互相污染同一份 TEMPLATE
 function deepClone(value) {
   return JSON.parse(JSON.stringify(value));
-}
-
-// 判断是否是模板里"此处为所有单节点"的占位分组：
-// 显式写了 proxies 字段、且取值为 null，例如：
-//   - name: 👉 手动切换
-//     proxies:
-//     type: select
-function isAllNodesPlaceholder(group) {
-  return !!group && ('proxies' in group) && group.proxies === null;
 }
 
 // =====================================================
@@ -1914,6 +1922,19 @@ function main(config, profileName) {
     result['proxy-providers'] = originalProxyProviders;
   }
 
+  // include-all 按名称排序；手动选择与 Telegram 组仍以订阅顺序中的首个节点作为默认选择。
+  const firstProxyName = originalProxies
+    .map((proxy) => proxy && proxy.name)
+    .find((name) => typeof name === 'string' && name.length > 0);
+  if (firstProxyName) {
+    const defaultSelectedGroups = new Set(['👉 手动切换', '📲 Telegram', '📲 Telegram(兜底)']);
+    (result['proxy-groups'] || []).forEach((group) => {
+      if (group && defaultSelectedGroups.has(group.name)) {
+        group['default-selected'] = firstProxyName;
+      }
+    });
+  }
+
   // ---- 4. 动态过滤策略组：读取 ruleOptionsEnable 的单独开关 ----
   // 识别所有被禁用的策略组名字
   const disabledGroupNames = new Set();
@@ -1953,55 +1974,7 @@ function main(config, profileName) {
     }
   });
 
-  // ---- 5. 为单节点占位组和 Games 组追加订阅的真实节点名 ----
-  const allNodeNames = originalProxies
-    .map((p) => p && p.name)
-    .filter((name) => typeof name === 'string' && name.length > 0);
-
-  result['proxy-groups'].forEach((group) => {
-    if (!isAllNodesPlaceholder(group) && group.name !== '🎮 Games-Global') {
-      return;
-    }
-
-    let fixedProxies = [];
-    if (group.name === '🍎 海外苹果' || group.name === '💠 海外微软') {
-      fixedProxies = [
-        '👉 手动切换',
-        '♻️ 自动选择',
-        '🔄 负载均衡',
-        'DIRECT'
-      ];
-    } else if (group.name === '🎮 Steam平台（非下载/CDN）') {
-      fixedProxies = [
-        'DIRECT',
-        '👉 手动切换',
-        '♻️ 自动选择',
-        '🔄 负载均衡'
-      ];
-    } else if (group.name === '🎮 Games-Global') {
-      fixedProxies = group.proxies.slice();
-    }
-
-    if (fixedProxies.length > 0) {
-      // 策略组在前、订阅节点在后；不把已关闭的嵌套组重新加回来。
-      const enabledFixedProxies = fixedProxies.filter(
-        (name) => !disabledGroupNames.has(name)
-      );
-      group.proxies = [
-        ...enabledFixedProxies,
-        ...allNodeNames.filter((name) => !fixedProxies.includes(name))
-      ];
-    } else {
-      // 其他原有占位组继续保持“仅填入全部订阅节点”的行为。
-      group.proxies = allNodeNames.slice();
-    }
-
-    if (originalProxyProviders) {
-      group.use = Object.keys(originalProxyProviders);
-    }
-  });
-
-  // ---- 5.5 FCM 直连开关：默认打开时 FCM 隐藏组仅含 DIRECT；
+  // ---- 5. FCM 直连开关：默认打开时 FCM 隐藏组仅含 DIRECT；
   //      关闭后仅保留 👉 手动切换（该开关不移除 FCM 组，仅改写组内节点） ----
   const fcmDirectEnabled = ruleOptionsEnable['FCM直连'] === true;
   result['proxy-groups'].forEach((group) => {
