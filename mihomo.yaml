@@ -245,8 +245,7 @@ proxy-groups:
   - name: 🔄 负载均衡
     icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-clash-verge-rev-balance.svg"
     type: load-balance
-    # 此处为所有单节点（由覆写脚本自动填入订阅全部节点）
-    proxies:
+    include-all-proxies: true
     url: 'https://www.gstatic.com/generate_204'
     interval: 300
     lazy: true
@@ -254,41 +253,72 @@ proxy-groups:
   - name: 👉 手动切换
     icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-select.png"
     type: select
-    # 此处为所有单节点（由覆写脚本自动填入订阅全部节点）
-    proxies:
+    include-all-proxies: true
   - name: ♻️ 自动选择
     icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-auto.png"
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    # 此处为所有单节点（由覆写脚本自动填入订阅全部节点）
-    proxies:
+    include-all-proxies: true
   - name: 🍎 海外苹果
     icon: https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-AIsouler-MyClash-Apple.svg
     type: select
-    proxies: null
+    proxies:
+      - 👉 手动切换
+      - ♻️ 自动选择
+      - 🔄 负载均衡
+      - DIRECT
+    include-all-proxies: true
   - name: 💠 海外微软
     icon: https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/self-Microsoft.svg
     type: select
-    proxies: null
+    proxies:
+      - 👉 手动切换
+      - ♻️ 自动选择
+      - 🔄 负载均衡
+      - DIRECT
+    include-all-proxies: true
   - name: 🎮 Steam平台（非下载/CDN）
     icon: https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-AIsouler-MyClash-Steam.svg
     type: select
     default-selected: DIRECT
-    proxies: null
+    proxies:
+      - DIRECT
+      - 👉 手动切换
+      - ♻️ 自动选择
+      - 🔄 负载均衡
+    include-all-proxies: true
   - name: 📲 Telegram
     icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-telegram.png"
     type: select
-    # 此处为所有单节点（由覆写脚本自动填入订阅全部节点）
-    proxies:
+    include-all-proxies: true
+  # Telegram DC 地区组为可选配置；启用时，需同时取消注释下方 rule-providers 与 rules 对应段落。
+  # - name: 📲 Telegram-DC1-DC3-Miami
+  #   icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-Koolson-Qure-United_States.png"
+  #   type: select
+  #   filter: '(?i)🇺🇸|美国|迈阿密|miami|\bMIA\b|\bUSA\b|united\s*states'
+  #   include-all-proxies: true
+  #   empty-fallback: COMPATIBLE
+  # - name: 📲 Telegram-DC2-DC4-Amsterdam
+  #   icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/self-Netherlands.png"
+  #   type: select
+  #   filter: '(?i)🇳🇱|荷兰|阿姆斯特丹|amsterdam|\bAMS\b|\bNL\b|netherlands'
+  #   include-all-proxies: true
+  #   empty-fallback: COMPATIBLE
+  # - name: 📲 Telegram-DC5-SG
+  #   icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-Koolson-Qure-Singapore.png"
+  #   type: select
+  #   filter: '(?i)🇸🇬|🇭🇰|新加坡|狮城|香港|singapore|hong\s*kong|\bSG\b|\bSGP\b|\bHK\b|\bHKG\b'
+  #   include-all-proxies: true
+  #   empty-fallback: COMPATIBLE
   - name: 🎮 Games-Global
     icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-games-cn.png"
     type: select
     default-selected: 🎮 Steam平台（非下载/CDN）
-    # 保留 Steam 嵌套组；覆写脚本会追加订阅全部节点
     proxies:
       - 🎮 Steam平台（非下载/CDN）
+    include-all-proxies: true
 
   - name: ✖️ Twitter
     icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-clash-verge-rev-twitter.svg"
@@ -352,6 +382,38 @@ rule-providers:
   proxy@direct: { <<: *domain_mrs, url: 'https://raw.githubusercontent.com/echs-top/proxy/main/mrs/domain/proxy@direct.mrs', path: ./rules/proxy@direct.mrs }
   steam_ip: { <<: *ipcidr_mrs, url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geoip/steam.mrs', path: ./ruleset/steam_ip.mrs }
   steam: { <<: *domain_mrs, url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/steam.mrs', path: ./ruleset/steam.mrs }
+  # Telegram DC 地区 CIDR 规则集：启用地区分流时取消注释本段。
+  # telegram_dc1_dc3_miami:
+  #   type: inline
+  #   behavior: classical
+  #   payload:
+  #     - IP-CIDR,91.108.12.0/22,no-resolve
+  #     - IP-CIDR,149.154.172.0/22,no-resolve
+  #     - IP-CIDR6,2001:b28:f23d::/48,no-resolve
+  # telegram_dc2_dc4_amsterdam:
+  #   type: inline
+  #   behavior: classical
+  #   payload:
+  #     - IP-CIDR,91.108.58.0/23,no-resolve
+  #     - IP-CIDR,91.108.4.0/22,no-resolve
+  #     - IP-CIDR,91.108.8.0/22,no-resolve
+  #     - IP-CIDR,149.154.160.0/21,no-resolve
+  #     - IP-CIDR,95.161.64.0/20,no-resolve
+  #     - IP-CIDR,91.105.192.0/23,no-resolve
+  #     - IP-CIDR,185.76.151.0/24,no-resolve
+  #     - IP-CIDR,5.28.192.0/18,no-resolve
+  #     - IP-CIDR,109.239.140.0/24,no-resolve
+  #     - IP-CIDR6,2001:67c:4e8::/48,no-resolve
+  #     - IP-CIDR6,2a0a:f280:203::/48,no-resolve
+  # telegram_dc5_sg:
+  #   type: inline
+  #   behavior: classical
+  #   payload:
+  #     - IP-CIDR,91.108.16.0/22,no-resolve
+  #     - IP-CIDR,91.108.56.0/23,no-resolve
+  #     - IP-CIDR,149.154.168.0/22,no-resolve
+  #     - IP-CIDR6,2001:b28:f23c::/48,no-resolve
+  #     - IP-CIDR6,2001:b28:f23f::/48,no-resolve
   telegram_domain: { <<: *domain_mrs, url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.mrs', path: ./rules/telegram_domain.mrs }
   telegramcidr: { <<: *ipcidr_mrs, url: 'https://raw.githubusercontent.com/reddishJade/private_proxy/main/Mihomo/Provider/telegram%40ip.mrs', path: ./ruleset/telegramcidr.mrs }
   twitter-x-blackmatrix7-No_Resolve: { <<: *classical_yaml, format: yaml, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Twitter/Twitter_No_Resolve.yaml', path: ./ruleset/twitter-x-blackmartix7-noreslove.mrs }
@@ -444,6 +506,10 @@ rules:
   - RULE-SET,apple_ip,🍎 海外苹果,no-resolve
   - RULE-SET,apple,🍎 海外苹果
   - RULE-SET,proxy@direct,🌍 PROXY
+  # Telegram DC 地区规则：启用地区分流时取消注释，并同时启用对应策略组与 rule-providers。
+  # - RULE-SET,telegram_dc1_dc3_miami,📲 Telegram-DC1-DC3-Miami,no-resolve
+  # - RULE-SET,telegram_dc2_dc4_amsterdam,📲 Telegram-DC2-DC4-Amsterdam,no-resolve
+  # - RULE-SET,telegram_dc5_sg,📲 Telegram-DC5-SG,no-resolve
   - PROCESS-NAME-REGEX,.*nagram.*,📲 Telegram
   - "PROCESS-NAME-REGEX,.*telegram.*,📲 Telegram"
   - RULE-SET,telegramcidr,📲 Telegram,no-resolve
