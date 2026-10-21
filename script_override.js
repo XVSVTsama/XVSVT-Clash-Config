@@ -227,6 +227,8 @@ const TGDC_RULE_PROVIDERS = {
 };
 
 // 地区组没有匹配节点时，按订阅原始顺序展示全部合格节点供手动选择。
+// 地区检测与保底筛选仅依据订阅顶层 proxies；JS 不读取 proxy-providers 的运行时节点，
+// 因此 provider 节点不参与地区命中判断，也不会进入此处生成的保底列表。
 // 仅从订阅直接列出的节点中排除异常、内置/拒绝/重匹配和提示信息；免费、低倍率、高倍率均允许。
 // 若仍无候选，使用 COMPATIBLE；empty-fallback 只接受单节点名称，不能填写策略组或多个节点。
 const TGDC_FALLBACK_EXCLUDE_FILTER =
@@ -670,21 +672,21 @@ const TEMPLATE = {
       "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-clash-verge-rev-twitter.svg",
       "type": "select",
       "filter": "(?i)^(?!.*(?:🇭🇰|香港|Hong\\s*Kong|\\bHK\\b|🇸🇬|新加坡|Singapore|\\bSG\\b)).*(?:住宅|家宽|家寬|家庭宽带|家庭寬頻|原生住宅|住宅\\s*IP|residential|home\\s*broadband|home\\s*internet|🇺🇸|美国|美國|\\bUnited\\s+States\\b|\\bU\\.?S\\.?(?:A\\.?)?\\b).*$",
-      "include-all-proxies": true
+      "include-all": true
     },
     {
       "name": "🤖 AI大模型",
       "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-ai.png",
       "type": "select",
       "filter": "(?i)^(?!.*(?:🇭🇰|香港|Hong\\s*Kong|\\bHK\\b|🇸🇬|新加坡|Singapore|\\bSG\\b)).*(?:住宅|家宽|家寬|家庭宽带|家庭寬頻|原生住宅|住宅\\s*IP|residential|home\\s*broadband|home\\s*internet|🇺🇸|美国|美國|\\bUnited\\s+States\\b|\\bU\\.?S\\.?(?:A\\.?)?\\b).*$",
-      "include-all-proxies": true
+      "include-all": true
     },
     {
       "name": "🎵 TikTok",
       "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-tiktok.png",
       "type": "select",
       "filter": "(?i)^(?!.*(?:🇭🇰|香港|Hong\\s*Kong|\\bHK\\b|🇸🇬|新加坡|Singapore|\\bSG\\b)).*(?:住宅|家宽|家寬|家庭宽带|家庭寬頻|原生住宅|住宅\\s*IP|residential|home\\s*broadband|home\\s*internet|🇺🇸|美国|美國|\\bUnited\\s+States\\b|\\bU\\.?S\\.?(?:A\\.?)?\\b).*$",
-      "include-all-proxies": true
+      "include-all": true
     },
     {
       "hidden": true,
