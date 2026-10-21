@@ -226,7 +226,6 @@ hosts                             :
   '*.pglstatp-toutiao.com.*': 0.0.0.0
   'gurd.snssdk.com': 0.0.0.0
   'gurd.snssdk.com.*': 0.0.0.0
-  '*default.ixigua.com': 0.0.0.0
 
 
 
@@ -438,7 +437,6 @@ sub-rules:
 
     - DOMAIN,v6-novelapp.ixigua.com,REJECT
     - DOMAIN-WILDCARD,*novelapp.ixigua.com,REJECT
-    - DOMAIN-WILDCARD,*default.ixigua.com,REJECT
     - DOMAIN,msync-im1-vip6-std.easemob.com,REJECT
     - DOMAIN,apd-pcdnwxlogin.teg.tencent-cloud.net,REJECT
     - DOMAIN,api.iegadp.qq.com,REJECT

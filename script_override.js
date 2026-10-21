@@ -573,8 +573,7 @@ const TEMPLATE = {
     "*.pglstatp-toutiao.com": "0.0.0.0",
     "*.pglstatp-toutiao.com.*": "0.0.0.0",
     "gurd.snssdk.com": "0.0.0.0",
-    "gurd.snssdk.com.*": "0.0.0.0",
-    "*default.ixigua.com": "0.0.0.0"
+    "gurd.snssdk.com.*": "0.0.0.0"
   },
   "proxies": null,
   "proxy-groups": [
@@ -982,7 +981,6 @@ const TEMPLATE = {
       "DOMAIN,is.snssdk.com,REJECT",
       "DOMAIN,v6-novelapp.ixigua.com,REJECT",
       "DOMAIN-WILDCARD,*novelapp.ixigua.com,REJECT",
-      "DOMAIN-WILDCARD,*default.ixigua.com,REJECT",
       "DOMAIN,msync-im1-vip6-std.easemob.com,REJECT",
       "DOMAIN,apd-pcdnwxlogin.teg.tencent-cloud.net,REJECT",
       "DOMAIN,api.iegadp.qq.com,REJECT",
