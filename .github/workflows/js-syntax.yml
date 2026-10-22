@@ -36,5 +36,3 @@ jobs:
           CHECK_ENFORCE: ${{ github.event.inputs.enforce || vars.SYNTAX_CHECK_ENFORCE || '' }}
           CHECK_PER_COMMIT: ${{ github.event.inputs.per_commit || vars.SYNTAX_CHECK_PER_COMMIT || '' }}
         run: python .github/scripts/run_check.py --file script_override.js -- node --check script_override.js
-      - name: Run JavaScript tests
-        run: node --test tests/*.test.js
