@@ -256,45 +256,166 @@ venn-beta
 
 <br>
 
-> 以下仅保留按**完整 349 次提交历史与当前配置**核对后仍适用的提醒。
->
-> - **日期含义**：相关变更的 UTC+8 日期，不代表版本号。
-> - **检查时机**：升级或更换使用方式时，请按适用范围检查。
-
 <details>
 <summary>更新提醒（16 条）</summary>
 
-- **2026-10-22 · TUN DNS · YAML / JS**：模板已设置 `tun.dns-mode: hijack`，需使用支持该字段的 Mihomo；[v1.19.33 已包含该字段](https://github.com/MetaCubeX/mihomo/blob/v1.19.33/docs/config.yaml#L137-L143)。macOS 会从默认不设置系统 DNS 改为显式使用 TUN DNS，勿据此假定具有 Windows/Linux 同等的跨网卡拦截效果。更新前请核对客户端实际使用的内核。[相关提交：`635708b`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/635708b)
+### 2026-10-22 · TUN DNS
 
-- **2026-10-21—2026-10-22 · 订阅来源 · YAML / JS**：YAML 的示例 provider URL 必须在本地替换为自己的订阅链接，不要公开真实链接或凭据；当前常规动态节点组使用 `include-all`，会纳入顶层节点与 provider 节点，`filter` 对两者生效。添加 provider 后也请检查这些组的候选节点，TGDC 实验地区组不在此列。[相关提交：`0fffb5d`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/0fffb5d)、[`15e41c6`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/15e41c6)、[`073081c`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/073081c)
+**适用范围**：YAML / JS
 
-- **2026-10-14 · 默认路由 · YAML / JS**：`🎮 Games-Global` 默认选择嵌套的 `🎮 Steam平台（非下载/CDN）`，后者默认选择 `DIRECT`。希望命中该组的国际游戏走代理时，请检查 Games 与 Steam 两层实际选择，而不只检查其中一组。[相关提交：`beafa5c`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/beafa5c)
+新增 `tun.dns-mode: hijack`。
 
-- **2026-10-14 · 规则优先级 · YAML / JS**：`echs_direct` 等通用直连规则位于 Apple / Microsoft 海外组规则之前；若流量先命中直连规则，切换海外组不会改变其路由。请先查看实际命中的规则，再决定是否调整顺序或添加例外；不保证外部规则集覆盖所有国内域名。[相关提交：`8b2e458`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/8b2e458)
+[相关提交：`635708b`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/635708b)
 
-- **2026-10-06 · 节点过滤 · YAML / JS**：Twitter / AI / TikTok 按节点名称中的住宅、美国等标记筛选，并排除香港、新加坡命名；这不是对真实出口地区或住宅属性的检测。候选为空或不符预期时，请核对节点名称并按需调整 `filter`。[相关提交：`6bf27df`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/6bf27df)
+---
 
-- **2026-10-05 · TGDC · JS（启用 `TGDC实验分流` 时）**：地区命中判断与保底列表只读取订阅顶层 `proxies`，不读取 provider 运行时节点；地区无候选时会显式列出全部合格顶层节点供手动选择。仅有 provider 的订阅不会因此获得地区候选或保底节点，请检查生成结果。[相关提交：`8e3a548`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/8e3a548)
+### 2026-10-21—2026-10-22 · 订阅来源
 
-- **2026-10-01 · Bettbox 开关声明 · JS / Bettbox**：增删策略组开关时，同步维护脚本顶部 `policyGroupOptions` 与 `ruleOptionsEnable` 的对应名称；前者只列策略组，不列功能开关。`Compatible_With_Bettbox` 声明须保持置顶，以免开关入口或分类异常。[相关提交：`810ade6`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/810ade6)
+**适用范围**：YAML / JS
 
-- **2026-09-28 · TUN 栈 · YAML / JS**：TUN `stack` 已由 `gvisor` 改为 `mips`；迁移旧配置或自行修改时，请核对 YAML 与脚本内嵌模板，避免两处设置不一致。[相关提交：`41bc108`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/41bc108)
+YAML 提供示例订阅 provider；常规动态节点组使用 `include-all` 纳入顶层与 provider 节点，`filter` 对两者生效；TGDC 实验地区组除外。
 
-- **2026-09-11 · IPv6 优先 · JS（启用 `IPv6优先` 时）**：仅改写订阅顶层节点的 `ip-version`：已有 `ipv6` 保持不变，`ipv6-prefer` 改为 `ipv6`，其余值（含缺失）设为 `ipv6-prefer`；不处理 provider 运行时节点。启用前请确认节点具备所需 IPv6 连通性。[相关提交：`ac0f39e`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/ac0f39e)
+[相关提交：`0fffb5d`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/0fffb5d)、[`15e41c6`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/15e41c6)、[`073081c`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/073081c)
 
-- **2026-09-10 · 入口解析 · JS（启用 `入口解析` 时）**：会注入三个固定 IP 入口，通过 `国内入口解析` 组改变节点服务器 DNS 的代理出口，并非改变所有应用 DNS 或全部流量出口。三个入口需手动选择，没有运营商自动优先级；地址可能失效，启用前请检查可用性。[相关提交：`1f6f2b2`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/1f6f2b2)
+---
 
-- **2026-09-03 · Claude 分流 · YAML / JS**：Claude / Anthropic 的显式域名与后缀规则不依赖进程名，也可独立命中；不要只凭进程名判断是否进入 AI 组，请结合实际命中规则检查。[相关提交：`aafa648`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/aafa648)
+### 2026-10-14 · 默认路由
 
-- **2026-08-08—2026-09-03 · hosts / 私有 DNS · JS**：只有启用 `dns.use-hosts`、`dns.listen` 与实际优先解析端点形成闭环且存在订阅 `hosts` 时，才按映射改写节点 `server`。私有 DNS / DoH 另按节点域名迁移或补充解析策略，并非自身触发 `server` 改写；映射到 IP 的节点不生成域名解析策略。请区分这两条处理路径。[相关提交：`fb461c0`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/fb461c0)、[`8fad6ec`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/8fad6ec)
+**适用范围**：YAML / JS
 
-- **2026-08-07 · FCM 默认选择 · YAML / JS**：静态 YAML 的 FCM 组依次提供 `👉 手动切换`、`DIRECT`；JS 默认开启 `FCM直连`，实际生成的隐藏 FCM 组仅含 `DIRECT`。两种使用方式的默认行为不同，切换时请检查；JS 关闭此开关后优先使用手动组，手动组禁用时才回退。[相关提交：`dab2dfb`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/dab2dfb)
+`🎮 Games-Global` 默认选择 `🎮 Steam平台（非下载/CDN）`，后者默认选择 `DIRECT`。
 
-- **2026-08-07 · 证书验证 · JS**：`强制证书验证` 默认关闭，表示不覆盖顶层订阅节点原有的 `skip-cert-verify`，并不保证已启用证书校验；开启后才统一写入 `false`。有校验要求时，请检查订阅原值或主动开启该开关。[相关提交：`1459672`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/1459672)
+[相关提交：`beafa5c`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/beafa5c)
 
-- **2026-08-01 · Reality 增强 · JS**：默认只为顶层节点中具备非空 `public-key`、`short-id` 的 Reality 配置写入 `support-x25519mlkem768: true`，不处理 provider 运行时节点。关闭开关不会清除订阅原有的 `true`；如需禁用，请同时检查节点原值。[相关提交：`e1e65cd`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/e1e65cd)
+---
 
-- **长期机制（首次生效日期未确认） · 模板合并 · JS**：脚本以模板重建结果，不会自动保留模板未定义的订阅顶层字段；`proxies` 被专门替换，订阅 `proxy-providers` 是明确保留的例外，DNS 另有指定合并逻辑。依赖其他自定义字段时，请检查最终配置并自行补入模板。[当前基线实现：`952fed4`](https://github.com/XVSVTsama/XVSVT-Clash-Config/blob/952fed4/script_override.js#L1914-L1924)
+### 2026-10-14 · 规则优先级
+
+**适用范围**：YAML / JS
+
+`echs_direct` 等通用直连规则排在 Apple / Microsoft 海外组规则之前。
+
+[相关提交：`8b2e458`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/8b2e458)
+
+---
+
+### 2026-10-06 · 节点过滤
+
+**适用范围**：YAML / JS
+
+Twitter / AI / TikTok 按节点名称中的住宅、美国等标记筛选，排除香港、新加坡命名。
+
+[相关提交：`6bf27df`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/6bf27df)
+
+---
+
+### 2026-10-05 · TGDC
+
+**适用范围**：JS（启用 `TGDC实验分流` 时）
+
+地区筛选与保底列表只读取订阅顶层 `proxies`，不读取 provider 运行时节点；地区无候选时列出全部合格顶层节点。
+
+[相关提交：`8e3a548`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/8e3a548)
+
+---
+
+### 2026-10-01 · Bettbox 开关声明
+
+**适用范围**：JS / Bettbox
+
+`policyGroupOptions` 只列策略组，名称对应 `ruleOptionsEnable`；`Compatible_With_Bettbox` 声明置顶。
+
+[相关提交：`810ade6`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/810ade6)
+
+---
+
+### 2026-09-28 · TUN 栈
+
+**适用范围**：YAML / JS
+
+TUN `stack` 由 `gvisor` 改为 `mips`。
+
+[相关提交：`41bc108`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/41bc108)
+
+---
+
+### 2026-09-11 · IPv6 优先
+
+**适用范围**：JS（启用 `IPv6优先` 时）
+
+仅改写订阅顶层节点的 `ip-version`：`ipv6` 不变，`ipv6-prefer` 改为 `ipv6`，其余值（含缺失）设为 `ipv6-prefer`。
+
+[相关提交：`ac0f39e`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/ac0f39e)
+
+---
+
+### 2026-09-10 · 入口解析
+
+**适用范围**：JS（启用 `入口解析` 时）
+
+注入三个固定 IP 入口，由 `国内入口解析` 组手动选择节点服务器 DNS 的代理出口，无运营商自动优先级。
+
+[相关提交：`1f6f2b2`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/1f6f2b2)
+
+---
+
+### 2026-09-03 · Claude 分流
+
+**适用范围**：YAML / JS
+
+Claude / Anthropic 的显式域名与后缀规则可独立命中，不依赖进程名。
+
+[相关提交：`aafa648`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/aafa648)
+
+---
+
+### 2026-08-08—2026-09-03 · hosts / 私有 DNS
+
+**适用范围**：JS
+
+启用 `dns.use-hosts`、`dns.listen`，与实际优先解析端点形成闭环且存在订阅 `hosts` 时，按映射改写节点 `server`；私有 DNS / DoH 另按节点域名迁移或补充解析策略；映射到 IP 的节点不生成域名解析策略。
+
+[相关提交：`fb461c0`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/fb461c0)、[`8fad6ec`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/8fad6ec)
+
+---
+
+### 2026-08-07 · FCM 默认选择
+
+**适用范围**：YAML / JS
+
+静态 YAML 的 FCM 组依次提供 `👉 手动切换`、`DIRECT`；JS 默认开启 `FCM直连`，隐藏 FCM 组仅含 `DIRECT`；关闭后优先使用手动组，手动组禁用时回退。
+
+[相关提交：`dab2dfb`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/dab2dfb)
+
+---
+
+### 2026-08-07 · 证书验证
+
+**适用范围**：JS
+
+`强制证书验证` 默认关闭，不覆盖顶层订阅节点原有的 `skip-cert-verify`；开启后统一写入 `false`。
+
+[相关提交：`1459672`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/1459672)
+
+---
+
+### 2026-08-01 · Reality 增强
+
+**适用范围**：JS
+
+默认仅为顶层节点中具备非空 `public-key`、`short-id` 的 Reality 配置写入 `support-x25519mlkem768: true`，不处理 provider 运行时节点；关闭开关不清除订阅原有的 `true`。
+
+[相关提交：`e1e65cd`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/e1e65cd)
+
+---
+
+### 长期机制（首次生效日期未确认） · 模板合并
+
+**适用范围**：JS
+
+脚本以模板重建结果；专门替换 `proxies`，保留订阅 `proxy-providers`，DNS 按指定逻辑合并；其余模板未定义的订阅顶层字段不自动保留。
+
+[当前基线实现：`952fed4`](https://github.com/XVSVTsama/XVSVT-Clash-Config/blob/952fed4/script_override.js#L1914-L1924)
 
 </details>
 
