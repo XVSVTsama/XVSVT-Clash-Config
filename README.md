@@ -259,151 +259,151 @@ venn-beta
 <details>
 <summary>更新提醒（15 条）</summary>
 
-### 2026-10-22 · TUN DNS
+### 2026-10-22
 
-**适用范围**：YAML / JS
+**适用范围**：JS/YAML
 
-新增 `tun.dns-mode: hijack`。
+接管虚拟网卡中的 DNS 请求，让域名解析按配置统一处理。
 
 [相关提交：`635708b`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/635708b)
 
 ---
 
-### 2026-10-21—2026-10-22 · 订阅来源
+### 2026-10-21—2026-10-22
 
-**适用范围**：YAML / JS
+**适用范围**：JS/YAML
 
-YAML 提供示例订阅 provider；常规动态节点组使用 `include-all` 纳入顶层与 provider 节点，`filter` 对两者生效；TGDC 实验地区组除外。
+支持使用订阅中的节点，减少手动维护节点列表的需要；直接使用 YAML 时，需先填入自己的订阅。
 
 [相关提交：`0fffb5d`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/0fffb5d)、[`15e41c6`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/15e41c6)、[`073081c`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/073081c)
 
 ---
 
-### 2026-10-14 · 默认路由
+### 2026-10-14
 
-**适用范围**：YAML / JS
+**适用范围**：JS/YAML
 
-`🎮 Games-Global` 默认选择 `🎮 Steam平台（非下载/CDN）`，后者默认选择 `DIRECT`。
+国际游戏流量默认直连；需要代理时，请手动切换。
 
 [相关提交：`beafa5c`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/beafa5c)
 
 ---
 
-### 2026-10-14 · 规则优先级
+### 2026-10-14
 
-**适用范围**：YAML / JS
+**适用范围**：JS/YAML
 
-`echs_direct` 等通用直连规则排在 Apple / Microsoft 海外组规则之前。
+Apple、Microsoft 等服务中符合直连条件的流量优先直连，其余流量仍可单独选择线路。
 
 [相关提交：`8b2e458`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/8b2e458)
 
 ---
 
-### 2026-10-06 · 节点过滤
+### 2026-10-06
 
-**适用范围**：YAML / JS
+**适用范围**：JS/YAML
 
-Twitter / AI / TikTok 按节点名称中的住宅、美国等标记筛选，排除香港、新加坡命名。
+Twitter、AI 和 TikTok 仅使用名称符合住宅、美国等条件且不含香港、新加坡标记的节点；没有匹配节点时，需调整节点选择条件。
 
 [相关提交：`6bf27df`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/6bf27df)
 
 ---
 
-### 2026-10-05 · TGDC
+### 2026-10-05
 
-**适用范围**：JS（启用 `TGDC实验分流` 时）
+**适用范围**：JS
 
-地区筛选与保底列表只读取订阅顶层 `proxies`，不读取 provider 运行时节点；地区无候选时列出全部合格顶层节点。
+可按 Telegram 数据中心所在地区选择线路；没有匹配地区的节点时，可从其他可用节点中手动选择。
 
 [相关提交：`8e3a548`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/8e3a548)
 
 ---
 
-### 2026-10-01 · Bettbox 开关声明
+### 2026-10-01
 
-**适用范围**：JS / Bettbox
+**适用范围**：JS
 
-`Compatible_With_Bettbox` 声明置顶。
+提供自定义规则开关入口，方便按需启用或关闭功能。
 
 [相关提交：`810ade6`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/810ade6)
 
 ---
 
-### 2026-09-28 · TUN 栈
+### 2026-09-28
 
-**适用范围**：YAML / JS
+**适用范围**：JS/YAML
 
-TUN `stack` 由 `gvisor` 改为 `mips`。
+调整虚拟网卡的网络处理方式，更新后请留意设备上的连接兼容性。
 
 [相关提交：`41bc108`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/41bc108)
 
 ---
 
-### 2026-09-11 · IPv6 优先
+### 2026-09-11
 
-**适用范围**：JS（启用 `IPv6优先` 时）
+**适用范围**：JS
 
-仅改写订阅顶层节点的 `ip-version`：`ipv6` 不变，`ipv6-prefer` 改为 `ipv6`，其余值（含缺失）设为 `ipv6-prefer`。
+可优先使用 IPv6 连接节点，适合具备可用 IPv6 网络的环境；默认关闭。
 
 [相关提交：`ac0f39e`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/ac0f39e)
 
 ---
 
-### 2026-09-10 · 入口解析
+### 2026-09-10
 
-**适用范围**：JS（启用 `入口解析` 时）
+**适用范围**：JS
 
-注入三个固定 IP 入口，由 `国内入口解析` 组手动选择节点服务器 DNS 的代理出口，无运营商自动优先级。
+可手动选择节点域名解析所用的国内运营商入口，不会自动判断最合适的运营商；默认关闭。
 
 [相关提交：`1f6f2b2`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/1f6f2b2)
 
 ---
 
-### 2026-09-03 · Claude 分流
+### 2026-09-03
 
-**适用范围**：YAML / JS
+**适用范围**：JS/YAML
 
-Claude / Anthropic 的显式域名与后缀规则可独立命中，不依赖进程名。
+Claude 等 AI 服务可使用 AI 专用线路，便于与其他流量分开选择节点。
 
 [相关提交：`aafa648`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/aafa648)
 
 ---
 
-### 2026-08-08—2026-09-03 · hosts / 私有 DNS
+### 2026-08-08—2026-09-03
 
 **适用范围**：JS
 
-启用 `dns.use-hosts`、`dns.listen`，与实际优先解析端点形成闭环且存在订阅 `hosts` 时，按映射改写节点 `server`；私有 DNS / DoH 另按节点域名迁移或补充解析策略；映射到 IP 的节点不生成域名解析策略。
+支持节点域名的自定义映射与私有 DNS，方便使用自建解析服务。
 
 [相关提交：`fb461c0`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/fb461c0)、[`8fad6ec`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/8fad6ec)
 
 ---
 
-### 2026-08-07 · FCM 默认选择
+### 2026-08-07
 
-**适用范围**：YAML / JS
+**适用范围**：JS/YAML
 
-静态 YAML 的 FCM 组依次提供 `👉 手动切换`、`DIRECT`；JS 默认开启 `FCM直连`，隐藏 FCM 组仅含 `DIRECT`；关闭后优先使用手动组，手动组禁用时回退。
+Android 推送通知可单独选择连接方式；脚本默认直连，直接使用 YAML 时可选择直连或手动指定线路。
 
 [相关提交：`dab2dfb`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/dab2dfb)
 
 ---
 
-### 2026-08-07 · 证书验证
+### 2026-08-07
 
 **适用范围**：JS
 
-`强制证书验证` 默认关闭，不覆盖顶层订阅节点原有的 `skip-cert-verify`；开启后统一写入 `false`。
+可强制验证节点证书，降低使用不受信任证书的风险；默认关闭，开启后可能无法连接证书不符合要求的节点。
 
 [相关提交：`1459672`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/1459672)
 
 ---
 
-### 2026-08-01 · Reality 增强
+### 2026-08-01
 
 **适用范围**：JS
 
-默认仅为顶层节点中具备非空 `public-key`、`short-id` 的 Reality 配置写入 `support-x25519mlkem768: true`，不处理 provider 运行时节点；关闭开关不清除订阅原有的 `true`。
+默认启用 Reality 的后量子密钥协商增强，供支持该能力的节点使用。
 
 [相关提交：`e1e65cd`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/e1e65cd)
 
