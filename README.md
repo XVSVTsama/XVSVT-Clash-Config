@@ -145,13 +145,14 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 | **📲 Telegram-DC5-SG** | `TGDC实验分流` | 关闭 | 同上，DC5 同时匹配新加坡与香港节点 |
 | **国内入口解析** | `入口解析` | 关闭 | 开关开启时统一注入维护区所有运营商的入口节点并建立该组，由用户手动选择入口；每个运营商支持多个节点，排列顺序不代表优先级 |
 
-**同样不在 `policyGroupOptions`、也不对应任何策略组的开关（3 个）**
+**同样不在 `policyGroupOptions`、也不对应任何策略组的开关（4 个）**
 
 | 开关 | 默认 | 作用 |
 | :--- | :--- | :--- |
 | `强制证书验证` | 关闭 | 开启时统一把订阅节点的 `skip-cert-verify` 置为 `false`；关闭时不干预订阅节点原有设置 |
 | `启用 Reality 增强` | 开启 | 为带非空 `public-key` / `short-id` 的 Reality 节点启用 X25519MLKEM768 后量子密钥协商 |
 | `IPv6优先` | 关闭 | 改写顶层节点 `ip-version`：`ipv6` 保持不变，`ipv6-prefer` 改为 `ipv6`，其余设为 `ipv6-prefer`；不处理 provider 运行时节点 |
+| `代理节点 DNS 使用 TCP` | 关闭 | 为代理节点解析 DNS 中未标协议的地址启用 TCP；显式协议不变，失败时不回退 UDP |
 
 > **关于客户端**：这套图形化开关由 Bettbox 原生支持——脚本开头的 `Compatible_With_Bettbox` 声明就是给 Bettbox 识别用的。换到其他客户端分两种情况：
 >
