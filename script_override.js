@@ -1150,9 +1150,7 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     },
     {
       name: '代理节点 DNS 使用 TCP',
-      // Carbon TCP/IP Service（IBM，Apache-2.0）；原样副本及许可证保存在 assets/icons。
-      // 上游提交：45b0fc1b328ffdc4a784560f7983210b2e20596e；来源与许可见 README 图标致谢。
-      icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-carbon-design-system-carbon-tcp-ip-service.svg'
+      icon: 'https://fastly.jsdelivr.net/gh/XVSVT-Clash-Config@main/assets/icons/self-TCP.png'
     }
   ]);
 
