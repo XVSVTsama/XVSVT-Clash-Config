@@ -120,6 +120,8 @@ const ruleOptionsEnable = {
   'TGDC实验分流': false,
   // 开启后，维护区所有运营商的入口节点统一加入“国内入口解析”组，不进入其他代理组。
   '入口解析': false,
+  // 最后为节点解析 DNS 的无协议地址补 tcp://；不改变显式协议、出口后缀或 DNS 优先级，TCP 失败不回退 UDP。
+  '代理节点 DNS 使用 TCP': false,
 };
 
 // 出现同一个域名规则 key 时，订阅原始配置(true) 还是模板(false) 优先（模板目前未配置
@@ -1109,7 +1111,7 @@ const TEMPLATE = {
 // Bettbox 的可视化开关图标：客户端会读取全局 serviceConfigs（name 对应 ruleOptionsEnable 的 key，
 // icon 为该开关行显示的图标）。上面只覆盖代理组；功能开关的图标来源：
 // FCM直连 从 FCM 代理组的 icon 字段派生；
-// 其余功能开关（强制证书验证、启用 Reality 增强、IPv6优先）在此直接指定固定图标。
+// 其余功能开关在此直接指定固定图标；所有图标均由本仓库 assets/icons 通过 jsDelivr 提供。
 const serviceConfigs = TEMPLATE['proxy-groups']
   .filter(
     (group) =>
@@ -1145,6 +1147,12 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     {
       name: '入口解析',
       icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-Koolson-Qure-Domestic.png'
+    },
+    {
+      name: '代理节点 DNS 使用 TCP',
+      // Carbon TCP/IP Service（IBM，Apache-2.0）；原样副本及许可证保存在 assets/icons。
+      // 上游提交：45b0fc1b328ffdc4a784560f7983210b2e20596e；来源与许可见 README 图标致谢。
+      icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-carbon-design-system-carbon-tcp-ip-service.svg'
     }
   ]);
 
@@ -1349,6 +1357,40 @@ function applyEntryResolution(result) {
       policy[rule] = value.map((item) => withDnsPolicySuffix(item, suffix));
     } else if (typeof value === 'string') {
       policy[rule] = withDnsPolicySuffix(value, suffix);
+    }
+  }
+}
+// 仅处理最终节点 DNS：在 DNS/hosts 合并和入口解析后执行，不重新选择来源或改写节点。
+function applyProxyDnsTcp(result) {
+  if (ruleOptionsEnable['代理节点 DNS 使用 TCP'] !== true || !result.dns ||
+      typeof result.dns !== 'object') {
+    return;
+  }
+
+  const withTcp = (value) => {
+    if (typeof value !== 'string') return value;
+    const address = value.split('#', 1)[0];
+    // 保留空值、非规范空白、system 及所有显式 URI 协议（含 dhcp://、rcode://）。
+    if (!address || address !== address.trim() || /^system$/i.test(address) ||
+        /^[a-z][a-z0-9+.-]*:\/\//i.test(address)) {
+      return value;
+    }
+    // 无方括号 IPv6 必须按 URI 语法加方括号；完整保留 #DIRECT、#国内入口解析及其他参数。
+    const colonCount = (address.match(/:/g) || []).length;
+    if (!address.startsWith('[') && colonCount > 1) {
+      return 'tcp://[' + address + ']' + value.slice(address.length);
+    }
+    return 'tcp://' + value;
+  };
+  const mapValue = (value) => Array.isArray(value) ? value.map(withTcp) : withTcp(value);
+  const dns = result.dns;
+  if (Object.prototype.hasOwnProperty.call(dns, 'proxy-server-nameserver')) {
+    dns['proxy-server-nameserver'] = mapValue(dns['proxy-server-nameserver']);
+  }
+  const policy = dns['proxy-server-nameserver-policy'];
+  if (policy && typeof policy === 'object' && !Array.isArray(policy)) {
+    for (const rule of Object.keys(policy)) {
+      policy[rule] = mapValue(policy[rule]);
     }
   }
 }
@@ -2039,6 +2081,9 @@ function main(config, profileName) {
 
   // ---- 8. 国内入口解析：在最终节点 DNS 结果上追加运营商策略。 ----
   applyEntryResolution(result);
+
+  // ---- 9. 代理节点 DNS 使用 TCP：最后补协议，保留前序合并、hosts 与出口选择结果。 ----
+  applyProxyDnsTcp(result);
 
   return result;
 }

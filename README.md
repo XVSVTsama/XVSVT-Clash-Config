@@ -390,6 +390,7 @@ Claude 等 AI 服务可使用 AI 专用线路，便于与其他流量分开选�
 - [DustinWin/ruleset_geodata](https://github.com/DustinWin/ruleset_geodata)
 - [AIsouler/MyClash](https://github.com/AIsouler/MyClash)
 - [Clash Verge](https://www.clashverge.dev/)
+- [Carbon Design System（IBM）](https://github.com/carbon-design-system/carbon)：TCP DNS 开关使用 [TCP/IP Service 图标](https://github.com/carbon-design-system/carbon/blob/45b0fc1b328ffdc4a784560f7983210b2e20596e/packages/icons/src/svg/32/tcp-ip-service.svg)，取自固定提交 `45b0fc1b328ffdc4a784560f7983210b2e20596e`，原样复制到 [`assets/icons/upstream-carbon-design-system-carbon-tcp-ip-service.svg`](assets/icons/upstream-carbon-design-system-carbon-tcp-ip-service.svg)，未修改图形内容；该资源遵循 Apache-2.0，许可证全文保留于 [`assets/icons/licenses/carbon-design-system-carbon-LICENSE.txt`](assets/icons/licenses/carbon-design-system-carbon-LICENSE.txt)。
 - 荷兰国旗图标由本项目自行绘制，并托管于 [`assets/icons/self-Netherlands.png`](assets/icons/self-Netherlands.png)。
 
 图标副本统一托管在 `assets/icons/` 并通过 jsDelivr 引用。
