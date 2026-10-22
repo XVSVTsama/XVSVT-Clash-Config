@@ -342,6 +342,7 @@ const TEMPLATE = {
     "auto-redirect": true,
     "strict-route": true,
     "stack": "mips",
+    "dns-mode": "hijack",
     "dns-hijack": [
       "any:53",
       "udp://any:53",
