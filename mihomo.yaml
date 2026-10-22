@@ -230,7 +230,23 @@ hosts                             :
 
 
 
-# 公共模板配置（锚点定义）
+# 订阅模板：仅在本地将下方占位 URL 替换为自己的 Clash/Mihomo 订阅链接。
+# example.invalid 不提供实际订阅；替换前无法获取节点。请勿将真实链接或凭据提交到公开仓库。
+# 添加更多订阅时，请使用不同的提供者名称与缓存路径，并在所需策略组的 use 中追加名称。
+proxy-providers:
+  subscription:
+    type: http
+    url: "https://example.invalid/REPLACE_WITH_YOUR_SUBSCRIPTION_URL"
+    path: ./proxy-providers/subscription.yaml
+    interval: 3600
+    proxy: DIRECT
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+      lazy: true
+
+# 策略组：include-all-proxies 纳入直接定义的节点，use 纳入订阅节点；原有 filter 对两者均生效。
 proxies: ~
 proxy-groups:
   - name: 🌍 PROXY
@@ -245,6 +261,7 @@ proxy-groups:
     icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-clash-verge-rev-balance.svg"
     type: load-balance
     include-all-proxies: true
+    use: [subscription]
     url: 'https://www.gstatic.com/generate_204'
     interval: 300
     lazy: true
@@ -253,6 +270,7 @@ proxy-groups:
     icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-select.png"
     type: select
     include-all-proxies: true
+    use: [subscription]
   - name: ♻️ 自动选择
     icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-auto.png"
     type: url-test
@@ -260,6 +278,7 @@ proxy-groups:
     interval: 300
     tolerance: 50
     include-all-proxies: true
+    use: [subscription]
   - name: 🍎 海外苹果
     icon: https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-AIsouler-MyClash-Apple.svg
     type: select
@@ -269,6 +288,7 @@ proxy-groups:
       - 🔄 负载均衡
       - DIRECT
     include-all-proxies: true
+    use: [subscription]
   - name: 💠 海外微软
     icon: https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/self-Microsoft.svg
     type: select
@@ -278,6 +298,7 @@ proxy-groups:
       - 🔄 负载均衡
       - DIRECT
     include-all-proxies: true
+    use: [subscription]
   - name: 🎮 Steam平台（非下载/CDN）
     icon: https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-AIsouler-MyClash-Steam.svg
     type: select
@@ -288,28 +309,33 @@ proxy-groups:
       - ♻️ 自动选择
       - 🔄 负载均衡
     include-all-proxies: true
+    use: [subscription]
   - name: 📲 Telegram
     icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-telegram.png"
     type: select
     include-all-proxies: true
+    use: [subscription]
   # Telegram DC 地区组为可选配置；启用时，需同时取消注释下方 rule-providers 与 rules 对应段落。
   # - name: 📲 Telegram-DC1-DC3-Miami
   #   icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-Koolson-Qure-United_States.png"
   #   type: select
   #   filter: '(?i)🇺🇸|美国|迈阿密|miami|\bMIA\b|\bUSA\b|united\s*states'
   #   include-all-proxies: true
+  #   use: [subscription]
   #   empty-fallback: COMPATIBLE
   # - name: 📲 Telegram-DC2-DC4-Amsterdam
   #   icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/self-Netherlands.png"
   #   type: select
   #   filter: '(?i)🇳🇱|荷兰|阿姆斯特丹|amsterdam|\bAMS\b|\bNL\b|netherlands'
   #   include-all-proxies: true
+  #   use: [subscription]
   #   empty-fallback: COMPATIBLE
   # - name: 📲 Telegram-DC5-SG
   #   icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-Koolson-Qure-Singapore.png"
   #   type: select
   #   filter: '(?i)🇸🇬|🇭🇰|新加坡|狮城|香港|singapore|hong\s*kong|\bSG\b|\bSGP\b|\bHK\b|\bHKG\b'
   #   include-all-proxies: true
+  #   use: [subscription]
   #   empty-fallback: COMPATIBLE
   - name: 🎮 Games-Global
     icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-games-cn.png"
@@ -318,22 +344,26 @@ proxy-groups:
     proxies:
       - 🎮 Steam平台（非下载/CDN）
     include-all-proxies: true
+    use: [subscription]
 
   - name: ✖️ Twitter
     icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-clash-verge-rev-twitter.svg"
     type: select
     filter: '(?i)^(?!.*(?:🇭🇰|香港|Hong\s*Kong|\bHK\b|🇸🇬|新加坡|Singapore|\bSG\b)).*(?:住宅|家宽|家寬|家庭宽带|家庭寬頻|原生住宅|住宅\s*IP|residential|home\s*broadband|home\s*internet|🇺🇸|美国|美國|\bUnited\s+States\b|\bU\.?S\.?(?:A\.?)?\b).*$'
     include-all-proxies: true
+    use: [subscription]
   - name: 🤖 AI大模型
     icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-ai.png"
     type: select
     filter: '(?i)^(?!.*(?:🇭🇰|香港|Hong\s*Kong|\bHK\b|🇸🇬|新加坡|Singapore|\bSG\b)).*(?:住宅|家宽|家寬|家庭宽带|家庭寬頻|原生住宅|住宅\s*IP|residential|home\s*broadband|home\s*internet|🇺🇸|美国|美國|\bUnited\s+States\b|\bU\.?S\.?(?:A\.?)?\b).*$'
     include-all-proxies: true
+    use: [subscription]
   - name: 🎵 TikTok
     icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-DustinWin-ruleset_geodata-tiktok.png"
     type: select
     filter: '(?i)^(?!.*(?:🇭🇰|香港|Hong\s*Kong|\bHK\b|🇸🇬|新加坡|Singapore|\bSG\b)).*(?:住宅|家宽|家寬|家庭宽带|家庭寬頻|原生住宅|住宅\s*IP|residential|home\s*broadband|home\s*internet|🇺🇸|美国|美國|\bUnited\s+States\b|\bU\.?S\.?(?:A\.?)?\b).*$'
     include-all-proxies: true
+    use: [subscription]
   # FCM：Google FCM 域名分流目标，由 FCM直连 开关控制本组的 proxies。
   # 开启时使用 DIRECT，关闭时使用 👉 手动切换；开关图标取自本组的 icon 字段。
   - name: FCM
