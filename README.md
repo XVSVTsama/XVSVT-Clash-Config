@@ -257,7 +257,7 @@ venn-beta
 <br>
 
 <details>
-<summary>更新提醒（15 条）</summary>
+<summary>更新提醒（13 条）</summary>
 
 ### 2026-10-22
 
@@ -319,16 +319,6 @@ Twitter、AI 和 TikTok 仅使用名称符合住宅、美国等条件且不含�
 
 ---
 
-### 2026-10-01
-
-**适用范围**：JS
-
-提供自定义规则开关入口，方便按需启用或关闭功能。
-
-[相关提交：`810ade6`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/810ade6)
-
----
-
 ### 2026-09-28
 
 **适用范围**：JS/YAML
@@ -336,16 +326,6 @@ Twitter、AI 和 TikTok 仅使用名称符合住宅、美国等条件且不含�
 调整虚拟网卡的网络处理方式，更新后请留意设备上的连接兼容性。
 
 [相关提交：`41bc108`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/41bc108)
-
----
-
-### 2026-09-11
-
-**适用范围**：JS
-
-可优先使用 IPv6 连接节点，适合具备可用 IPv6 网络的环境；默认关闭。
-
-[相关提交：`ac0f39e`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/ac0f39e)
 
 ---
 
