@@ -257,7 +257,7 @@ venn-beta
 <br>
 
 <details>
-<summary>更新提醒（16 条）</summary>
+<summary>更新提醒（15 条）</summary>
 
 ### 2026-10-22 · TUN DNS
 
@@ -323,7 +323,7 @@ Twitter / AI / TikTok 按节点名称中的住宅、美国等标记筛选，排�
 
 **适用范围**：JS / Bettbox
 
-`policyGroupOptions` 只列策略组，名称对应 `ruleOptionsEnable`；`Compatible_With_Bettbox` 声明置顶。
+`Compatible_With_Bettbox` 声明置顶。
 
 [相关提交：`810ade6`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/810ade6)
 
@@ -406,16 +406,6 @@ Claude / Anthropic 的显式域名与后缀规则可独立命中，不依赖进�
 默认仅为顶层节点中具备非空 `public-key`、`short-id` 的 Reality 配置写入 `support-x25519mlkem768: true`，不处理 provider 运行时节点；关闭开关不清除订阅原有的 `true`。
 
 [相关提交：`e1e65cd`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/e1e65cd)
-
----
-
-### 长期机制（首次生效日期未确认） · 模板合并
-
-**适用范围**：JS
-
-脚本以模板重建结果；专门替换 `proxies`，保留订阅 `proxy-providers`，DNS 按指定逻辑合并；其余模板未定义的订阅顶层字段不自动保留。
-
-[当前基线实现：`952fed4`](https://github.com/XVSVTsama/XVSVT-Clash-Config/blob/952fed4/script_override.js#L1914-L1924)
 
 </details>
 
