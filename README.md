@@ -257,7 +257,7 @@ venn-beta
 <br>
 
 <details>
-<summary>更新提醒（13 条）</summary>
+<summary>更新提醒（8 条）</summary>
 
 ### 2026-10-22
 
@@ -309,16 +309,6 @@ Twitter、AI 和 TikTok 仅使用名称符合住宅、美国等条件且不含�
 
 ---
 
-### 2026-10-05
-
-**适用范围**：JS
-
-可按 Telegram 数据中心所在地区选择线路；没有匹配地区的节点时，可从其他可用节点中手动选择。
-
-[相关提交：`8e3a548`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/8e3a548)
-
----
-
 ### 2026-09-28
 
 **适用范围**：JS/YAML
@@ -326,16 +316,6 @@ Twitter、AI 和 TikTok 仅使用名称符合住宅、美国等条件且不含�
 调整虚拟网卡的网络处理方式，更新后请留意设备上的连接兼容性。
 
 [相关提交：`41bc108`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/41bc108)
-
----
-
-### 2026-09-10
-
-**适用范围**：JS
-
-可手动选择节点域名解析所用的国内运营商入口，不会自动判断最合适的运营商；默认关闭。
-
-[相关提交：`1f6f2b2`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/1f6f2b2)
 
 ---
 
@@ -356,36 +336,6 @@ Claude 等 AI 服务可使用 AI 专用线路，便于与其他流量分开选�
 支持节点域名的自定义映射与私有 DNS，方便使用自建解析服务。
 
 [相关提交：`fb461c0`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/fb461c0)、[`8fad6ec`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/8fad6ec)
-
----
-
-### 2026-08-07
-
-**适用范围**：JS/YAML
-
-Android 推送通知可单独选择连接方式；脚本默认直连，直接使用 YAML 时可选择直连或手动指定线路。
-
-[相关提交：`dab2dfb`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/dab2dfb)
-
----
-
-### 2026-08-07
-
-**适用范围**：JS
-
-可强制验证节点证书，降低使用不受信任证书的风险；默认关闭，开启后可能无法连接证书不符合要求的节点。
-
-[相关提交：`1459672`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/1459672)
-
----
-
-### 2026-08-01
-
-**适用范围**：JS
-
-默认启用 Reality 的后量子密钥协商增强，供支持该能力的节点使用。
-
-[相关提交：`e1e65cd`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/e1e65cd)
 
 </details>
 
