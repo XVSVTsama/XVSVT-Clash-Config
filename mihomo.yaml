@@ -230,9 +230,6 @@ hosts                             :
 
 
 
-# 订阅模板：仅在本地将下方占位 URL 替换为自己的 Clash/Mihomo 订阅链接。
-# example.invalid 不提供实际订阅；替换前无法获取节点。请勿将真实链接或凭据提交到公开仓库。
-# 添加更多订阅时，请使用不同的提供者名称与缓存路径；include-all 策略组会自动纳入。
 proxy-providers:
   subscription:
     type: http
@@ -246,7 +243,6 @@ proxy-providers:
       interval: 300
       lazy: true
 
-# 策略组：与 JS 一样使用 include-all 纳入全部直接节点和订阅集合；原有 filter 对两者均生效。
 proxies: ~
 proxy-groups:
   - name: 🌍 PROXY
