@@ -30,7 +30,7 @@
   <a href="#script-override">JavaScript 说明</a> ·
   <a href="#dns-model">dns-host背景说明</a> ·
   <a href="#ruleset-overlap">规则集重合</a> ·
-  <a href="#update-notes">更新注意事项</a> ·
+  <a href="#update-notes">更新需知</a> ·
   <a href="#acknowledgments">致谢</a> ·
   <a href="#star-history">Star History</a> ·
   <a href="#disclaimer">免责声明</a>
@@ -252,7 +252,7 @@ venn-beta
 
 <br>
 
-<h2 align="center">更新注意事项</h2>
+<h2 align="center">更新需知</h2>
 
 <br>
 
@@ -261,7 +261,8 @@ venn-beta
 > - **日期含义**：相关变更的 UTC+8 日期，不代表版本号。
 > - **检查时机**：升级或更换使用方式时，请按适用范围检查。
 
-### 近期提醒
+<details>
+<summary>更新提醒（16 条）</summary>
 
 - **2026-10-22 · TUN DNS · YAML / JS**：模板已设置 `tun.dns-mode: hijack`，需使用支持该字段的 Mihomo；[v1.19.33 已包含该字段](https://github.com/MetaCubeX/mihomo/blob/v1.19.33/docs/config.yaml#L137-L143)。macOS 会从默认不设置系统 DNS 改为显式使用 TUN DNS，勿据此假定具有 Windows/Linux 同等的跨网卡拦截效果。更新前请核对客户端实际使用的内核。[相关提交：`635708b`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/635708b)
 
@@ -274,9 +275,6 @@ venn-beta
 - **2026-10-06 · 节点过滤 · YAML / JS**：Twitter / AI / TikTok 按节点名称中的住宅、美国等标记筛选，并排除香港、新加坡命名；这不是对真实出口地区或住宅属性的检测。候选为空或不符预期时，请核对节点名称并按需调整 `filter`。[相关提交：`6bf27df`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/6bf27df)
 
 - **2026-10-05 · TGDC · JS（启用 `TGDC实验分流` 时）**：地区命中判断与保底列表只读取订阅顶层 `proxies`，不读取 provider 运行时节点；地区无候选时会显式列出全部合格顶层节点供手动选择。仅有 provider 的订阅不会因此获得地区候选或保底节点，请检查生成结果。[相关提交：`8e3a548`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/8e3a548)
-
-<details>
-<summary>较早但仍适用的提醒（10 条）</summary>
 
 - **2026-10-01 · Bettbox 开关声明 · JS / Bettbox**：增删策略组开关时，同步维护脚本顶部 `policyGroupOptions` 与 `ruleOptionsEnable` 的对应名称；前者只列策略组，不列功能开关。`Compatible_With_Bettbox` 声明须保持置顶，以免开关入口或分类异常。[相关提交：`810ade6`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/810ade6)
 
