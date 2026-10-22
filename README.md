@@ -57,18 +57,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 `mihomo.yaml` 是本仓库的基准配置模板，同时也是覆写脚本合并时使用的内嵌模板：一份不含任何节点的完整配置骨架，不可直接使用它。
 
-### TUN 系统 DNS 模式
-
-YAML 与脚本内嵌模板均设置 `tun.dns-mode: hijack`，对应上游提交 [`2df147b`（支持 TUN DNS 模式）](https://github.com/MetaCubeX/mihomo/commit/2df147b90640ef5f03cd69a784abcd2c800a5dcc)，已包含于 [Mihomo v1.19.33](https://github.com/MetaCubeX/mihomo/releases/tag/v1.19.33)。请使用包含该变更的内核；旧内核即使能读取配置，也不代表支持此字段。
-
-按上游 [配置示例](https://github.com/MetaCubeX/mihomo/blob/v1.19.33/docs/config.yaml#L137-L143) 与 [字段校验](https://github.com/MetaCubeX/mihomo/blob/v1.19.33/listener/sing_tun/server.go#L277-L281)，可选值为 `disabled`、`native`、`hijack`，也可留空沿用旧行为：
-
-- `disabled`：不设置系统 DNS。
-- `native`：将 TUN 地址设为系统 DNS。
-- `hijack`：在 `native` 基础上，额外拦截发往其他网卡的 53 端口流量；Windows 需要 `strict-route`，Linux 需要 `auto-redirect`，本模板均已开启，并保留 `auto-route: true`。
-- 留空：Windows/Linux 启用 `auto-route` 时默认使用 `hijack`，否则为 `disabled`；macOS 默认 `disabled`。
-
-本仓库显式选择 `hijack`，以配合现有的 DNS 接管配置；它与 `tun.dns-hijack` 的连接匹配列表不是同一个字段，也不是 `dns.enhanced-mode`。Windows/Linux 延续上述默认接管行为；**macOS 将从默认不设置系统 DNS 改为显式配置 TUN 系统 DNS**，但不应据此假定具备 Windows/Linux 同等的跨网卡拦截效果。如需保留各平台旧行为，可将 YAML 与脚本模板中的 `dns-mode` 同时改为 `""`。
+> 提示：YAML 与脚本模板已启用 `tun.dns-mode: hijack`，需使用支持该字段的内核，macOS 将由默认不设置系统 DNS 改为使用 TUN DNS。
 
 <a id="proxy-groups"></a>
 
