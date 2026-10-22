@@ -118,7 +118,7 @@ const ruleOptionsEnable = {
   'FCM直连': true,
   // 开启 Telegram DC/地区实验分流；关闭时不改变原 Telegram 规则、策略组和规则集。
   'TGDC实验分流': false,
-  // 开启后，三个国内入口节点全部加入同一个代理组。
+  // 开启后，维护区所有运营商的入口节点统一加入“国内入口解析”组，不进入其他代理组。
   '入口解析': false,
 };
 
@@ -128,54 +128,41 @@ const NAMESERVER_POLICY_PREFER_ORIGINAL = true;
 
 // ============================================================================
 // 国内入口解析节点维护区
-// 仅维护下面的 type / server / port 及其他可选字段。
-// name 不要写在这里，由 ENTRY_RESOLUTION_OPTIONS 固定为国内入口解析-运营商。
-// 可修改、删除或添加任意 Mihomo 节点字段。
+// 每个运营商维护一个数组：可复制数组内的节点对象追加多个节点，填 [] 表示不配置。
+// 仅维护 type / server / port 及其他 Mihomo 节点字段，无需填写 name；即使填写也会被覆盖。
+// 名称强制为“电信入口解析-01”等，按各运营商数组顺序独立编号，从 01 开始，超过 99 不截断。
 // ============================================================================
 const DOMESTIC_ENTRY_PROXIES = {
   // 中国电信
-  telecom: {
+  telecom: [{
     type: 'http',
     server: '36.111.33.167',
     port: 13128
-  },
+  }],
 
   // 中国联通
-  unicom: {
+  unicom: [{
     type: 'http',
     server: '119.188.131.55',
     port: 17981
-  },
+  }],
 
   // 中国移动
-  mobile: {
+  mobile: [{
     type: 'http',
     server: '116.196.150.180',
     port: 17981
-  }
+  }]
 };
 
-// 三个入口节点都会加入“国内入口解析”代理组，由用户手动选择；此处顺序不代表自动优先级。节点名固定在这里，不应修改。
+// 运营商与强制命名前缀的固定映射，不应修改；节点顺序不代表自动优先级。
 const ENTRY_RESOLUTION_OPTIONS = [
-  {
-    key: '电信入口解析',
-    proxyName: '国内入口解析-电信',
-    proxy: DOMESTIC_ENTRY_PROXIES.telecom,
-    icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-Koolson-Qure-China.png'
-  },
-  {
-    key: '联通入口解析',
-    proxyName: '国内入口解析-联通',
-    proxy: DOMESTIC_ENTRY_PROXIES.unicom,
-    icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-Koolson-Qure-China_Map.png'
-  },
-  {
-    key: '移动入口解析',
-    proxyName: '国内入口解析-移动',
-    proxy: DOMESTIC_ENTRY_PROXIES.mobile,
-    icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-Koolson-Qure-Server.png'
-  }
+  { carrier: 'telecom', prefix: '电信入口解析' },
+  { carrier: 'unicom', prefix: '联通入口解析' },
+  { carrier: 'mobile', prefix: '移动入口解析' }
 ];
+// 保留命名空间：用于排除入口节点，并防止同名订阅节点抢占维护区定义。
+const ENTRY_RESOLUTION_EXCLUDE_FILTER = '^(?:电信|联通|移动)入口解析-[0-9]{2,}$';
 
 // ============================================================================
 // Telegram DC/地区实验分流（仅在 ruleOptionsEnable['TGDC实验分流'] 为 true 时注入）
@@ -1256,9 +1243,24 @@ function sameNameserverSet(a, b) {
 }
 
 function selectedEntryResolutionOptions() {
-  return ruleOptionsEnable['入口解析'] === true
-    ? ENTRY_RESOLUTION_OPTIONS
-    : [];
+  if (ruleOptionsEnable['入口解析'] !== true) {
+    return [];
+  }
+  return ENTRY_RESOLUTION_OPTIONS.flatMap((option) => {
+    const proxies = DOMESTIC_ENTRY_PROXIES[option.carrier];
+    if (!Array.isArray(proxies)) {
+      throw new Error('国内入口解析维护区 ' + option.carrier + ' 必须是节点数组（无节点请填 []）');
+    }
+    return proxies.map((proxy, index) => {
+      if (!proxy || typeof proxy !== 'object' || Array.isArray(proxy)) {
+        throw new Error('国内入口解析维护区 ' + option.carrier + ' 第 ' + (index + 1) + ' 项必须是节点对象');
+      }
+      return {
+        proxyName: option.prefix + '-' + String(index + 1).padStart(2, '0'),
+        proxy
+      };
+    });
+  });
 }
 
 function withDnsPolicySuffix(value, suffix) {
@@ -1276,15 +1278,37 @@ function applyEntryResolution(result) {
   const groupName = '国内入口解析';
   const proxyNames = options.map((option) => option.proxyName);
 
-  if (Array.isArray(result.proxies)) {
-    options.forEach((option) => {
-      if (!result.proxies.some((proxy) => proxy && proxy.name === option.proxyName)) {
-        const injectedProxy = deepClone(option.proxy);
-        injectedProxy.name = option.proxyName;
-        result.proxies.push(injectedProxy);
+  const isEntryName = (name) => typeof name === 'string' &&
+    (name === groupName || new RegExp(ENTRY_RESOLUTION_EXCLUDE_FILTER).test(name));
+  result.proxies = (result.proxies || []).filter((proxy) => !isEntryName(proxy && proxy.name));
+  options.forEach((option) => {
+    const injectedProxy = deepClone(option.proxy);
+    injectedProxy.name = option.proxyName;
+    result.proxies.push(injectedProxy);
+  });
+
+  // include-all 会动态纳入刚注入的顶层节点，必须由内核排除；显式引用和默认选择也一起清理。
+  // Mihomo 以反引号分隔多个 exclude-filter，避免拼接正则破坏原有内联标志或筛选语义。
+  (result['proxy-groups'] || []).forEach((group) => {
+    if (!group || group.name === groupName) return;
+    const filters = typeof group['exclude-filter'] === 'string' && group['exclude-filter']
+      ? group['exclude-filter'].split('`') : [];
+    if (!filters.includes(ENTRY_RESOLUTION_EXCLUDE_FILTER)) {
+      filters.push(ENTRY_RESOLUTION_EXCLUDE_FILTER);
+    }
+    group['exclude-filter'] = filters.join('`');
+    if (Array.isArray(group.proxies)) {
+      group.proxies = group.proxies.filter((name) => !isEntryName(name));
+      if (group.proxies.length === 0 && !group['include-all'] &&
+          !group['include-all-proxies'] && !group['include-all-providers'] &&
+          !(Array.isArray(group.use) && group.use.length > 0)) {
+        group.proxies = ['DIRECT'];
       }
-    });
-  }
+    }
+    if (isEntryName(group['default-selected'])) {
+      delete group['default-selected'];
+    }
+  });
 
   const displayGroup = {
     name: groupName,
@@ -1297,10 +1321,8 @@ function applyEntryResolution(result) {
     (group) => group && group.name === groupName
   );
   if (existingDisplayGroup) {
-    existingDisplayGroup.type = displayGroup.type;
-    existingDisplayGroup.proxies = displayGroup.proxies.slice();
-    existingDisplayGroup.url = displayGroup.url;
-    existingDisplayGroup.icon = displayGroup.icon;
+    // 重建专用组，不保留可能把其他节点混入的 include-all、use 或筛选字段。
+    result['proxy-groups'][result['proxy-groups'].indexOf(existingDisplayGroup)] = displayGroup;
   } else {
     const autoSelectIndex = (result['proxy-groups'] || []).findIndex(
       (group) => group && group.name === '♻️ 自动选择'
@@ -1845,7 +1867,12 @@ function main(config, profileName) {
   config = config || {};
 
   // ---- 1. 从订阅原始配置里取出会被模板覆盖、但需要保留/合并的动态数据 ----
-  const originalProxies = Array.isArray(config.proxies) ? config.proxies : [];
+  // 启用入口解析时保留强制命名空间给维护区；同时避免重载已有输出时污染 TGDC 保底及默认选择。
+  const entryNamePattern = new RegExp(ENTRY_RESOLUTION_EXCLUDE_FILTER);
+  const originalProxies = (Array.isArray(config.proxies) ? config.proxies : []).filter(
+    (proxy) => ruleOptionsEnable['入口解析'] !== true ||
+      !(proxy && typeof proxy.name === 'string' && entryNamePattern.test(proxy.name))
+  );
 
   // 1.1 Reality 增强开关处理
   const enableRealityEnhance = ruleOptionsEnable['启用 Reality 增强'] === true;
@@ -1918,7 +1945,7 @@ function main(config, profileName) {
   applyTelegramDcExperiment(result, originalProxies);
 
   // ---- 3. 节点列表换成订阅里的真实节点 ----
-  result.proxies = originalProxies;
+  result.proxies = originalProxies.slice();
   if (originalProxyProviders) {
     result['proxy-providers'] = originalProxyProviders;
   }
