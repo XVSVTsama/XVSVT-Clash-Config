@@ -287,9 +287,7 @@ venn-beta
 - [Loyalsoldier/clash-rules](https://github.com/Loyalsoldier/clash-rules)
 - [blackmatrix7/ios_rule_script](https://github.com/blackmatrix7/ios_rule_script)
 
-新增服务域名沿用 [MetaCubeX MRS 集合](https://github.com/MetaCubeX/meta-rules-dat/tree/meta/geo/geosite)，每日更新；Meta 集合已覆盖 Instagram，不重复叠加子品牌规则。金融支付使用 `category-cryptocurrency`、`paypal`、`stripe`、`visa`、`mastercard`、`wise`，不是全部金融机构规则。国内支付由收藏上游 blackmatrix7 的 [AliPay](https://github.com/blackmatrix7/ios_rule_script/tree/master/rule/Clash/AliPay)、[UnionPay](https://github.com/blackmatrix7/ios_rule_script/tree/master/rule/Clash/UnionPay) 及内联微信支付域名（`tenpay.com`、`wechatpay.com`、`pay.weixin.qq.com`）优先直连，既有国内直连规则继续保留。Google / Google-CN 沿用原提供者与规则集，统一路由到独立的 `🔎 Google` 组；Google FCM 与前置 AI 特例不变。关闭 Google 组时两套规则回退到 `🌍 PROXY`，该组也关闭时回退到 `DIRECT`。
 
-既有 `cn` / `echs_direct` 仍优先于新增服务组；与其重合的域名会提前直连（例如当前集合中的 `binancezh.top`、`facebook.wang`），因此服务组并非无条件接管其规则集内的每个域名。 对被既有宽泛规则遮蔽的 `bybit-exchange.github.io`、`d3r7nsslvs6aaf.cloudfront.net`，仅添加精确域名例外，分别放在 Microsoft 集合、CloudFront 后缀规则之前；金融支付组关闭时，两条例外随其他金融规则回退到 `🌍 PROXY`（该组也关闭时回退 `DIRECT`），不改变其他 GitHub / CloudFront 域名的处理。
 
 ### 图标作者与原项目
 
@@ -297,12 +295,10 @@ venn-beta
 - [DustinWin/ruleset_geodata](https://github.com/DustinWin/ruleset_geodata)
 - [AIsouler/MyClash](https://github.com/AIsouler/MyClash)
 - [Clash Verge](https://www.clashverge.dev/)
-- [Simple Icons](https://github.com/simple-icons/simple-icons)（金融支付 / Google / Meta / Spotify / Discord / Reddit 六组的品牌 SVG；[项目 CC0 1.0 许可](assets/icons/licenses/simple-icons-LICENSE.md)）
+- [Simple Icons](https://github.com/simple-icons/simple-icons)
 - 荷兰国旗图标由本项目自行绘制，并托管于 [`assets/icons/self-Netherlands.png`](assets/icons/self-Netherlands.png)。
 
-图标资源统一托管在 `assets/icons/` 并通过 jsDelivr 引用。金融支付 / Google / Meta / Spotify / Discord / Reddit 六组统一使用 [Simple Icons 固定版本 `90bd1f3`](https://github.com/simple-icons/simple-icons/tree/90bd1f3e7b77851fd0c56474f6fa43b816babdab/icons) 的 `paypal.svg`、`google.svg`、`meta.svg`、`spotify.svg`、`discord.svg`、`reddit.svg`，保存为 `upstream-simple-icons-*.svg`。保留上游 SVG 路径与 `24×24` viewBox，仅按同版本 [品牌色元数据](https://github.com/simple-icons/simple-icons/blob/90bd1f3e7b77851fd0c56474f6fa43b816babdab/data/simple-icons.json) 增加显式 `fill`（PayPal `#002991`、Google `#4285F4`、Meta `#0467DF`、Spotify `#1ED760`、Discord `#5865F2`、Reddit `#FF4500`），不依赖客户端 CSS 或 `currentColor`。既有其他 Qure / AIsouler 图标不作替换。
 
-Simple Icons 项目采用 CC0 1.0，但并不代表所有品牌图标的第三方权利均被豁免；CC0 不授予商标权，使用时仍应遵循品牌方规范及 [上游免责声明](https://github.com/simple-icons/simple-icons/blob/90bd1f3e7b77851fd0c56474f6fa43b816babdab/DISCLAIMER.md)。这次仅替换新增图标，不改变既有图标的来源或使用条件。
 
 ### 脚本与配置参考
 

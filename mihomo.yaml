@@ -417,7 +417,6 @@ proxy-groups:
   ipcidr_yaml: &ipcidr_yaml { type: http, interval: 86400, behavior: ipcidr }
   classical_yaml: &classical_yaml { type: http, interval: 86400, behavior: classical }
 
-# 规则集配置
 rule-providers:
   Gemini_Domain: { <<: *domain_yaml, url: 'https://cdn.jsdelivr.net/gh/Accademia/Additional_Rule_For_Clash@master/Gemini/Gemini_Domain.yaml', path: ./ruleset/Gemini_Domain.yaml }
   Grok_Domain: { <<: *domain_yaml, url: 'https://raw.githubusercontent.com/Accademia/Additional_Rule_For_Clash/refs/heads/main/Grok/Grok_Domain.yaml', path: ./ruleset/Grok_Domain.yaml }
@@ -496,7 +495,6 @@ rule-providers:
   twitter-x-ip: { <<: *ipcidr_mrs, url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/twitter.mrs', path: ./ruleset/twitter/x-ip.mrs }
   unionpay: { <<: *classical_yaml, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/UnionPay/UnionPay.yaml', path: ./ruleset/unionpay.yaml }
   visa: { <<: *domain_mrs, url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/visa.mrs', path: ./ruleset/visa.mrs }
-  # 仅补充微信支付域名，不将整个 WeChat 集合或 ASN 作为支付规则。
   wechatpay: { type: inline, behavior: domain, payload: ['+.tenpay.com', '+.wechatpay.com', '+.pay.weixin.qq.com'] }
   wise: { <<: *domain_mrs, url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/wise.mrs', path: ./ruleset/wise.mrs }
 
@@ -535,7 +533,6 @@ sub-rules:
     - IP-CIDR,101.36.166.16/32,REJECT,no-resolve
     - IP-CIDR,180.96.2.114/32,REJECT,no-resolve
 
-  # URL 重写 Host 提取
     - DOMAIN-WILDCARD,*.pangolin-sdk-toutiao.com,REJECT
     - DOMAIN-WILDCARD,*.pglstatp-toutiao.com,REJECT
     - DOMAIN-WILDCARD,*.pstatp.com,REJECT
@@ -543,7 +540,6 @@ sub-rules:
     - DOMAIN-WILDCARD,*.byteimg.com,REJECT
     - DOMAIN-WILDCARD,*.snssdk.com,REJECT
 
-  # MITM 主机
     - DOMAIN-WILDCARD,*.pangolin-sdk-toutiao,REJECT
     - DOMAIN-WILDCARD,*.pangolin-sdk-toutiao.*,REJECT
     - DOMAIN-WILDCARD,*.pstatp.com.*,REJECT
@@ -555,11 +551,9 @@ rules:
   - AND,((NETWORK,UDP),(DST-PORT,3478-3479/5349-5350/19302-19309),(NOT,((RULE-SET,cncidr))),(NOT,((RULE-SET,cn))),(NOT,((RULE-SET,applications))),(NOT,((RULE-SET,games))),(NOT,((RULE-SET,echs_direct)))),REJECT
   - RULE-SET,HijackingPlus,REJECT
   - RULE-SET,applications,DIRECT
-  # 国内支付优先直连，不受金融支付策略组开关影响。
   - RULE-SET,alipay,DIRECT
   - RULE-SET,wechatpay,DIRECT
   - RULE-SET,unionpay,DIRECT
-  # 国内 Apple、Microsoft、Games 分类直连统一交给 echs_direct。
   - RULE-SET,echs_direct_ip,DIRECT,no-resolve
   - RULE-SET,echs_direct,DIRECT
   - RULE-SET,cncidr,DIRECT,no-resolve
@@ -571,22 +565,15 @@ rules:
   - RULE-SET,lancidr,DIRECT,no-resolve
   - DOMAIN-WILDCARD,*.deepseek.com,DIRECT
   - DOMAIN-WILDCARD,*.portal101.cn,DIRECT
-  # 华为云 CDN 的分发域名
   - DOMAIN-SUFFIX,cdnhwcqwg14.com,DIRECT
   - DOMAIN-SUFFIX,cdnhwcxcy07.com,DIRECT
-  # 阿里云 CDN 的分发域名
   - DOMAIN-SUFFIX,cdngslb.com,DIRECT
-  # Akamai CDN 的分发域名
   - DOMAIN-SUFFIX,edgekey.net,DIRECT
-  # Amazon CloudFront 分发域名 (api 接口 CDN)
-  # 加密货币 API 的 CloudFront 域名例外
   - DOMAIN,d3r7nsslvs6aaf.cloudfront.net,💳 金融支付
   - DOMAIN-SUFFIX,cloudfront.net,DIRECT
   - RULE-SET,googlefcm,FCM
   - SUB-RULE,(PROCESS-NAME,com.dragon.read.oversea.gp),fanqie
   - DOMAIN-KEYWORD,ikuuu,🌍 PROXY
-  # 通用直连规则优先，剩余 Apple / Microsoft 域名和 IP 再进入海外组。
-  # Bybit 静态资源位于 Microsoft 规则集内，优先保留金融支付分流。
   - DOMAIN,bybit-exchange.github.io,💳 金融支付
   - RULE-SET,microsoft_ip,💠 海外微软,no-resolve
   - RULE-SET,microsoft,💠 海外微软
@@ -601,9 +588,7 @@ rules:
   - "PROCESS-NAME-REGEX,.*telegram.*,📲 Telegram"
   - RULE-SET,telegramcidr,📲 Telegram,no-resolve
   - RULE-SET,telegram_domain,📲 Telegram
-  # Manus AI：覆盖 Manus Desktop、Manus Helper 及 Android 客户端进程
   - PROCESS-NAME-REGEX,(?i).*(manus|tech\.butterfly\.app).*,🤖 AI大模型
-  # Claude / Anthropic：进程命中优先，覆盖 Claude Desktop、Claude Code 等客户端
   - DOMAIN-SUFFIX,muse.ai,🤖 AI大模型
   - DOMAIN,hatch-api.meta.ai,🤖 AI大模型
   - DOMAIN,api.meta.ai,🤖 AI大模型
@@ -617,7 +602,6 @@ rules:
   - PROCESS-NAME,com.facebook.aura,🤖 AI大模型
   - PROCESS-NAME-REGEX,(?i).*claude.*,🤖 AI大模型
   - PROCESS-NAME-REGEX,(?i).*anthropic.*,🤖 AI大模型
-  # Claude / Anthropic：官方 API、网页登录、OAuth、MCP、CLI 更新和插件依赖
   - DOMAIN,api.anthropic.com,🤖 AI大模型
   - DOMAIN,console.anthropic.com,🤖 AI大模型
   - DOMAIN,statsig.anthropic.com,🤖 AI大模型
@@ -651,28 +635,21 @@ rules:
   - IP-CIDR,17.253.4.0/23,🤖 AI大模型,no-resolve
   - RULE-SET,Gemini_Domain,🤖 AI大模型
   - RULE-SET,Grok_Domain,🤖 AI大模型
- # - RULE-SET,Grok_IP,🤖 AI大模型
-  # CDN 和静态资源
   - DOMAIN,anthropic.com.cdn.cloudflare.net,🤖 AI大模型
-  # 认证 / 内容
   - DOMAIN,anthropic-com.ghost.io,🤖 AI大模型
-  # 监控和遥测
   - DOMAIN-SUFFIX,sentry.io,🤖 AI大模型
   - DOMAIN-SUFFIX,statsigapi.net,🤖 AI大模型
   - DOMAIN,browser-intake-us5-datadoghq.com,🤖 AI大模型
   - DOMAIN-KEYWORD,datadog,🤖 AI大模型
   - DOMAIN-KEYWORD,sift,🤖 AI大模型
-  # 兼容旧版 AI 规则中的第三方监控条目
   - RULE-SET,ai-1,🤖 AI大模型
   - RULE-SET,ai-2,🤖 AI大模型
   - RULE-SET,google,🔎 Google
   - RULE-SET,google-cn,🔎 Google
-  # Meta 包含 Facebook / Instagram / WhatsApp / Threads；保留上方 AI 特例。
   - RULE-SET,meta,♾️ Meta
   - RULE-SET,spotify,🎧 Spotify
   - RULE-SET,discord,💬 Discord
   - RULE-SET,reddit,👽 Reddit
-  # 海外金融支付与加密货币；国内支付已在直连段优先匹配。
   - RULE-SET,category-cryptocurrency,💳 金融支付
   - RULE-SET,paypal,💳 金融支付
   - RULE-SET,stripe,💳 金融支付
