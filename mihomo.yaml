@@ -356,6 +356,15 @@ proxy-groups:
       - 🔄 负载均衡
       - DIRECT
     include-all: true
+  - name: 🔎 Google
+    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-simple-icons-google.svg"
+    type: select
+    proxies:
+      - 👉 手动切换
+      - ♻️ 自动选择
+      - 🔄 负载均衡
+      - DIRECT
+    include-all: true
   - name: ♾️ Meta
     icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-simple-icons-meta.svg"
     type: select
@@ -656,8 +665,8 @@ rules:
   # 兼容旧版 AI 规则中的第三方监控条目
   - RULE-SET,ai-1,🤖 AI大模型
   - RULE-SET,ai-2,🤖 AI大模型
-  - RULE-SET,google,🌍 PROXY
-  - RULE-SET,google-cn,🌍 PROXY
+  - RULE-SET,google,🔎 Google
+  - RULE-SET,google-cn,🔎 Google
   # Meta 包含 Facebook / Instagram / WhatsApp / Threads；保留上方 AI 特例。
   - RULE-SET,meta,♾️ Meta
   - RULE-SET,spotify,🎧 Spotify

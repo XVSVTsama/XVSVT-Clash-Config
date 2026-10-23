@@ -17,6 +17,7 @@ const Compatible_With_Bettbox = {
     '🤖 AI大模型',
     '🎵 TikTok',
     '💳 金融支付',
+    '🔎 Google',
     '♾️ Meta',
     '🎧 Spotify',
     '💬 Discord',
@@ -111,6 +112,8 @@ const ruleOptionsEnable = {
   '🤖 AI大模型': true,
   // TikTok 视频平台策略组
   '🎵 TikTok': true,
+  // Google / Google-CN 共用独立策略组；Google FCM 与 AI 特例仍由原规则处理。
+  '🔎 Google': true,
   // 金融支付及社交/音乐服务；Instagram 统一归入 Meta。
   '💳 金融支付': true,
   '♾️ Meta': true,
@@ -745,6 +748,18 @@ const TEMPLATE = {
       "include-all": true
     },
     {
+      "name": "🔎 Google",
+      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-simple-icons-google.svg",
+      "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
+      "include-all": true
+    },
+    {
       "name": "♾️ Meta",
       "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-simple-icons-meta.svg",
       "type": "select",
@@ -1316,8 +1331,8 @@ const TEMPLATE = {
     "DOMAIN-KEYWORD,sift,🤖 AI大模型",
     "RULE-SET,ai-1,🤖 AI大模型",
     "RULE-SET,ai-2,🤖 AI大模型",
-    "RULE-SET,google,🌍 PROXY",
-    "RULE-SET,google-cn,🌍 PROXY",
+    "RULE-SET,google,🔎 Google",
+    "RULE-SET,google-cn,🔎 Google",
     "RULE-SET,meta,♾️ Meta",
     "RULE-SET,spotify,🎧 Spotify",
     "RULE-SET,discord,💬 Discord",
