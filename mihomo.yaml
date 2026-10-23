@@ -427,7 +427,6 @@ rule-providers:
   TikTok: { <<: *domain_mrs, url: 'https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/tiktok.mrs', path: ./ruleset/tiktok.mrs }
   ai-1: { <<: *domain_mrs, url: 'https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/ai.mrs', path: ./ruleset/ai-1.mrs }
   ai-2: { <<: *domain_mrs, url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs', path: ./ruleset/ai-2.mrs }
-  alipay: { <<: *classical_yaml, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/AliPay/AliPay.yaml', path: ./ruleset/alipay.yaml }
   apple: { <<: *domain_mrs, url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/apple.mrs', path: ./ruleset/apple.mrs }
   apple_ip: { <<: *ipcidr_mrs, url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geoip/apple.mrs', path: ./ruleset/apple_ip.mrs }
   category-cryptocurrency: { <<: *domain_mrs, url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-cryptocurrency.mrs', path: ./ruleset/category-cryptocurrency.mrs }
@@ -495,9 +494,7 @@ rule-providers:
   twitter-x-blackmatrix7-No_Resolve: { <<: *classical_yaml, format: yaml, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Twitter/Twitter_No_Resolve.yaml', path: ./ruleset/twitter-x-blackmartix7-noreslove.mrs }
   twitter-x-domain: { <<: *domain_mrs, url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/twitter.mrs', path: ./ruleset/twitter/x-domain.mrs }
   twitter-x-ip: { <<: *ipcidr_mrs, url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/twitter.mrs', path: ./ruleset/twitter/x-ip.mrs }
-  unionpay: { <<: *classical_yaml, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/UnionPay/UnionPay.yaml', path: ./ruleset/unionpay.yaml }
   visa: { <<: *domain_mrs, url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/visa.mrs', path: ./ruleset/visa.mrs }
-  wechatpay: { type: inline, behavior: domain, payload: ['+.tenpay.com', '+.wechatpay.com', '+.pay.weixin.qq.com'] }
   wise: { <<: *domain_mrs, url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/wise.mrs', path: ./ruleset/wise.mrs }
 
 sub-rules:
@@ -565,9 +562,7 @@ rules:
   - DOMAIN,repo.huaweicloud.com,DIRECT
   - DOMAIN,mirrors.163.com,DIRECT
   - DOMAIN,gh-proxy.com,DIRECT
-  - RULE-SET,alipay,DIRECT
-  - RULE-SET,wechatpay,DIRECT
-  - RULE-SET,unionpay,DIRECT
+  - DOMAIN-SUFFIX,alipayeshop.com,DIRECT
   - RULE-SET,echs_direct_ip,DIRECT,no-resolve
   - RULE-SET,echs_direct,DIRECT
   - RULE-SET,cncidr,DIRECT,no-resolve

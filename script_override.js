@@ -867,13 +867,6 @@ const TEMPLATE = {
       "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs",
       "path": "./ruleset/ai-2.mrs"
     },
-    "alipay": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "classical",
-      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/AliPay/AliPay.yaml",
-      "path": "./ruleset/alipay.yaml"
-    },
     "category-cryptocurrency": {
       "type": "http",
       "interval": 86400,
@@ -1151,13 +1144,6 @@ const TEMPLATE = {
       "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/twitter.mrs",
       "path": "./ruleset/twitter/x-ip.mrs"
     },
-    "unionpay": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "classical",
-      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/UnionPay/UnionPay.yaml",
-      "path": "./ruleset/unionpay.yaml"
-    },
     "visa": {
       "type": "http",
       "interval": 86400,
@@ -1165,15 +1151,6 @@ const TEMPLATE = {
       "format": "mrs",
       "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/visa.mrs",
       "path": "./ruleset/visa.mrs"
-    },
-    "wechatpay": {
-      "type": "inline",
-      "behavior": "domain",
-      "payload": [
-        "+.tenpay.com",
-        "+.wechatpay.com",
-        "+.pay.weixin.qq.com"
-      ]
     },
     "wise": {
       "type": "http",
@@ -1244,9 +1221,7 @@ const TEMPLATE = {
     "DOMAIN,repo.huaweicloud.com,DIRECT",
     "DOMAIN,mirrors.163.com,DIRECT",
     "DOMAIN,gh-proxy.com,DIRECT",
-    "RULE-SET,alipay,DIRECT",
-    "RULE-SET,wechatpay,DIRECT",
-    "RULE-SET,unionpay,DIRECT",
+    "DOMAIN-SUFFIX,alipayeshop.com,DIRECT",
     // 国内 Apple、Microsoft、Games 分类直连统一交给 echs_direct。
     "RULE-SET,echs_direct_ip,DIRECT,no-resolve",
     "RULE-SET,echs_direct,DIRECT",
