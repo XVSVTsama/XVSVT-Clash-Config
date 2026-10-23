@@ -108,14 +108,15 @@ sniffer:
     - '+.oray.com'
     - '+.sunlogin.net'
   skip-dst-address:
+    - 'rule-set:echs_direct_ip'
+    - 'rule-set:cncidr'
+    - 'rule-set:lancidr'
+    - 'rule-set:microsoft_ip'
+    - 'rule-set:apple_ip'
     - 'rule-set:telegramcidr'
     - 'rule-set:twitter-x-ip'
-    - 'rule-set:lancidr'
-    - 'rule-set:cncidr'
-    - 'rule-set:apple_ip'
-    - 'rule-set:microsoft_ip'
-    - 'rule-set:steam_ip'
     - 'rule-set:twitter-x-blackmatrix7-No_Resolve'
+    - 'rule-set:steam_ip'
     - 160.79.104.0/21
     - 2607:6bc0::/48
     - 8.8.8.8/32
