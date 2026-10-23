@@ -589,7 +589,8 @@ const TEMPLATE = {
       "rule-set:cn",
       "rule-set:echs_direct",
       "rule-set:googlefcm",
-      "rule-set:applications",
+      "yacd.haishan.me",
+      "+.alipayeshop.com",
       "rule-set:pixiv",
       "pixshaft.com",
       "gh-proxy.com"
@@ -985,13 +986,6 @@ const TEMPLATE = {
       "url": "https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/douyin.mrs",
       "path": "./ruleset/douyin.mrs"
     },
-    "applications": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "domain",
-      "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/applications.txt",
-      "path": "./ruleset/applications.yaml"
-    },
     "cn": {
       "type": "http",
       "interval": 86400,
@@ -1235,7 +1229,7 @@ const TEMPLATE = {
     ]
   },
   "rules": [
-    "AND,((NETWORK,UDP),(DST-PORT,3478-3479/5349-5350/19302-19309),(NOT,((RULE-SET,cncidr))),(NOT,((RULE-SET,cn))),(NOT,((RULE-SET,applications))),(NOT,((RULE-SET,games))),(NOT,((RULE-SET,echs_direct)))),REJECT",
+    "AND,((NETWORK,UDP),(DST-PORT,3478-3479/5349-5350/19302-19309),(NOT,((RULE-SET,cncidr))),(NOT,((RULE-SET,cn))),(NOT,((RULE-SET,games))),(NOT,((RULE-SET,echs_direct)))),REJECT",
     "RULE-SET,HijackingPlus,REJECT",
     "DOMAIN,mirrors.tuna.tsinghua.edu.cn,DIRECT",
     "DOMAIN,mirrors.ustc.edu.cn,DIRECT",
@@ -1250,7 +1244,6 @@ const TEMPLATE = {
     "DOMAIN,repo.huaweicloud.com,DIRECT",
     "DOMAIN,mirrors.163.com,DIRECT",
     "DOMAIN,gh-proxy.com,DIRECT",
-    "RULE-SET,applications,DIRECT",
     "RULE-SET,alipay,DIRECT",
     "RULE-SET,wechatpay,DIRECT",
     "RULE-SET,unionpay,DIRECT",

@@ -203,7 +203,8 @@ dns:
     - rule-set:cn
     - rule-set:echs_direct
     - rule-set:googlefcm
-    - rule-set:applications
+    - yacd.haishan.me
+    - +.alipayeshop.com
     - rule-set:pixiv
     - pixshaft.com
     - gh-proxy.com
@@ -429,7 +430,6 @@ rule-providers:
   alipay: { <<: *classical_yaml, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/AliPay/AliPay.yaml', path: ./ruleset/alipay.yaml }
   apple: { <<: *domain_mrs, url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/apple.mrs', path: ./ruleset/apple.mrs }
   apple_ip: { <<: *ipcidr_mrs, url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geoip/apple.mrs', path: ./ruleset/apple_ip.mrs }
-  applications: { <<: *domain_yaml, url: 'https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/applications.txt', path: ./ruleset/applications.yaml }
   category-cryptocurrency: { <<: *domain_mrs, url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-cryptocurrency.mrs', path: ./ruleset/category-cryptocurrency.mrs }
   cn: { <<: *domain_mrs, url: 'https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/cn.mrs', path: ./ruleset/cn.mrs }
   cncidr: { <<: *ipcidr_mrs, url: 'https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/cnip.mrs', path: ./ruleset/cncidr.mrs }
@@ -550,7 +550,7 @@ sub-rules:
 
     - MATCH,DIRECT                                           
 rules:
-  - AND,((NETWORK,UDP),(DST-PORT,3478-3479/5349-5350/19302-19309),(NOT,((RULE-SET,cncidr))),(NOT,((RULE-SET,cn))),(NOT,((RULE-SET,applications))),(NOT,((RULE-SET,games))),(NOT,((RULE-SET,echs_direct)))),REJECT
+  - AND,((NETWORK,UDP),(DST-PORT,3478-3479/5349-5350/19302-19309),(NOT,((RULE-SET,cncidr))),(NOT,((RULE-SET,cn))),(NOT,((RULE-SET,games))),(NOT,((RULE-SET,echs_direct)))),REJECT
   - RULE-SET,HijackingPlus,REJECT
   - DOMAIN,mirrors.tuna.tsinghua.edu.cn,DIRECT
   - DOMAIN,mirrors.ustc.edu.cn,DIRECT
@@ -565,7 +565,6 @@ rules:
   - DOMAIN,repo.huaweicloud.com,DIRECT
   - DOMAIN,mirrors.163.com,DIRECT
   - DOMAIN,gh-proxy.com,DIRECT
-  - RULE-SET,applications,DIRECT
   - RULE-SET,alipay,DIRECT
   - RULE-SET,wechatpay,DIRECT
   - RULE-SET,unionpay,DIRECT
