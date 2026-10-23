@@ -591,7 +591,8 @@ const TEMPLATE = {
       "rule-set:googlefcm",
       "rule-set:applications",
       "rule-set:pixiv",
-      "pixshaft.com"
+      "pixshaft.com",
+      "gh-proxy.com"
     ],
   },
   "hosts": {

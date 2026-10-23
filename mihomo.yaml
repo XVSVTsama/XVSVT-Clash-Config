@@ -206,6 +206,7 @@ dns:
     - rule-set:applications
     - rule-set:pixiv
     - pixshaft.com
+    - gh-proxy.com
 
 hosts                             :                                            
   '+.clash.dev'               : [ '127.0.0.1'          ]                
