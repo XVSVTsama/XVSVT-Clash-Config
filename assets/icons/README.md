@@ -8,7 +8,7 @@
 - `self-` 表示本仓库自绘或自用制作的素材；`upstream-<作者或项目>-` 标示第三方来源，不表示本仓库拥有相关品牌权利。
 - 本目录只保留 YAML / JS 实际引用的图像，包括开关控制的可选功能和运行时生成的分组；不预存未使用的图标。`assets/avatar.png` 是主 README 正在使用的头像，不属于本目录图标。
 - 新增或替换图标时，同步修改 YAML、JS 内嵌模板及其他运行时引用，并更新本页的文件清单、来源、改动与许可说明。删除失去全部配置引用的旧图片，保留适用的署名与许可文本。
-- 配置统一引用本仓库的 `https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/<文件名>`。本地修改须发布后远程地址才会更新；客户端或 CDN 可能仍有缓存。
+- 配置统一引用本仓库的 `https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/<文件名>`。本地修改须发布后远程地址才会更新；客户端或 CDN 可能仍有缓存。
 
 ## 尺寸与视觉归一化
 
