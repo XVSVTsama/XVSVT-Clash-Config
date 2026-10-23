@@ -737,7 +737,7 @@ const TEMPLATE = {
     },
     {
       "name": "💳 金融支付",
-      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-simple-icons-paypal.svg",
+      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-simple-icons-bitcoin.svg",
       "type": "select",
       "proxies": [
         "👉 手动切换",

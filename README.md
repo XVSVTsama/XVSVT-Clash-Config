@@ -298,7 +298,7 @@ venn-beta
 - [Simple Icons](https://github.com/simple-icons/simple-icons)
 - 荷兰国旗图标由本项目自行绘制，并托管于 [`assets/icons/self-Netherlands.png`](assets/icons/self-Netherlands.png)。
 
-
+各图标文件的来源、许可、可使用范围及 SVG 优先维护约定，统一见 [图标资源与使用说明](assets/icons/README.md)。
 
 ### 脚本与配置参考
 
