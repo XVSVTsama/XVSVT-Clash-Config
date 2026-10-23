@@ -10,6 +10,17 @@
 - 新增或替换图标时，同步修改 YAML、JS 内嵌模板及其他运行时引用，并更新本页的文件清单、来源、改动与许可说明。删除失去全部配置引用的旧图片，保留适用的署名与许可文本。
 - 配置统一引用本仓库的 `https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/<文件名>`。本地修改须发布后远程地址才会更新；客户端或 CDN 可能仍有缓存。
 
+## 尺寸与视觉归一化
+
+当前配置引用的 28 张图标（17 PNG、11 SVG）统一按以下原则处理，文件名、格式与配置引用不变：
+
+- PNG 使用 **144×144 像素**透明画布；SVG 使用 **`viewBox="0 0 100 100"`**。按完整可见图形边界等比缩放并居中，不拉伸、不裁掉可见内容，也不以其他图案替换原稿。
+- 图形最长可见边以画布的**约 80%**为目标，四周保留留白。占比是视觉目标而非逐像素硬阈值；抗锯齿、低透明度边缘和阴影会使实际非透明边界略有差异，处理时仍保留这些内容。
+- 为平衡横向旗帜与细线图形的小尺寸辨识度，以下文件作轻微光学放大：`self-Netherlands.png`、`upstream-Koolson-Qure-Singapore.png`、`upstream-Koolson-Qure-United_States.png`、`upstream-simple-icons-meta.svg` 的目标约 **83%**；`upstream-clash-verge-rev-balance.svg` 的目标约 **84%**。其他文件按约 80% 处理。
+- PNG 仅进行等比重采样和透明留白调整；SVG 保留原路径、填色、渐变、裁剪定义及内部引用，通过外层等比变换调整尺寸与位置。原有可辨识设计和配色保留，PNG 不描摹为 SVG，SVG 不栅格化。
+
+本次归一化仅改变尺寸、位置与留白，**不改变来源、许可、署名要求、商业用途限制或品牌权利边界**；下列各来源的说明与限制仍适用。
+
 ## 使用范围与许可边界
 
 这些图像在本项目中用于标识代理策略、服务及设置，不表示品牌方与本项目存在合作、赞助或背书关系。
@@ -44,7 +55,7 @@
 
 ## Simple Icons
 
-来源固定为 [`90bd1f3e7b77851fd0c56474f6fa43b816babdab`](https://github.com/simple-icons/simple-icons/tree/90bd1f3e7b77851fd0c56474f6fa43b816babdab/icons)。各文件保留该版本 SVG 的几何路径及 `24×24` viewBox，仅按同版本 [品牌色元数据](https://github.com/simple-icons/simple-icons/blob/90bd1f3e7b77851fd0c56474f6fa43b816babdab/data/simple-icons.json) 增加显式 `fill`，避免依赖客户端 CSS。
+来源固定为 [`90bd1f3e7b77851fd0c56474f6fa43b816babdab`](https://github.com/simple-icons/simple-icons/tree/90bd1f3e7b77851fd0c56474f6fa43b816babdab/icons)。各文件保留该版本 SVG 在原 `24×24` 坐标系中的几何路径，并按同版本 [品牌色元数据](https://github.com/simple-icons/simple-icons/blob/90bd1f3e7b77851fd0c56474f6fa43b816babdab/data/simple-icons.json) 增加显式 `fill`，避免依赖客户端 CSS；本次归一化仅增加外层等比缩放与平移，将画布统一为 `viewBox="0 0 100 100"`，不改写原路径或品牌色。
 
 | 本地文件 | 上游文件 | 用途 / 显式颜色 |
 | --- | --- | --- |
