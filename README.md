@@ -30,7 +30,6 @@
   <a href="#script-override">JavaScript 说明</a> ·
   <a href="#dns-model">dns-host背景说明</a> ·
   <a href="#ruleset-overlap">规则集重合</a> ·
-  <a href="#update-notes">更新需知</a> ·
   <a href="#acknowledgments">致谢</a> ·
   <a href="#star-history">Star History</a> ·
   <a href="#disclaimer">免责声明</a>
@@ -246,99 +245,6 @@ venn-beta
 两套来源不同却覆盖同类站点，在 `rules` 中同指 `🤖 AI大模型`。
 
 > 以上重合关系按各规则集的覆盖范围与来源判断（依据取自 `mihomo.yaml` 的 `rules:` 引用与注释）。
-
----
-
-<a id="update-notes"></a>
-
-<br>
-
-<h2 align="center">更新需知</h2>
-
-<br>
-
-<details>
-<summary>更新提醒（8 条）</summary>
-
-### 2026-10-22
-
-**适用范围**：JS/YAML
-
-接管虚拟网卡中的 DNS 请求，让域名解析按配置统一处理。
-
-[相关提交：`635708b`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/635708b)
-
----
-
-### 2026-10-21—2026-10-22
-
-**适用范围**：JS/YAML
-
-支持使用订阅中的节点，减少手动维护节点列表的需要；直接使用 YAML 时，需先填入自己的订阅。
-
-[相关提交：`0fffb5d`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/0fffb5d)、[`15e41c6`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/15e41c6)、[`073081c`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/073081c)
-
----
-
-### 2026-10-14
-
-**适用范围**：JS/YAML
-
-国际游戏流量默认直连；需要代理时，请手动切换。
-
-[相关提交：`beafa5c`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/beafa5c)
-
----
-
-### 2026-10-14
-
-**适用范围**：JS/YAML
-
-Apple、Microsoft 等服务中符合直连条件的流量优先直连，其余流量仍可单独选择线路。
-
-[相关提交：`8b2e458`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/8b2e458)
-
----
-
-### 2026-10-06
-
-**适用范围**：JS/YAML
-
-Twitter、AI 和 TikTok 仅使用名称符合住宅、美国等条件且不含香港、新加坡标记的节点；没有匹配节点时，需调整节点选择条件。
-
-[相关提交：`6bf27df`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/6bf27df)
-
----
-
-### 2026-09-28
-
-**适用范围**：JS/YAML
-
-调整虚拟网卡的网络处理方式，更新后请留意设备上的连接兼容性。
-
-[相关提交：`41bc108`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/41bc108)
-
----
-
-### 2026-09-03
-
-**适用范围**：JS/YAML
-
-Claude 等 AI 服务可使用 AI 专用线路，便于与其他流量分开选择节点。
-
-[相关提交：`aafa648`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/aafa648)
-
----
-
-### 2026-08-08—2026-09-03
-
-**适用范围**：JS
-
-支持节点域名的自定义映射与私有 DNS，方便使用自建解析服务。
-
-[相关提交：`fb461c0`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/fb461c0)、[`8fad6ec`](https://github.com/XVSVTsama/XVSVT-Clash-Config/commit/8fad6ec)
-
-</details>
 
 ---
 
