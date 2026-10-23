@@ -550,6 +550,19 @@ sub-rules:
 rules:
   - AND,((NETWORK,UDP),(DST-PORT,3478-3479/5349-5350/19302-19309),(NOT,((RULE-SET,cncidr))),(NOT,((RULE-SET,cn))),(NOT,((RULE-SET,applications))),(NOT,((RULE-SET,games))),(NOT,((RULE-SET,echs_direct)))),REJECT
   - RULE-SET,HijackingPlus,REJECT
+  - DOMAIN,mirrors.tuna.tsinghua.edu.cn,DIRECT
+  - DOMAIN,mirrors.ustc.edu.cn,DIRECT
+  - DOMAIN,mirrors.bfsu.edu.cn,DIRECT
+  - DOMAIN,mirror.nju.edu.cn,DIRECT
+  - DOMAIN,mirrors.hit.edu.cn,DIRECT
+  - DOMAIN,mirror.lzu.edu.cn,DIRECT
+  - DOMAIN,mirrors.aliyun.com,DIRECT
+  - DOMAIN,mirrors.cloud.tencent.com,DIRECT
+  - DOMAIN,mirrors.tencent.com,DIRECT
+  - DOMAIN,mirrors.huaweicloud.com,DIRECT
+  - DOMAIN,repo.huaweicloud.com,DIRECT
+  - DOMAIN,mirrors.163.com,DIRECT
+  - DOMAIN,gh-proxy.com,DIRECT
   - RULE-SET,applications,DIRECT
   - RULE-SET,alipay,DIRECT
   - RULE-SET,wechatpay,DIRECT
