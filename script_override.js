@@ -140,6 +140,18 @@ const DOMESTIC_ENTRY_PROXIES = {
     type: 'http',
     server: '36.111.33.167',
     port: 13128
+  }, {
+    type: 'socks5',
+    server: '175.6.28.82',
+    port: 59999
+  }, {
+    type: 'socks5',
+    server: '113.249.111.67',
+    port: 1080
+  }, {
+    type: 'socks5',
+    server: '218.95.39.30',
+    port: 59999
   }],
 
   // 中国联通
@@ -147,6 +159,14 @@ const DOMESTIC_ENTRY_PROXIES = {
     type: 'http',
     server: '119.188.131.55',
     port: 17981
+  }, {
+    type: 'socks5',
+    server: '140.207.114.166',
+    port: 10080
+  }, {
+    type: 'socks5',
+    server: '61.182.120.230',
+    port: 7890
   }],
 
   // 中国移动
@@ -154,6 +174,30 @@ const DOMESTIC_ENTRY_PROXIES = {
     type: 'http',
     server: '116.196.150.180',
     port: 17981
+  }, {
+    type: 'socks5',
+    server: '223.113.241.216',
+    port: 59999
+  }, {
+    type: 'socks5',
+    server: '120.220.197.200',
+    port: 59999
+  }, {
+    type: 'socks5',
+    server: '120.220.197.196',
+    port: 59999
+  }, {
+    type: 'socks5',
+    server: '120.220.197.199',
+    port: 59999
+  }, {
+    type: 'socks5',
+    server: '112.12.84.4',
+    port: 59999
+  }, {
+    type: 'socks5',
+    server: '112.12.84.5',
+    port: 59999
   }]
 };
 
