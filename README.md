@@ -75,6 +75,11 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 | **✖️ Twitter** | `filter` 匹配住宅/美国系命名节点，排除香港/新加坡节点 | 🚨 **节点命名不符将导致此策略组为空！** |
 | **🤖 AI大模型** | `filter` 匹配住宅/美国系命名节点，排除香港/新加坡节点 | 🚨 **节点命名不符将导致此策略组为空！** |
 | **🎵 TikTok** | `filter` 匹配住宅/美国系命名节点，排除香港/新加坡节点 | 🚨 **节点命名不符将导致此策略组为空！** |
+| **💳 金融支付** | 加密货币、PayPal、Stripe、Visa、Mastercard、Wise 域名 | 国内支付优先 `DIRECT`；不等同于覆盖所有银行/券商 |
+| **♾️ Meta** | Facebook、Instagram、WhatsApp、Threads 等 Meta 家族域名 | Instagram 不单列；现有 AI 特例仍优先 |
+| **🎧 Spotify** | Spotify 音乐及相关服务域名 | 默认跟随手动切换，可独立选择节点 |
+| **💬 Discord** | Discord 域名 | 沿用现有全局 UDP/STUN 拦截规则，语音连通性依网络而定 |
+| **👽 Reddit** | Reddit 及相关资源域名 | 默认跟随手动切换，可独立选择节点 |
 | **FCM** | Google FCM 相关域名（`rules` 中 `googlefcm` 规则集的目标组） | 静态 YAML 依次提供 `👉 手动切换`、`DIRECT`；使用 JS 后由 `FCM直连` 控制，默认仅 `DIRECT` |
 
 > 注：不使用覆写脚本直接运行 YAML 时，需自行提供节点或有效订阅 provider。YAML 与脚本的常规动态节点组均通过 Mihomo 原生 `include-all` 纳入顶层 `proxies` 与 `proxy-providers` 节点，带 `filter` 的组对两者继续筛选；🌍 PROXY、FCM 不直接使用该字段。🍎 海外苹果 / 💠 海外微软 / 🎮 Steam平台（非下载/CDN）/ 🎮 Games-Global 保留固定策略项。脚本的 TGDC 实验地区组例外：仅依据顶层节点筛选，地区无候选时显式列出合格保底节点。
@@ -104,7 +109,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 - **节点与代理组**：订阅里的真实节点填入顶层 `proxies`；常规动态节点组通过 Mihomo 原生 `include-all` 引入顶层节点与 provider 节点，带 `filter` 的组继续由 Mihomo 筛选。固定策略项保留在各组的 `proxies` 列表中。
 - **订阅自带 `proxy-providers`**：原样保留；使用 `include-all` 的代理组会原生纳入这些 provider。脚本生成的 TGDC 实验地区组仍使用 `include-all-proxies` 或显式保底列表，不纳入 provider 运行时节点。
 - **DNS**：动态合并出 `dns.proxy-server-nameserver-policy`（模板不预置该键，以脚本计算结果为准），细节见下方流程图。
-- **开关声明**：脚本首行的 `Compatible_With_Bettbox` 兼容声明必须置顶——Bettbox 只在脚本开头识别该声明，删除或下移会导致"自定义规则开关"入口不显示；声明中的 `policyGroupOptions` 列出归入图形化开关分类的 12 个策略组，`ruleOptionsEnable` 则是实际生效的开关表，键名需与声明保持一致。
+- **开关声明**：脚本首行的 `Compatible_With_Bettbox` 兼容声明必须置顶——Bettbox 只在脚本开头识别该声明，删除或下移会导致"自定义规则开关"入口不显示；声明中的 `policyGroupOptions` 列出归入图形化开关分类的 17 个策略组，`ruleOptionsEnable` 则是实际生效的开关表，键名需与声明保持一致。
 
 ### 🔀 hosts / DNS 处理流程
 
@@ -114,7 +119,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 脚本开头的 `Compatible_With_Bettbox` 声明用 `policyGroupOptions` 划定了"策略组开关"分类：只列进去的组出现在该分类下，没列进去的组不受它控制，改由脚本的 `ruleOptionsEnable` 决定存在形态（两者都在脚本顶部可查）。
 
-**列入 `policyGroupOptions` 的策略组（12 个）**
+**列入 `policyGroupOptions` 的策略组（17 个）**
 
 | 策略组名称 | Bettbox 开关 | 默认 |
 | :--- | :--- | :--- |
@@ -130,8 +135,13 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 | **✖️ Twitter** | `✖️ Twitter` | 开启 |
 | **🤖 AI大模型** | `🤖 AI大模型` | 开启 |
 | **🎵 TikTok** | `🎵 TikTok` | 开启 |
+| **💳 金融支付** | `💳 金融支付` | 开启 |
+| **♾️ Meta** | `♾️ Meta` | 开启 |
+| **🎧 Spotify** | `🎧 Spotify` | 开启 |
+| **💬 Discord** | `💬 Discord` | 开启 |
+| **👽 Reddit** | `👽 Reddit` | 开启 |
 
-这 12 个开关默认全部开启，关闭即移除该组，并清理其他组与 `rules` 中的引用（`🌍 PROXY` 关闭时其余引用回退到 `DIRECT`；TGDC 开启时 `📲 Telegram` 开关同时管 `📲 Telegram(兜底)`）。
+这 17 个开关默认全部开启，关闭即移除该组，并清理其他组与 `rules` 中的引用（`🌍 PROXY` 关闭时其余引用回退到 `DIRECT`；TGDC 开启时 `📲 Telegram` 开关同时管 `📲 Telegram(兜底)`）。
 
 **未列入 `policyGroupOptions` 的组**
 
@@ -275,15 +285,22 @@ venn-beta
 - [Loyalsoldier/clash-rules](https://github.com/Loyalsoldier/clash-rules)
 - [blackmatrix7/ios_rule_script](https://github.com/blackmatrix7/ios_rule_script)
 
+新增服务域名沿用 [MetaCubeX MRS 集合](https://github.com/MetaCubeX/meta-rules-dat/tree/meta/geo/geosite)，每日更新；Meta 集合已覆盖 Instagram，不重复叠加子品牌规则。金融支付使用 `category-cryptocurrency`、`paypal`、`stripe`、`visa`、`mastercard`、`wise`，不是全部金融机构规则。国内支付由收藏上游 blackmatrix7 的 [AliPay](https://github.com/blackmatrix7/ios_rule_script/tree/master/rule/Clash/AliPay)、[UnionPay](https://github.com/blackmatrix7/ios_rule_script/tree/master/rule/Clash/UnionPay) 及内联微信支付域名（`tenpay.com`、`wechatpay.com`、`pay.weixin.qq.com`）优先直连，既有国内直连规则继续保留。Google / Google-CN 仍走 `🌍 PROXY`。
+
+既有 `cn` / `echs_direct` 仍优先于新增服务组；与其重合的域名会提前直连（例如当前集合中的 `binancezh.top`、`facebook.wang`），因此服务组并非无条件接管其规则集内的每个域名。 对被既有宽泛规则遮蔽的 `bybit-exchange.github.io`、`d3r7nsslvs6aaf.cloudfront.net`，仅添加精确域名例外，分别放在 Microsoft 集合、CloudFront 后缀规则之前；金融支付组关闭时，两条例外随其他金融规则回退到 `🌍 PROXY`（该组也关闭时回退 `DIRECT`），不改变其他 GitHub / CloudFront 域名的处理。
+
 ### 图标作者与原项目
 
 - [Koolson/Qure](https://github.com/Koolson/Qure) 与 [MiToverG422/Qure](https://github.com/MiToverG422/Qure)
 - [DustinWin/ruleset_geodata](https://github.com/DustinWin/ruleset_geodata)
 - [AIsouler/MyClash](https://github.com/AIsouler/MyClash)
 - [Clash Verge](https://www.clashverge.dev/)
+- [Simple Icons](https://github.com/simple-icons/simple-icons)（本次新增五组的品牌 SVG；[项目 CC0 1.0 许可](assets/icons/licenses/simple-icons-LICENSE.md)）
 - 荷兰国旗图标由本项目自行绘制，并托管于 [`assets/icons/self-Netherlands.png`](assets/icons/self-Netherlands.png)。
 
-图标资源统一托管在 `assets/icons/` 并通过 jsDelivr 引用。
+图标资源统一托管在 `assets/icons/` 并通过 jsDelivr 引用。本次新增金融支付 / Meta / Spotify / Discord / Reddit 五组统一使用 [Simple Icons 固定版本 `90bd1f3`](https://github.com/simple-icons/simple-icons/tree/90bd1f3e7b77851fd0c56474f6fa43b816babdab/icons) 的 `paypal.svg`、`meta.svg`、`spotify.svg`、`discord.svg`、`reddit.svg`，保存为 `upstream-simple-icons-*.svg`。保留上游 SVG 路径与 `24×24` viewBox，仅按同版本 [品牌色元数据](https://github.com/simple-icons/simple-icons/blob/90bd1f3e7b77851fd0c56474f6fa43b816babdab/data/simple-icons.json) 增加显式 `fill`（PayPal `#002991`、Meta `#0467DF`、Spotify `#1ED760`、Discord `#5865F2`、Reddit `#FF4500`），不依赖客户端 CSS 或 `currentColor`。既有其他 Qure / AIsouler 图标不作替换。
+
+Simple Icons 项目采用 CC0 1.0，但并不代表所有品牌图标的第三方权利均被豁免；CC0 不授予商标权，使用时仍应遵循品牌方规范及 [上游免责声明](https://github.com/simple-icons/simple-icons/blob/90bd1f3e7b77851fd0c56474f6fa43b816babdab/DISCLAIMER.md)。这次仅替换新增图标，不改变既有图标的来源或使用条件。
 
 ### 脚本与配置参考
 

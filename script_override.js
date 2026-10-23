@@ -16,6 +16,11 @@ const Compatible_With_Bettbox = {
     '✖️ Twitter',
     '🤖 AI大模型',
     '🎵 TikTok',
+    '💳 金融支付',
+    '♾️ Meta',
+    '🎧 Spotify',
+    '💬 Discord',
+    '👽 Reddit',
   ]
 };
 /**
@@ -106,6 +111,12 @@ const ruleOptionsEnable = {
   '🤖 AI大模型': true,
   // TikTok 视频平台策略组
   '🎵 TikTok': true,
+  // 金融支付及社交/音乐服务；Instagram 统一归入 Meta。
+  '💳 金融支付': true,
+  '♾️ Meta': true,
+  '🎧 Spotify': true,
+  '💬 Discord': true,
+  '👽 Reddit': true,
 
   // --- 节点与网络功能开关 ---
   // 开启时统一把订阅节点 skip-cert-verify 置为 false（强制校验证书）；关闭时不干预，保留订阅节点原有设置。对全部节点一视同仁
@@ -722,6 +733,66 @@ const TEMPLATE = {
       "include-all": true
     },
     {
+      "name": "💳 金融支付",
+      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-simple-icons-paypal.svg",
+      "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
+      "include-all": true
+    },
+    {
+      "name": "♾️ Meta",
+      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-simple-icons-meta.svg",
+      "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
+      "include-all": true
+    },
+    {
+      "name": "🎧 Spotify",
+      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-simple-icons-spotify.svg",
+      "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
+      "include-all": true
+    },
+    {
+      "name": "💬 Discord",
+      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-simple-icons-discord.svg",
+      "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
+      "include-all": true
+    },
+    {
+      "name": "👽 Reddit",
+      "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-simple-icons-reddit.svg",
+      "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
+      "include-all": true
+    },
+    {
       "hidden": true,
       "icon": "https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/upstream-MiToverG422-Qure-fcm.png",
       "name": "FCM",
@@ -778,6 +849,45 @@ const TEMPLATE = {
       "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs",
       "path": "./ruleset/ai-2.mrs"
     },
+    "alipay": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "classical",
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/AliPay/AliPay.yaml",
+      "path": "./ruleset/alipay.yaml"
+    },
+    "category-cryptocurrency": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-cryptocurrency.mrs",
+      "path": "./ruleset/category-cryptocurrency.mrs"
+    },
+    "discord": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/discord.mrs",
+      "path": "./ruleset/discord.mrs"
+    },
+    "mastercard": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/mastercard.mrs",
+      "path": "./ruleset/mastercard.mrs"
+    },
+    "meta": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/meta.mrs",
+      "path": "./ruleset/meta.mrs"
+    },
     "microsoft": {
       "type": "http",
       "interval": 86400,
@@ -809,6 +919,30 @@ const TEMPLATE = {
       "format": "mrs",
       "url": "https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geoip/apple.mrs",
       "path": "./ruleset/apple_ip.mrs"
+    },
+    "paypal": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/paypal.mrs",
+      "path": "./ruleset/paypal.mrs"
+    },
+    "reddit": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/reddit.mrs",
+      "path": "./ruleset/reddit.mrs"
+    },
+    "spotify": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/spotify.mrs",
+      "path": "./ruleset/spotify.mrs"
     },
     "steam": {
       "type": "http",
@@ -958,6 +1092,14 @@ const TEMPLATE = {
       "url": "https://raw.githubusercontent.com/echs-top/proxy/main/mrs/domain/proxy@direct.mrs",
       "path": "./rules/proxy@direct.mrs"
     },
+    "stripe": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/stripe.mrs",
+      "path": "./ruleset/stripe.mrs"
+    },
     "telegram_domain": {
       "type": "http",
       "interval": 86400,
@@ -997,6 +1139,38 @@ const TEMPLATE = {
       "format": "mrs",
       "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/twitter.mrs",
       "path": "./ruleset/twitter/x-ip.mrs"
+    },
+    "unionpay": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "classical",
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/UnionPay/UnionPay.yaml",
+      "path": "./ruleset/unionpay.yaml"
+    },
+    "visa": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/visa.mrs",
+      "path": "./ruleset/visa.mrs"
+    },
+    "wechatpay": {
+      "type": "inline",
+      "behavior": "domain",
+      "payload": [
+        "+.tenpay.com",
+        "+.wechatpay.com",
+        "+.pay.weixin.qq.com"
+      ]
+    },
+    "wise": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/wise.mrs",
+      "path": "./ruleset/wise.mrs"
     }
   },
   "sub-rules": {
@@ -1047,6 +1221,9 @@ const TEMPLATE = {
     "AND,((NETWORK,UDP),(DST-PORT,3478-3479/5349-5350/19302-19309),(NOT,((RULE-SET,cncidr))),(NOT,((RULE-SET,cn))),(NOT,((RULE-SET,applications))),(NOT,((RULE-SET,games))),(NOT,((RULE-SET,echs_direct)))),REJECT",
     "RULE-SET,HijackingPlus,REJECT",
     "RULE-SET,applications,DIRECT",
+    "RULE-SET,alipay,DIRECT",
+    "RULE-SET,wechatpay,DIRECT",
+    "RULE-SET,unionpay,DIRECT",
     // 国内 Apple、Microsoft、Games 分类直连统一交给 echs_direct。
     "RULE-SET,echs_direct_ip,DIRECT,no-resolve",
     "RULE-SET,echs_direct,DIRECT",
@@ -1063,11 +1240,15 @@ const TEMPLATE = {
     "DOMAIN-SUFFIX,cdnhwcxcy07.com,DIRECT",
     "DOMAIN-SUFFIX,cdngslb.com,DIRECT",
     "DOMAIN-SUFFIX,edgekey.net,DIRECT",
+    // 加密货币 API 的 CloudFront 域名例外
+    "DOMAIN,d3r7nsslvs6aaf.cloudfront.net,💳 金融支付",
     "DOMAIN-SUFFIX,cloudfront.net,DIRECT",
     "RULE-SET,googlefcm,FCM",
     "SUB-RULE,(PROCESS-NAME,com.dragon.read.oversea.gp),fanqie",
     "DOMAIN-KEYWORD,ikuuu,🌍 PROXY",
     // 通用直连规则优先，剩余 Apple / Microsoft 域名和 IP 再进入海外组。
+    // Bybit 静态资源位于 Microsoft 规则集内，优先保留金融支付分流。
+    "DOMAIN,bybit-exchange.github.io,💳 金融支付",
     "RULE-SET,microsoft_ip,💠 海外微软,no-resolve",
     "RULE-SET,microsoft,💠 海外微软",
     "RULE-SET,apple_ip,🍎 海外苹果,no-resolve",
@@ -1137,6 +1318,16 @@ const TEMPLATE = {
     "RULE-SET,ai-2,🤖 AI大模型",
     "RULE-SET,google,🌍 PROXY",
     "RULE-SET,google-cn,🌍 PROXY",
+    "RULE-SET,meta,♾️ Meta",
+    "RULE-SET,spotify,🎧 Spotify",
+    "RULE-SET,discord,💬 Discord",
+    "RULE-SET,reddit,👽 Reddit",
+    "RULE-SET,category-cryptocurrency,💳 金融支付",
+    "RULE-SET,paypal,💳 金融支付",
+    "RULE-SET,stripe,💳 金融支付",
+    "RULE-SET,visa,💳 金融支付",
+    "RULE-SET,mastercard,💳 金融支付",
+    "RULE-SET,wise,💳 金融支付",
     "PROCESS-NAME-REGEX,.*twitter.*,✖️ Twitter",
     "RULE-SET,twitter-x-ip,✖️ Twitter,no-resolve",
     "RULE-SET,twitter-x-domain,✖️ Twitter",
