@@ -366,6 +366,7 @@ const TGDC_RULES = [
 
 const TEMPLATE = {
   "mode": "rule",
+  "find-process-mode": "strict",
   "mixed-port": 7254,
   "port": 7249,
   "socks-port": 7346,
@@ -1365,6 +1366,37 @@ const TEMPLATE = {
     "PROCESS-NAME,bf6.exe,🎮 Games-Global",
     "RULE-SET,games,🎮 Games-Global",
     "RULE-SET,TikTok,🎵 TikTok",
+    // 金融支付 Android 进程兜底：仅处理未命中前置直连、拦截和专项规则的连接。
+    // 包名已核对官方 Google Play 详情；Android 客户端需支持包名识别，远端设备流量不适用。
+    // Bitget / HTX（火币）/ Bitget Wallet / Bybit
+    "PROCESS-NAME,com.bitget.exchange,💳 金融支付",
+    "PROCESS-NAME,pro.huobi,💳 金融支付",
+    "PROCESS-NAME,com.bitkeep.wallet,💳 金融支付",
+    "PROCESS-NAME,com.bybit.app,💳 金融支付",
+    // Keeper（原 Tonkeeper）/ Gram Wallet
+    "PROCESS-NAME,com.ton_keeper,💳 金融支付",
+    "PROCESS-NAME,io.gramwallet.app,💳 金融支付",
+    // Coinbase / OKX / Kraken / Crypto.com / Phantom / PayPal
+    "PROCESS-NAME,com.coinbase.android,💳 金融支付",
+    "PROCESS-NAME,com.okinc.okex.gp,💳 金融支付",
+    "PROCESS-NAME,com.kraken.invest.app,💳 金融支付",
+    "PROCESS-NAME,co.mona.android,💳 金融支付",
+    "PROCESS-NAME,app.phantom,💳 金融支付",
+    "PROCESS-NAME,com.paypal.android.p2pmobile,💳 金融支付",
+    // Binance / Binance.US / Gate / KuCoin / MEXC
+    "PROCESS-NAME,com.binance.dev,💳 金融支付",
+    "PROCESS-NAME,com.binance.us,💳 金融支付",
+    "PROCESS-NAME,com.gateio.gateio,💳 金融支付",
+    "PROCESS-NAME,com.kubi.kucoin,💳 金融支付",
+    "PROCESS-NAME,com.mexcpro.client,💳 金融支付",
+    // Trust Wallet / MetaMask / imToken / TokenPocket / SafePal / Exodus / Coinbase Wallet
+    "PROCESS-NAME,com.wallet.crypto.trustapp,💳 金融支付",
+    "PROCESS-NAME,io.metamask,💳 金融支付",
+    "PROCESS-NAME,im.token.app,💳 金融支付",
+    "PROCESS-NAME,vip.mytokenpocket,💳 金融支付",
+    "PROCESS-NAME,io.safepal.wallet,💳 金融支付",
+    "PROCESS-NAME,exodusmovement.exodus,💳 金融支付",
+    "PROCESS-NAME,org.toshi,💳 金融支付",
     "RULE-SET,proxy,🌍 PROXY",
     "RULE-SET,gfw,🌍 PROXY",
     "MATCH,🌍 PROXY"
