@@ -1400,7 +1400,7 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     },
     {
       name: '代理节点 DNS 使用 TCP',
-      icon: 'https://fastly.jsdelivr.net/gh/XVSVT-Clash-Config@main/assets/icons/self-TCP.png'
+      icon: 'https://fastly.jsdelivr.net/gh/XVSVTsama/XVSVT-Clash-Config@main/assets/icons/self-TCP.png'
     }
   ]);
 
