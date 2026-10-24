@@ -651,7 +651,7 @@ const TEMPLATE = {
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-clash-verge-rev-balance.svg",
       "type": "load-balance",
       "include-all": true,
-      "url": "https://www.gstatic.com/generate_204",
+      "url": "https://g.cn/generate_204",
       "interval": 300,
       "lazy": true,
       "strategy": "sticky-sessions"
@@ -666,7 +666,7 @@ const TEMPLATE = {
       "name": "♻️ 自动选择",
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-auto.png",
       "type": "url-test",
-      "url": "https://www.gstatic.com/generate_204",
+      "url": "https://g.cn/generate_204",
       "interval": 300,
       "tolerance": 50,
       "include-all": true
