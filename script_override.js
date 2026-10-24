@@ -58,7 +58,7 @@ const Compatible_With_Bettbox = {
  *
  *    3. proxy-groups 使用 Mihomo 原生 include-all / include-all-proxies
  *       动态引入订阅节点和代理提供者；🍎 海外苹果、💠 海外微软、🎮 Steam平台（非下载/CDN）、
- *       🎮 Games-Global 保留模板中显式列出的固定策略项。带 filter 的分组继续由 Mihomo
+ *       🎮 Games-Global、🎬 Emby 保留模板中显式列出的固定策略项。带 filter 的分组继续由 Mihomo
  *       原生筛选。TGDC 实验组在没有地区节点时仍由脚本显式生成保底节点列表。
  *
  *    4.【特别处理】DNS 与 hosts：
@@ -119,7 +119,7 @@ const ruleOptionsEnable = {
   '💳 金融支付': true,
   '♾️ Meta': true,
   '🎧 Spotify': true,
-  // Emby 生态播放器策略组
+  // Emby 播放器进程分流策略组
   '🎬 Emby': true,
   '💬 Discord': true,
   '👽 Reddit': true,
@@ -1260,7 +1260,7 @@ const TEMPLATE = {
     "DOMAIN-SUFFIX,cdnhwcxcy07.com,DIRECT",
     "DOMAIN-SUFFIX,cdngslb.com,DIRECT",
     "DOMAIN-SUFFIX,edgekey.net,DIRECT",
-    // Verified Android package IDs for apps that officially support Emby.
+    // 已核实支持 Emby 的 Android 播放器进程，统一分流至 🎬 Emby。
     "PROCESS-NAME,com.mountains.hills,🎬 Emby",
     "PROCESS-NAME,com.hamhub.app,🎬 Emby",
     "PROCESS-NAME,com.oumi.utility.media.hub,🎬 Emby",
@@ -1268,7 +1268,8 @@ const TEMPLATE = {
     "PROCESS-NAME,com.attempt.afusekt,🎬 Emby",
     "PROCESS-NAME,com.hush.yamby,🎬 Emby",
     "PROCESS-NAME,com.railux.mobile,🎬 Emby",
-    // 加密货币 API 的 CloudFront 域名例外
+    // Emby 进程规则需先于 CloudFront 通用直连规则，避免其流量被优先直连。
+    // 指定加密货币 API 仍走金融组；其余 cloudfront.net 域名直连。
     "DOMAIN,d3r7nsslvs6aaf.cloudfront.net,💳 金融支付",
     "DOMAIN-SUFFIX,cloudfront.net,DIRECT",
     "RULE-SET,googlefcm,FCM",
