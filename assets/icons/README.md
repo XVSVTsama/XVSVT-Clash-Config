@@ -12,7 +12,7 @@
 
 ## 尺寸与视觉归一化
 
-当前配置引用的 28 张图标（17 PNG、11 SVG）统一按以下原则处理，文件名、格式与配置引用不变：
+当前配置引用的 29 张图标（17 PNG、12 SVG）统一按以下原则处理，文件名、格式与配置引用不变：
 
 - PNG 使用 **144×144 像素**透明画布；SVG 使用 **`viewBox="0 0 100 100"`**。按完整可见图形边界等比缩放并居中，不拉伸、不裁掉可见内容，也不以其他图案替换原稿。
 - 图形最长可见边以画布的**约 80%**为目标，四周保留留白。占比是视觉目标而非逐像素硬阈值；抗锯齿、低透明度边缘和阴影会使实际非透明边界略有差异，处理时仍保留这些内容。
@@ -62,11 +62,12 @@
 | `upstream-simple-icons-bitcoin.svg` | [`bitcoin.svg`](https://github.com/simple-icons/simple-icons/blob/90bd1f3e7b77851fd0c56474f6fa43b816babdab/icons/bitcoin.svg) | 金融支付；橙色 BTC / ₿ 图形，`#F7931A` |
 | `upstream-simple-icons-google.svg` | [`google.svg`](https://github.com/simple-icons/simple-icons/blob/90bd1f3e7b77851fd0c56474f6fa43b816babdab/icons/google.svg) | Google，`#4285F4` |
 | `upstream-simple-icons-meta.svg` | [`meta.svg`](https://github.com/simple-icons/simple-icons/blob/90bd1f3e7b77851fd0c56474f6fa43b816babdab/icons/meta.svg) | Meta，`#0467DF` |
+| `upstream-simple-icons-emby.svg` | [`emby.svg`](https://github.com/simple-icons/simple-icons/blob/90bd1f3e7b77851fd0c56474f6fa43b816babdab/icons/emby.svg) | Emby，`#52B54B`；保留固定版本原始路径与品牌色，仅将 `24×24` 画布等比居中归一化至 `100×100` |
 | `upstream-simple-icons-spotify.svg` | [`spotify.svg`](https://github.com/simple-icons/simple-icons/blob/90bd1f3e7b77851fd0c56474f6fa43b816babdab/icons/spotify.svg) | Spotify，`#1ED760` |
 | `upstream-simple-icons-discord.svg` | [`discord.svg`](https://github.com/simple-icons/simple-icons/blob/90bd1f3e7b77851fd0c56474f6fa43b816babdab/icons/discord.svg) | Discord，`#5865F2` |
 | `upstream-simple-icons-reddit.svg` | [`reddit.svg`](https://github.com/simple-icons/simple-icons/blob/90bd1f3e7b77851fd0c56474f6fa43b816babdab/icons/reddit.svg) | Reddit，`#FF4500` |
 
-Simple Icons **项目**采用 [CC0 1.0](https://github.com/simple-icons/simple-icons/blob/90bd1f3e7b77851fd0c56474f6fa43b816babdab/LICENSE.md)。但 [上游免责声明](https://github.com/simple-icons/simple-icons/blob/90bd1f3e7b77851fd0c56474f6fa43b816babdab/DISCLAIMER.md) 明确说明：项目 CC0 不代表所有图标都是 CC0；CC0 不授予商标权；缺少许可或规范字段不代表没有限制。上述六个条目在该版本元数据中未见单图 `license` 字段，不能据此宣称它们均可不受限制地商用。
+Simple Icons **项目**采用 [CC0 1.0](https://github.com/simple-icons/simple-icons/blob/90bd1f3e7b77851fd0c56474f6fa43b816babdab/LICENSE.md)。但 [上游免责声明](https://github.com/simple-icons/simple-icons/blob/90bd1f3e7b77851fd0c56474f6fa43b816babdab/DISCLAIMER.md) 明确说明：项目 CC0 不代表所有图标都是 CC0；CC0 不授予商标权；缺少许可或规范字段不代表没有限制。上述七个条目在该版本元数据中未见单图 `license` 字段，不能据此宣称它们均可不受限制地商用。
 
 复用前请查看各条目的 `source`、`guidelines` 和品牌方的最新规范，例如 [Bitcoin](https://bitcoin.org)、[Google](https://about.google/brand-resource-center/brand-elements/)、[Meta](https://www.facebook.com/brand/resources/meta/company-brand)、[Spotify](https://developer.spotify.com/documentation/general/design-and-branding/#using-our-logo)、[Discord](https://discord.com/branding)、[Reddit](https://www.redditinc.com/brand)。本目录仅链接其项目许可，不另放 Simple Icons 独立许可文件。
 

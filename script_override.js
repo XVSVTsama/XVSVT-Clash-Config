@@ -9,6 +9,7 @@ const Compatible_With_Bettbox = {
     '👉 手动切换',
     '♻️ 自动选择',
     '📲 Telegram',
+    '🎬 Emby',
     '🎮 Games-Global',
     '🍎 海外苹果',
     '💠 海外微软',
@@ -98,6 +99,8 @@ const ruleOptionsEnable = {
   '♻️ 自动选择': true,
   // Telegram 通讯软件策略组
   '📲 Telegram': true,
+  // Emby 生态播放器策略组
+  '🎬 Emby': true,
   // 游戏策略组
   '🎮 Games-Global': true,
   // 海外 Apple 平台服务
@@ -715,6 +718,18 @@ const TEMPLATE = {
       "include-all": true
     },
     {
+      "name": "🎬 Emby",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-emby.svg",
+      "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
+      "include-all": true
+    },
+    {
       "name": "🎮 Games-Global",
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-games-cn.png",
       "type": "select",
@@ -1250,6 +1265,14 @@ const TEMPLATE = {
     "DOMAIN-SUFFIX,cloudfront.net,DIRECT",
     "RULE-SET,googlefcm,FCM",
     "SUB-RULE,(PROCESS-NAME,com.dragon.read.oversea.gp),fanqie",
+    // Verified Android package IDs for apps that officially support Emby.
+    "PROCESS-NAME,com.mountains.hills,🎬 Emby",
+    "PROCESS-NAME,com.hamhub.app,🎬 Emby",
+    "PROCESS-NAME,com.oumi.utility.media.hub,🎬 Emby",
+    "PROCESS-NAME,com.feifeiduck.capyplayer,🎬 Emby",
+    "PROCESS-NAME,com.attempt.afusekt,🎬 Emby",
+    "PROCESS-NAME,com.hush.yamby,🎬 Emby",
+    "PROCESS-NAME,com.railux.mobile,🎬 Emby",
     "DOMAIN-KEYWORD,ikuuu,🌍 PROXY",
     // 通用直连规则优先，剩余 Apple / Microsoft 域名和 IP 再进入海外组。
     // Bybit 静态资源位于 Microsoft 规则集内，优先保留金融支付分流。
