@@ -1260,9 +1260,6 @@ const TEMPLATE = {
     "DOMAIN-SUFFIX,cdnhwcxcy07.com,DIRECT",
     "DOMAIN-SUFFIX,cdngslb.com,DIRECT",
     "DOMAIN-SUFFIX,edgekey.net,DIRECT",
-    // 加密货币 API 的 CloudFront 域名例外
-    "DOMAIN,d3r7nsslvs6aaf.cloudfront.net,💳 金融支付",
-    "DOMAIN-SUFFIX,cloudfront.net,DIRECT",
     // Verified Android package IDs for apps that officially support Emby.
     "PROCESS-NAME,com.mountains.hills,🎬 Emby",
     "PROCESS-NAME,com.hamhub.app,🎬 Emby",
@@ -1271,6 +1268,9 @@ const TEMPLATE = {
     "PROCESS-NAME,com.attempt.afusekt,🎬 Emby",
     "PROCESS-NAME,com.hush.yamby,🎬 Emby",
     "PROCESS-NAME,com.railux.mobile,🎬 Emby",
+    // 加密货币 API 的 CloudFront 域名例外
+    "DOMAIN,d3r7nsslvs6aaf.cloudfront.net,💳 金融支付",
+    "DOMAIN-SUFFIX,cloudfront.net,DIRECT",
     "RULE-SET,googlefcm,FCM",
     "SUB-RULE,(PROCESS-NAME,com.dragon.read.oversea.gp),fanqie",
     "DOMAIN-KEYWORD,ikuuu,🌍 PROXY",
