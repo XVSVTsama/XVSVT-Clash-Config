@@ -315,15 +315,6 @@ proxy-groups:
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-telegram.png"
     type: select
     include-all: true
-  - name: 🎬 Emby
-    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-emby.svg"
-    type: select
-    proxies:
-      - 👉 手动切换
-      - ♻️ 自动选择
-      - 🔄 负载均衡
-      - DIRECT
-    include-all: true
   # Telegram DC 地区组为可选配置；启用时，需同时取消注释下方 rule-providers 与 rules 对应段落。
   # - name: 📲 Telegram-DC1-DC3-Miami
   #   icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-United_States.png"
@@ -395,6 +386,15 @@ proxy-groups:
     include-all: true
   - name: 🎧 Spotify
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-spotify.svg"
+    type: select
+    proxies:
+      - 👉 手动切换
+      - ♻️ 自动选择
+      - 🔄 负载均衡
+      - DIRECT
+    include-all: true
+  - name: 🎬 Emby
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-emby.svg"
     type: select
     proxies:
       - 👉 手动切换
@@ -596,8 +596,6 @@ rules:
   - DOMAIN-SUFFIX,edgekey.net,DIRECT
   - DOMAIN,d3r7nsslvs6aaf.cloudfront.net,💳 金融支付
   - DOMAIN-SUFFIX,cloudfront.net,DIRECT
-  - RULE-SET,googlefcm,FCM
-  - SUB-RULE,(PROCESS-NAME,com.dragon.read.oversea.gp),fanqie
   # Verified Android package IDs for apps that officially support Emby.
   - PROCESS-NAME,com.mountains.hills,🎬 Emby
   - PROCESS-NAME,com.hamhub.app,🎬 Emby
@@ -606,6 +604,8 @@ rules:
   - PROCESS-NAME,com.attempt.afusekt,🎬 Emby
   - PROCESS-NAME,com.hush.yamby,🎬 Emby
   - PROCESS-NAME,com.railux.mobile,🎬 Emby
+  - RULE-SET,googlefcm,FCM
+  - SUB-RULE,(PROCESS-NAME,com.dragon.read.oversea.gp),fanqie
   - DOMAIN-KEYWORD,ikuuu,🌍 PROXY
   - DOMAIN,bybit-exchange.github.io,💳 金融支付
   - RULE-SET,microsoft_ip,💠 海外微软,no-resolve
