@@ -79,6 +79,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 | **🔎 Google** | 既有 `google` / `google-cn` 规则集 | 默认跟随手动切换，可独立选择节点；Google FCM 与现有 AI 特例仍优先 |
 | **♾️ Meta** | Facebook、Instagram、WhatsApp、Threads 等 Meta 家族域名 | Instagram 不单列；现有 AI 特例仍优先 |
 | **🎧 Spotify** | Spotify 音乐及相关服务域名 | 默认跟随手动切换，可独立选择节点 |
+| **🎬 Emby** | Emby 播放器进程分流 | 当前仅覆盖 7 个已核实的 Android 客户端；其他平台未纳入 |
 | **💬 Discord** | Discord 域名 | 沿用现有全局 UDP/STUN 拦截规则，语音连通性依网络而定 |
 | **👽 Reddit** | Reddit 及相关资源域名 | 默认跟随手动切换，可独立选择节点 |
 | **FCM** | Google FCM 相关域名（`rules` 中 `googlefcm` 规则集的目标组） | 静态 YAML 依次提供 `👉 手动切换`、`DIRECT`；使用 JS 后由 `FCM直连` 控制，默认仅 `DIRECT` |
@@ -110,7 +111,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 - **节点与代理组**：订阅里的真实节点填入顶层 `proxies`；常规动态节点组通过 Mihomo 原生 `include-all` 引入顶层节点与 provider 节点，带 `filter` 的组继续由 Mihomo 筛选。固定策略项保留在各组的 `proxies` 列表中。
 - **订阅自带 `proxy-providers`**：原样保留；使用 `include-all` 的代理组会原生纳入这些 provider。脚本生成的 TGDC 实验地区组仍使用 `include-all-proxies` 或显式保底列表，不纳入 provider 运行时节点。
 - **DNS**：动态合并出 `dns.proxy-server-nameserver-policy`（模板不预置该键，以脚本计算结果为准），细节见下方流程图。
-- **开关声明**：脚本首行的 `Compatible_With_Bettbox` 兼容声明必须置顶——Bettbox 只在脚本开头识别该声明，删除或下移会导致"自定义规则开关"入口不显示；声明中的 `policyGroupOptions` 列出归入图形化开关分类的 18 个策略组，`ruleOptionsEnable` 则是实际生效的开关表，键名需与声明保持一致。
+- **开关声明**：脚本首行的 `Compatible_With_Bettbox` 兼容声明必须置顶——Bettbox 只在脚本开头识别该声明，删除或下移会导致"自定义规则开关"入口不显示；声明中的 `policyGroupOptions` 列出归入图形化开关分类的 19 个策略组，`ruleOptionsEnable` 则是实际生效的开关表，键名需与声明保持一致。
 
 ### 🔀 hosts / DNS 处理流程
 
@@ -120,7 +121,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 脚本开头的 `Compatible_With_Bettbox` 声明用 `policyGroupOptions` 划定了"策略组开关"分类：只列进去的组出现在该分类下，没列进去的组不受它控制，改由脚本的 `ruleOptionsEnable` 决定存在形态（两者都在脚本顶部可查）。
 
-**列入 `policyGroupOptions` 的策略组（18 个）**
+**列入 `policyGroupOptions` 的策略组（19 个）**
 
 | 策略组名称 | Bettbox 开关 | 默认 |
 | :--- | :--- | :--- |
@@ -140,10 +141,11 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 | **🔎 Google** | `🔎 Google` | 开启 |
 | **♾️ Meta** | `♾️ Meta` | 开启 |
 | **🎧 Spotify** | `🎧 Spotify` | 开启 |
+| **🎬 Emby** | `🎬 Emby` | 开启 |
 | **💬 Discord** | `💬 Discord` | 开启 |
 | **👽 Reddit** | `👽 Reddit` | 开启 |
 
-这 18 个开关默认全部开启，关闭即移除该组，并清理其他组与 `rules` 中的引用（`🌍 PROXY` 关闭时其余引用回退到 `DIRECT`；TGDC 开启时 `📲 Telegram` 开关同时管 `📲 Telegram(兜底)`）。
+这 19 个开关默认全部开启，关闭即移除该组，并清理其他组与 `rules` 中的引用（`🌍 PROXY` 关闭时其余引用回退到 `DIRECT`；TGDC 开启时 `📲 Telegram` 开关同时管 `📲 Telegram(兜底)`）。
 
 **未列入 `policyGroupOptions` 的组**
 
@@ -190,20 +192,16 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 本小节不属于 YAML 或脚本单方面的说明：本仓库引用的规则集来自多个上游，彼此存在规则集与规则集之间的覆盖重合。下面按重合的集合分组，全部用韦恩图说明。
 
-**1. 国内直连的三个来源**
+**1. 国内直连的两个来源**
 
 ```mermaid
 venn-beta
   set E["echs_direct（echs-top 直连域名集）"]
   set C["cn（DustinWin 国内域名集）"]
-  set A["applications（Loyalsoldier 国内应用域名集）"]
   union E,C
-  union E,A
-  union C,A
-  union E,C,A
 ```
 
-三者交集与两两交集是同一批国内直连域名，在 `rules` 的直连段依次命中、统一走 `DIRECT`。
+两组规则有部分重合；重合域名按配置顺序先命中 `echs_direct`，两组最终都走 `DIRECT`。
 
 **2. 直连规则集与海外组规则集**
 
