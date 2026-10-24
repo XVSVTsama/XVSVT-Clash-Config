@@ -1260,6 +1260,9 @@ const TEMPLATE = {
     "DOMAIN-SUFFIX,cdnhwcxcy07.com,DIRECT",
     "DOMAIN-SUFFIX,cdngslb.com,DIRECT",
     "DOMAIN-SUFFIX,edgekey.net,DIRECT",
+    "DOMAIN,lumina.lumina00001.com,DIRECT",
+    "DOMAIN,gfwsb.yiku.xyz,DIRECT",
+    "DOMAIN,bsub.douyincdns.com,DIRECT",
     // 已核实支持 Emby 的 Android 播放器进程，统一分流至 🎬 Emby。
     "PROCESS-NAME,com.mountains.hills,🎬 Emby",
     "PROCESS-NAME,com.hamhub.app,🎬 Emby",

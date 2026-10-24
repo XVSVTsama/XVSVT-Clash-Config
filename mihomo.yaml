@@ -594,6 +594,9 @@ rules:
   - DOMAIN-SUFFIX,cdnhwcxcy07.com,DIRECT
   - DOMAIN-SUFFIX,cdngslb.com,DIRECT
   - DOMAIN-SUFFIX,edgekey.net,DIRECT
+  - DOMAIN,lumina.lumina00001.com,DIRECT
+  - DOMAIN,gfwsb.yiku.xyz,DIRECT
+  - DOMAIN,bsub.douyincdns.com,DIRECT
   # Verified Android package IDs for apps that officially support Emby.
   - PROCESS-NAME,com.mountains.hills,🎬 Emby
   - PROCESS-NAME,com.hamhub.app,🎬 Emby
