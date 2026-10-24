@@ -1260,6 +1260,7 @@ const TEMPLATE = {
     "DOMAIN-SUFFIX,cdnhwcxcy07.com,DIRECT",
     "DOMAIN-SUFFIX,cdngslb.com,DIRECT",
     "DOMAIN-SUFFIX,edgekey.net,DIRECT",
+    "DOMAIN-KEYWORD,ikuuu,🌍 PROXY",
     "DOMAIN,lumina.lumina00001.com,DIRECT",
     "DOMAIN,gfwsb.yiku.xyz,DIRECT",
     "DOMAIN,bsub.douyincdns.com,DIRECT",
@@ -1277,7 +1278,6 @@ const TEMPLATE = {
     "DOMAIN-SUFFIX,cloudfront.net,DIRECT",
     "RULE-SET,googlefcm,FCM",
     "SUB-RULE,(PROCESS-NAME,com.dragon.read.oversea.gp),fanqie",
-    "DOMAIN-KEYWORD,ikuuu,🌍 PROXY",
     // 通用直连规则优先，剩余 Apple / Microsoft 域名和 IP 再进入海外组。
     // Bybit 静态资源位于 Microsoft 规则集内，优先保留金融支付分流。
     "DOMAIN,bybit-exchange.github.io,💳 金融支付",
