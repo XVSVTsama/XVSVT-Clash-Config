@@ -72,9 +72,9 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 | **🎮 Steam平台（非下载/CDN）** | Steam 域名/IP 规则 | `default-selected: DIRECT`；命中前置直连规则的国内游戏/下载会提前直连 |
 | **📲 Telegram** | 匹配进程名、Telegram 域名与 CIDR 规则集 | 节点由 YAML/JS 的原生 include 字段引入 |
 | **🎮 Games-Global** | 国际服游戏流量 | `default-selected: 🎮 Steam平台（非下载/CDN）`，保留嵌套组并动态引入节点 |
-| **✖️ Twitter** | `filter` 匹配住宅/美国系命名节点，排除香港/新加坡节点 | 🚨 **节点命名不符将导致此策略组为空！** |
-| **🤖 AI大模型** | `filter` 匹配住宅/美国系命名节点，排除香港/新加坡节点 | 🚨 **节点命名不符将导致此策略组为空！** |
-| **🎵 TikTok** | `filter` 匹配住宅/美国系命名节点，排除香港/新加坡节点 | 🚨 **节点命名不符将导致此策略组为空！** |
+| **✖️ Twitter** | Twitter / X 进程、域名与 IP 规则集 | 节点由 YAML/JS 的原生 include 字段引入 |
+| **🤖 AI大模型** | AI 服务域名、进程与规则集 | 节点由 YAML/JS 的原生 include 字段引入 |
+| **🎵 TikTok** | TikTok 域名规则集 | 节点由 YAML/JS 的原生 include 字段引入 |
 | **💳 金融支付** | 加密货币、PayPal、Stripe、Visa、Mastercard、Wise 域名 | 国内支付优先 `DIRECT`；不等同于覆盖所有银行/券商 |
 | **🔎 Google** | 既有 `google` / `google-cn` 规则集 | 默认跟随手动切换，可独立选择节点；Google FCM 与现有 AI 特例仍优先 |
 | **♾️ Meta** | Facebook、Instagram、WhatsApp、Threads 等 Meta 家族域名 | Instagram 不单列；现有 AI 特例仍优先 |
@@ -84,7 +84,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 | **👽 Reddit** | Reddit 及相关资源域名 | 默认跟随手动切换，可独立选择节点 |
 | **FCM** | Google FCM 相关域名（`rules` 中 `googlefcm` 规则集的目标组） | 静态 YAML 依次提供 `👉 手动切换`、`DIRECT`；使用 JS 后由 `FCM直连` 控制，默认仅 `DIRECT` |
 
-> 注：不使用覆写脚本直接运行 YAML 时，需自行提供节点或有效订阅 provider。YAML 与脚本的常规动态节点组均通过 Mihomo 原生 `include-all` 纳入顶层 `proxies` 与 `proxy-providers` 节点，带 `filter` 的组对两者继续筛选；🌍 PROXY、FCM 不直接使用该字段。🍎 海外苹果 / 💠 海外微软 / 🎮 Steam平台（非下载/CDN）/ 🎮 Games-Global 保留固定策略项。脚本的 TGDC 实验地区组例外：仅依据顶层节点筛选，地区无候选时显式列出合格保底节点。
+> 注：不使用覆写脚本直接运行 YAML 时，需自行提供节点或有效订阅 provider。YAML 与脚本的常规动态节点组均通过 Mihomo 原生 `include-all` 纳入顶层 `proxies` 与 `proxy-providers` 节点；🌍 PROXY、FCM 不直接使用该字段。🍎 海外苹果 / 💠 海外微软 / 🎮 Steam平台（非下载/CDN）/ 🎮 Games-Global 保留固定策略项。脚本的 TGDC 实验地区组例外：仅依据顶层节点筛选，地区无候选时显式列出合格保底节点。
 
 <a id="before-use"></a>
 
@@ -93,8 +93,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 本配置按个人使用习惯定制，并非开箱即用的通用模板，尤其是对于直接导入 YAML 的使用形式。使用前请完成以下必要设置；如不熟悉 Mihomo、TUN、DNS 或策略组过滤规则，请先了解相关机制再使用。
 
 1. **直接使用 YAML (`mihomo.yaml`)**：不使用 JavaScript 覆写脚本时，将 `proxy-providers.subscription.url` 的占位地址在本地替换为自己的 Clash/Mihomo 订阅链接；`include-all` 策略组会自动纳入 provider 节点。也可删除不用的示例 provider，将 `proxies: ~` 替换为自己的节点列表。模板不会自动读取客户端中的其他订阅，请勿把真实订阅链接或凭据提交到公开仓库。
-2. **节点过滤规则 (Filter)**：配置默认使用长正则匹配住宅/美国系命名节点（住宅/家宽/家庭宽带/residential/home broadband/🇺🇸/美国/美國/U.S. 等多种命名变体），并排除香港/新加坡相关节点（🇭🇰/香港/Hong Kong/HK/🇸🇬/新加坡/Singapore/SG）。如果订阅节点名称不符合这些条件，可根据实际情况调整相关策略组的 `filter` 正则。
-3. **按需删减规则**：如果你不需要屏蔽番茄小说海外版的广告，建议删除 `sub-rules` 中 `fanqie` 相关的规则，以节省性能。
+2. **按需删减规则**：如果你不需要屏蔽番茄小说海外版的广告，建议删除 `sub-rules` 中 `fanqie` 相关的规则，以节省性能。
 
 <a id="script-override"></a>
 
@@ -108,7 +107,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 合并产物：
 
-- **节点与代理组**：订阅里的真实节点填入顶层 `proxies`；常规动态节点组通过 Mihomo 原生 `include-all` 引入顶层节点与 provider 节点，带 `filter` 的组继续由 Mihomo 筛选。固定策略项保留在各组的 `proxies` 列表中。
+- **节点与代理组**：订阅里的真实节点填入顶层 `proxies`；常规动态节点组通过 Mihomo 原生 `include-all` 引入顶层节点与 provider 节点。固定策略项保留在各组的 `proxies` 列表中。
 - **订阅自带 `proxy-providers`**：原样保留；使用 `include-all` 的代理组会原生纳入这些 provider。脚本生成的 TGDC 实验地区组仍使用 `include-all-proxies` 或显式保底列表，不纳入 provider 运行时节点。
 - **DNS**：动态合并出 `dns.proxy-server-nameserver-policy`（模板不预置该键，以脚本计算结果为准），细节见下方流程图。
 - **开关声明**：脚本首行的 `Compatible_With_Bettbox` 兼容声明必须置顶——Bettbox 只在脚本开头识别该声明，删除或下移会导致"自定义规则开关"入口不显示；声明中的 `policyGroupOptions` 列出归入图形化开关分类的 19 个策略组，`ruleOptionsEnable` 则是实际生效的开关表，键名需与声明保持一致。

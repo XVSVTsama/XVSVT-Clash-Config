@@ -58,8 +58,8 @@ const Compatible_With_Bettbox = {
  *
  *    3. proxy-groups 使用 Mihomo 原生 include-all / include-all-proxies
  *       动态引入订阅节点和代理提供者；🍎 海外苹果、💠 海外微软、🎮 Steam平台（非下载/CDN）、
- *       🎮 Games-Global、🎬 Emby 保留模板中显式列出的固定策略项。带 filter 的分组继续由 Mihomo
- *       原生筛选。TGDC 实验组在没有地区节点时仍由脚本显式生成保底节点列表。
+ *       🎮 Games-Global、🎬 Emby 保留模板中显式列出的固定策略项。
+ *       TGDC 实验组在没有地区节点时仍由脚本显式生成保底节点列表。
  *
  *    4.【特别处理】DNS 与 hosts：
  *       - hosts 仅在 dns.use-hosts=true 且 dns.listen 与真正参与节点解析的 DNS 端点
@@ -731,21 +731,18 @@ const TEMPLATE = {
       "name": "✖️ Twitter",
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-clash-verge-rev-twitter.svg",
       "type": "select",
-      "filter": "(?i)^(?!.*(?:🇭🇰|香港|Hong\\s*Kong|\\bHK\\b|🇸🇬|新加坡|Singapore|\\bSG\\b)).*(?:住宅|家宽|家寬|家庭宽带|家庭寬頻|原生住宅|住宅\\s*IP|residential|home\\s*broadband|home\\s*internet|🇺🇸|美国|美國|\\bUnited\\s+States\\b|\\bU\\.?S\\.?(?:A\\.?)?\\b).*$",
       "include-all": true
     },
     {
       "name": "🤖 AI大模型",
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-ai.png",
       "type": "select",
-      "filter": "(?i)^(?!.*(?:🇭🇰|香港|Hong\\s*Kong|\\bHK\\b|🇸🇬|新加坡|Singapore|\\bSG\\b)).*(?:住宅|家宽|家寬|家庭宽带|家庭寬頻|原生住宅|住宅\\s*IP|residential|home\\s*broadband|home\\s*internet|🇺🇸|美国|美國|\\bUnited\\s+States\\b|\\bU\\.?S\\.?(?:A\\.?)?\\b).*$",
       "include-all": true
     },
     {
       "name": "🎵 TikTok",
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-tiktok.png",
       "type": "select",
-      "filter": "(?i)^(?!.*(?:🇭🇰|香港|Hong\\s*Kong|\\bHK\\b|🇸🇬|新加坡|Singapore|\\bSG\\b)).*(?:住宅|家宽|家寬|家庭宽带|家庭寬頻|原生住宅|住宅\\s*IP|residential|home\\s*broadband|home\\s*internet|🇺🇸|美国|美國|\\bUnited\\s+States\\b|\\bU\\.?S\\.?(?:A\\.?)?\\b).*$",
       "include-all": true
     },
     {
