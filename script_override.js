@@ -55,6 +55,7 @@ const Compatible_With_Bettbox = {
  *
  *    2. proxies：使用订阅原始配置里的真实节点列表（模板里这一项本来就是空的，
  *       只是占位）。
+ *       国家分组筛选仅处理订阅顶层 proxies 节点，不处理 proxy-providers 中的运行时节点。
  *
  *    3. proxy-groups 使用 Mihomo 原生 include-all / include-all-proxies
  *       动态引入订阅节点和代理提供者；🍎 海外苹果、💠 海外微软、🎮 Steam平台（非下载/CDN）、
@@ -135,6 +136,8 @@ const ruleOptionsEnable = {
   'FCM直连': true,
   // 开启 Telegram DC/地区实验分流；关闭时不改变原 Telegram 规则、策略组和规则集。
   'TGDC实验分流': false,
+  // 为合格的订阅顶层节点生成按国家/地区划分的策略组；与入口解析开关独立。
+  '国家/地区分组': false,
   // 开启后，维护区所有运营商的入口节点统一加入“国内入口解析”组，不进入其他代理组。
   '入口解析': false,
   // 最后为节点解析 DNS 的无协议地址补 tcp://；不改变显式协议、出口后缀或 DNS 优先级。
@@ -276,16 +279,16 @@ const TGDC_RULE_PROVIDERS = {
   },
 };
 
-// 地区组没有匹配节点时，按订阅原始顺序展示全部合格节点供手动选择。
-// 地区检测与保底筛选仅依据订阅顶层 proxies；JS 不读取 proxy-providers 的运行时节点，
-// 因此 provider 节点不参与地区命中判断，也不会进入此处生成的保底列表。
-// 仅从订阅直接列出的节点中排除异常、内置/拒绝/重匹配和提示信息；免费、低倍率、高倍率均允许。
-// 若仍无候选，使用 COMPATIBLE；empty-fallback 只接受单节点名称，不能填写策略组或多个节点。
-const TGDC_FALLBACK_EXCLUDE_FILTER =
-  /群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|电报|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|优惠|福利|邀请|好友|失联|选择|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|⚠️|@|t\.me\/\+|\bexpire\b|\bhttps?:\/\/|\.com|\btraffic\b/iu;
+// 模块候选仅取订阅顶层 proxies，不读取 proxy-providers 的运行时节点。
+// 仅排除异常、内置/拒绝/重匹配和提示信息节点；免费、低倍率、高倍率均允许。
+// 此过滤只返回模块候选，不修改最终 config.proxies 或代理组的 include-all。
+const MODULE_CANDIDATE_EXCLUDE_FILTER =
+  /群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|地址|频道|电报|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|优惠|福利|邀请|好友|失联|选择|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|⚠️|@|t\.me\/\+|\bexpire\b|\bhttps?:\/\/|\.com|\btraffic\b/iu;
+const TGDC_FALLBACK_ADDITIONAL_EXCLUDE_FILTER = /国内/iu;
 
-function selectTelegramDcFallbackNodes(originalProxies) {
+function filterModuleCandidateProxies(originalProxies) {
   const proxies = Array.isArray(originalProxies) ? originalProxies : [];
+  const entryNamePattern = new RegExp(ENTRY_RESOLUTION_EXCLUDE_FILTER);
   return proxies.filter((proxy) => {
     if (!proxy || typeof proxy !== 'object' || typeof proxy.name !== 'string' || proxy.name.trim().length === 0) {
       return false;
@@ -295,9 +298,21 @@ function selectTelegramDcFallbackNodes(originalProxies) {
       return false;
     }
     const name = proxy.name;
-    if (TGDC_FALLBACK_EXCLUDE_FILTER.test(name)) return false;
+    if (
+      MODULE_CANDIDATE_EXCLUDE_FILTER.test(name) ||
+      name === '国内入口解析' ||
+      entryNamePattern.test(name)
+    ) return false;
     return true;
-  }).map((proxy) => proxy.name);
+  });
+}
+
+// TGDC 无地区候选时，按订阅原始顺序列出全部合格顶层节点作保底选择。
+// 若仍无候选，使用 COMPATIBLE；empty-fallback 只接受单节点名称，不能填写策略组或多个节点。
+function selectTelegramDcFallbackNodes(originalProxies) {
+  return filterModuleCandidateProxies(originalProxies)
+    .filter((proxy) => !TGDC_FALLBACK_ADDITIONAL_EXCLUDE_FILTER.test(proxy.name))
+    .map((proxy) => proxy.name);
 }
 
 const TGDC_PROXY_GROUP_DEFINITIONS = [
@@ -351,6 +366,159 @@ function buildTelegramDcProxyGroups(originalProxies) {
     }
     return group;
   });
+}
+
+// 国家/地区的可编辑名称与匹配表达式；一个节点允许命中多个常见地区。
+const COUNTRY_REGION_PARENT_ICON =
+  'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Global.png';
+const COUNTRY_REGION_DEFINITIONS = [
+  { name: '🇭🇰 香港', pattern: /🇭🇰|香港|Hong\s*Kong|HongKong|\bHK\b|\bHKG\b/iu },
+  { name: '🇯🇵 日本', pattern: /🇯🇵|日本|东京|東京|大阪|Tokyo|Osaka|Japan|\bJP\b|\bJPN\b/iu },
+  { name: '🇸🇬 新加坡', pattern: /🇸🇬|新加坡|狮城|Singapore|\bSG\b|\bSGP\b/iu },
+  { name: '🇹🇼 台湾', pattern: /🇹🇼|台湾|臺灣|台北|臺北|Taipei|Taiwan|\bTW\b|\bTWN\b/iu },
+  { name: '🇺🇸 美国', pattern: /🇺🇸|美国|美國|洛杉矶|洛杉磯|纽约|紐約|西雅图|西雅圖|硅谷|华盛顿|華盛頓|Los\s*Angeles|New\s*York|Seattle|Washington|United\s*States|\bUSA\b|\bUS\b/iu },
+  { name: '🇨🇦 加拿大', pattern: /🇨🇦|加拿大|多伦多|多倫多|温哥华|溫哥華|Toronto|Vancouver|Canada|\bCA\b|\bCAN\b/iu },
+  { name: '🇬🇧 英国', pattern: /🇬🇧|英国|英國|伦敦|倫敦|London|United\s*Kingdom|\bUK\b|\bGB\b|\bGBR\b/iu },
+  { name: '🇫🇷 法国', pattern: /🇫🇷|法国|法國|巴黎|Paris|France|\bFR\b|\bFRA\b/iu },
+  { name: '🇳🇱 荷兰', pattern: /🇳🇱|荷兰|荷蘭|阿姆斯特丹|Amsterdam|Netherlands|\bNL\b|\bNLD\b/iu },
+  { name: '🇩🇪 德国', pattern: /🇩🇪|德国|德國|法兰克福|法蘭克福|柏林|Frankfurt|Berlin|Germany|\bDE\b|\bDEU\b/iu },
+  { name: '🇦🇺 澳大利亚', pattern: /🇦🇺|澳大利亚|澳大利亞|悉尼|墨尔本|墨爾本|Sydney|Melbourne|Perth|Australia|\bAU\b|\bAUS\b/iu },
+];
+const OTHER_COUNTRY_REGION_NAME = '🌐 其他国家/地区';
+const COUNTRY_REGION_TARGET_GROUPS = [
+  '📲 Telegram',
+  '🎮 Games-Global',
+  '🍎 海外苹果',
+  '💠 海外微软',
+  '🎮 Steam平台（非下载/CDN）',
+  '✖️ Twitter',
+  '🤖 AI大模型',
+  '🎵 TikTok',
+  '💳 金融支付',
+  '🔎 Google',
+  '♾️ Meta',
+  '🎧 Spotify',
+  '🎬 Emby',
+  '💬 Discord',
+  '👽 Reddit',
+];
+const COUNTRY_REGION_CHILD_GROUP_TYPES = [
+  { suffix: '自动选择', type: 'url-test' },
+  { suffix: '手动选择', type: 'select' },
+  { suffix: '故障转移', type: 'fallback' },
+  { suffix: '负载均衡', type: 'load-balance' },
+];
+
+function countryRegionChildGroupName(parentName, suffix) {
+  return parentName + ' · ' + suffix;
+}
+
+function buildCountryRegionProxyGroups(originalProxies) {
+  const candidates = filterModuleCandidateProxies(originalProxies);
+  const templateAutoGroup = (TEMPLATE['proxy-groups'] || []).find(
+    (group) => group && group.name === '♻️ 自动选择'
+  ) || {};
+  const urlTestSettings = {};
+  ['url', 'interval', 'tolerance', 'lazy'].forEach((key) => {
+    if (Object.prototype.hasOwnProperty.call(templateAutoGroup, key)) {
+      urlTestSettings[key] = templateAutoGroup[key];
+    }
+  });
+  const healthCheckSettings = {
+    url: urlTestSettings.url || 'https://g.cn/generate_204',
+    interval: urlTestSettings.interval || 300,
+  };
+  const parentGroups = [];
+  const childGroups = [];
+
+  COUNTRY_REGION_DEFINITIONS.forEach((definition) => {
+    const regionProxies = candidates.filter((proxy) => definition.pattern.test(proxy.name));
+    if (regionProxies.length === 0) return;
+    const nodeNames = regionProxies.map((proxy) => proxy.name);
+    const children = COUNTRY_REGION_CHILD_GROUP_TYPES.map((childDefinition) => {
+      const child = {
+        name: countryRegionChildGroupName(definition.name, childDefinition.suffix),
+        type: childDefinition.type,
+        proxies: nodeNames.slice(),
+        hidden: true,
+      };
+      if (childDefinition.type === 'url-test') {
+        Object.assign(child, urlTestSettings);
+      } else if (childDefinition.type === 'fallback' || childDefinition.type === 'load-balance') {
+        Object.assign(child, healthCheckSettings);
+        if (childDefinition.type === 'load-balance') {
+          child.strategy = 'consistent-hashing';
+        }
+      }
+      return child;
+    });
+    parentGroups.push({
+      name: definition.name,
+      type: 'select',
+      icon: COUNTRY_REGION_PARENT_ICON,
+      proxies: children.map((child) => child.name).concat(['DIRECT', 'REJECT'], nodeNames),
+    });
+    childGroups.push(...children);
+  });
+
+  const otherProxies = candidates.filter((proxy) =>
+    !COUNTRY_REGION_DEFINITIONS.some((definition) => definition.pattern.test(proxy.name))
+  );
+  if (otherProxies.length > 0) {
+    parentGroups.push({
+      name: OTHER_COUNTRY_REGION_NAME,
+      type: 'select',
+      icon: COUNTRY_REGION_PARENT_ICON,
+      proxies: ['DIRECT', 'REJECT', ...otherProxies.map((proxy) => proxy.name)],
+    });
+  }
+
+  return { parentGroups, childGroups };
+}
+
+function appendCountryRegionParentsToTargets(proxyGroups, parentGroups) {
+  if (!Array.isArray(proxyGroups) || parentGroups.length === 0) return;
+  const targetNames = new Set(COUNTRY_REGION_TARGET_GROUPS);
+  // TGDC 只会把 Telegram 目标重命名为此兜底组；其他实验组不接收国家组。
+  targetNames.add('📲 Telegram(兜底)');
+  const existingGroupNames = new Set(
+    proxyGroups.filter((group) => group && typeof group.name === 'string').map((group) => group.name)
+  );
+  const parentNames = parentGroups.map((group) => group.name);
+
+  proxyGroups.forEach((group) => {
+    if (!group || !targetNames.has(group.name)) return;
+    if (!Array.isArray(group.proxies)) group.proxies = [];
+    const additions = parentNames.filter((name) => !group.proxies.includes(name));
+    if (additions.length === 0) return;
+    let lastNestedGroupIndex = -1;
+    group.proxies.forEach((name, index) => {
+      if (existingGroupNames.has(name)) lastNestedGroupIndex = index;
+    });
+    if (lastNestedGroupIndex >= 0) {
+      group.proxies.splice(lastNestedGroupIndex + 1, 0, ...additions);
+    } else {
+      group.proxies.push(...additions);
+    }
+  });
+}
+
+function applyCountryRegionGrouping(result, originalProxies) {
+  if (ruleOptionsEnable['国家/地区分组'] !== true) return;
+  const { parentGroups, childGroups } = buildCountryRegionProxyGroups(originalProxies);
+  if (parentGroups.length === 0) return;
+  const proxyGroups = Array.isArray(result['proxy-groups']) ? result['proxy-groups'] : [];
+  appendCountryRegionParentsToTargets(proxyGroups, parentGroups);
+
+  const fcmIndex = proxyGroups.findIndex((group) => group && group.name === 'FCM');
+  if (fcmIndex >= 0) {
+    proxyGroups.splice(fcmIndex, 0, ...parentGroups);
+    const insertedFcmIndex = proxyGroups.findIndex((group) => group && group.name === 'FCM');
+    proxyGroups.splice(insertedFcmIndex + 1, 0, ...childGroups);
+  } else {
+    proxyGroups.push(...parentGroups, ...childGroups);
+  }
+  result['proxy-groups'] = proxyGroups;
 }
 
 const TGDC_RULES = [
@@ -1433,6 +1601,10 @@ const serviceConfigs = TEMPLATE['proxy-groups']
       icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Telegram.png'
     },
     {
+      name: '国家/地区分组',
+      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Global.png'
+    },
+    {
       name: '入口解析',
       icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Domestic.png'
     },
@@ -2365,10 +2537,13 @@ function main(config, profileName) {
     result
   );
 
-  // ---- 8. 国内入口解析：在最终节点 DNS 结果上追加运营商策略。 ----
+  // ---- 8. 国家/地区策略组：DNS/hosts 完成后生成，筛选仅作用于模块候选。 ----
+  applyCountryRegionGrouping(result, originalProxies);
+
+  // ---- 9. 国内入口解析：国家/地区策略组生成后，再追加运营商入口节点。 ----
   applyEntryResolution(result);
 
-  // ---- 9. 代理节点 DNS 使用 TCP：最后补协议，保留前序合并、hosts 与出口选择结果。 ----
+  // ---- 10. 代理节点 DNS 使用 TCP：最后补协议，保留前序合并、hosts 与出口选择结果。 ----
   applyProxyDnsTcp(result);
 
   return result;
