@@ -116,10 +116,10 @@ const ruleOptionsEnable = {
   '🤖 AI大模型': true,
   // TikTok 视频平台策略组
   '🎵 TikTok': true,
-  // Google / Google-CN 共用独立策略组；Google FCM 与 AI 特例仍由原规则处理。
-  '🔎 Google': true,
   // 金融支付；Instagram 统一归入 Meta。
   '💳 金融支付': true,
+  // Google / Google-CN 共用独立策略组；Google FCM 与 AI 特例仍由原规则处理。
+  '🔎 Google': true,
   '♾️ Meta': true,
   '🎧 Spotify': true,
   // Emby 播放器进程分流策略组
@@ -1222,94 +1222,6 @@ const TEMPLATE = {
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs",
       "path": "./ruleset/ai-2.mrs"
     },
-    "category-cryptocurrency": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "domain",
-      "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-cryptocurrency.mrs",
-      "path": "./ruleset/category-cryptocurrency.mrs"
-    },
-    "discord": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "domain",
-      "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/discord.mrs",
-      "path": "./ruleset/discord.mrs"
-    },
-    "ehentai": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "domain",
-      "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/ehentai.mrs",
-      "path": "./ruleset/ehentai.mrs"
-    },
-    "line": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "domain",
-      "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/line.mrs",
-      "path": "./ruleset/line.mrs"
-    },
-    "netflix": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "classical",
-      "format": "text",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/DustinWin/domain-list-custom/domains/netflix.list",
-      "path": "./ruleset/netflix.list"
-    },
-    "patreon": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "domain",
-      "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/patreon.mrs",
-      "path": "./ruleset/patreon.mrs"
-    },
-    "pikpak": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "domain",
-      "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/pikpak.mrs",
-      "path": "./ruleset/pikpak.mrs"
-    },
-    "mastercard": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "domain",
-      "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/mastercard.mrs",
-      "path": "./ruleset/mastercard.mrs"
-    },
-    "meta": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "domain",
-      "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/meta.mrs",
-      "path": "./ruleset/meta.mrs"
-    },
-    "microsoft": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "domain",
-      "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/microsoft.mrs",
-      "path": "./ruleset/microsoft.mrs"
-    },
-    "microsoft_ip": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "ipcidr",
-      "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geoip/microsoft.mrs",
-      "path": "./ruleset/microsoft_ip.mrs"
-    },
     "apple": {
       "type": "http",
       "interval": 86400,
@@ -1326,53 +1238,13 @@ const TEMPLATE = {
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geoip/apple.mrs",
       "path": "./ruleset/apple_ip.mrs"
     },
-    "paypal": {
+    "category-cryptocurrency": {
       "type": "http",
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/paypal.mrs",
-      "path": "./ruleset/paypal.mrs"
-    },
-    "reddit": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "domain",
-      "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/reddit.mrs",
-      "path": "./ruleset/reddit.mrs"
-    },
-    "spotify": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "domain",
-      "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/spotify.mrs",
-      "path": "./ruleset/spotify.mrs"
-    },
-    "steam": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "domain",
-      "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/steam.mrs",
-      "path": "./ruleset/steam.mrs"
-    },
-    "steam_ip": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "ipcidr",
-      "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geoip/steam.mrs",
-      "path": "./ruleset/steam_ip.mrs"
-    },
-    "douyin": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "domain",
-      "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/douyin.mrs",
-      "path": "./ruleset/douyin.mrs"
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-cryptocurrency.mrs",
+      "path": "./ruleset/category-cryptocurrency.mrs"
     },
     "cn": {
       "type": "http",
@@ -1390,6 +1262,22 @@ const TEMPLATE = {
       "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/cnip.mrs",
       "path": "./ruleset/cncidr.mrs"
     },
+    "discord": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/discord.mrs",
+      "path": "./ruleset/discord.mrs"
+    },
+    "douyin": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/douyin.mrs",
+      "path": "./ruleset/douyin.mrs"
+    },
     "echs_direct": {
       "type": "http",
       "interval": 86400,
@@ -1405,6 +1293,14 @@ const TEMPLATE = {
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/echs-top/proxy/main/mrs/ip/direct.mrs",
       "path": "./ruleset/echs_direct_ip.mrs"
+    },
+    "ehentai": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/ehentai.mrs",
+      "path": "./ruleset/ehentai.mrs"
     },
     "fakeip-filter_domain": {
       "type": "http",
@@ -1460,6 +1356,78 @@ const TEMPLATE = {
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/lancidr.txt",
       "path": "./ruleset/lancidr.yaml"
     },
+    "line": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/line.mrs",
+      "path": "./ruleset/line.mrs"
+    },
+    "mastercard": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/mastercard.mrs",
+      "path": "./ruleset/mastercard.mrs"
+    },
+    "meta": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/meta.mrs",
+      "path": "./ruleset/meta.mrs"
+    },
+    "netflix": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "classical",
+      "format": "text",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/DustinWin/domain-list-custom/domains/netflix.list",
+      "path": "./ruleset/netflix.list"
+    },
+    "microsoft_ip": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "ipcidr",
+      "format": "mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geoip/microsoft.mrs",
+      "path": "./ruleset/microsoft_ip.mrs"
+    },
+    "microsoft": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/microsoft.mrs",
+      "path": "./ruleset/microsoft.mrs"
+    },
+    "paypal": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/paypal.mrs",
+      "path": "./ruleset/paypal.mrs"
+    },
+    "patreon": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/patreon.mrs",
+      "path": "./ruleset/patreon.mrs"
+    },
+    "pikpak": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/pikpak.mrs",
+      "path": "./ruleset/pikpak.mrs"
+    },
     "pixiv": {
       "type": "http",
       "interval": 86400,
@@ -1490,6 +1458,38 @@ const TEMPLATE = {
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/echs-top/proxy/main/mrs/domain/proxy@direct.mrs",
       "path": "./rules/proxy@direct.mrs"
+    },
+    "reddit": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/reddit.mrs",
+      "path": "./ruleset/reddit.mrs"
+    },
+    "spotify": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/spotify.mrs",
+      "path": "./ruleset/spotify.mrs"
+    },
+    "steam_ip": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "ipcidr",
+      "format": "mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geoip/steam.mrs",
+      "path": "./ruleset/steam_ip.mrs"
+    },
+    "steam": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/steam.mrs",
+      "path": "./ruleset/steam.mrs"
     },
     "stripe": {
       "type": "http",
