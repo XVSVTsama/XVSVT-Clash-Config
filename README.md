@@ -76,10 +76,6 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 | 代理组 | 用途 | 分流说明 |
 | :--- | :--- | :--- |
-| **🌍 PROXY** | 全局代理出口与最终兜底 | `DOMAIN-KEYWORD,ikuuu`、`proxy@direct` / `proxy` / `gfw` 规则集指向本组，未命中其他规则的流量由 `MATCH` 兜底到本组 |
-| **👉 手动切换** | 手动选择单个节点 | 无规则直接指向本组，由其他代理组嵌套调用；`include-all` 纳入所有可用节点 |
-| **♻️ 自动选择** | 自动测速选优 | 无规则直接指向本组，由其他代理组嵌套调用；`url-test` 类型，`include-all` 纳入所有可用节点 |
-| **🔄 负载均衡** | 多节点负载均衡 | 无规则直接指向本组，由其他代理组嵌套调用；`load-balance` 类型（`sticky-sessions`），`include-all` 纳入所有可用节点 |
 | **🍎 海外苹果** | 海外 Apple 服务单独选出口 | `apple` 域名集与 `apple_ip` IP 集（`no-resolve`） |
 | **💠 海外微软** | 海外 Microsoft 服务单独选出口 | `microsoft` 域名集与 `microsoft_ip` IP 集（`no-resolve`） |
 | **📲 Telegram** | Telegram 单独选出口 | `telegram_domain` 域名集、`telegramcidr` IP 集（`no-resolve`），及 Telegram / Nagram 进程名正则 |
