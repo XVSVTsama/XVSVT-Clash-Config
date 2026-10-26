@@ -61,7 +61,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 ### 🗂 分流组结构（按 `mihomo.yaml` 定义）
 
-本节分三层：先看核心代理组的骨架与嵌套，再看每个基础代理组的用途与分流，最后看三组的特别说明。
+本节分三层：先看核心代理组的骨架与嵌套，再看每个基础代理组的用途与路由规则，最后看三组的特别说明。
 
 #### 核心代理组
 
@@ -74,30 +74,29 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 #### 基础代理组
 
-| 代理组 | 用途 | 分流说明 |
+| 代理组 | 用途 | 路由规则 |
 | :--- | :--- | :--- |
-| **🍎 海外苹果** | 海外 Apple 服务单独选出口 | `apple` 域名集与 `apple_ip` IP 集（`no-resolve`） |
-| **💠 海外微软** | 海外 Microsoft 服务单独选出口 | `microsoft` 域名集与 `microsoft_ip` IP 集（`no-resolve`） |
-| **📲 Telegram** | Telegram 单独选出口 | `telegram_domain` 域名集、`telegramcidr` IP 集（`no-resolve`），及 Telegram / Nagram 进程名正则 |
-| **✖️ Twitter** | Twitter / X 单独选出口 | `twitter-x-domain`、`twitter-x-ip`（`no-resolve`）、`twitter-x-blackmatrix7-No_Resolve` 三套规则集，及 Twitter 进程名正则 |
-| **🤖 AI大模型** | AI 服务单独选出口 | `ai-1` / `ai-2` 规则集、`Gemini_Domain` / `Grok_Domain` 域名集，及 Claude / Anthropic、Manus、Muse 等域名、进程与 IP 段直达规则 |
-| **🎵 TikTok** | TikTok 单独选出口 | `TikTok` 规则集 |
-| **💳 金融支付** | 支付与加密货币单独选出口 | `category-cryptocurrency` 及 PayPal、Stripe、Visa、Mastercard、Wise 规则集，及交易所 / 钱包 App 进程名 |
-| **🔎 Google** | Google 服务单独选出口 | `google` 与 `google-cn` 两套规则集；FCM 不在本组，见特别组说明 |
-| **♾️ Meta** | Meta 服务单独选出口 | `meta` 规则集 |
-| **🎧 Spotify** | Spotify 单独选出口 | `spotify` 规则集 |
-| **🎬 Emby** | Emby 类客户端单独选出口 | 无规则集，仅按 7 个 Emby 类客户端进程名分流 |
-| **💬 Discord** | Discord 单独选出口 | `discord` 规则集 |
-| **👽 Reddit** | Reddit 单独选出口 | `reddit` 规则集 |
-| **🎥 Netflix** | Netflix 单独选出口 | `netflix` 规则集 |
-| **💝 Patreon** | Patreon 单独选出口 | `patreon` 规则集 |
-| **📚 EHentai** | EHentai 单独选出口 | `ehentai` 规则集 |
-| **☁️ PikPak** | PikPak 单独选出口 | `pikpak` 规则集 |
-| **💬 LINE** | LINE 单独选出口 | `line` 规则集 |
-| **🎮 Games-Global** | 游戏流量单独选出口 | `games` 规则集及 `bf6.exe` 进程 |
-| **🎮 Steam平台（非下载/CDN）** | Steam 平台流量单独选出口 | `steam` 域名集与 `steam_ip` IP 集（`no-resolve`） |
-| **FCM** | Google FCM 推送单独选出口 | `googlefcm` 规则集 |
-
+| **🍎 海外苹果** | 海外 Apple 服务单独选出口 | 引用规则集合：`apple`、`apple_ip` |
+| **💠 海外微软** | 海外 Microsoft 服务单独选出口 | 引用规则集合：`microsoft`、`microsoft_ip` |
+| **📲 Telegram** | Telegram 单独选出口 | 引用规则集合：`telegram_domain`、`telegramcidr`<br>使用进程名称正则表达式匹配：telegram、nagram |
+| **✖️ Twitter** | Twitter / X 单独选出口 | 引用规则集合：`twitter-x-domain`、`twitter-x-ip`、`twitter-x-blackmatrix7-No_Resolve`<br>使用进程名称正则表达式匹配：twitter |
+| **🤖 AI大模型** | AI 服务单独选出口 | 引用规则集合：`ai-1`、`ai-2`、`Gemini_Domain`、`Grok_Domain`<br>使用域名后缀匹配：anthropic.com、claude.ai、claude.com、claudeusercontent.com、clau.de、frame.claudeusercontent.com、metaaivm.com、modelcontextprotocol.io、muse.ai、sentry.io、statsigapi.net<br>使用域名精确匹配：共 31 个域名（api.anthropic.com、downloads.claude.ai、api.meta.ai、hatch-api.meta.ai 等）<br>使用域名关键词匹配：datadog、sift<br>使用进程名称匹配：com.facebook.aura<br>使用进程名称正则表达式匹配：claude、anthropic、manus<br>使用 IP 段匹配：160.79.104.0/21、17.253.4.0/23、2607:6bc0::/48 |
+| **🎵 TikTok** | TikTok 单独选出口 | 引用规则集合：`TikTok` |
+| **💳 金融支付** | 支付与加密货币单独选出口 | 引用规则集合：`category-cryptocurrency`、`paypal`、`stripe`、`visa`、`mastercard`、`wise`<br>使用域名精确匹配：d3r7nsslvs6aaf.cloudfront.net、bybit-exchange.github.io<br>使用进程名称匹配：共 24 个交易所 / 钱包 App 进程名（com.binance.dev、com.coinbase.android、com.okinc.okex.gp 等） |
+| **🔎 Google** | Google 服务单独选出口 | 引用规则集合：`google`、`google-cn` |
+| **♾️ Meta** | Meta 服务单独选出口 | 引用规则集合：`meta` |
+| **🎧 Spotify** | Spotify 单独选出口 | 引用规则集合：`spotify` |
+| **🎬 Emby** | Emby 类客户端单独选出口 | 使用进程名称匹配：com.mountains.hills、com.hamhub.app、com.oumi.utility.media.hub、com.feifeiduck.capyplayer、com.attempt.afusekt、com.hush.yamby、com.railux.mobile |
+| **💬 Discord** | Discord 单独选出口 | 引用规则集合：`discord` |
+| **👽 Reddit** | Reddit 单独选出口 | 引用规则集合：`reddit` |
+| **🎥 Netflix** | Netflix 单独选出口 | 引用规则集合：`netflix` |
+| **💝 Patreon** | Patreon 单独选出口 | 引用规则集合：`patreon` |
+| **📚 EHentai** | EHentai 单独选出口 | 引用规则集合：`ehentai` |
+| **☁️ PikPak** | PikPak 单独选出口 | 引用规则集合：`pikpak` |
+| **💬 LINE** | LINE 单独选出口 | 引用规则集合：`line` |
+| **🎮 Games-Global** | 游戏流量单独选出口 | 引用规则集合：`games`<br>使用进程名称匹配：bf6.exe |
+| **🎮 Steam平台（非下载/CDN）** | Steam 平台流量单独选出口 | 引用规则集合：`steam`、`steam_ip` |
+| **FCM** | Google FCM 推送单独选出口 | 引用规则集合：`googlefcm` |
 #### 特别组说明
 
 以下三组同时属于基础代理组（见上表），嵌套结构不同于常规业务组，单独列出。
