@@ -72,14 +72,6 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 | **♻️ 自动选择** | 被 **🌍 PROXY** 嵌套；自身以 `include-all` 纳入所有可用节点，不再嵌套其他代理组 |
 | **🔄 负载均衡** | 被 **🌍 PROXY** 嵌套；自身以 `include-all` 纳入所有可用节点，不再嵌套其他代理组 |
 
-**与基础代理组的关系**——共性：基础代理组中的常规业务组（含 `🎮 Steam平台（非下载/CDN）`）都嵌套核心三组并加 `DIRECT` 作为可选项，在业务组里选核心三组即借用其节点集合与选择方式。差异逐组如下：
-
-| 核心组 | 在基础代理组中的嵌套情况 |
-| :--- | :--- |
-| **🔄 负载均衡** | 常规业务组均嵌套本组；`🎮 Games-Global`、`FCM` 不嵌套本组（Games-Global 经 Steam 组间接使用） |
-| **👉 手动切换** | 常规业务组均嵌套本组；此外 `FCM` 也嵌套本组，且本组是 `FCM` 唯一嵌套的代理组；`🎮 Games-Global` 不直接嵌套，经 Steam 组间接使用 |
-| **♻️ 自动选择** | 常规业务组均嵌套本组；`🎮 Games-Global`、`FCM` 不嵌套本组（Games-Global 经 Steam 组间接使用） |
-
 #### 基础代理组
 
 | 代理组 | 用途 | 分流说明 |
