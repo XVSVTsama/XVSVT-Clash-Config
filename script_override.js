@@ -805,17 +805,17 @@ const TEMPLATE = {
       "https://cloudflare-dns.com/dns-query#👉 手动切换"
     ],
     "nameserver-policy": {
-      "rule-set:proxy@direct,cn,echs_direct": [
-        "https://dns.alidns.com/dns-query#DIRECT",
-        "https://doh.pub/dns-query#DIRECT"
-      ],
-      "rule-set:private": [
-        "system"
-      ],
       "rule-set:douyin": [
         "system",
         "180.184.1.1",
         "180.184.2.2"
+      ],
+      "rule-set:private": [
+        "system"
+      ],
+      "rule-set:proxy@direct,cn,echs_direct": [
+        "https://dns.alidns.com/dns-query#DIRECT",
+        "https://doh.pub/dns-query#DIRECT"
       ]
     },
       "prefer-h3": false,
