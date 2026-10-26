@@ -61,47 +61,64 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 ### 🗂 分流组结构（按 `mihomo.yaml` 定义）
 
-#### 基础选择组
+本节分三层：先看核心代理组的骨架与嵌套，再看每个基础代理组的用途与分流，最后看三组的特别说明。
 
-| 代理组 | 组内结构 |
+#### 核心代理组
+
+| 代理组 | 嵌套关系 |
 | :--- | :--- |
-| **🌍 PROXY** | `👉 手动切换`、`♻️ 自动选择`、`🔄 负载均衡`、`DIRECT` |
-| **👉 手动切换** | 纳入所有可用节点 |
-| **♻️ 自动选择** | 纳入所有可用节点 |
-| **🔄 负载均衡** | 纳入所有可用节点 |
+| **🌍 PROXY** | 唯一的顶层入口，不直接纳入节点（无 `include-all`），实际节点经被嵌套的三组进入；组内只有以下四项：<br>`👉 手动切换`<br>`♻️ 自动选择`<br>`🔄 负载均衡`<br>`DIRECT` |
+| **👉 手动切换** | 被 **🌍 PROXY** 嵌套；自身以 `include-all` 纳入所有可用节点，不再嵌套其他代理组 |
+| **♻️ 自动选择** | 被 **🌍 PROXY** 嵌套；自身以 `include-all` 纳入所有可用节点，不再嵌套其他代理组 |
+| **🔄 负载均衡** | 被 **🌍 PROXY** 嵌套；自身以 `include-all` 纳入所有可用节点，不再嵌套其他代理组 |
 
-#### 常规业务组
+**与基础代理组的关系**——共性：基础代理组中的常规业务组（含 `🎮 Steam平台（非下载/CDN）`）都嵌套核心三组并加 `DIRECT` 作为可选项，在业务组里选核心三组即借用其节点集合与选择方式。差异逐组如下：
 
-以下业务组采用相同结构：`👉 手动切换`、`♻️ 自动选择`、`🔄 负载均衡`、`DIRECT`，并纳入可用节点。
-
-| 代理组 |
-| :--- |
-| **🍎 海外苹果** |
-| **💠 海外微软** |
-| **📲 Telegram** |
-| **✖️ Twitter** |
-| **🤖 AI大模型** |
-| **🎵 TikTok** |
-| **💳 金融支付** |
-| **🔎 Google** |
-| **♾️ Meta** |
-| **🎧 Spotify** |
-| **🎬 Emby** |
-| **💬 Discord** |
-| **👽 Reddit** |
-| **🎥 Netflix** |
-| **💝 Patreon** |
-| **📚 EHentai** |
-| **☁️ PikPak** |
-| **💬 LINE** |
-
-#### 特殊结构组
-
-| 代理组 | 组内结构 |
+| 核心组 | 在基础代理组中的嵌套情况 |
 | :--- | :--- |
-| **🎮 Steam平台（非下载/CDN）** | `DIRECT`、`👉 手动切换`、`♻️ 自动选择`、`🔄 负载均衡`；默认选择 `DIRECT` |
-| **🎮 Games-Global** | 嵌套 **🎮 Steam平台（非下载/CDN）**，并纳入可用节点 |
-| **FCM** | `👉 手动切换`、`DIRECT` |
+| **🔄 负载均衡** | 常规业务组均嵌套本组；`🎮 Games-Global`、`FCM` 不嵌套本组（Games-Global 经 Steam 组间接使用） |
+| **👉 手动切换** | 常规业务组均嵌套本组；此外 `FCM` 也嵌套本组，且本组是 `FCM` 唯一嵌套的代理组；`🎮 Games-Global` 不直接嵌套，经 Steam 组间接使用 |
+| **♻️ 自动选择** | 常规业务组均嵌套本组；`🎮 Games-Global`、`FCM` 不嵌套本组（Games-Global 经 Steam 组间接使用） |
+
+#### 基础代理组
+
+| 代理组 | 用途 | 分流说明 |
+| :--- | :--- | :--- |
+| **🌍 PROXY** | 全局代理出口与最终兜底 | `DOMAIN-KEYWORD,ikuuu`、`proxy@direct` / `proxy` / `gfw` 规则集指向本组，未命中其他规则的流量由 `MATCH` 兜底到本组 |
+| **👉 手动切换** | 手动选择单个节点 | 无规则直接指向本组，由其他代理组嵌套调用；`include-all` 纳入所有可用节点 |
+| **♻️ 自动选择** | 自动测速选优 | 无规则直接指向本组，由其他代理组嵌套调用；`url-test` 类型，`include-all` 纳入所有可用节点 |
+| **🔄 负载均衡** | 多节点负载均衡 | 无规则直接指向本组，由其他代理组嵌套调用；`load-balance` 类型（`sticky-sessions`），`include-all` 纳入所有可用节点 |
+| **🍎 海外苹果** | 海外 Apple 服务单独选出口 | `apple` 域名集与 `apple_ip` IP 集（`no-resolve`） |
+| **💠 海外微软** | 海外 Microsoft 服务单独选出口 | `microsoft` 域名集与 `microsoft_ip` IP 集（`no-resolve`） |
+| **📲 Telegram** | Telegram 单独选出口 | `telegram_domain` 域名集、`telegramcidr` IP 集（`no-resolve`），及 Telegram / Nagram 进程名正则 |
+| **✖️ Twitter** | Twitter / X 单独选出口 | `twitter-x-domain`、`twitter-x-ip`（`no-resolve`）、`twitter-x-blackmatrix7-No_Resolve` 三套规则集，及 Twitter 进程名正则 |
+| **🤖 AI大模型** | AI 服务单独选出口 | `ai-1` / `ai-2` 规则集、`Gemini_Domain` / `Grok_Domain` 域名集，及 Claude / Anthropic、Manus、Muse 等域名、进程与 IP 段直达规则 |
+| **🎵 TikTok** | TikTok 单独选出口 | `TikTok` 规则集 |
+| **💳 金融支付** | 支付与加密货币单独选出口 | `category-cryptocurrency` 及 PayPal、Stripe、Visa、Mastercard、Wise 规则集，及交易所 / 钱包 App 进程名 |
+| **🔎 Google** | Google 服务单独选出口 | `google` 与 `google-cn` 两套规则集；FCM 不在本组，见特别组说明 |
+| **♾️ Meta** | Meta 服务单独选出口 | `meta` 规则集 |
+| **🎧 Spotify** | Spotify 单独选出口 | `spotify` 规则集 |
+| **🎬 Emby** | Emby 类客户端单独选出口 | 无规则集，仅按 7 个 Emby 类客户端进程名分流 |
+| **💬 Discord** | Discord 单独选出口 | `discord` 规则集 |
+| **👽 Reddit** | Reddit 单独选出口 | `reddit` 规则集 |
+| **🎥 Netflix** | Netflix 单独选出口 | `netflix` 规则集 |
+| **💝 Patreon** | Patreon 单独选出口 | `patreon` 规则集 |
+| **📚 EHentai** | EHentai 单独选出口 | `ehentai` 规则集 |
+| **☁️ PikPak** | PikPak 单独选出口 | `pikpak` 规则集 |
+| **💬 LINE** | LINE 单独选出口 | `line` 规则集 |
+| **🎮 Games-Global** | 游戏流量单独选出口 | `games` 规则集及 `bf6.exe` 进程；特别说明见下 |
+| **🎮 Steam平台（非下载/CDN）** | Steam 平台流量单独选出口 | `steam` 域名集与 `steam_ip` IP 集（`no-resolve`）；特别说明见下 |
+| **FCM** | Google FCM 推送单独选出口 | `googlefcm` 规则集；特别说明见下 |
+
+#### 特别组说明
+
+以下三组同时属于基础代理组（见上表），因结构与默认行为不同于常规业务组，单独说明。
+
+| 代理组 | 特别说明 |
+| :--- | :--- |
+| **🎮 Games-Global** | 结构：唯一嵌套另一个业务组的代理组，固定策略项只有 `🎮 Steam平台（非下载/CDN）`，另以 `include-all` 纳入的节点可直接改选<br>默认：默认选中 Steam 组，实际出口随 Steam 组的当前选择走<br>规则关联：`games` 规则集被 WebRTC 阻断规则列为豁免，命中它的 UDP 不按 STUN 端口拦截 |
+| **🎮 Steam平台（非下载/CDN）** | 范围：只承接 `steam` / `steam_ip` 规则集的 Steam 平台流量，不含下载 / CDN 流量<br>默认：`DIRECT` 排首位且为默认选中，未手动改选时平台流量默认直连<br>嵌套：被 `🎮 Games-Global` 嵌套，是唯一既是规则的直接分流目标、又被其他组嵌套的业务组 |
+| **FCM** | 结构：只有 `👉 手动切换` 与 `DIRECT` 两项，无 `include-all`，不能在本组直接选具体节点<br>范围：只承接 `googlefcm` 规则集，与 `🔎 Google` 的 `google` / `google-cn` 分开<br>脚本：合并后本组的组内节点由 `FCM直连` 开关改写，见 JavaScript 说明 |
 
 <a id="before-use"></a>
 
