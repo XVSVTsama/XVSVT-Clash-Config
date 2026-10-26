@@ -67,7 +67,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 <table width="100%">
 <thead>
-<tr><th width="20%">代理组</th><th width="80%">嵌套关系</th></tr>
+<tr><th width="20%">代理组<img src="assets/table-spacer.png" width="320" height="1" alt=""></th><th width="80%">嵌套关系<img src="assets/table-spacer.png" width="1280" height="1" alt=""></th></tr>
 </thead>
 <tbody>
 <tr><td><strong>🌍 PROXY</strong></td><td>唯一的顶层入口，不直接纳入节点（无 <code>include-all</code>），实际节点经被嵌套的三组进入；组内只有以下四项：<br><code>👉 手动切换</code><br><code>♻️ 自动选择</code><br><code>🔄 负载均衡</code><br><code>DIRECT</code></td></tr>
@@ -81,7 +81,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 <table width="100%">
 <thead>
-<tr><th width="15%">代理组</th><th width="25%">用途</th><th width="60%">路由规则</th></tr>
+<tr><th width="15%">代理组<img src="assets/table-spacer.png" width="240" height="1" alt=""></th><th width="25%">用途<img src="assets/table-spacer.png" width="400" height="1" alt=""></th><th width="60%">路由规则<img src="assets/table-spacer.png" width="960" height="1" alt=""></th></tr>
 </thead>
 <tbody>
 <tr><td><strong>🍎 海外苹果</strong></td><td>海外 Apple 服务单独选出口</td><td>引用规则集合：<code>apple</code>、<code>apple_ip</code></td></tr>
@@ -113,7 +113,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 <table width="100%">
 <thead>
-<tr><th width="25%">代理组</th><th width="75%">嵌套结构</th></tr>
+<tr><th width="25%">代理组<img src="assets/table-spacer.png" width="400" height="1" alt=""></th><th width="75%">嵌套结构<img src="assets/table-spacer.png" width="1200" height="1" alt=""></th></tr>
 </thead>
 <tbody>
 <tr><td><strong>🎮 Games-Global</strong></td><td><code>🎮 Steam平台（非下载/CDN）</code>（默认选中）<br>所有可用节点（<code>include-all</code>）</td></tr>
@@ -162,7 +162,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 <table width="100%">
 <thead>
-<tr><th width="42%">策略组名称</th><th width="43%">Bettbox 开关</th><th width="15%">默认</th></tr>
+<tr><th width="42%">策略组名称<img src="assets/table-spacer.png" width="672" height="1" alt=""></th><th width="43%">Bettbox 开关<img src="assets/table-spacer.png" width="688" height="1" alt=""></th><th width="15%">默认<img src="assets/table-spacer.png" width="240" height="1" alt=""></th></tr>
 </thead>
 <tbody>
 <tr><td><strong>🔄 负载均衡</strong></td><td><code>🔄 负载均衡</code></td><td>开启</td></tr>
@@ -197,7 +197,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 <table width="100%">
 <thead>
-<tr><th width="20%">策略组名称</th><th width="14%">由哪个开关决定</th><th width="8%">默认</th><th width="58%">说明</th></tr>
+<tr><th width="20%">策略组名称<img src="assets/table-spacer.png" width="320" height="1" alt=""></th><th width="14%">由哪个开关决定<img src="assets/table-spacer.png" width="224" height="1" alt=""></th><th width="8%">默认<img src="assets/table-spacer.png" width="128" height="1" alt=""></th><th width="58%">说明<img src="assets/table-spacer.png" width="928" height="1" alt=""></th></tr>
 </thead>
 <tbody>
 <tr><td><strong>FCM</strong></td><td><code>FCM直连</code></td><td>开启</td><td>开关不移除本组，只改写组内节点：开启=<code>DIRECT</code>；关闭且 <code>👉 手动切换</code> 已禁用时回退到全局兜底。脚本内嵌模板把本组标记为隐藏组（<code>hidden</code>）</td></tr>
@@ -214,7 +214,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 <table width="100%">
 <thead>
-<tr><th width="18%">开关</th><th width="8%">默认</th><th width="74%">作用</th></tr>
+<tr><th width="18%">开关<img src="assets/table-spacer.png" width="288" height="1" alt=""></th><th width="8%">默认<img src="assets/table-spacer.png" width="128" height="1" alt=""></th><th width="74%">作用<img src="assets/table-spacer.png" width="1184" height="1" alt=""></th></tr>
 </thead>
 <tbody>
 <tr><td><code>强制证书验证</code></td><td>关闭</td><td>开启时统一把订阅节点的 <code>skip-cert-verify</code> 置为 <code>false</code>；关闭时不干预订阅节点原有设置</td></tr>
