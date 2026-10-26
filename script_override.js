@@ -140,6 +140,9 @@ const ruleOptionsEnable = {
   'TGDC实验分流': false,
   // 为合格的订阅顶层节点生成按国家/地区划分的策略组；与入口解析开关独立。
   '国家/地区分组': false,
+  // 国家/地区组生成后，按节点名称中的显式数值倍率筛选；不处理 proxy-providers。
+  '高倍率筛选': false,
+  '低倍率筛选': false,
   // 开启后，维护区所有运营商的入口节点统一加入“国内入口解析”组，不进入其他代理组。
   '入口解析': false,
   // 最后为节点解析 DNS 的无协议地址补 tcp://；不改变显式协议、出口后缀或 DNS 优先级。
@@ -523,6 +526,52 @@ function applyCountryRegionGrouping(result, originalProxies) {
     proxyGroups.push(...parentGroups, ...childGroups);
   }
   result['proxy-groups'] = proxyGroups;
+}
+
+// 只识别节点名称中明确标记的数值倍率（如 0.5x、2x、5×），不推断“高倍”等模糊标签。
+function getExplicitProxyMultipliers(name) {
+  if (typeof name !== 'string') return [];
+  const matches = name.matchAll(/(?:^|[^A-Za-z0-9_.])(\d+(?:\.\d+)?)\s*[x×](?![A-Za-z0-9_])/giu);
+  return Array.from(matches, (match) => Number(match[1]));
+}
+
+// 在地区组生成后过滤顶层订阅节点，并清理静态引用；保持代理组结构（包括空地区组）不变。
+function applyProxyMultiplierFilters(result) {
+  const filterHigh = ruleOptionsEnable['高倍率筛选'] === true;
+  const filterLow = ruleOptionsEnable['低倍率筛选'] === true;
+  if (!filterHigh && !filterLow) return;
+  if (!Array.isArray(result.proxies)) return;
+
+  const removedProxyNames = new Set();
+  result.proxies = result.proxies.filter((proxy) => {
+    if (!proxy || typeof proxy !== 'object' || typeof proxy.name !== 'string') return true;
+    const multipliers = getExplicitProxyMultipliers(proxy.name);
+    const shouldRemove = multipliers.some(
+      (multiplier) => (filterHigh && multiplier >= 2) || (filterLow && multiplier <= 0.5)
+    );
+    if (shouldRemove) removedProxyNames.add(proxy.name);
+    return !shouldRemove;
+  });
+
+  if (removedProxyNames.size === 0) return;
+  const firstRemainingProxyName = result.proxies
+    .map((proxy) => proxy && proxy.name)
+    .find((name) => typeof name === 'string' && name.length > 0);
+  if (!Array.isArray(result['proxy-groups'])) return;
+
+  result['proxy-groups'].forEach((group) => {
+    if (!group || typeof group !== 'object') return;
+    if (Array.isArray(group.proxies)) {
+      group.proxies = group.proxies.filter((name) => !removedProxyNames.has(name));
+    }
+    if (removedProxyNames.has(group['default-selected'])) {
+      if (firstRemainingProxyName) {
+        group['default-selected'] = firstRemainingProxyName;
+      } else {
+        delete group['default-selected'];
+      }
+    }
+  });
 }
 
 const TGDC_RULES = [
@@ -1633,6 +1682,14 @@ const serviceConfigs = TEMPLATE['proxy-groups']
       icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Global.png'
     },
     {
+      name: '高倍率筛选',
+      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Global.png'
+    },
+    {
+      name: '低倍率筛选',
+      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Global.png'
+    },
+    {
       name: '入口解析',
       icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Domestic.png'
     },
@@ -2600,7 +2657,10 @@ function main(config, profileName) {
   // ---- 8. 国家/地区策略组：DNS/hosts 完成后生成，筛选仅作用于模块候选。 ----
   applyCountryRegionGrouping(result, originalProxies);
 
-  // ---- 9. 国内入口解析：国家/地区策略组生成后，再追加运营商入口节点。 ----
+  // ---- 8.5 倍率筛选：国家/地区组生成后、国内入口解析注入前，仅处理订阅顶层节点。 ----
+  applyProxyMultiplierFilters(result);
+
+  // ---- 9. 国内入口解析：倍率筛选完成后，再追加运营商入口节点。 ----
   applyEntryResolution(result);
 
   // ---- 10. 代理节点 DNS 使用 TCP：最后补协议，保留前序合并、hosts 与出口选择结果。 ----
