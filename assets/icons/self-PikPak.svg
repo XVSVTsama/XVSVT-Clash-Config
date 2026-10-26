@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 100 100">
   <title>Cloud storage icon for PikPak</title>
-  <g fill="none" stroke="#2787C5" stroke-linecap="round" stroke-linejoin="round" stroke-width="7">
+  <g transform="translate(5.4 6.8) scale(0.92)" fill="none" stroke="#2787C5" stroke-linecap="round" stroke-linejoin="round" stroke-width="7">
     <path d="M28 62h43a17 17 0 0 0 1-34 24 24 0 0 0-45-4A19 19 0 0 0 28 62Z" />
     <path d="M50 48v33m-12-12 12 12 12-12M34 84h32" />
   </g>
