@@ -159,7 +159,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 | **国内入口解析** | `入口解析` | 关闭 | 开关开启时统一注入维护区所有运营商的入口节点并建立该组，由用户手动选择入口；每个运营商支持多个节点，排列顺序不代表优先级 |
 | **国家/地区父组及隐藏子组** | `国家/地区分组` | 关闭 | 仅为有候选节点的地区创建分组；将父组追加到 15 个指定流量目标中，跳过已禁用或不存在的目标；排除国内入口解析节点 |
 
-**同样不在 `policyGroupOptions`、也不对应任何策略组的开关（5 个）**
+**同样不在 `policyGroupOptions`、也不对应任何策略组的开关（7 个）**
 
 | 开关 | 默认 | 作用 |
 | :--- | :--- | :--- |
@@ -168,6 +168,8 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 | `IPv6优先` | 关闭 | 改写顶层节点 `ip-version`：`ipv6` 保持不变，`ipv6-prefer` 改为 `ipv6`，其余设为 `ipv6-prefer`；不处理 provider 运行时节点 |
 | `国家/地区分组` | 关闭 | 只用订阅顶层节点生成国家/地区选择组；共用官网、流量说明等节点过滤，但不改变原节点列表或目标组的 `include-all`。该开关独立于 `入口解析` |
 | `代理节点 DNS 使用 TCP` | 关闭 | 为代理节点解析 DNS 中未标协议的地址启用 TCP；显式协议不变 |
+| `WebRTC阻断` | 开启 | 开启时保持模板规则不变；关闭时移除所有同时包含 `NETWORK,UDP` 与 `DST-PORT,3478-3479/5349-5350/19302-19309` 的规则 |
+| `试开启节点UDP` | 关闭 | 开启时为订阅顶层节点设置 `udp: true`，允许 UDP 通过代理；关闭时不改动节点原值。Mihomo [官方通用字段文档](https://wiki.metacubex.one/config/proxies/) 说明该字段默认通常为 `false`，TUIC 等基于 UDP 的协议以及 `direct`、`dns` 类型默认开启 |
 
 > **关于客户端**：这套图形化开关由 Bettbox 原生支持——脚本开头的 `Compatible_With_Bettbox` 声明就是给 Bettbox 识别用的。换到其他客户端分两种情况：
 >

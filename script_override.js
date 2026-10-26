@@ -130,6 +130,8 @@ const ruleOptionsEnable = {
   '强制证书验证': false,
   // 是否为带非空 public-key/short-id 的 Reality 节点启用 support-x25519mlkem768（X25519MLKEM768 后量子密钥协商）
   '启用 Reality 增强': true,
+  // 默认不改动订阅节点的 udp；开启时统一设置为 true，允许 UDP 通过代理。
+  '试开启节点UDP': false,
   // 开启后按节点 ip-version 优先使用 IPv6
   'IPv6优先': false,
   // 默认打开：隐藏组 FCM 仅含 DIRECT；关闭后优先使用 👉 手动切换，若该组已关闭则回退到 🌍 PROXY，再回退到 DIRECT（不移除 FCM 组）。开关图标取自 FCM 代理组的 icon 字段。
@@ -142,6 +144,8 @@ const ruleOptionsEnable = {
   '入口解析': false,
   // 最后为节点解析 DNS 的无协议地址补 tcp://；不改变显式协议、出口后缀或 DNS 优先级。
   '代理节点 DNS 使用 TCP': false,
+  // 默认保留 WebRTC 阻断规则；关闭后删除所有同时包含指定 UDP 网络和端口特征的规则。
+  'WebRTC阻断': true,
 };
 
 // 出现同一个域名规则 key 时，订阅原始配置(true) 还是模板(false) 优先（模板目前未配置
@@ -1611,6 +1615,14 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     {
       name: '代理节点 DNS 使用 TCP',
       icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-TCP.png'
+    },
+    {
+      name: 'WebRTC阻断',
+      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-MiToverG422-Qure-SSL.png'
+    },
+    {
+      name: '试开启节点UDP',
+      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Global.png'
     }
   ]);
 
@@ -2402,6 +2414,19 @@ function main(config, profileName) {
     }
   }
 
+  // 节点 UDP 开关处理：默认关闭时不修改；开启时为订阅顶层节点设置 udp: true。
+  const enableNodeUdp = ruleOptionsEnable['试开启节点UDP'] === true;
+
+  if (enableNodeUdp) {
+    for (const proxy of originalProxies) {
+      if (!proxy || typeof proxy !== "object") {
+        continue;
+      }
+
+      proxy.udp = true;
+    }
+  }
+
   // 1.2 节点 TLS 证书验证开关处理：默认不干预订阅节点原有 skip-cert-verify；
   //     开启「强制证书验证」时统一置为 false（强制校验证书），对全部节点一视同仁
   const forceCertVerify = ruleOptionsEnable['强制证书验证'] === true;
@@ -2529,6 +2554,17 @@ function main(config, profileName) {
       });
       return updatedRule;
     });
+  }
+
+  // ---- 6.5 WebRTC 阻断开关：默认开启时不改动模板规则；关闭时按指定特征移除全部匹配规则 ----
+  if (ruleOptionsEnable['WebRTC阻断'] === false && Array.isArray(result.rules)) {
+    const isWebRtcBlockingRule = (rule) =>
+      typeof rule === 'string' &&
+      rule.includes('NETWORK,UDP') &&
+      rule.includes('DST-PORT,3478-3479/5349-5350/19302-19309');
+    if (result.rules.some(isWebRtcBlockingRule)) {
+      result.rules = result.rules.filter((rule) => !isWebRtcBlockingRule(rule));
+    }
   }
 
   // ---- 7. DNS 节点智能补充 ----
