@@ -82,9 +82,15 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 | **🎬 Emby** | Emby 播放器进程分流 | 当前仅覆盖 7 个已核实的 Android 客户端；其他平台未纳入 |
 | **💬 Discord** | Discord 域名 | 沿用现有全局 UDP/STUN 拦截规则，语音连通性依网络而定 |
 | **👽 Reddit** | Reddit 及相关资源域名 | 默认跟随手动切换，可独立选择节点 |
+| **🎥 Netflix** | Netflix 域名与关键词规则集 | [DustinWin standalone list](https://github.com/DustinWin/domain-list-custom/blob/domains/netflix.list)：36 条 classical/text 规则，含 4 条 `DOMAIN-KEYWORD` |
+| **💝 Patreon** | Patreon 域名规则集 | [MetaCubeX MRS](https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/patreon.mrs)；默认跟随手动切换，可独立选择节点 |
+| **📚 EHentai** | E-Hentai 域名规则集 | [MetaCubeX MRS](https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/ehentai.mrs)；默认跟随手动切换，可独立选择节点 |
+| **☁️ PikPak** | PikPak 域名规则集 | [MetaCubeX MRS](https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/pikpak.mrs)；默认跟随手动切换，可独立选择节点 |
+| **💬 LINE** | LINE 域名规则集 | [MetaCubeX MRS](https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/line.mrs)；默认跟随手动切换，可独立选择节点 |
 | **FCM** | Google FCM 相关域名（`rules` 中 `googlefcm` 规则集的目标组） | 静态 YAML 依次提供 `👉 手动切换`、`DIRECT`；使用 JS 后由 `FCM直连` 控制，默认仅 `DIRECT` |
 
 > 注：不使用覆写脚本直接运行 YAML 时，需自行提供节点或有效订阅 provider。YAML 与脚本的常规动态节点组均通过 Mihomo 原生 `include-all` 纳入顶层 `proxies` 与 `proxy-providers` 节点；🌍 PROXY、FCM 不直接使用该字段。🍎 海外苹果 / 💠 海外微软 / 🎮 Steam平台（非下载/CDN）/ 🎮 Games-Global 保留固定策略项。脚本的 TGDC 实验地区组例外：仅依据顶层节点筛选，地区无候选时显式列出合格保底节点。
+> 新增五个服务组均默认开启，提供 `👉 手动切换`、`♻️ 自动选择`、`🔄 负载均衡`、`DIRECT` 选项，并通过 `include-all` 引入节点；Netflix 使用 classical/text 提供者以保留关键词规则，其余四组使用 MetaCubeX 域名 MRS。
 
 <a id="before-use"></a>
 
@@ -112,7 +118,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 - **国家/地区分组**：`国家/地区分组` 开启后，只从订阅顶层 `proxies` 生成香港、日本、新加坡、台湾、美国、加拿大、英国、法国、荷兰、德国、澳大利亚及“其他国家/地区”策略组；不枚举 `proxy-providers`。倍率筛选在地区组生成之后执行；即使某地区的节点全部被筛除，父组和四个隐藏子组仍保留。
 - **倍率筛选**：`高倍率筛选` 删除名称中明确标记为 `2x` 或更高的订阅顶层节点；`低倍率筛选` 删除明确标记为 `0.5x` 或更低的节点。只识别显式数值倍率（例如 `5x`），不猜测模糊标签；过滤同步清理代理组 `proxies` 中的节点名称引用，不处理 `proxy-providers`，并在国内入口解析节点注入之前执行。
 - **DNS**：动态合并出 `dns.proxy-server-nameserver-policy`（模板不预置该键，以脚本计算结果为准），细节见下方流程图。
-- **开关声明**：脚本首行的 `Compatible_With_Bettbox` 兼容声明必须置顶——Bettbox 只在脚本开头识别该声明，删除或下移会导致"自定义规则开关"入口不显示；声明中的 `policyGroupOptions` 列出归入图形化开关分类的 19 个策略组，`ruleOptionsEnable` 则是实际生效的开关表，键名需与声明保持一致。
+- **开关声明**：脚本首行的 `Compatible_With_Bettbox` 兼容声明必须置顶——Bettbox 只在脚本开头识别该声明，删除或下移会导致"自定义规则开关"入口不显示；声明中的 `policyGroupOptions` 列出归入图形化开关分类的 24 个策略组，`ruleOptionsEnable` 则是实际生效的开关表，键名需与声明保持一致。
 
 ### 🔀 hosts / DNS 处理流程
 
@@ -122,7 +128,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 脚本开头的 `Compatible_With_Bettbox` 声明用 `policyGroupOptions` 划定了"策略组开关"分类：只列进去的组出现在该分类下，没列进去的组不受它控制，改由脚本的 `ruleOptionsEnable` 决定存在形态（两者都在脚本顶部可查）。
 
-**列入 `policyGroupOptions` 的策略组（19 个）**
+**列入 `policyGroupOptions` 的策略组（24 个）**
 
 | 策略组名称 | Bettbox 开关 | 默认 |
 | :--- | :--- | :--- |
@@ -145,8 +151,13 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 | **🎬 Emby** | `🎬 Emby` | 开启 |
 | **💬 Discord** | `💬 Discord` | 开启 |
 | **👽 Reddit** | `👽 Reddit` | 开启 |
+| **🎥 Netflix** | `🎥 Netflix` | 开启 |
+| **💝 Patreon** | `💝 Patreon` | 开启 |
+| **📚 EHentai** | `📚 EHentai` | 开启 |
+| **☁️ PikPak** | `☁️ PikPak` | 开启 |
+| **💬 LINE** | `💬 LINE` | 开启 |
 
-这 19 个开关默认全部开启，关闭即移除该组，并清理其他组与 `rules` 中的引用（`🌍 PROXY` 关闭时其余引用回退到 `DIRECT`；TGDC 开启时 `📲 Telegram` 开关同时管 `📲 Telegram(兜底)`）。
+这 24 个开关默认全部开启，关闭即移除该组，并清理其他组与 `rules` 中的引用（`🌍 PROXY` 关闭时其余引用回退到 `DIRECT`；TGDC 开启时 `📲 Telegram` 开关同时管 `📲 Telegram(兜底)`）。
 
 **未列入 `policyGroupOptions` 的组**
 

@@ -23,6 +23,11 @@ const Compatible_With_Bettbox = {
     '🎬 Emby',
     '💬 Discord',
     '👽 Reddit',
+    '🎥 Netflix',
+    '💝 Patreon',
+    '📚 EHentai',
+    '☁️ PikPak',
+    '💬 LINE',
   ]
 };
 /**
@@ -116,7 +121,7 @@ const ruleOptionsEnable = {
   '🎵 TikTok': true,
   // Google / Google-CN 共用独立策略组；Google FCM 与 AI 特例仍由原规则处理。
   '🔎 Google': true,
-  // 金融支付及社交/音乐服务；Instagram 统一归入 Meta。
+  // 金融支付；Instagram 统一归入 Meta。
   '💳 金融支付': true,
   '♾️ Meta': true,
   '🎧 Spotify': true,
@@ -124,6 +129,11 @@ const ruleOptionsEnable = {
   '🎬 Emby': true,
   '💬 Discord': true,
   '👽 Reddit': true,
+  '🎥 Netflix': true,
+  '💝 Patreon': true,
+  '📚 EHentai': true,
+  '☁️ PikPak': true,
+  '💬 LINE': true,
 
   // --- 节点与网络功能开关 ---
   // 开启时统一把订阅节点 skip-cert-verify 置为 false（强制校验证书）；关闭时不干预，保留订阅节点原有设置。对全部节点一视同仁
@@ -1075,6 +1085,66 @@ const TEMPLATE = {
       "include-all": true
     },
     {
+      "name": "🎥 Netflix",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-netflix.svg",
+      "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
+      "include-all": true
+    },
+    {
+      "name": "💝 Patreon",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-patreon.svg",
+      "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
+      "include-all": true
+    },
+    {
+      "name": "📚 EHentai",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-EHentai.svg",
+      "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
+      "include-all": true
+    },
+    {
+      "name": "☁️ PikPak",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-PikPak.svg",
+      "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
+      "include-all": true
+    },
+    {
+      "name": "💬 LINE",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-line.svg",
+      "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
+      "include-all": true
+    },
+    {
       "hidden": true,
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-MiToverG422-Qure-fcm.png",
       "name": "FCM",
@@ -1090,21 +1160,21 @@ const TEMPLATE = {
       "type": "http",
       "interval": 86400,
       "behavior": "domain",
-      "url": "https://cdn.jsdelivr.net/gh/Accademia/Additional_Rule_For_Clash@master/Gemini/Gemini_Domain.yaml",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/Accademia/Additional_Rule_For_Clash/master/Gemini/Gemini_Domain.yaml",
       "path": "./ruleset/Gemini_Domain.yaml"
     },
     "Grok_Domain": {
       "type": "http",
       "interval": 86400,
       "behavior": "domain",
-      "url": "https://raw.githubusercontent.com/Accademia/Additional_Rule_For_Clash/refs/heads/main/Grok/Grok_Domain.yaml",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/Accademia/Additional_Rule_For_Clash/refs/heads/main/Grok/Grok_Domain.yaml",
       "path": "./ruleset/Grok_Domain.yaml"
     },
     "HijackingPlus": {
       "type": "http",
       "interval": 86400,
       "behavior": "classical",
-      "url": "https://raw.githubusercontent.com/Accademia/Additional_Rule_For_Clash/refs/heads/main/HijackingPlus/HijackingPlus_No_Resolve.yaml",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/Accademia/Additional_Rule_For_Clash/refs/heads/main/HijackingPlus/HijackingPlus_No_Resolve.yaml",
       "path": "./ruleset/HijackingPlus.yaml"
     },
     "TikTok": {
@@ -1112,7 +1182,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/tiktok.mrs",
+      "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/tiktok.mrs",
       "path": "./ruleset/tiktok.mrs"
     },
     "ai-1": {
@@ -1120,7 +1190,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/ai.mrs",
+      "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/ai.mrs",
       "path": "./ruleset/ai-1.mrs"
     },
     "ai-2": {
@@ -1128,7 +1198,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs",
       "path": "./ruleset/ai-2.mrs"
     },
     "category-cryptocurrency": {
@@ -1136,7 +1206,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-cryptocurrency.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-cryptocurrency.mrs",
       "path": "./ruleset/category-cryptocurrency.mrs"
     },
     "discord": {
@@ -1144,15 +1214,55 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/discord.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/discord.mrs",
       "path": "./ruleset/discord.mrs"
+    },
+    "ehentai": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/ehentai.mrs",
+      "path": "./ruleset/ehentai.mrs"
+    },
+    "line": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/line.mrs",
+      "path": "./ruleset/line.mrs"
+    },
+    "netflix": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "classical",
+      "format": "text",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/DustinWin/domain-list-custom/domains/netflix.list",
+      "path": "./ruleset/netflix.list"
+    },
+    "patreon": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/patreon.mrs",
+      "path": "./ruleset/patreon.mrs"
+    },
+    "pikpak": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/pikpak.mrs",
+      "path": "./ruleset/pikpak.mrs"
     },
     "mastercard": {
       "type": "http",
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/mastercard.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/mastercard.mrs",
       "path": "./ruleset/mastercard.mrs"
     },
     "meta": {
@@ -1160,7 +1270,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/meta.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/meta.mrs",
       "path": "./ruleset/meta.mrs"
     },
     "microsoft": {
@@ -1168,7 +1278,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/microsoft.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/microsoft.mrs",
       "path": "./ruleset/microsoft.mrs"
     },
     "microsoft_ip": {
@@ -1176,7 +1286,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "ipcidr",
       "format": "mrs",
-      "url": "https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geoip/microsoft.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geoip/microsoft.mrs",
       "path": "./ruleset/microsoft_ip.mrs"
     },
     "apple": {
@@ -1184,7 +1294,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/apple.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/apple.mrs",
       "path": "./ruleset/apple.mrs"
     },
     "apple_ip": {
@@ -1192,7 +1302,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "ipcidr",
       "format": "mrs",
-      "url": "https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geoip/apple.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geoip/apple.mrs",
       "path": "./ruleset/apple_ip.mrs"
     },
     "paypal": {
@@ -1200,7 +1310,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/paypal.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/paypal.mrs",
       "path": "./ruleset/paypal.mrs"
     },
     "reddit": {
@@ -1208,7 +1318,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/reddit.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/reddit.mrs",
       "path": "./ruleset/reddit.mrs"
     },
     "spotify": {
@@ -1216,7 +1326,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/spotify.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/spotify.mrs",
       "path": "./ruleset/spotify.mrs"
     },
     "steam": {
@@ -1224,7 +1334,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/steam.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/steam.mrs",
       "path": "./ruleset/steam.mrs"
     },
     "steam_ip": {
@@ -1232,7 +1342,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "ipcidr",
       "format": "mrs",
-      "url": "https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geoip/steam.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geoip/steam.mrs",
       "path": "./ruleset/steam_ip.mrs"
     },
     "douyin": {
@@ -1240,7 +1350,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/douyin.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/douyin.mrs",
       "path": "./ruleset/douyin.mrs"
     },
     "cn": {
@@ -1248,7 +1358,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/cn.mrs",
+      "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/cn.mrs",
       "path": "./ruleset/cn.mrs"
     },
     "cncidr": {
@@ -1256,7 +1366,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "ipcidr",
       "format": "mrs",
-      "url": "https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/cnip.mrs",
+      "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/cnip.mrs",
       "path": "./ruleset/cncidr.mrs"
     },
     "echs_direct": {
@@ -1264,7 +1374,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://raw.githubusercontent.com/echs-top/proxy/main/mrs/domain/direct.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/echs-top/proxy/main/mrs/domain/direct.mrs",
       "path": "./ruleset/echs_direct.mrs"
     },
     "echs_direct_ip": {
@@ -1272,7 +1382,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "ipcidr",
       "format": "mrs",
-      "url": "https://raw.githubusercontent.com/echs-top/proxy/main/mrs/ip/direct.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/echs-top/proxy/main/mrs/ip/direct.mrs",
       "path": "./ruleset/echs_direct_ip.mrs"
     },
     "fakeip-filter_domain": {
@@ -1280,7 +1390,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/fakeip-filter.mrs",
+      "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/fakeip-filter.mrs",
       "path": "./ruleset/fakeip-filter_domain.mrs"
     },
     "games": {
@@ -1288,7 +1398,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/games.mrs",
+      "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/games.mrs",
       "path": "./ruleset/games.mrs"
     },
     "gfw": {
@@ -1296,14 +1406,14 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/gfw.mrs",
+      "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/gfw.mrs",
       "path": "./ruleset/gfw.mrs"
     },
     "google": {
       "type": "http",
       "interval": 86400,
       "behavior": "domain",
-      "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/google.txt",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/google.txt",
       "path": "./ruleset/google.yaml"
     },
     "google-cn": {
@@ -1311,7 +1421,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/google-cn.mrs",
+      "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/google-cn.mrs",
       "path": "./ruleset/google-cn.mrs"
     },
     "googlefcm": {
@@ -1319,14 +1429,14 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/googlefcm.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/googlefcm.mrs",
       "path": "./ruleset/googlefcm.mrs"
     },
     "lancidr": {
       "type": "http",
       "interval": 86400,
       "behavior": "ipcidr",
-      "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/lancidr.txt",
       "path": "./ruleset/lancidr.yaml"
     },
     "pixiv": {
@@ -1334,14 +1444,14 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/pixiv.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/pixiv.mrs",
       "path": "./ruleset/pixiv.mrs"
     },
     "private": {
       "type": "http",
       "interval": 86400,
       "behavior": "domain",
-      "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/private.txt",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/private.txt",
       "path": "./ruleset/private.yaml"
     },
     "proxy": {
@@ -1349,7 +1459,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/proxy.mrs",
+      "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/proxy.mrs",
       "path": "./ruleset/proxy.mrs"
     },
     "proxy@direct": {
@@ -1357,7 +1467,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://raw.githubusercontent.com/echs-top/proxy/main/mrs/domain/proxy@direct.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/echs-top/proxy/main/mrs/domain/proxy@direct.mrs",
       "path": "./rules/proxy@direct.mrs"
     },
     "stripe": {
@@ -1365,7 +1475,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/stripe.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/stripe.mrs",
       "path": "./ruleset/stripe.mrs"
     },
     "telegram_domain": {
@@ -1373,7 +1483,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.mrs",
       "path": "./rules/telegram_domain.mrs"
     },
     "telegramcidr": {
@@ -1381,7 +1491,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "ipcidr",
       "format": "mrs",
-      "url": "https://raw.githubusercontent.com/reddishJade/private_proxy/main/Mihomo/Provider/telegram%40ip.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/reddishJade/private_proxy/main/Mihomo/Provider/telegram%40ip.mrs",
       "path": "./ruleset/telegramcidr.mrs"
     },
     "twitter-x-blackmatrix7-No_Resolve": {
@@ -1389,7 +1499,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "classical",
       "format": "yaml",
-      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Twitter/Twitter_No_Resolve.yaml",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Twitter/Twitter_No_Resolve.yaml",
       "path": "./ruleset/twitter-x-blackmartix7-noreslove.mrs"
     },
     "twitter-x-domain": {
@@ -1397,7 +1507,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/twitter.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/twitter.mrs",
       "path": "./ruleset/twitter/x-domain.mrs"
     },
     "twitter-x-ip": {
@@ -1405,7 +1515,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "ipcidr",
       "format": "mrs",
-      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/twitter.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/twitter.mrs",
       "path": "./ruleset/twitter/x-ip.mrs"
     },
     "visa": {
@@ -1413,7 +1523,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/visa.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/visa.mrs",
       "path": "./ruleset/visa.mrs"
     },
     "wise": {
@@ -1421,7 +1531,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/wise.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/wise.mrs",
       "path": "./ruleset/wise.mrs"
     }
   },
@@ -1596,6 +1706,11 @@ const TEMPLATE = {
     "RULE-SET,spotify,🎧 Spotify",
     "RULE-SET,discord,💬 Discord",
     "RULE-SET,reddit,👽 Reddit",
+    "RULE-SET,netflix,🎥 Netflix",
+    "RULE-SET,patreon,💝 Patreon",
+    "RULE-SET,ehentai,📚 EHentai",
+    "RULE-SET,pikpak,☁️ PikPak",
+    "RULE-SET,line,💬 LINE",
     "RULE-SET,category-cryptocurrency,💳 金融支付",
     "RULE-SET,paypal,💳 金融支付",
     "RULE-SET,stripe,💳 金融支付",
