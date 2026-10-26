@@ -4,7 +4,6 @@ const Compatible_With_Bettbox = {
   ruleOptionsEnable: true,
   // 声明属于策略组的开关名称，需与 ruleOptionsEnable 的键完全一致
   policyGroupOptions: [
-    '🌍 PROXY',
     '🔄 负载均衡',
     '👉 手动切换',
     '♻️ 自动选择',
@@ -90,13 +89,11 @@ const ruleOptionsEnable = {
  * 自定义配置选项
  * 为模板里的每个代理组（策略组）单独定义开关：
  * true  = 启用该策略组
- * false = 禁用该策略组（会自动从 proxy-groups 中移除，并清理其他组中的引用）
+ * false = 禁用该策略组（会从 proxy-groups 中移除并清理引用；业务组还会删除对应路由规则）
  * 另有功能开关（如 FCM直连）：只调整组内节点，不涉及策略组启停。
  */
 
   // --- 代理组（策略组）单独控制开关 ---
-  // 主代理策略组
-  '🌍 PROXY': true,
   // 负载均衡策略组
   '🔄 负载均衡': true,
   // 手动选择策略组
@@ -160,6 +157,30 @@ const ruleOptionsEnable = {
   // 默认保留 WebRTC 阻断规则；关闭后删除所有同时包含指定 UDP 网络和端口特征的规则。
   'WebRTC阻断': true,
 };
+
+// 关闭这些业务组时删除指向它们的路由规则，而不是把规则改写到全局兜底。
+const REMOVE_ROUTING_RULES_FOR_DISABLED_GROUPS = new Set([
+  '📲 Telegram',
+  '🎮 Games-Global',
+  '🍎 海外苹果',
+  '💠 海外微软',
+  '🎮 Steam平台（非下载/CDN）',
+  '✖️ Twitter',
+  '🤖 AI大模型',
+  '🎵 TikTok',
+  '💳 金融支付',
+  '🔎 Google',
+  '♾️ Meta',
+  '🎧 Spotify',
+  '🎬 Emby',
+  '💬 Discord',
+  '👽 Reddit',
+  '🎥 Netflix',
+  '💝 Patreon',
+  '📚 EHentai',
+  '☁️ PikPak',
+  '💬 LINE',
+]);
 
 // 出现同一个域名规则 key 时，订阅原始配置(true) 还是模板(false) 优先（模板目前未配置
 // proxy-server-nameserver-policy，因此该开关当前实际只影响订阅来源之间的合并）
@@ -1830,7 +1851,45 @@ const serviceConfigs = TEMPLATE['proxy-groups']
 function deepClone(value) {
   return JSON.parse(JSON.stringify(value));
 }
-
+function ruleTargetsProxyGroup(rule, groupName) {
+  if (typeof rule !== 'string') return false;
+  const fields = rule.split(',');
+  const lastField = fields[fields.length - 1].trim();
+  const targetIndex = lastField.toLowerCase() === 'no-resolve'
+    ? fields.length - 2
+    : fields.length - 1;
+  return typeof fields[targetIndex] === 'string' && fields[targetIndex].trim() === groupName;
+}
+function collectRuleProviderReferences(value, references = new Set()) {
+  if (typeof value === 'string') {
+    for (const match of value.matchAll(/\bRULE-SET\s*,\s*([^,\s)]+)/gi)) {
+      references.add(match[1]);
+    }
+    for (const match of value.matchAll(/\brule-set:([^\s"'`]+)/gi)) {
+      match[1].replace(/[\])}.,;]+$/, '').split(',').forEach((name) => {
+        if (name) references.add(name);
+      });
+    }
+  } else if (Array.isArray(value)) {
+    value.forEach((item) => collectRuleProviderReferences(item, references));
+  } else if (value && typeof value === 'object') {
+    Object.entries(value).forEach(([key, item]) => {
+      if (key !== 'rule-providers') {
+        collectRuleProviderReferences(key, references);
+        collectRuleProviderReferences(item, references);
+      }
+    });
+  }
+  return references;
+}
+function removeUnusedRuleProviders(result) {
+  const providers = result && result['rule-providers'];
+  if (!providers || typeof providers !== 'object' || Array.isArray(providers)) return;
+  const referencedProviders = collectRuleProviderReferences(result);
+  Object.keys(providers).forEach((name) => {
+    if (!referencedProviders.has(name)) delete providers[name];
+  });
+}
 // =====================================================
 // DNS 节点域名智能补充逻辑
 // =====================================================
@@ -2702,6 +2761,11 @@ function main(config, profileName) {
     }
   });
 
+  // TGDC 子组和兜底组由 Telegram 总开关管理，不单独留下无路由的组。
+  if (disabledGroupNames.has('📲 Telegram(兜底)')) {
+    TGDC_PROXY_GROUP_DEFINITIONS.forEach(({ name }) => disabledGroupNames.add(name));
+  }
+
   // 过滤出启用的策略组
   result['proxy-groups'] = (result['proxy-groups'] || []).filter(
     group => group && group.name && !disabledGroupNames.has(group.name)
@@ -2739,8 +2803,18 @@ function main(config, profileName) {
     }
   });
 
-  // ---- 6. 清理 rules 中指向已禁用策略组的规则，指向保底策略组 ----
+  // ---- 6. 业务组关闭时删除对应路由；其他被禁用组仍沿用原有兜底改写 ----
   if (Array.isArray(result.rules)) {
+    const routeRemovalGroupNames = new Set(
+      Array.from(disabledGroupNames).filter((name) => REMOVE_ROUTING_RULES_FOR_DISABLED_GROUPS.has(name))
+    );
+    if (disabledGroupNames.has('📲 Telegram(兜底)')) {
+      routeRemovalGroupNames.add('📲 Telegram(兜底)');
+      TGDC_PROXY_GROUP_DEFINITIONS.forEach(({ name }) => routeRemovalGroupNames.add(name));
+    }
+    result.rules = result.rules.filter((rule) =>
+      !Array.from(routeRemovalGroupNames).some((name) => ruleTargetsProxyGroup(rule, name))
+    );
     result.rules = result.rules.map(rule => {
       let updatedRule = rule;
       disabledGroupNames.forEach(disabledName => {
@@ -2780,6 +2854,9 @@ function main(config, profileName) {
 
   // ---- 10. 代理节点 DNS 使用 TCP：最后补协议，保留前序合并、hosts 与出口选择结果。 ----
   applyProxyDnsTcp(result);
+
+  // 仅删除在最终路由、DNS 或其他配置中都不再被引用的规则集。
+  removeUnusedRuleProviders(result);
 
   return result;
 }
