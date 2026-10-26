@@ -61,36 +61,47 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 ### 🗂 分流组结构（按 `mihomo.yaml` 定义）
 
-| 策略组名称 | 默认行为 / 触发条件 | 注意事项 |
-| :--- | :--- | :--- |
-| **🌍 PROXY** | 未命中的所有默认海外流量 | 可选手动、自动或负载均衡 |
-| **🔄 负载均衡** | 采用 `sticky-sessions` (粘性会话) 策略 | 保证同一域名短时间内 IP 不变 |
-| **👉 手动切换** | 手动选择特定节点 | YAML 与 JS 均使用 `include-all`，纳入顶层节点与 provider 节点 |
-| **♻️ 自动选择** | `url-test` 自动测试并选择延迟最低的节点 | 容差设置为 50ms；节点由原生 include 字段引入 |
-| **🍎 海外苹果** | 未被前置直连规则匹配的 Apple 域名/IP | 固定策略项与动态节点并存；`echs_direct` 等通用直连规则优先 |
-| **💠 海外微软** | 未被前置直连规则匹配的 Microsoft 域名/IP | 固定策略项与动态节点并存；`echs_direct` 等通用直连规则优先 |
-| **🎮 Steam平台（非下载/CDN）** | Steam 域名/IP 规则 | `default-selected: DIRECT`；命中前置直连规则的国内游戏/下载会提前直连 |
-| **📲 Telegram** | 匹配进程名、Telegram 域名与 CIDR 规则集 | 节点由 YAML/JS 的原生 include 字段引入 |
-| **🎮 Games-Global** | 国际服游戏流量 | `default-selected: 🎮 Steam平台（非下载/CDN）`，保留嵌套组并动态引入节点 |
-| **✖️ Twitter** | Twitter / X 进程、域名与 IP 规则集 | 节点由 YAML/JS 的原生 include 字段引入 |
-| **🤖 AI大模型** | AI 服务域名、进程与规则集 | 节点由 YAML/JS 的原生 include 字段引入 |
-| **🎵 TikTok** | TikTok 域名规则集 | 节点由 YAML/JS 的原生 include 字段引入 |
-| **💳 金融支付** | 加密货币、PayPal、Stripe、Visa、Mastercard、Wise 域名 | 国内支付优先 `DIRECT`；不等同于覆盖所有银行/券商 |
-| **🔎 Google** | 既有 `google` / `google-cn` 规则集 | 默认跟随手动切换，可独立选择节点；Google FCM 与现有 AI 特例仍优先 |
-| **♾️ Meta** | Facebook、Instagram、WhatsApp、Threads 等 Meta 家族域名 | Instagram 不单列；现有 AI 特例仍优先 |
-| **🎧 Spotify** | Spotify 音乐及相关服务域名 | 默认跟随手动切换，可独立选择节点 |
-| **🎬 Emby** | Emby 播放器进程分流 | 当前仅覆盖 7 个已核实的 Android 客户端；其他平台未纳入 |
-| **💬 Discord** | Discord 域名 | 沿用现有全局 UDP/STUN 拦截规则，语音连通性依网络而定 |
-| **👽 Reddit** | Reddit 及相关资源域名 | 默认跟随手动切换，可独立选择节点 |
-| **🎥 Netflix** | Netflix 域名与关键词规则集 | [DustinWin standalone list](https://github.com/DustinWin/domain-list-custom/blob/domains/netflix.list)：36 条 classical/text 规则，含 4 条 `DOMAIN-KEYWORD` |
-| **💝 Patreon** | Patreon 域名规则集 | [MetaCubeX MRS](https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/patreon.mrs)；默认跟随手动切换，可独立选择节点 |
-| **📚 EHentai** | E-Hentai 域名规则集 | [MetaCubeX MRS](https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/ehentai.mrs)；默认跟随手动切换，可独立选择节点 |
-| **☁️ PikPak** | PikPak 域名规则集 | [MetaCubeX MRS](https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/pikpak.mrs)；默认跟随手动切换，可独立选择节点 |
-| **💬 LINE** | LINE 域名规则集 | [MetaCubeX MRS](https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/line.mrs)；默认跟随手动切换，可独立选择节点 |
-| **FCM** | Google FCM 相关域名（`rules` 中 `googlefcm` 规则集的目标组） | 静态 YAML 依次提供 `👉 手动切换`、`DIRECT`；使用 JS 后由 `FCM直连` 控制，默认仅 `DIRECT` |
+#### 基础选择组
 
-> 注：不使用覆写脚本直接运行 YAML 时，需自行提供节点或有效订阅 provider。YAML 与脚本的常规动态节点组均通过 Mihomo 原生 `include-all` 纳入顶层 `proxies` 与 `proxy-providers` 节点；🌍 PROXY、FCM 不直接使用该字段。🍎 海外苹果 / 💠 海外微软 / 🎮 Steam平台（非下载/CDN）/ 🎮 Games-Global 保留固定策略项。脚本的 TGDC 实验地区组例外：仅依据顶层节点筛选，地区无候选时显式列出合格保底节点。
-> 新增五个服务组均默认开启，提供 `👉 手动切换`、`♻️ 自动选择`、`🔄 负载均衡`、`DIRECT` 选项，并通过 `include-all` 引入节点；Netflix 使用 classical/text 提供者以保留关键词规则，其余四组使用 MetaCubeX 域名 MRS。
+| 代理组 | 组内结构 |
+| :--- | :--- |
+| **🌍 PROXY** | `👉 手动切换`、`♻️ 自动选择`、`🔄 负载均衡`、`DIRECT` |
+| **👉 手动切换** | 纳入所有可用节点 |
+| **♻️ 自动选择** | 纳入所有可用节点 |
+| **🔄 负载均衡** | 纳入所有可用节点 |
+
+#### 常规业务组
+
+以下业务组采用相同结构：`👉 手动切换`、`♻️ 自动选择`、`🔄 负载均衡`、`DIRECT`，并纳入可用节点。
+
+| 代理组 |
+| :--- |
+| **🍎 海外苹果** |
+| **💠 海外微软** |
+| **📲 Telegram** |
+| **✖️ Twitter** |
+| **🤖 AI大模型** |
+| **🎵 TikTok** |
+| **💳 金融支付** |
+| **🔎 Google** |
+| **♾️ Meta** |
+| **🎧 Spotify** |
+| **🎬 Emby** |
+| **💬 Discord** |
+| **👽 Reddit** |
+| **🎥 Netflix** |
+| **💝 Patreon** |
+| **📚 EHentai** |
+| **☁️ PikPak** |
+| **💬 LINE** |
+
+#### 特殊结构组
+
+| 代理组 | 组内结构 |
+| :--- | :--- |
+| **🎮 Steam平台（非下载/CDN）** | `DIRECT`、`👉 手动切换`、`♻️ 自动选择`、`🔄 负载均衡`；默认选择 `DIRECT` |
+| **🎮 Games-Global** | 嵌套 **🎮 Steam平台（非下载/CDN）**，并纳入可用节点 |
+| **FCM** | `👉 手动切换`、`DIRECT` |
 
 <a id="before-use"></a>
 
