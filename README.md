@@ -94,19 +94,19 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 | **📚 EHentai** | EHentai 单独选出口 | `ehentai` 规则集 |
 | **☁️ PikPak** | PikPak 单独选出口 | `pikpak` 规则集 |
 | **💬 LINE** | LINE 单独选出口 | `line` 规则集 |
-| **🎮 Games-Global** | 游戏流量单独选出口 | `games` 规则集及 `bf6.exe` 进程；特别说明见下 |
-| **🎮 Steam平台（非下载/CDN）** | Steam 平台流量单独选出口 | `steam` 域名集与 `steam_ip` IP 集（`no-resolve`）；特别说明见下 |
-| **FCM** | Google FCM 推送单独选出口 | `googlefcm` 规则集；特别说明见下 |
+| **🎮 Games-Global** | 游戏流量单独选出口 | `games` 规则集及 `bf6.exe` 进程 |
+| **🎮 Steam平台（非下载/CDN）** | Steam 平台流量单独选出口 | `steam` 域名集与 `steam_ip` IP 集（`no-resolve`） |
+| **FCM** | Google FCM 推送单独选出口 | `googlefcm` 规则集 |
 
 #### 特别组说明
 
-以下三组同时属于基础代理组（见上表），因结构与默认行为不同于常规业务组，单独说明。
+以下三组同时属于基础代理组（见上表），嵌套结构不同于常规业务组，单独列出。
 
-| 代理组 | 特别说明 |
+| 代理组 | 嵌套结构 |
 | :--- | :--- |
-| **🎮 Games-Global** | 结构：唯一嵌套另一个业务组的代理组，固定策略项只有 `🎮 Steam平台（非下载/CDN）`，另以 `include-all` 纳入的节点可直接改选<br>默认：默认选中 Steam 组，实际出口随 Steam 组的当前选择走<br>规则关联：`games` 规则集被 WebRTC 阻断规则列为豁免，命中它的 UDP 不按 STUN 端口拦截 |
-| **🎮 Steam平台（非下载/CDN）** | 范围：只承接 `steam` / `steam_ip` 规则集的 Steam 平台流量，不含下载 / CDN 流量<br>默认：`DIRECT` 排首位且为默认选中，未手动改选时平台流量默认直连<br>嵌套：被 `🎮 Games-Global` 嵌套，是唯一既是规则的直接分流目标、又被其他组嵌套的业务组 |
-| **FCM** | 结构：只有 `👉 手动切换` 与 `DIRECT` 两项，无 `include-all`，不能在本组直接选具体节点<br>范围：只承接 `googlefcm` 规则集，与 `🔎 Google` 的 `google` / `google-cn` 分开<br>脚本：合并后本组的组内节点由 `FCM直连` 开关改写，见 JavaScript 说明 |
+| **🎮 Games-Global** | `🎮 Steam平台（非下载/CDN）`（默认选中）<br>所有可用节点（`include-all`） |
+| **🎮 Steam平台（非下载/CDN）** | `DIRECT`（默认选中）<br>`👉 手动切换`<br>`♻️ 自动选择`<br>`🔄 负载均衡`<br>所有可用节点（`include-all`） |
+| **FCM** | `👉 手动切换`<br>`DIRECT` |
 
 <a id="before-use"></a>
 
