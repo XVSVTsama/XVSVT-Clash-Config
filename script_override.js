@@ -1851,14 +1851,25 @@ const serviceConfigs = TEMPLATE['proxy-groups']
 function deepClone(value) {
   return JSON.parse(JSON.stringify(value));
 }
-function ruleTargetsProxyGroup(rule, groupName) {
-  if (typeof rule !== 'string') return false;
+function getRuleProxyTargetIndex(rule) {
+  if (typeof rule !== 'string' || /^\s*SUB-RULE\s*,/i.test(rule)) return -1;
   const fields = rule.split(',');
   const lastField = fields[fields.length - 1].trim();
-  const targetIndex = lastField.toLowerCase() === 'no-resolve'
+  return lastField.toLowerCase() === 'no-resolve'
     ? fields.length - 2
     : fields.length - 1;
-  return typeof fields[targetIndex] === 'string' && fields[targetIndex].trim() === groupName;
+}
+function ruleTargetsProxyGroup(rule, groupName) {
+  const targetIndex = getRuleProxyTargetIndex(rule);
+  const fields = typeof rule === 'string' ? rule.split(',') : [];
+  return targetIndex >= 0 && fields[targetIndex].trim() === groupName;
+}
+function replaceRuleProxyGroup(rule, groupName, replacement) {
+  const fields = typeof rule === 'string' ? rule.split(',') : [];
+  const targetIndex = getRuleProxyTargetIndex(rule);
+  if (targetIndex < 0 || fields[targetIndex].trim() !== groupName) return rule;
+  fields[targetIndex] = replacement;
+  return fields.join(',');
 }
 function collectRuleProviderReferences(value, references = new Set()) {
   if (typeof value === 'string') {
@@ -2761,11 +2772,6 @@ function main(config, profileName) {
     }
   });
 
-  // TGDC 子组和兜底组由 Telegram 总开关管理，不单独留下无路由的组。
-  if (disabledGroupNames.has('📲 Telegram(兜底)')) {
-    TGDC_PROXY_GROUP_DEFINITIONS.forEach(({ name }) => disabledGroupNames.add(name));
-  }
-
   // 过滤出启用的策略组
   result['proxy-groups'] = (result['proxy-groups'] || []).filter(
     group => group && group.name && !disabledGroupNames.has(group.name)
@@ -2808,19 +2814,13 @@ function main(config, profileName) {
     const routeRemovalGroupNames = new Set(
       Array.from(disabledGroupNames).filter((name) => REMOVE_ROUTING_RULES_FOR_DISABLED_GROUPS.has(name))
     );
-    if (disabledGroupNames.has('📲 Telegram(兜底)')) {
-      routeRemovalGroupNames.add('📲 Telegram(兜底)');
-      TGDC_PROXY_GROUP_DEFINITIONS.forEach(({ name }) => routeRemovalGroupNames.add(name));
-    }
     result.rules = result.rules.filter((rule) =>
       !Array.from(routeRemovalGroupNames).some((name) => ruleTargetsProxyGroup(rule, name))
     );
     result.rules = result.rules.map(rule => {
       let updatedRule = rule;
       disabledGroupNames.forEach(disabledName => {
-        if (updatedRule.includes(`,${disabledName}`)) {
-          updatedRule = updatedRule.replace(`,${disabledName}`, `,${fallbackTarget}`);
-        }
+        updatedRule = replaceRuleProxyGroup(updatedRule, disabledName, fallbackTarget);
       });
       return updatedRule;
     });

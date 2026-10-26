@@ -156,7 +156,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 | **☁️ PikPak** | `☁️ PikPak` | 开启 |
 | **💬 LINE** | `💬 LINE` | 开启 |
 
-这 23 个开关默认全部开启。关闭 20 个业务分流组时，会移除该组并删除指向它的路由规则，而不是把规则改写到 `🌍 PROXY`；只有未被剩余路由规则、DNS nameserver policy 或其他配置引用的规则集才会清理。关闭 `🔄 负载均衡`、`👉 手动切换` 或 `♻️ 自动选择` 时仍沿用原有组引用和兜底处理。`🌍 PROXY` 始终保留为基础/兜底组；TGDC 开启时，`📲 Telegram` 开关同时管理 `📲 Telegram(兜底)` 及其地区子组。
+这 23 个开关默认全部开启。关闭 20 个业务分流组时，会移除该组并删除指向它的路由规则，而不是把规则改写到 `🌍 PROXY`；只有在剩余规则和配置中均无引用的规则集才会清理。关闭 `🔄 负载均衡`、`👉 手动切换` 或 `♻️ 自动选择` 时仍沿用原有组引用和兜底处理。`🌍 PROXY` 始终保留为基础/兜底组。
 
 **未列入 `policyGroupOptions` 的组**
 
