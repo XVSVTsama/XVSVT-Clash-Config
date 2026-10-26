@@ -120,16 +120,25 @@ const ruleOptionsEnable = {
   '💳 金融支付': true,
   // Google / Google-CN 共用独立策略组；Google FCM 与 AI 特例仍由原规则处理。
   '🔎 Google': true,
+  // Meta 社交平台策略组
   '♾️ Meta': true,
+  // Spotify 音乐流媒体策略组
   '🎧 Spotify': true,
   // Emby 播放器进程分流策略组
   '🎬 Emby': true,
+  // Discord 通讯软件策略组
   '💬 Discord': true,
+  // Reddit 社交平台策略组
   '👽 Reddit': true,
+  // Netflix 流媒体策略组
   '🎥 Netflix': true,
+  // Patreon 赞助平台策略组
   '💝 Patreon': true,
+  // EHentai 策略组
   '📚 EHentai': true,
+  // PikPak 网盘策略组
   '☁️ PikPak': true,
+  // LINE 通讯软件策略组
   '💬 LINE': true,
 
   // --- 节点与网络功能开关 ---
@@ -414,6 +423,8 @@ const COUNTRY_REGION_DEFINITIONS = [
   { name: '🇯🇵 日本', pattern: /🇯🇵|日本|东京|東京|大阪|Tokyo|Osaka|Japan|\bJP\b|\bJPN\b/iu },
   { name: '🇸🇬 新加坡', pattern: /🇸🇬|新加坡|狮城|Singapore|\bSG\b|\bSGP\b/iu },
   { name: '🇹🇼 台湾', pattern: /🇹🇼|台湾|臺灣|台北|臺北|Taipei|Taiwan|\bTW\b|\bTWN\b/iu },
+  { name: '🇰🇷 韩国', pattern: /🇰🇷|韩国|韓國|首尔|首爾|Seoul|Korea|\bKR\b|\bKOR\b/iu },
+  { name: '🇲🇾 马来西亚', pattern: /🇲🇾|马来西亚|馬來西亞|吉隆坡|Kuala\s*Lumpur|Malaysia|\bMY\b|\bMYS\b/iu },
   { name: '🇺🇸 美国', pattern: /🇺🇸|美国|美國|洛杉矶|洛杉磯|纽约|紐約|西雅图|西雅圖|硅谷|华盛顿|華盛頓|Los\s*Angeles|New\s*York|Seattle|Washington|United\s*States|\bUSA\b|\bUS\b/iu },
   { name: '🇨🇦 加拿大', pattern: /🇨🇦|加拿大|多伦多|多倫多|温哥华|溫哥華|Toronto|Vancouver|Canada|\bCA\b|\bCAN\b/iu },
   { name: '🇬🇧 英国', pattern: /🇬🇧|英国|英國|伦敦|倫敦|London|United\s*Kingdom|\bUK\b|\bGB\b|\bGBR\b/iu },
