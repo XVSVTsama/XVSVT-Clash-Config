@@ -442,7 +442,6 @@ const COUNTRY_REGION_TARGET_GROUPS = [
 ];
 const COUNTRY_REGION_CHILD_GROUP_TYPES = [
   { suffix: '自动选择', type: 'url-test' },
-  { suffix: '手动选择', type: 'select' },
   { suffix: '故障转移', type: 'fallback' },
   { suffix: '负载均衡', type: 'load-balance' },
 ];
@@ -507,6 +506,7 @@ function buildCountryRegionProxyGroups(originalProxies) {
       name: OTHER_COUNTRY_REGION_NAME,
       type: 'select',
       icon: COUNTRY_REGION_PARENT_ICON,
+      'default-selected': otherProxies[0].name,
       proxies: ['DIRECT', 'REJECT', ...otherProxies.map((proxy) => proxy.name)],
     });
   }
