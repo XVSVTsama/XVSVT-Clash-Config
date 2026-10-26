@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 100 100">
+  <title>UDP packet flow icon</title>
+  <g transform="translate(50 50) scale(1.1) translate(-50 -50)">
+    <g fill="none" stroke="#0E7490" stroke-linecap="round" stroke-linejoin="round" stroke-width="6">
+      <path d="M38 30c13 0 9 20 24 20"/>
+      <path d="M38 70c13 0 9-20 24-20"/>
+    </g>
+    <g fill="#0891B2">
+      <rect x="14" y="20" width="27" height="20" rx="5"/>
+      <rect x="14" y="60" width="27" height="20" rx="5"/>
+      <rect x="59" y="40" width="27" height="20" rx="5"/>
+    </g>
+    <g fill="#FFFFFF">
+      <path d="M20 26h15v3H20zm0 6h10v3H20z"/>
+      <path d="M20 66h15v3H20zm0 6h10v3H20z"/>
+      <path d="M65 46h15v3H65zm0 6h10v3H65z"/>
+    </g>
+  </g>
+</svg>
