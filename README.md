@@ -41,9 +41,15 @@
 
 ## 🔗 远程覆写脚本地址
 
+```text
+https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
+```
+
 <table width="100%">
+<thead>
+<tr><th>地址</th></tr>
+</thead>
 <tbody>
-<tr><td><code>https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js</code></td></tr>
 <tr><td><code>https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js</code></td></tr>
 <tr><td><code>https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.js</code></td></tr>
 </tbody>
