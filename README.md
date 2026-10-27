@@ -50,8 +50,8 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><th width="100%" align="center">地址</th></tr>
 </thead>
 <tbody>
-<tr><td align="center"><div align="center"><a href="https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js">gh-proxy</a><br><small>GitHub 文件 CDN 代理，缓存 1 分钟</small></div></td></tr>
-<tr><td align="center"><div align="center"><a href="https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.js">jsdmirror</a><br><small>jsDelivr 镜像，缓存 12 小时</small></div></td></tr>
+<tr><td align="center"><div align="center"><a href="https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js">gh-proxy</a>：GitHub 文件 CDN 链接，缓存更新时间约 1 分钟</div></td></tr>
+<tr><td align="center"><div align="center"><a href="https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.js">jsdmirror</a>：jsDelivr 镜像链接，缓存更新时间约 12 小时</div></td></tr>
 </tbody>
 </table>
 
