@@ -25,16 +25,18 @@ jobs:
           python-version: "3.12"
       - name: Install PyYAML
         run: pip install pyyaml
-      - name: Download mihomo
+      - name: Download mihomo (latest release)
+        id: version
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           API_HEADERS=(-H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GH_TOKEN}")
-          TAG="$(curl -fsSL "${API_HEADERS[@]}" https://api.github.com/repos/MetaCubeX/mihomo/releases/latest | jq -r .tag_name)"
+          TAG="$(curl -fsSL "${API_HEADERS[@]}" "https://api.github.com/repos/MetaCubeX/mihomo/releases?per_page=30" | jq -r '[.[] | select(.draft == false)] | sort_by(.published_at) | reverse | .[0].tag_name')"
           if [ -z "$TAG" ] || [ "$TAG" = "null" ]; then
-            echo "::error::Unable to resolve mihomo release tag"
+            echo "::error::Unable to resolve the latest mihomo release"
             exit 1
           fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           ASSET="$(curl -fsSL "${API_HEADERS[@]}" "https://api.github.com/repos/MetaCubeX/mihomo/releases/tags/${TAG}" | jq -r '[.assets[].name | select(test("^mihomo-linux-amd64-.*\\.gz$") and (test("-v[0-9]+-") | not) and (test("-compatible-") | not))][0]')"
           if [ -z "$ASSET" ]; then
             echo "::error::No compatible mihomo-linux-amd64 asset found for tag ${TAG}"
@@ -45,9 +47,8 @@ jobs:
           gunzip mihomo.gz
           chmod +x mihomo
       - name: Inject fake nodes
-        id: patch
         run: |
-          PATCHED="$(mktemp --suffix=.yaml)"
+          PATCHED="patched-mihomo.yaml"
           python - mihomo.yaml "$PATCHED" <<'PY'
           import sys
           import yaml
@@ -85,8 +86,34 @@ jobs:
           with open(dst, "w", encoding="utf-8") as fh:
               yaml.safe_dump(data, fh, allow_unicode=True, default_flow_style=False)
           PY
-          echo "patched=$PATCHED" >> "$GITHUB_OUTPUT"
-      - name: Test config
-        env:
-          PATCHED: ${{ steps.patch.outputs.patched }}
-        run: ./mihomo -t -d . -f "$PATCHED"
+      - name: Test config with mihomo
+        run: |
+          set +e
+          timeout 300 ./mihomo -t -d . -f patched-mihomo.yaml 2>&1 | tee mihomo-test.log
+          STATUS=${PIPESTATUS[0]}
+          {
+            echo "### Mihomo test"
+            echo ""
+            echo "- version: ${{ steps.version.outputs.tag }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$STATUS" -eq 0 ]; then
+            echo "- result: passed" >> "$GITHUB_STEP_SUMMARY"
+            echo "mihomo test passed"
+          elif [ "$STATUS" -eq 124 ]; then
+            echo "- result: timed out after 5 minutes" >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::mihomo test timed out after 5 minutes"
+          else
+            echo "- result: failed (exit $STATUS)" >> "$GITHUB_STEP_SUMMARY"
+            echo "- errors:" >> "$GITHUB_STEP_SUMMARY"
+            grep -iE "error|fatal|panic" mihomo-test.log | head -20 | sed 's/^/  - /' >> "$GITHUB_STEP_SUMMARY" || true
+            echo "::error::mihomo test failed with exit code $STATUS"
+          fi
+          exit "$STATUS"
+      - name: Upload test log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mihomo-test-log
+          path: |
+            mihomo-test.log
+            patched-mihomo.yaml
