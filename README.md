@@ -180,13 +180,7 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 
 **能不能加速代理**：不会，不参与代理。
 
-#### JS 对 proxy-provider 的处理局限，与尽可能的逼近
-
-**局限**：脚本不读取 `proxy-providers` 的节点。
-
-[<kbd>打开三维视图</kbd>](https://XVSVTsama.github.io/XVSVT-Clash-Config/provider-node-3d.html)
-
-**图中**：脚本对 YAML 节点已实现的处理办法。
+**能不能读取 proxy-provider**：不能。[<kbd>三维视图</kbd>](https://XVSVTsama.github.io/XVSVT-Clash-Config/provider-node-3d.html)
 
 ### 🔀 hosts / DNS 处理流程
 
