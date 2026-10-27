@@ -184,15 +184,11 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 
 #### 三维视图：节点处理与来源
 
-三维视图按「功能 × 处理方式 × 节点来源」展示，可旋转、缩放、点击查看详情：
+按「功能 × 处理方式 × 节点来源」展示，可拖拽旋转、捏合缩放，点击坐标点查看详情：
 
 [provider-node-3d.html](https://XVSVTsama.github.io/XVSVT-Clash-Config/provider-node-3d.html)
 
-- 操作：拖拽旋转、双指捏合或滚轮缩放、双击重置视角；点坐标点查看功能、处理方式、来源与说明。
-- 编号：X 功能（F1–F10）、Y 处理方式（M1–M3）、Z 节点来源（S1–S3），对照在页面下方。
-- 页面更新后如仍显示旧版，在链接后加 `?v=数字` 强制刷新。
-
-`http` / `file` 型 provider 的节点在脚本执行时不存在，只有证书、UDP、IPv6 能通过 `override` 影响 provider；图中来源为 S2、颜色为 M3 的点就是这三种。
+`http` / `file` 型 provider 的节点在脚本执行时不存在，只有证书、UDP、IPv6 能通过 `override` 影响 provider（图中来源 S2、颜色 M3 的点）。
 
 ### 🔀 hosts / DNS 处理流程
 
