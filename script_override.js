@@ -70,7 +70,7 @@ const Compatible_With_Bettbox = {
  *
  *  节点处理与 proxy-providers（重要）：
  *    节点级处理分三类：
- *      1) 筛选：高/低倍率（剔除）、国家/地区（分组）、TGDC（候选）；
+ *      1) 筛选：高/低倍率筛选、国家/地区分组、TGDC 候选；
  *      2) 注入：入口解析（注入入口节点，并用 exclude-filter 排除同名节点）；
  *      3) 修正字段：强制证书验证、启用 Reality 增强、试开启节点UDP、
  *         IPv6优先、hosts 改写节点 server。
