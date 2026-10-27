@@ -24,7 +24,7 @@
 </head>
 <body>
 <h1>节点处理三维视图</h1>
-<p class="hint">拖拽旋转、双指捏合或滚轮缩放、双击重置视角；也可用图上方工具栏。点击坐标点，详情显示在下方。轴刻度使用编号：X 节点来源（S1–S3）、Y 节点处理办法（M1–M3）、Z 功能名称（F1–F10），对照见下方。坐标含义：x+y+z 表示 Z 功能中按 Y 处理办法处理的节点，来源为 X；x+y、x+z 没有实际意义。</p>
+<p class="hint">拖拽旋转、双指捏合或滚轮缩放、双击重置视角；也可用图上方工具栏。点击坐标点，详情显示在下方。轴刻度使用编号：X 节点来源（X1–X3）、Y 节点处理办法（Y1–Y3）、Z 功能名称（Z1–Z10），对照见下方。坐标含义：x+y+z 表示 Z 功能中按 Y 处理办法处理的节点，来源为 X；x+y、x+z 没有实际意义。</p>
 <div class="toolbar"><button id="fs" type="button">全屏查看</button></div>
 <div id="plot"></div>
 <div id="detail"><span class="muted">点击坐标点，详情显示在下方。</span></div>
@@ -33,43 +33,43 @@
 <div class="funcs" id="funcs"></div>
 <script>
 const SOURCES = [
-  { id: 'S1', short: 'proxies', full: '原始 YAML 的 proxies' },
-  { id: 'S2', short: 'proxy-providers', full: '原生 YAML 的 proxy-providers' },
-  { id: 'S3', short: 'JS 补充', full: 'JS 外部定义补充' }
+  { id: 'X1', short: 'proxies', full: '原始 YAML 的 proxies' },
+  { id: 'X2', short: 'proxy-providers', full: '原生 YAML 的 proxy-providers' },
+  { id: 'X3', short: 'JS 补充', full: 'JS 外部定义补充' }
 ];
 const MODES = [
-  { id: 'M1', name: '筛选/剔除', color: '#1f6feb' },
-  { id: 'M2', name: '注入', color: '#d4a72c' },
-  { id: 'M3', name: '修正字段', color: '#8250df' }
+  { id: 'Y1', name: '筛选/剔除', color: '#1f6feb' },
+  { id: 'Y2', name: '注入', color: '#d4a72c' },
+  { id: 'Y3', name: '修正字段', color: '#8250df' }
 ];
 const FUNCS = [
-  { id: 'F1', name: '高倍率筛选' },
-  { id: 'F2', name: '低倍率筛选' },
-  { id: 'F3', name: '国家/地区分组' },
-  { id: 'F4', name: 'TGDC实验分流' },
-  { id: 'F5', name: '入口解析' },
-  { id: 'F6', name: '强制证书验证' },
-  { id: 'F7', name: '试开启节点UDP' },
-  { id: 'F8', name: 'IPv6优先' },
-  { id: 'F9', name: '启用 Reality 增强' },
-  { id: 'F10', name: 'hosts 改写节点 server' }
+  { id: 'Z1', name: '高倍率筛选' },
+  { id: 'Z2', name: '低倍率筛选' },
+  { id: 'Z3', name: '国家/地区分组' },
+  { id: 'Z4', name: 'TGDC实验分流' },
+  { id: 'Z5', name: '入口解析' },
+  { id: 'Z6', name: '强制证书验证' },
+  { id: 'Z7', name: '试开启节点UDP' },
+  { id: 'Z8', name: 'IPv6优先' },
+  { id: 'Z9', name: '启用 Reality 增强' },
+  { id: 'Z10', name: 'hosts 改写节点 server' }
 ];
 const POINTS = [
-  { f: 'F1', s: 'S1', m: 'M1', desc: '删除名称含显式 >=2x 的顶层节点' },
-  { f: 'F2', s: 'S1', m: 'M1', desc: '删除名称含显式 <=0.5x 的顶层节点' },
-  { f: 'F3', s: 'S1', m: 'M1', desc: '按名称筛出地区候选，生成显式列表组' },
-  { f: 'F4', s: 'S1', m: 'M1', desc: '筛出地区候选，生成保底列表' },
-  { f: 'F5', s: 'S1', m: 'M1', desc: '排除与入口节点同名的顶层节点' },
-  { f: 'F5', s: 'S2', m: 'M1', desc: 'exclude-filter 连带排除 provider 中的同名节点' },
-  { f: 'F5', s: 'S3', m: 'M2', desc: '注入脚本维护区的入口节点，写入顶层 proxies' },
-  { f: 'F6', s: 'S1', m: 'M3', desc: '顶层直接写 skip-cert-verify=false' },
-  { f: 'F6', s: 'S2', m: 'M3', desc: 'provider 经 override.skip-cert-verify=false 生效' },
-  { f: 'F7', s: 'S1', m: 'M3', desc: '顶层直接写 udp=true' },
-  { f: 'F7', s: 'S2', m: 'M3', desc: 'provider 经 override.udp=true 生效' },
-  { f: 'F8', s: 'S1', m: 'M3', desc: '按原值改写 ip-version' },
-  { f: 'F8', s: 'S2', m: 'M3', desc: '统一写 override.ip-version=ipv6-prefer' },
-  { f: 'F9', s: 'S1', m: 'M3', desc: '写 reality-opts.support-x25519mlkem768=true' },
-  { f: 'F10', s: 'S1', m: 'M3', desc: '把节点 server 换成 hosts 映射' }
+  { f: 'Z1', s: 'X1', m: 'Y1', desc: '删除名称含显式 >=2x 的顶层节点' },
+  { f: 'Z2', s: 'X1', m: 'Y1', desc: '删除名称含显式 <=0.5x 的顶层节点' },
+  { f: 'Z3', s: 'X1', m: 'Y1', desc: '按名称筛出地区候选，生成显式列表组' },
+  { f: 'Z4', s: 'X1', m: 'Y1', desc: '筛出地区候选，生成保底列表' },
+  { f: 'Z5', s: 'X1', m: 'Y1', desc: '排除与入口节点同名的顶层节点' },
+  { f: 'Z5', s: 'X2', m: 'Y1', desc: 'exclude-filter 连带排除 provider 中的同名节点' },
+  { f: 'Z5', s: 'X3', m: 'Y2', desc: '注入脚本维护区的入口节点，写入顶层 proxies' },
+  { f: 'Z6', s: 'X1', m: 'Y3', desc: '顶层直接写 skip-cert-verify=false' },
+  { f: 'Z6', s: 'X2', m: 'Y3', desc: 'provider 经 override.skip-cert-verify=false 生效' },
+  { f: 'Z7', s: 'X1', m: 'Y3', desc: '顶层直接写 udp=true' },
+  { f: 'Z7', s: 'X2', m: 'Y3', desc: 'provider 经 override.udp=true 生效' },
+  { f: 'Z8', s: 'X1', m: 'Y3', desc: '按原值改写 ip-version' },
+  { f: 'Z8', s: 'X2', m: 'Y3', desc: '统一写 override.ip-version=ipv6-prefer' },
+  { f: 'Z9', s: 'X1', m: 'Y3', desc: '写 reality-opts.support-x25519mlkem768=true' },
+  { f: 'Z10', s: 'X1', m: 'Y3', desc: '把节点 server 换成 hosts 映射' }
 ];
 </script>
 <script>

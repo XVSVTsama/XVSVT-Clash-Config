@@ -188,7 +188,7 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 
 [provider-node-3d.html](https://XVSVTsama.github.io/XVSVT-Clash-Config/provider-node-3d.html)
 
-`http` / `file` 型 provider 的节点在脚本执行时不存在，只有证书、UDP、IPv6 能通过 `override` 影响 provider（图中 S2、M3 对应的三个点）。
+`http` / `file` 型 provider 的节点在脚本执行时不存在，只有证书、UDP、IPv6 能通过 `override` 影响 provider（图中 X2、Y3 对应的三个点）。
 
 ### 🔀 hosts / DNS 处理流程
 
