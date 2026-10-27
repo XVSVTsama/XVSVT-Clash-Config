@@ -50,7 +50,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><th width="100%" align="center">地址<img src="assets/table-spacer.png" width="1280" height="1" alt=""></th></tr>
 </thead>
 <tbody>
-<tr><td align="center"><div align="center"><a href="https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js">gh-proxy</a>：国内加速 GitHub，更新即时（无缓存）</div></td></tr>
+<tr><td align="center"><div align="center"><a href="https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js">gh-proxy</a>：国内加速 GitHub，更新即时，无缓存</div></td></tr>
 <tr><td align="center"><div align="center"><a href="https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.js">jsdmirror</a>：国内加速 jsDelivr，自动同步源站</div></td></tr>
 </tbody>
 </table>
