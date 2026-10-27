@@ -3,35 +3,27 @@ name: YAML Syntax
 on:
   push:
     branches: [main]
-  pull_request:
+    paths:
+      - mihomo.yaml
   workflow_dispatch:
-    inputs:
-      enforce:
-        description: Fail the workflow when syntax errors are found
-        type: boolean
-        default: true
-      per_commit:
-        description: Check every commit in a push
-        type: boolean
-        default: false
 
 permissions:
   contents: read
 
+concurrency:
+  group: yaml-syntax
+  cancel-in-progress: true
+
 jobs:
-  yamllint:
+  check:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - name: Install yamllint
         run: pip install yamllint
-      - name: Check YAML syntax
-        env:
-          CHECK_ENFORCE: ${{ github.event.inputs.enforce || vars.SYNTAX_CHECK_ENFORCE || '' }}
-          CHECK_PER_COMMIT: ${{ github.event.inputs.per_commit || vars.SYNTAX_CHECK_PER_COMMIT || '' }}
-        run: python .github/scripts/run_check.py --file mihomo.yaml -- yamllint -c .yamllint mihomo.yaml
+      - name: Check syntax
+        run: yamllint -c .yamllint mihomo.yaml

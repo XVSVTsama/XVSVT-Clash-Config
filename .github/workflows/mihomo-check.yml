@@ -3,83 +3,36 @@ name: Mihomo Real Core Check
 on:
   push:
     branches: [main]
-  pull_request:
+    paths:
+      - mihomo.yaml
   workflow_dispatch:
-    inputs:
-      version:
-        description: "mihomo version: stable, alpha, or exact tag (e.g. v1.19.29)"
-        required: false
-        default: ""
-      config:
-        description: "config file to test"
-        required: false
-        default: ""
 
 permissions:
   contents: read
 
+concurrency:
+  group: mihomo-check
+  cancel-in-progress: true
+
 jobs:
-  mihomo-test:
-    if: >-
-      vars.MIHOMO_CHECK_ENABLED != 'false' &&
-      (
-        github.event_name == 'workflow_dispatch' ||
-        (github.event_name == 'push' && vars.MIHOMO_CHECK_ON_PUSH != 'false') ||
-        (github.event_name == 'pull_request' && vars.MIHOMO_CHECK_ON_PR != 'false')
-      )
+  check:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Validate config path
-        env:
-          CONFIG: ${{ inputs.config || vars.MIHOMO_CHECK_CONFIG || 'mihomo.yaml' }}
-        run: |
-          case "$CONFIG" in
-            *.yaml|*.yml) ;;
-            *)
-              echo "::error::Config path must be a YAML file (.yaml or .yml): $CONFIG"
-              exit 1
-              ;;
-          esac
-          if [ ! -f "$CONFIG" ]; then
-            echo "::error::Config file not found: $CONFIG"
-            exit 1
-          fi
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - name: Install PyYAML
         run: pip install pyyaml
-      - name: Resolve mihomo version
-        id: version
+      - name: Download mihomo
         env:
-          INPUT_VERSION: ${{ inputs.version || '' }}
-          VAR_VERSION: ${{ vars.MIHOMO_CHECK_VERSION || '' }}
-        run: |
-          VERSION="${INPUT_VERSION:-${VAR_VERSION:-stable}}"
-          case "$VERSION" in
-            stable|alpha) ;;
-            [0-9]*) VERSION="v${VERSION}" ;;
-          esac
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-      - name: Download mihomo binary
-        env:
-          MIHOMO_TAG: ${{ steps.version.outputs.version }}
           GH_TOKEN: ${{ github.token }}
         run: |
           API_HEADERS=(-H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GH_TOKEN}")
-          TAG="$MIHOMO_TAG"
-          case "$TAG" in
-            stable)
-              TAG="$(curl -fsSL "${API_HEADERS[@]}" https://api.github.com/repos/MetaCubeX/mihomo/releases/latest | jq -r .tag_name)"
-              ;;
-            alpha)
-              TAG="$(curl -fsSL "${API_HEADERS[@]}" "https://api.github.com/repos/MetaCubeX/mihomo/releases?per_page=20" | jq -r '[.[] | select(.prerelease == true)][0].tag_name')"
-              ;;
-          esac
+          TAG="$(curl -fsSL "${API_HEADERS[@]}" https://api.github.com/repos/MetaCubeX/mihomo/releases/latest | jq -r .tag_name)"
           if [ -z "$TAG" ] || [ "$TAG" = "null" ]; then
-            echo "::error::Unable to resolve mihomo release tag for ${MIHOMO_TAG}"
+            echo "::error::Unable to resolve mihomo release tag"
             exit 1
           fi
           ASSET="$(curl -fsSL "${API_HEADERS[@]}" "https://api.github.com/repos/MetaCubeX/mihomo/releases/tags/${TAG}" | jq -r '[.assets[].name | select(test("^mihomo-linux-amd64-.*\\.gz$") and (test("-v[0-9]+-") | not) and (test("-compatible-") | not))][0]')"
@@ -93,11 +46,9 @@ jobs:
           chmod +x mihomo
       - name: Inject fake nodes
         id: patch
-        env:
-          CONFIG: ${{ inputs.config || vars.MIHOMO_CHECK_CONFIG || 'mihomo.yaml' }}
         run: |
           PATCHED="$(mktemp --suffix=.yaml)"
-          python - "$CONFIG" "$PATCHED" <<'PY'
+          python - mihomo.yaml "$PATCHED" <<'PY'
           import sys
           import yaml
 
@@ -135,7 +86,7 @@ jobs:
               yaml.safe_dump(data, fh, allow_unicode=True, default_flow_style=False)
           PY
           echo "patched=$PATCHED" >> "$GITHUB_OUTPUT"
-      - name: Test config with mihomo
+      - name: Test config
         env:
           PATCHED: ${{ steps.patch.outputs.patched }}
         run: ./mihomo -t -d . -f "$PATCHED"

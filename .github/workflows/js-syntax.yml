@@ -3,36 +3,25 @@ name: JavaScript Syntax
 on:
   push:
     branches: [main]
-  pull_request:
+    paths:
+      - script_override.js
   workflow_dispatch:
-    inputs:
-      enforce:
-        description: Fail the workflow when syntax errors are found
-        type: boolean
-        default: true
-      per_commit:
-        description: Check every commit in a push
-        type: boolean
-        default: false
 
 permissions:
   contents: read
 
+concurrency:
+  group: js-syntax
+  cancel-in-progress: true
+
 jobs:
-  node-check:
+  check:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Check JavaScript syntax
-        env:
-          CHECK_ENFORCE: ${{ github.event.inputs.enforce || vars.SYNTAX_CHECK_ENFORCE || '' }}
-          CHECK_PER_COMMIT: ${{ github.event.inputs.per_commit || vars.SYNTAX_CHECK_PER_COMMIT || '' }}
-        run: python .github/scripts/run_check.py --file script_override.js -- node --check script_override.js
+      - name: Check syntax
+        run: node --check script_override.js
