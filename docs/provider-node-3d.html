@@ -24,7 +24,7 @@
 </head>
 <body>
 <h1>节点处理三维视图</h1>
-<p class="hint">拖拽旋转、双指捏合或滚轮缩放、双击重置视角；也可用图上方工具栏。点击坐标点，详情显示在下方。轴刻度使用编号：X 功能（F1–F10）、Y 处理方式（M1–M3）、Z 节点来源（S1–S3），对照见下方。</p>
+<p class="hint">拖拽旋转、双指捏合或滚轮缩放、双击重置视角；也可用图上方工具栏。点击坐标点，详情显示在下方。轴刻度使用编号：X 节点来源（S1–S3）、Y 节点处理办法（M1–M3）、Z 功能名称（F1–F10），对照见下方。坐标含义：x+y+z 表示 Z 功能中按 Y 处理办法处理的节点，来源为 X；x+y、x+z 没有实际意义。</p>
 <div class="toolbar"><button id="fs" type="button">全屏查看</button></div>
 <div id="plot"></div>
 <div id="detail"><span class="muted">点击坐标点，详情显示在下方。</span></div>
@@ -80,20 +80,17 @@ const modeById = Object.fromEntries(MODES.map(m => [m.id, m]));
 const funcById = Object.fromEntries(FUNCS.map(f => [f.id, f]));
 const sourceById = Object.fromEntries(SOURCES.map(s => [s.id, s]));
 
-const traces = MODES.map(mode => {
-  const pts = POINTS.filter(p => p.m === mode.id);
-  return {
-    type: 'scatter3d',
-    mode: 'markers',
-    name: mode.name,
-    x: pts.map(p => funcIndex[p.f]),
-    y: pts.map(p => modeIndex[p.m]),
-    z: pts.map(p => sourceIndex[p.s]),
-    customdata: pts.map(p => [funcById[p.f].name, mode.name, sourceById[p.s].full, p.desc]),
-    marker: { size: 4, color: mode.color, opacity: 0.95, line: { color: '#fff', width: 0.6 } },
-    hoverinfo: 'none'
-  };
-});
+const traces = [{
+  type: 'scatter3d',
+  mode: 'markers',
+  x: POINTS.map(p => sourceIndex[p.s]),
+  y: POINTS.map(p => modeIndex[p.m]),
+  z: POINTS.map(p => funcIndex[p.f]),
+  customdata: POINTS.map(p => [p.f, p.m, p.s, p.desc]),
+  marker: { size: 4, color: '#1f6feb', opacity: 0.9, line: { color: '#fff', width: 0.6 } },
+  hoverinfo: 'none',
+  showlegend: false
+}];
 
 const layout = {
   paper_bgcolor: '#fff',
@@ -103,10 +100,10 @@ const layout = {
   showlegend: false,
   scene: {
     dragmode: 'orbit',
-    xaxis: { title: { text: '功能', font: { size: 10 } }, tickvals: FUNCS.map((f, i) => i + 1), ticktext: FUNCS.map(f => f.id), range: [0.5, 10.5], tickfont: { size: 9 } },
-    yaxis: { title: { text: '处理方式', font: { size: 10 } }, tickvals: [0, 1, 2], ticktext: MODES.map(m => m.id), range: [-0.6, 2.6], tickfont: { size: 9 } },
-    zaxis: { title: { text: '节点来源', font: { size: 10 } }, tickvals: [0, 1, 2], ticktext: SOURCES.map(s => s.id), range: [-0.6, 2.6], tickfont: { size: 9 } },
-    aspectratio: { x: 2, y: 1, z: 1 },
+    xaxis: { title: { text: '节点来源', font: { size: 10 } }, tickvals: [0, 1, 2], ticktext: SOURCES.map(s => s.id), range: [-0.6, 2.6], tickfont: { size: 9 } },
+    yaxis: { title: { text: '节点处理办法', font: { size: 10 } }, tickvals: [0, 1, 2], ticktext: MODES.map(m => m.id), range: [-0.6, 2.6], tickfont: { size: 9 } },
+    zaxis: { title: { text: '功能名称', font: { size: 10 } }, tickvals: FUNCS.map((f, i) => i + 1), ticktext: FUNCS.map(f => f.id), range: [0.5, 10.5], tickfont: { size: 9 } },
+    aspectratio: { x: 1, y: 1, z: 1.8 },
     camera: { eye: { x: 2.2, y: -2.4, z: 1.4 }, up: { x: 0, y: 0, z: 1 } }
   }
 };
@@ -114,28 +111,27 @@ const layout = {
 const config = { responsive: true, displayModeBar: true, displaylogo: false };
 
 const plotEl = document.getElementById('plot');
-const MODE_COLOR_NAMES = { M1: '蓝色', M2: '黄色', M3: '紫色' };
 Plotly.newPlot('plot', traces, layout, config).then(() => {
   plotEl.on('plotly_click', (e) => {
     const p = e.points[0];
-    const f = FUNCS[Number(p.x) - 1];
+    const s = SOURCES[Number(p.x)];
     const m = MODES[Number(p.y)];
-    const s = SOURCES[Number(p.z)];
+    const f = FUNCS[Number(p.z) - 1];
     if (!f || !m || !s) return;
     const point = POINTS.find(q => q.f === f.id && q.m === m.id && q.s === s.id);
     const others = SOURCES.filter(x => x.id !== s.id && POINTS.some(q => q.f === f.id && q.s === x.id));
-    let html = '<b>已选中坐标为 (' + f.id + ', ' + m.id + ', ' + s.id + ') 的坐标点</b><br>'
-      + 'X 功能：' + f.id + ' ' + f.name + '<br>'
-      + 'Y 处理方式：' + m.id + ' ' + m.name + '<br>'
-      + 'Z 节点来源：' + s.id + ' ' + s.full + '<br>'
-      + '选中坐标点颜色为' + (MODE_COLOR_NAMES[m.id] || m.name) + '，你正在查看 ' + f.name
-      + ' 的部分节点处理办法为：' + (point ? point.desc : '') + '。<br>';
+    let html = '<b>已选中坐标为 (' + s.id + ', ' + m.id + ', ' + f.id + ') 的坐标点</b><br>'
+      + 'X 节点来源：' + s.id + ' ' + s.full + '<br>'
+      + 'Y 节点处理办法：' + m.id + ' ' + m.name + '<br>'
+      + 'Z 功能名称：' + f.id + ' ' + f.name + '<br>'
+      + f.name + ' 功能中按 ' + m.name + ' 处理的节点，来源是 ' + s.full + '。'
+      + (point ? '具体：' + point.desc + '。' : '') + '<br>';
     if (others.length === 0) {
-      html += '该功能只有这一方面的处理办法。';
+      html += '该功能只有这一来源的处理办法。';
     } else {
       html += '该功能还有 ' + others.map(x => {
         const coords = POINTS.filter(y => y.f === f.id && y.s === x.id)
-          .map(y => '(' + f.id + ', ' + y.m + ', ' + x.id + ')').join('、');
+          .map(y => '(' + x.id + ', ' + y.m + ', ' + f.id + ')').join('、');
         return x.full + ' 方面的处理办法，请点击坐标 ' + coords;
       }).join('；') + '。';
     }
@@ -152,7 +148,7 @@ document.addEventListener('fullscreenchange', () => {
 });
 
 document.getElementById('legend').innerHTML = MODES.map(m =>
-  '<span><i class="dot" style="background:' + m.color + '"></i><b>' + m.id + '</b> ' + m.name + '</span>'
+  '<span><b>' + m.id + '</b> ' + m.name + '</span>'
 ).join('');
 document.getElementById('sources').innerHTML = SOURCES.map(s =>
   '<span><b>' + s.id + '</b> ' + s.full + '</span>'
