@@ -188,7 +188,7 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 
 节点级处理分三类，用颜色区分：🔵 筛选/剔除、🟡 注入、🟣 修正字段。一个功能或一个来源可以同时有多个颜色。
 
-> 可旋转、可点击查看详情的三维视图（S/M/F 编号对照见页面）：[provider-node-3d.html](https://XVSVTsama.github.io/XVSVT-Clash-Config/provider-node-3d.html)
+> 可旋转、可点击查看详情的三维视图（S/M/F 编号对照见页面）：[provider-node-3d.html](https://XVSVTsama.github.io/XVSVT-Clash-Config/provider-node-3d.html)。页面更新后如仍显示旧版，在链接后加 `?v=数字` 强制刷新。
 
 按来源说明：
 
