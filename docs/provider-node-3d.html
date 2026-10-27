@@ -114,11 +114,31 @@ const layout = {
 const config = { responsive: true, displayModeBar: true, displaylogo: false };
 
 const plotEl = document.getElementById('plot');
+const MODE_COLOR_NAMES = { M1: '蓝色', M2: '黄色', M3: '紫色' };
 Plotly.newPlot('plot', traces, layout, config).then(() => {
   plotEl.on('plotly_click', (e) => {
-    const d = e.points[0].customdata;
-    document.getElementById('detail').innerHTML =
-      '<b>' + d[0] + '</b><br>处理方式：' + d[1] + '<br>来源：' + d[2] + '<br>说明：' + d[3];
+    const p = e.points[0];
+    const f = FUNCS[Number(p.x) - 1];
+    const m = MODES[Number(p.y)];
+    const s = SOURCES[Number(p.z)];
+    if (!f || !m || !s) return;
+    const point = POINTS.find(q => q.f === f.id && q.m === m.id && q.s === s.id);
+    const others = MODES.filter(x => x.id !== m.id && POINTS.some(q => q.f === f.id && q.m === x.id));
+    let html = '<b>已选中坐标为 (' + f.id + ', ' + m.id + ', ' + s.id + ') 的坐标点</b><br>'
+      + 'X 功能：' + f.id + ' ' + f.name + '<br>'
+      + 'Y 处理方式：' + m.id + ' ' + m.name + '<br>'
+      + 'Z 节点来源：' + s.id + ' ' + s.full + '<br>'
+      + '选中坐标点颜色为' + (MODE_COLOR_NAMES[m.id] || m.name) + '，你正在查看 ' + f.name
+      + ' 的部分节点处理办法为：' + (point ? point.desc : '') + '。<br>';
+    if (others.length === 0) {
+      html += '该功能只有这一方面的处理办法。';
+    } else {
+      html += '该功能还有 ' + others.map(x => {
+        const q = POINTS.find(y => y.f === f.id && y.m === x.id);
+        return x.name + ' 方面的处理办法，请点击坐标 (' + f.id + ', ' + x.id + ', ' + q.s + ')';
+      }).join('；') + '。';
+    }
+    document.getElementById('detail').innerHTML = html;
   });
 });
 
