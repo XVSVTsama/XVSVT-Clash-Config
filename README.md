@@ -47,6 +47,22 @@
 https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
 ```
 
+   CDN 加速地址（内容与默认地址相同，按需二选一）：
+
+gh-proxy 代理：
+
+```text
+https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
+```
+
+jsdmirror（jsDelivr 镜像）：
+
+```text
+https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.js
+```
+
+> CDN 缓存更新时间：gh-proxy 为回源代理，缓存约 1 分钟，脚本更新后基本即时生效；jsdmirror 按 jsDelivr 分支缓存，最长约 12 小时，脚本更新后最迟约 12 小时同步。急用最新版时用默认地址。
+
 <a id="yaml-config"></a>
 
 <br>
