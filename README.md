@@ -184,11 +184,11 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 
 #### 三维视图
 
-按「节点来源 × 节点处理办法 × 功能名称」展示，可拖拽旋转、捏合缩放，点击坐标点查看详情：
+三维图展示脚本对 YAML 节点的处理办法（X 节点来源、Y 节点处理办法、Z 功能名称），可旋转、缩放，点击坐标点查看详情：
 
 [provider-node-3d.html](https://XVSVTsama.github.io/XVSVT-Clash-Config/provider-node-3d.html)
 
-`http` / `file` 型 provider 的节点在脚本执行时不存在，只有证书、UDP、IPv6 能通过 `override` 影响 provider（图中 X2、Y3 对应的三个点）。
+局限：`http` / `file` 型 `proxy-providers` 的节点由内核运行时拉取，脚本无法获取，所以 X2 上只有证书、UDP、IPv6 三个点（经 `override` 生效），其余功能都到不了 provider。
 
 ### 🔀 hosts / DNS 处理流程
 
