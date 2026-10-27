@@ -283,6 +283,14 @@ proxy-groups:
     interval: 300
     tolerance: 50
     include-all: true
+  # SKK 广告拦截组为可选配置；启用时，需同时取消注释下方 rule-providers 与 rules 对应段落。
+  # - name: 🛑 广告拦截
+  #   icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-adblock.svg"
+  #   type: select
+  #   proxies:
+  #     - REJECT
+  #     - REJECT-DROP
+  #     - PASS
   - name: 🍎 海外苹果
     icon: https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-AIsouler-MyClash-Apple.svg
     type: select
@@ -499,6 +507,11 @@ proxy-groups:
   classical_yaml: &classical_yaml { type: http, interval: 86400, behavior: classical }
 
 rule-providers:
+  # SKK 广告拦截规则集为可选配置；启用时，需同时取消注释上方 proxy-groups 与下方 rules 对应段落。
+  # skk_reject: { <<: *domain_yaml, format: text, interval: 43200, url: 'https://ruleset.skk.moe/Clash/domainset/reject.txt', path: ./ruleset/skk_reject.txt }
+  # skk_reject_non_ip: { <<: *classical_yaml, format: text, interval: 43200, url: 'https://ruleset.skk.moe/Clash/non_ip/reject.txt', path: ./ruleset/skk_reject_non_ip.txt }
+  # skk_reject_drop: { <<: *classical_yaml, format: text, interval: 43200, url: 'https://ruleset.skk.moe/Clash/non_ip/reject-drop.txt', path: ./ruleset/skk_reject_drop.txt }
+  # skk_reject_ip: { <<: *classical_yaml, format: text, interval: 43200, url: 'https://ruleset.skk.moe/Clash/ip/reject.txt', path: ./ruleset/skk_reject_ip.txt }
   Gemini_Domain: { <<: *domain_yaml, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/Accademia/Additional_Rule_For_Clash/master/Gemini/Gemini_Domain.yaml', path: ./ruleset/Gemini_Domain.yaml }
   Grok_Domain: { <<: *domain_yaml, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/Accademia/Additional_Rule_For_Clash/refs/heads/main/Grok/Grok_Domain.yaml', path: ./ruleset/Grok_Domain.yaml }
   HijackingPlus: { <<: *classical_yaml, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/Accademia/Additional_Rule_For_Clash/refs/heads/main/HijackingPlus/HijackingPlus_No_Resolve.yaml', path: ./ruleset/HijackingPlus.yaml }
@@ -631,6 +644,11 @@ sub-rules:
 rules:
   - AND,((NETWORK,UDP),(DST-PORT,3478-3479/5349-5350/19302-19309),(NOT,((RULE-SET,cncidr))),(NOT,((RULE-SET,cn))),(NOT,((RULE-SET,games))),(NOT,((RULE-SET,echs_direct)))),REJECT
   - RULE-SET,HijackingPlus,REJECT
+  # SKK 广告拦截规则：启用时取消注释，并同时启用上方 proxy-groups 与 rule-providers 对应段落。
+  # - RULE-SET,skk_reject_drop,REJECT-DROP
+  # - RULE-SET,skk_reject,🛑 广告拦截
+  # - RULE-SET,skk_reject_non_ip,🛑 广告拦截
+  # - RULE-SET,skk_reject_ip,REJECT,no-resolve
   - DOMAIN,mirrors.tuna.tsinghua.edu.cn,DIRECT
   - DOMAIN,mirrors.ustc.edu.cn,DIRECT
   - DOMAIN,mirrors.bfsu.edu.cn,DIRECT

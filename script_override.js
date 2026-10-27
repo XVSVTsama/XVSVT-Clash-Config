@@ -154,6 +154,8 @@ const ruleOptionsEnable = {
   'FCM直连': true,
   // 开启 Telegram DC/地区实验分流；关闭时不改变原 Telegram 规则、策略组和规则集。
   'TGDC实验分流': false,
+  // 开启后注入 SukkaW/Surge 的 reject 规则集与广告拦截策略组；关闭时不注入其策略组、规则集和规则。
+  'SKK广告拦截': false,
   // 为合格的订阅顶层节点生成按国家/地区划分的策略组；与入口解析开关独立。
   '国家/地区分组': false,
   // 国家/地区组生成后，按节点名称中的显式数值倍率筛选；不处理 proxy-providers。
@@ -624,6 +626,67 @@ const TGDC_RULES = [
   'PROCESS-NAME-REGEX,.*telegram.*,📲 Telegram(兜底)',
   'RULE-SET,telegramcidr,📲 Telegram(兜底),no-resolve',
   'RULE-SET,telegram_domain,📲 Telegram(兜底)',
+];
+
+// ============================================================================
+// SKK 广告拦截（仅在 ruleOptionsEnable['SKK广告拦截'] 为 true 时注入）
+// 规则集来自 SukkaW/Surge 的 reject 系列，只取核心四件：基础域名集、non_ip
+// 关键词/通配规则、reject-drop 遥测静默丢弃、ip 劫持/botnet 集。
+// 不含 reject_extra（源经上游降级，误杀与性能代价更高）、reject_phishing
+// （反钓鱼，非广告）与 reject-no-drop（PCDN，非广告且 mihomo 无对应策略）。
+// ============================================================================
+const SKK_ADBLOCK_ICON =
+  'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-adblock.svg';
+
+const SKK_RULE_PROVIDERS = {
+  skk_reject: {
+    type: 'http',
+    interval: 43200,
+    behavior: 'domain',
+    format: 'text',
+    url: 'https://ruleset.skk.moe/Clash/domainset/reject.txt',
+    path: './ruleset/skk_reject.txt',
+  },
+  skk_reject_non_ip: {
+    type: 'http',
+    interval: 43200,
+    behavior: 'classical',
+    format: 'text',
+    url: 'https://ruleset.skk.moe/Clash/non_ip/reject.txt',
+    path: './ruleset/skk_reject_non_ip.txt',
+  },
+  skk_reject_drop: {
+    type: 'http',
+    interval: 43200,
+    behavior: 'classical',
+    format: 'text',
+    url: 'https://ruleset.skk.moe/Clash/non_ip/reject-drop.txt',
+    path: './ruleset/skk_reject_drop.txt',
+  },
+  skk_reject_ip: {
+    type: 'http',
+    interval: 43200,
+    behavior: 'classical',
+    format: 'text',
+    url: 'https://ruleset.skk.moe/Clash/ip/reject.txt',
+    path: './ruleset/skk_reject_ip.txt',
+  },
+};
+
+const SKK_PROXY_GROUP = {
+  name: '🛑 广告拦截',
+  type: 'select',
+  proxies: ['REJECT', 'REJECT-DROP', 'PASS'],
+  icon: SKK_ADBLOCK_ICON,
+};
+
+// drop 与 ip 不走广告拦截组：前者是会疯狂重试的遥测域名，必须静默丢弃；
+// 后者是劫持/botnet IP。二者在广告拦截组切 PASS 时也不应被放行。
+const SKK_RULES = [
+  'RULE-SET,skk_reject_drop,REJECT-DROP',
+  'RULE-SET,skk_reject,🛑 广告拦截',
+  'RULE-SET,skk_reject_non_ip,🛑 广告拦截',
+  'RULE-SET,skk_reject_ip,REJECT,no-resolve',
 ];
 
 // ============================================================================
@@ -1825,6 +1888,10 @@ const serviceConfigs = TEMPLATE['proxy-groups']
       icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Telegram.png'
     },
     {
+      name: 'SKK广告拦截',
+      icon: SKK_ADBLOCK_ICON
+    },
+    {
       name: '国家/地区分组',
       icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Global.png'
     },
@@ -2650,6 +2717,57 @@ function applyTelegramDcExperiment(result, originalProxies) {
 }
 
 // ============================================================================
+// SKK 广告拦截：只在开关为 true 时修改 result。
+// ============================================================================
+function applySkkAdBlock(result) {
+  if (ruleOptionsEnable['SKK广告拦截'] !== true) {
+    return;
+  }
+
+  // 规则集插入全部 provider 之前，与规则同为 REJECT 守卫定位；保持其余 provider 原顺序。
+  const originalProviders = result['rule-providers'] || {};
+  const providersWithSkk = deepClone(SKK_RULE_PROVIDERS);
+  Object.keys(originalProviders).forEach((name) => {
+    providersWithSkk[name] = originalProviders[name];
+  });
+  result['rule-providers'] = providersWithSkk;
+
+  // 策略组插入核心选择组之后、第一个业务组之前；核心组被单独关闭时按
+  // 自动选择、手动切换、负载均衡的顺序回退，都不可用则追加到底部。
+  const proxyGroups = result['proxy-groups'] || [];
+  const autoSelectIndex = proxyGroups.findIndex(
+    (group) => group && group.name === '♻️ 自动选择'
+  );
+  const manualSwitchIndex = proxyGroups.findIndex(
+    (group) => group && group.name === '👉 手动切换'
+  );
+  const loadBalanceIndex = proxyGroups.findIndex(
+    (group) => group && group.name === '🔄 负载均衡'
+  );
+  let insertIndex = proxyGroups.length;
+  if (autoSelectIndex >= 0) {
+    insertIndex = autoSelectIndex + 1;
+  } else if (manualSwitchIndex >= 0) {
+    insertIndex = manualSwitchIndex + 1;
+  } else if (loadBalanceIndex >= 0) {
+    insertIndex = loadBalanceIndex + 1;
+  }
+  proxyGroups.splice(insertIndex, 0, deepClone(SKK_PROXY_GROUP));
+  result['proxy-groups'] = proxyGroups;
+
+  // 规则插入现有 REJECT 守卫之后：跳过开头的 AND 守卫与 HijackingPlus，
+  // 使广告规则先于镜像直连与国内直连命中；找不到守卫锚点时放最前面。
+  if (!Array.isArray(result.rules)) {
+    result.rules = [];
+  }
+  const hijackingIndex = result.rules.findIndex(
+    (rule) => typeof rule === 'string' && rule.startsWith('RULE-SET,HijackingPlus,')
+  );
+  const insertRuleIndex = hijackingIndex >= 0 ? hijackingIndex + 1 : 0;
+  result.rules.splice(insertRuleIndex, 0, ...SKK_RULES);
+}
+
+// ============================================================================
 // 入口函数：Bettbox / FlClash 系客户端会调用 main(config) 并使用其返回值
 // ============================================================================
 function main(config, profileName) {
@@ -2745,6 +2863,9 @@ function main(config, profileName) {
 
   // ---- 2.5 TGDC 实验分流（默认关闭；由 UI 开关控制） ----
   applyTelegramDcExperiment(result, originalProxies);
+
+  // ---- 2.6 SKK 广告拦截（默认关闭；由 UI 开关控制） ----
+  applySkkAdBlock(result);
 
   // ---- 3. 节点列表换成订阅里的真实节点 ----
   result.proxies = originalProxies.slice();
