@@ -184,43 +184,29 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 
 #### proxy-providers：只能看到定义，看不到节点
 
-`http` / `file` 型 provider 的节点由内核按 `url` 在运行时拉取，脚本执行时还不存在；脚本能看到 `url`、`path`、`interval`、`override`、`filter` 这些定义字段，看不到节点列表。`inline` 型 provider 的 `payload` 写在配置里，脚本能看到，但本脚本仍只把顶层 `proxies` 当作节点来源，不筛选、不改写 inline 的节点。
+`http` / `file` 型 provider 的节点由内核在运行时拉取，脚本只能看到 `url`、`path`、`interval`、`override`、`filter` 等定义字段，看不到节点列表；`inline` 型的 `payload` 虽然在配置里可见，本脚本也不把它当作节点来源。
 
-对节点本身的处理只有两类：筛选/剔除，和修正字段。先看筛选/剔除类：
-
-<table width="100%">
-<thead>
-<tr><th width="22%">功能</th><th width="14%">处理方式</th><th width="64%">对 proxy-providers 的实际效果</th></tr>
-</thead>
-<tbody>
-<tr><td><code>高倍率筛选</code></td><td>筛选/剔除</td><td>删除顶层名称含显式 <code>&gt;=2x</code> 的节点并清理静态引用；provider 节点做不到，仍由 <code>include-all</code> 引入</td></tr>
-<tr><td><code>低倍率筛选</code></td><td>筛选/剔除</td><td>删除顶层名称含显式 <code>&lt;=0.5x</code> 的节点并清理静态引用；provider 节点做不到</td></tr>
-<tr><td><code>国家/地区分组</code></td><td>筛选/分组</td><td>按名称从顶层节点筛出地区候选，生成显式列表组；provider 节点不参与，也不会进入地区组</td></tr>
-<tr><td><code>TGDC实验分流</code></td><td>筛选/候选</td><td>从顶层节点筛出地区候选并生成保底列表；provider 节点不参与</td></tr>
-<tr><td><code>入口解析</code></td><td>注入/排除</td><td>注入的入口节点属于顶层节点；<code>exclude-filter</code> 由内核应用，会排除 provider 中的同名节点，但不筛选 provider</td></tr>
-</tbody>
-</table>
-
-再看修正字段类：
+节点级处理只有两类：筛选/剔除、修正字段。对 provider 的实际效果如下。
 
 <table width="100%">
 <thead>
 <tr><th width="22%">功能</th><th width="14%">处理方式</th><th width="64%">对 proxy-providers 的实际效果</th></tr>
 </thead>
 <tbody>
-<tr><td><code>强制证书验证</code></td><td>修正字段</td><td>顶层直接写 <code>skip-cert-verify=false</code>；provider 经 <code>override.skip-cert-verify=false</code> 生效</td></tr>
-<tr><td><code>试开启节点UDP</code></td><td>修正字段</td><td>顶层直接写 <code>udp=true</code>；provider 经 <code>override.udp=true</code> 生效</td></tr>
-<tr><td><code>IPv6优先</code></td><td>修正字段</td><td>顶层按原值分别改写；provider 统一写 <code>override.ip-version=ipv6-prefer</code>，无法按节点区分</td></tr>
-<tr><td><code>启用 Reality 增强</code></td><td>修正字段</td><td>顶层写 <code>reality-opts.support-x25519mlkem768=true</code>；provider 做不到，<code>override</code> 只能改固定字段</td></tr>
-<tr><td><code>hosts</code> 改写节点 server</td><td>修正字段</td><td>顶层把节点 <code>server</code> 域名换成 hosts 映射；provider 做不到，只遍历顶层节点</td></tr>
+<tr><td><code>高倍率筛选</code></td><td>筛选/剔除</td><td>删除顶层 <code>&gt;=2x</code> 节点；provider 做不到，仍由 <code>include-all</code> 引入</td></tr>
+<tr><td><code>低倍率筛选</code></td><td>筛选/剔除</td><td>删除顶层 <code>&lt;=0.5x</code> 节点；provider 做不到</td></tr>
+<tr><td><code>国家/地区分组</code></td><td>筛选/分组</td><td>从顶层筛出地区候选，生成显式列表组；provider 不参与，也不进入地区组</td></tr>
+<tr><td><code>TGDC实验分流</code></td><td>筛选/候选</td><td>从顶层筛出地区候选，生成保底列表；provider 不参与</td></tr>
+<tr><td><code>入口解析</code></td><td>注入/排除</td><td>入口节点属顶层；<code>exclude-filter</code> 会排除 provider 中的同名节点，但不筛选 provider</td></tr>
+<tr><td><code>强制证书验证</code></td><td>修正字段</td><td>顶层 <code>skip-cert-verify=false</code>；provider 经 <code>override.skip-cert-verify=false</code> 生效</td></tr>
+<tr><td><code>试开启节点UDP</code></td><td>修正字段</td><td>顶层 <code>udp=true</code>；provider 经 <code>override.udp=true</code> 生效</td></tr>
+<tr><td><code>IPv6优先</code></td><td>修正字段</td><td>顶层按原值改写；provider 统一 <code>override.ip-version=ipv6-prefer</code></td></tr>
+<tr><td><code>启用 Reality 增强</code></td><td>修正字段</td><td>顶层写 <code>reality-opts.support-x25519mlkem768=true</code>；provider 做不到，override 只能改固定字段</td></tr>
+<tr><td><code>hosts</code> 改写节点 server</td><td>修正字段</td><td>顶层改 <code>server</code>；provider 做不到，只遍历顶层节点</td></tr>
 </tbody>
 </table>
 
-筛选类开关只对顶层节点生效：provider 节点要等内核按 `include-all` 展开后才进入策略组，脚本在生成阶段无法枚举或删除它们。要约束 provider 节点，只能在 provider 定义上配 `filter` / `exclude-filter`，或在订阅源侧处理。
-
-字段修正类里，前三个开关在开启时会写入每个 provider 的 `override`，原有其他键保留；`启用 Reality 增强` 需要写嵌套的 `reality-opts`，`hosts` 改写需要逐个节点的 `server`，都不在 override 能表达的范围内，所以只作用于顶层节点。
-
-`rule-providers` 同理：`http` / `file` 型只能看到定义（`url`、`behavior`、`format`），看不到规则内容，脚本只增删定义与规则引用，不读取、不筛选、不改写其中的规则；`inline` 型规则集的 `payload` 虽然可见，脚本也不处理。
+筛选类只覆盖顶层节点：provider 节点由内核按 `include-all` 展开，脚本在生成阶段无法枚举或删除，只能靠 provider 自己的 `filter` / `exclude-filter`。修正字段类只有 `override` 固定字段能写到 provider；Reality 需要嵌套 `reality-opts`，hosts 需要逐节点 `server`，都只作用于顶层。`rule-providers` 同理：`http` / `file` 型只看得到定义，脚本不改写其中的规则。
 
 ### 🔀 hosts / DNS 处理流程
 
