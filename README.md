@@ -193,16 +193,16 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 <tr><th width="20%">功能</th><th width="12%">处理方式</th><th width="22%">原始 YAML 的 proxies</th><th width="24%">原生 YAML 的 proxy-providers</th><th width="22%">JS 外部定义补充</th></tr>
 </thead>
 <tbody>
-<tr><td><code>高倍率筛选</code></td><td>筛选</td><td>是</td><td>否</td><td>否</td></tr>
-<tr><td><code>低倍率筛选</code></td><td>筛选</td><td>是</td><td>否</td><td>否</td></tr>
-<tr><td><code>国家/地区分组</code></td><td>筛选</td><td>是</td><td>否</td><td>否</td></tr>
-<tr><td><code>TGDC实验分流</code></td><td>筛选</td><td>是</td><td>否</td><td>否</td></tr>
-<tr><td><code>入口解析</code></td><td>注入</td><td>是</td><td>否</td><td>是</td></tr>
-<tr><td><code>强制证书验证</code></td><td>修正字段</td><td>是</td><td>是</td><td>否</td></tr>
-<tr><td><code>试开启节点UDP</code></td><td>修正字段</td><td>是</td><td>是</td><td>否</td></tr>
-<tr><td><code>IPv6优先</code></td><td>修正字段</td><td>是</td><td>是</td><td>否</td></tr>
-<tr><td><code>启用 Reality 增强</code></td><td>修正字段</td><td>是</td><td>否</td><td>否</td></tr>
-<tr><td><code>hosts</code> 改写节点 server</td><td>修正字段</td><td>是</td><td>否</td><td>否</td></tr>
+<tr><td><code>高倍率筛选</code></td><td>筛选</td><td><strong>是</strong></td><td><em>否</em></td><td><em>否</em></td></tr>
+<tr><td><code>低倍率筛选</code></td><td>筛选</td><td><strong>是</strong></td><td><em>否</em></td><td><em>否</em></td></tr>
+<tr><td><code>国家/地区分组</code></td><td>筛选</td><td><strong>是</strong></td><td><em>否</em></td><td><em>否</em></td></tr>
+<tr><td><code>TGDC实验分流</code></td><td>筛选</td><td><strong>是</strong></td><td><em>否</em></td><td><em>否</em></td></tr>
+<tr><td><code>入口解析</code></td><td>注入</td><td><strong>是</strong></td><td><em>否</em></td><td><strong>是</strong></td></tr>
+<tr><td><code>强制证书验证</code></td><td>修正字段</td><td><strong>是</strong></td><td><strong>是</strong></td><td><em>否</em></td></tr>
+<tr><td><code>试开启节点UDP</code></td><td>修正字段</td><td><strong>是</strong></td><td><strong>是</strong></td><td><em>否</em></td></tr>
+<tr><td><code>IPv6优先</code></td><td>修正字段</td><td><strong>是</strong></td><td><strong>是</strong></td><td><em>否</em></td></tr>
+<tr><td><code>启用 Reality 增强</code></td><td>修正字段</td><td><strong>是</strong></td><td><em>否</em></td><td><em>否</em></td></tr>
+<tr><td><code>hosts</code> 改写节点 server</td><td>修正字段</td><td><strong>是</strong></td><td><em>否</em></td><td><em>否</em></td></tr>
 </tbody>
 </table>
 
