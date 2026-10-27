@@ -9,13 +9,59 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: mihomo-check
   cancel-in-progress: true
 
 jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.check.outputs.run }}
+    steps:
+      - name: Check 45-minute cooldown
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          CURRENT_RUN: ${{ github.run_id }}
+        run: |
+          if [ "$EVENT" != "push" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            echo "manual run: no cooldown"
+            exit 0
+          fi
+          set +e
+          LAST=$(curl -fsSL -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/mihomo-check.yml/runs?event=push&per_page=10" \
+            | jq -r --arg current "$CURRENT_RUN" '[.workflow_runs[] | select((.id|tostring) != $current)][0].created_at // empty')
+          set -e
+          if [ -z "$LAST" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            echo "no previous push run"
+            exit 0
+          fi
+          LAST_TS=$(date -d "$LAST" +%s)
+          NOW=$(date +%s)
+          AGE=$(( (NOW - LAST_TS) / 60 ))
+          if [ "$AGE" -lt 45 ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "skipped: last push run was ${AGE}m ago (<45m)"
+            {
+              echo "### Mihomo check skipped"
+              echo ""
+              echo "Last push run was ${AGE} minutes ago (< 45 minutes). Manual runs are not affected."
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            echo "last push run was ${AGE}m ago"
+          fi
+
   check:
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
     strategy:
       fail-fast: false
       matrix:
