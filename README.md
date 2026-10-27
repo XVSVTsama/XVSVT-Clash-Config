@@ -49,13 +49,13 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
    CDN 加速地址：
 
-gh-proxy 代理：
+gh-proxy：
 
 ```text
 https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
 ```
 
-jsdmirror（jsDelivr 镜像）：
+jsdmirror：
 
 ```text
 https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.js
