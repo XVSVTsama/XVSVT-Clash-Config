@@ -146,6 +146,7 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 
 1. **直接使用 YAML (`mihomo.yaml`)**：不使用 JavaScript 覆写脚本时，将 `proxy-providers.subscription.url` 的占位地址在本地替换为自己的 Clash/Mihomo 订阅链接；`include-all` 策略组会自动纳入 provider 节点。也可删除不用的示例 provider，将 `proxies: ~` 替换为自己的节点列表。模板不会自动读取客户端中的其他订阅，请勿把真实订阅链接或凭据提交到公开仓库。
 2. **按需删减规则**：如果你不需要屏蔽番茄小说海外版的广告，建议删除 `sub-rules` 中 `fanqie` 相关的规则，以节省性能。
+3. **广告拦截（可选，默认关闭）**：使用覆写脚本时，打开 `SKK广告拦截` 开关即可，脚本会成套注入 `🛑 广告拦截` 策略组、4 个规则集（SukkaW/Surge reject 系列）与 4 条规则。**直接使用 YAML 时没有开关**：模板中对应的代理组、`rule-providers`、`rules` 三处都是注释段，必须三处一起取消注释才能启用，只启用其中一段会报规则集未定义或规则指向不存在的策略组；不需要时保持注释原样，不要改动。
 
 <a id="script-override"></a>
 
@@ -221,7 +222,7 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 <tr><td><strong>📲 Telegram-DC1-DC3-Miami</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>开关开启时按 Telegram DC IP 规则优先命中美国/迈阿密节点；地区无候选时列出全部合格节点供手动选择</td></tr>
 <tr><td><strong>📲 Telegram-DC2-DC4-Amsterdam</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>同上，对应荷兰/阿姆斯特丹节点</td></tr>
 <tr><td><strong>📲 Telegram-DC5-SG</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>同上，DC5 同时匹配新加坡与香港节点</td></tr>
-<tr><td><strong>🛑 广告拦截</strong></td><td><code>SKK广告拦截</code></td><td>关闭</td><td>开关关闭时本组、其 4 个规则集与 4 条规则都不生成；开启时组内可选 <code>REJECT</code> / <code>REJECT-DROP</code> / <code>PASS</code>，承接 SukkaW/Surge 的 reject 域名集与 non_ip 规则集，规则置于置顶拦截守卫之后；reject-drop 与 reject_ip 两条规则不经本组，分别直达 <code>REJECT-DROP</code> 与 <code>REJECT</code></td></tr>
+<tr><td><em><strong>🛑 广告拦截</strong></em></td><td><em><strong><code>SKK广告拦截</code></strong></em></td><td><em><strong>关闭</strong></em></td><td><em><strong>开关关闭时本组、其 4 个规则集与 4 条规则都不生成；开启时组内可选 <code>REJECT</code> / <code>REJECT-DROP</code> / <code>PASS</code>，承接 SukkaW/Surge 的 reject 域名集与 non_ip 规则集，规则置于置顶拦截守卫之后；reject-drop 与 reject_ip 两条规则不经本组，分别直达 <code>REJECT-DROP</code> 与 <code>REJECT</code></strong></em></td></tr>
 <tr><td><strong>国内入口解析</strong></td><td><code>入口解析</code></td><td>关闭</td><td>开关开启时统一注入维护区所有运营商的入口节点并建立该组，由用户手动选择入口；每个运营商支持多个节点，排列顺序不代表优先级</td></tr>
 <tr><td><strong>国家/地区父组及隐藏子组</strong></td><td><code>国家/地区分组</code></td><td>关闭</td><td>根据地区候选节点创建分组；将父组追加到 15 个指定流量目标中，跳过已禁用或不存在的目标；倍率筛选后即使组内无节点也保留父组和三个隐藏子组</td></tr>
 </tbody>
