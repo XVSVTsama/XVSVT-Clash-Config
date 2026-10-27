@@ -1881,7 +1881,7 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     },
     {
       name: 'IPv6优先',
-      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Global.png'
+      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-ipv6-prefer.svg'
     },
     {
       name: 'TGDC实验分流',

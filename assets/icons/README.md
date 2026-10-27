@@ -12,7 +12,7 @@
 
 ## 尺寸与视觉归一化
 
-当前配置引用的 39 张图标（17 PNG、22 SVG）统一按以下原则处理，文件名、格式与配置引用不变：
+当前配置引用的 40 张图标（17 PNG、23 SVG）统一按以下原则处理，文件名、格式与配置引用不变：
 
 - PNG 使用 **144×144 像素**透明画布；SVG 使用 **`viewBox="0 0 100 100"`**。按完整可见图形边界等比缩放并居中，不拉伸、不裁掉可见内容，也不以其他图案替换原稿。
 - 图形最长可见边以画布的**约 80%**为目标，四周保留留白。占比是视觉目标而非逐像素硬阈值；抗锯齿、低透明度边缘和阴影会使实际非透明边界略有差异，处理时仍保留这些内容。
@@ -41,6 +41,7 @@
 | `self-udp.svg` | 试开启节点 UDP 开关；本仓库原创的数据包流图形 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不包含第三方品牌图形。 |
 | `self-webrtc-block.svg` | WebRTC 阻断开关；本仓库原创的屏蔽网络盾牌图形 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不包含第三方品牌图形。 |
 | `self-adblock.svg` | SKK 广告拦截开关与广告拦截策略组；本仓库原创的禁止标志盾牌图形 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不包含第三方品牌图形。 |
+| `self-ipv6-prefer.svg` | IPv6 优先开关；本仓库原创的地球与向上箭头图形 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不包含第三方品牌图形。 |
 
 ## AIsouler / MyClash
 
@@ -107,7 +108,7 @@ Simple Icons **项目**采用 [CC0 1.0](https://github.com/simple-icons/simple-i
 | --- | --- | --- |
 | `upstream-Koolson-Qure-United_States.png` | Koolson / `United_States.png` | TGDC 迈阿密组 |
 | `upstream-Koolson-Qure-Singapore.png` | Koolson / `Singapore.png` | TGDC 新加坡组 |
-| `upstream-Koolson-Qure-Global.png` | Koolson / `Global.png` | IPv6 优先开关 |
+| `upstream-Koolson-Qure-Global.png` | Koolson / `Global.png` | 国家/地区分组开关及地区父组 |
 | `upstream-Koolson-Qure-Telegram.png` | Koolson / `Telegram.png` | TGDC 实验分流开关 |
 | `upstream-Koolson-Qure-Domestic.png` | Koolson / `Domestic.png` | 国内入口解析组及开关 |
 | `upstream-MiToverG422-Qure-fcm.png` | MiToverG422 / `fcm.png` | FCM 组及其直连开关 |
