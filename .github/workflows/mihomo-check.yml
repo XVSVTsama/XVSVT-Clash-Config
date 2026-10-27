@@ -75,17 +75,17 @@ jobs:
             target: linux-arm64
             prefix: mihomo-linux-arm64-
             archive: gz
-            qemu: qemu-aarch64
+            qemu: qemu-aarch64-static
           - runner: ubuntu-latest
             target: linux-armv7
             prefix: mihomo-linux-armv7-
             archive: gz
-            qemu: qemu-arm
+            qemu: qemu-arm-static
           - runner: ubuntu-latest
             target: android-arm64-v8
             prefix: mihomo-android-arm64-v8-
             archive: gz
-            qemu: qemu-aarch64
+            qemu: qemu-aarch64-static
           - runner: windows-latest
             target: windows-amd64
             prefix: mihomo-windows-amd64-

@@ -26,10 +26,18 @@ def api_get(url, token):
         return json.load(resp)
 
 
-def latest_release(token):
-    releases = [r for r in api_get(API, token) if not r.get("draft")]
-    releases.sort(key=lambda r: r.get("published_at") or "", reverse=True)
-    return releases[0]
+def releases(token):
+    items = [r for r in api_get(API, token) if not r.get("draft")]
+    items.sort(key=lambda r: r.get("published_at") or "", reverse=True)
+    return items
+
+
+def find_release_asset(items, prefix, archive):
+    for release in items:
+        asset = pick_asset(release, prefix, archive)
+        if asset:
+            return release, asset
+    return None, None
 
 
 def pick_asset(release, prefix, archive):
@@ -41,7 +49,7 @@ def pick_asset(release, prefix, archive):
         rest = name[len(prefix):]
         if "compatible" in rest or "go1" in rest:
             continue
-        if re.search(r"-v\d+-", name):
+        if re.search(r"-v[123]-", name):
             continue
         return asset
     return None
@@ -65,8 +73,8 @@ def extract(path, archive, outdir):
         return binary
     with zipfile.ZipFile(path) as zf:
         zf.extractall(outdir)
-    for name in ("mihomo.exe", "mihomo"):
-        for found in outdir.rglob(name):
+    for pattern in ("mihomo.exe", "*.exe", "mihomo"):
+        for found in outdir.rglob(pattern):
             return found
     raise SystemExit("mihomo binary not found in archive")
 
@@ -82,10 +90,10 @@ def main():
     args = parser.parse_args()
 
     token = os.environ.get("GITHUB_TOKEN", "")
-    release = latest_release(token)
-    asset = pick_asset(release, args.prefix, args.archive)
+    items = releases(token)
+    release, asset = find_release_asset(items, args.prefix, args.archive)
     if not asset:
-        print("::error::No asset matching %s in %s" % (args.prefix, release["tag_name"]))
+        print("::error::No asset matching %s in the latest %d releases" % (args.prefix, len(items)))
         return 1
 
     work = Path("mihomo-download")
