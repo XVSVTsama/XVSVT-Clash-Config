@@ -69,9 +69,10 @@ const Compatible_With_Bettbox = {
  *    值，不会把订阅内容拼进新地址。
  *
  *  节点处理与 proxy-providers（重要）：
- *    节点级处理只有两类：
- *      1) 筛选/剔除：高/低倍率筛选、国家/地区分组、TGDC 候选、入口解析；
- *      2) 修正字段：强制证书验证、启用 Reality 增强、试开启节点UDP、
+ *    节点级处理分三类：
+ *      1) 筛选：高/低倍率（剔除）、国家/地区（分组）、TGDC（候选）；
+ *      2) 注入：入口解析（注入入口节点，并用 exclude-filter 排除同名节点）；
+ *      3) 修正字段：强制证书验证、启用 Reality 增强、试开启节点UDP、
  *         IPv6优先、hosts 改写节点 server。
  *    http/file 型 provider 的节点由内核运行时按 url 拉取，脚本执行时不存在，
  *    只能看到 provider 定义（url/path/interval/override/filter 等）：
