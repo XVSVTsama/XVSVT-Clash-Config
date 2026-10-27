@@ -271,6 +271,7 @@ proxy-groups:
     url: 'https://g.cn/generate_204'
     interval: 300
     lazy: true
+    max-failed-times: 1
     strategy: sticky-sessions
   - name: 👉 手动切换
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-select.png"
@@ -281,7 +282,9 @@ proxy-groups:
     type: url-test
     url: https://g.cn/generate_204
     interval: 300
-    tolerance: 50
+    tolerance: 10
+    lazy: true
+    max-failed-times: 1
     include-all: true
   # SKK 广告拦截组为可选配置；启用时，需同时取消注释下方 rule-providers 与 rules 对应段落。
   # - name: 🛑 广告拦截

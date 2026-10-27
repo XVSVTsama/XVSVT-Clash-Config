@@ -517,15 +517,20 @@ function buildCountryRegionProxyGroups(originalProxies) {
     (group) => group && group.name === '♻️ 自动选择'
   ) || {};
   const urlTestSettings = {};
-  ['url', 'interval', 'tolerance', 'lazy'].forEach((key) => {
+  ['url', 'interval', 'tolerance', 'lazy', 'max-failed-times'].forEach((key) => {
     if (Object.prototype.hasOwnProperty.call(templateAutoGroup, key)) {
       urlTestSettings[key] = templateAutoGroup[key];
     }
   });
+  // fallback / load-balance 没有 tolerance，只继承文档列出的健康检查通用字段。
   const healthCheckSettings = {
     url: urlTestSettings.url || 'https://g.cn/generate_204',
     interval: urlTestSettings.interval || 300,
+    lazy: urlTestSettings.lazy === undefined ? true : urlTestSettings.lazy,
   };
+  if (urlTestSettings['max-failed-times'] !== undefined) {
+    healthCheckSettings['max-failed-times'] = urlTestSettings['max-failed-times'];
+  }
   const parentGroups = [];
   const childGroups = [];
 
@@ -1069,6 +1074,7 @@ const TEMPLATE = {
       "url": "https://g.cn/generate_204",
       "interval": 300,
       "lazy": true,
+      "max-failed-times": 1,
       "strategy": "sticky-sessions"
     },
     {
@@ -1083,7 +1089,9 @@ const TEMPLATE = {
       "type": "url-test",
       "url": "https://g.cn/generate_204",
       "interval": 300,
-      "tolerance": 50,
+      "tolerance": 10,
+      "lazy": true,
+      "max-failed-times": 1,
       "include-all": true
     },
     {
