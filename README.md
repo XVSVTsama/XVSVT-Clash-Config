@@ -206,7 +206,13 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 </tbody>
 </table>
 
-筛选类只能处理原始 YAML 的顶层 `proxies`：provider 节点由内核按 `include-all` 展开，脚本在生成阶段无法枚举或删除。修正字段类里，只有 `override` 的固定字段能写到 provider（证书、UDP、IPv6），Reality 需要嵌套 `reality-opts`、hosts 需要逐节点 `server`，都只能改顶层节点。入口解析注入的节点来自脚本维护区，会写入顶层 `proxies`；它的 `exclude-filter` 由内核应用，会连带排除 provider 中的同名节点，但不会筛选 provider。`rule-providers` 同理：`http` / `file` 型只看得到定义，脚本不改写其中的规则。
+按来源说明：
+
+- **原始 YAML 的 proxies**：所有节点级处理都会作用到这里——筛选类挑选或删除，注入类把入口节点写回这里，修正字段类直接改字段。
+- **原生 YAML 的 proxy-providers**：节点由内核按 `include-all` 在运行时展开，脚本只能改定义里的 `override` 固定字段，所以只有证书、UDP、IPv6 三项能生效；筛选类无法枚举节点，Reality 需要嵌套 `reality-opts`、hosts 需要逐节点 `server`，也都到不了 provider。
+- **JS 外部定义补充**：只有入口解析，节点来自脚本维护区并写入顶层 `proxies`；它的 `exclude-filter` 由内核应用，会把 provider 中的同名节点一起排除，但不算筛选 provider。
+
+`rule-providers` 同理：`http` / `file` 型只看得到定义，脚本不改写其中的规则。
 
 ### 🔀 hosts / DNS 处理流程
 
