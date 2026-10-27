@@ -170,8 +170,6 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 
 ### ⚠️ 设计局限：JS 覆写的能力边界
 
-这一节只说明脚本本身能接触什么、能改什么，不讨论具体客户端如何执行脚本。
-
 脚本拿到的是客户端传入的配置对象，在内存里改写后返回。它不读写文件、不发起网络请求、不启动进程，也没有异步、定时器或跨次执行的状态。由此有三条边界：
 
 - 能读：配置里已经存在的内容，包括顶层节点、规则、`proxy-providers` 与 `rule-providers` 的定义及其 URL；`http` / `file` 型规则集只看得到定义，不读取规则内容；
