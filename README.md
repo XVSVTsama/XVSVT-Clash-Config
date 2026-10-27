@@ -47,7 +47,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 <table width="100%">
 <thead>
-<tr><th width="100%" align="center">地址</th></tr>
+<tr><th width="100%" align="center">地址<img src="assets/table-spacer.png" width="1280" height="1" alt=""></th></tr>
 </thead>
 <tbody>
 <tr><td align="center"><div align="center"><a href="https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js">gh-proxy</a>：GitHub 文件 CDN 链接，缓存更新时间约 1 分钟<img src="assets/table-spacer.png" width="1280" height="1" alt=""></div></td></tr>
