@@ -55,7 +55,26 @@ const Compatible_With_Bettbox = {
  *       的同名字段（例如 dns 的各项细节、rules、rule-providers、sniffer、
  *       tun、proxy-groups 的分组结构等）。订阅原始配置里模板未定义的顶层字段不会被保留
  *       （比如某些订阅自带的 allow-lan、bind-address），唯一的例外是 proxy-providers：
- *       若订阅自带 proxy-providers，会原样保留并注入最终配置。
+ *       若订阅自带 proxy-providers，会保留并注入最终配置；仅在相关节点级开关开启时
+ *       合并 provider.override 字段（见下），其余内容不改。
+ *
+ *   ⚠️ proxy-providers 作用域（重要）：
+ *    provider 的节点由内核在运行时按 url 拉取并健康检查后才存在，脚本执行时只能
+ *    看到 provider 的定义对象，看不到、也无法展开其中的节点。因此节点级处理
+ *    一律不读取 provider 节点数据，只允许修改 provider 定义里的 override 段：
+ *      - 不读取 provider 节点：倍率筛选、国家/地区分组、TGDC 候选、模块候选、
+ *        hosts 改写节点 server 都只遍历订阅顶层 proxies；
+ *      - 不枚举 provider 节点：组内 include-all 由内核展开，provider 节点仍会
+ *        出现在含 include-all 的业务组里，不受上述筛选影响；
+ *      - 唯一例外是内核层 exclude-filter（入口解析用它排除入口节点命名空间），
+ *        它对 include-all 引入的 provider 节点同样生效，但不筛选节点本身。
+ *    节点级开关里能对 provider 生效的只有 override 可表达的字段，由
+ *    applyProviderOverrides() 在开关开启时写入 provider.override：
+ *      强制证书验证 -> override.skip-cert-verify=false
+ *      试开启节点UDP -> override.udp=true
+ *      IPv6优先     -> override.ip-version=ipv6-prefer（统一值，无法按节点区分）
+ *    Reality 增强依赖嵌套的 reality-opts，而 provider 的 override 只能改固定字段，
+ *    因此只作用于订阅顶层节点。
  *
  *    2. proxies：使用订阅原始配置里的真实节点列表（模板里这一项本来就是空的，
  *       只是占位）。
@@ -142,13 +161,18 @@ const ruleOptionsEnable = {
   '💬 LINE': true,
 
   // --- 节点与网络功能开关 ---
-  // 开启时统一把订阅节点 skip-cert-verify 置为 false（强制校验证书）；关闭时不干预，保留订阅节点原有设置。对全部节点一视同仁
+  // 开启时统一把订阅节点 skip-cert-verify 置为 false（强制校验证书）；关闭时不干预，保留订阅节点原有设置。
+  // provider 节点不在此遍历范围内，开启时改由 override.skip-cert-verify 生效。
   '强制证书验证': false,
-  // 是否为带非空 public-key/short-id 的 Reality 节点启用 support-x25519mlkem768（X25519MLKEM768 后量子密钥协商）
+  // 是否为带非空 public-key/short-id 的 Reality 节点启用 support-x25519mlkem768（X25519MLKEM768 后量子密钥协商）；
+  // 仅遍历订阅顶层 proxies；provider 的 override 只能改固定字段，
+  // 无法改写嵌套 reality-opts，故不涉及 provider 节点。
   '启用 Reality 增强': true,
   // 默认不改动订阅节点的 udp；开启时统一设置为 true，允许 UDP 通过代理。
+  // provider 节点不在此遍历范围内，开启时改由 override.udp 生效。
   '试开启节点UDP': false,
-  // 开启后按节点 ip-version 优先使用 IPv6
+  // 开启后按节点 ip-version 优先使用 IPv6；provider 节点不在此遍历范围内，
+  // 开启时改由 override.ip-version（统一 ipv6-prefer）生效。
   'IPv6优先': false,
   // 默认打开：隐藏组 FCM 仅含 DIRECT；关闭后优先使用 👉 手动切换，若该组已关闭则回退到 🌍 PROXY，再回退到 DIRECT（不移除 FCM 组）。开关图标取自 FCM 代理组的 icon 字段。
   'FCM直连': true,
@@ -157,6 +181,7 @@ const ruleOptionsEnable = {
   // 开启后注入 SukkaW/Surge 的 reject 规则集与广告拦截策略组；关闭时不注入其策略组、规则集和规则。
   'SKK广告拦截': false,
   // 为合格的订阅顶层节点生成按国家/地区划分的策略组；与入口解析开关独立。
+  // 只读取订阅顶层 proxies，不枚举 proxy-providers。
   '国家/地区分组': false,
   // 国家/地区组生成后，按节点名称中的显式数值倍率筛选；不处理 proxy-providers。
   '高倍率筛选': false,
@@ -463,6 +488,7 @@ function countryRegionChildGroupName(parentName, suffix) {
   return parentName + ' · ' + suffix;
 }
 
+// 候选只来自订阅顶层 proxies；provider 节点此阶段尚未加载，不参与地区分组。
 function buildCountryRegionProxyGroups(originalProxies) {
   const candidates = filterModuleCandidateProxies(originalProxies);
   const templateAutoGroup = (TEMPLATE['proxy-groups'] || []).find(
@@ -580,6 +606,7 @@ function getExplicitProxyMultipliers(name) {
 }
 
 // 在地区组生成后过滤顶层订阅节点，并清理静态引用；保持代理组结构（包括空地区组）不变。
+// provider 节点不受影响：它们由内核按 include-all 展开，仍会出现在相关组里。
 function applyProxyMultiplierFilters(result) {
   const filterHigh = ruleOptionsEnable['高倍率筛选'] === true;
   const filterLow = ruleOptionsEnable['低倍率筛选'] === true;
@@ -615,6 +642,43 @@ function applyProxyMultiplierFilters(result) {
         delete group['default-selected'];
       }
     }
+  });
+}
+
+// ============================================================================
+// provider 节点级覆写（仅在对应开关开启时写入 provider.override）
+// provider 节点由内核运行时加载，脚本无法逐节点改写；override 是唯一能让
+// 逐节点改写生效的通道，且只支持固定字段：
+//   skip-cert-verify / udp / ip-version（无法改写嵌套 reality-opts）。
+// 关闭开关时不写入，保留订阅原有的 override 内容。
+// ============================================================================
+function applyProviderOverrides(result) {
+  const providers = result['proxy-providers'];
+  if (!providers || typeof providers !== 'object' || Array.isArray(providers)) return;
+
+  const forceCertVerify = ruleOptionsEnable['强制证书验证'] === true;
+  const enableNodeUdp = ruleOptionsEnable['试开启节点UDP'] === true;
+  const preferIPv6 = ruleOptionsEnable['IPv6优先'] === true;
+  if (!forceCertVerify && !enableNodeUdp && !preferIPv6) return;
+
+  Object.keys(providers).forEach((name) => {
+    const provider = providers[name];
+    if (!provider || typeof provider !== 'object' || Array.isArray(provider)) return;
+    const override = provider.override && typeof provider.override === 'object' &&
+      !Array.isArray(provider.override) ? provider.override : {};
+
+    if (forceCertVerify) {
+      override['skip-cert-verify'] = false;
+    }
+    if (enableNodeUdp) {
+      override.udp = true;
+    }
+    // provider 侧读不到节点原值：统一使用可回退的 ipv6-prefer，
+    // 不把已是 ipv6-prefer 的节点提升为仅 IPv6。
+    if (preferIPv6) {
+      override['ip-version'] = 'ipv6-prefer';
+    }
+    provider.override = override;
   });
 }
 
@@ -2091,6 +2155,8 @@ function withDnsPolicySuffix(value, suffix) {
   return (hashIndex === -1 ? str : str.slice(0, hashIndex)) + suffix;
 }
 
+// 注入的入口节点属于订阅顶层节点；exclude-filter 由内核应用，会作用于 include-all
+// 引入的 provider 节点，但只排除入口节点命名空间，不筛选 provider 节点本身。
 function applyEntryResolution(result) {
   const options = selectedEntryResolutionOptions();
   if (options.length === 0) {
@@ -2775,6 +2841,8 @@ function main(config, profileName) {
 
   // ---- 1. 从订阅原始配置里取出会被模板覆盖、但需要保留/合并的动态数据 ----
   // 启用入口解析时保留强制命名空间给维护区；同时避免重载已有输出时污染 TGDC 保底及默认选择。
+  // 节点级逻辑（Reality/UDP/证书/IPv6/倍率/地区分组/TGDC 候选/hosts）只遍历这个
+  // 数组，即订阅顶层 proxies；provider 节点此时尚未由内核加载，详见文件头作用域说明。
   const entryNamePattern = new RegExp(ENTRY_RESOLUTION_EXCLUDE_FILTER);
   const originalProxies = (Array.isArray(config.proxies) ? config.proxies : []).filter(
     (proxy) => ruleOptionsEnable['入口解析'] !== true ||
@@ -2870,7 +2938,9 @@ function main(config, profileName) {
   // ---- 3. 节点列表换成订阅里的真实节点 ----
   result.proxies = originalProxies.slice();
   if (originalProxyProviders) {
-    result['proxy-providers'] = originalProxyProviders;
+    // 深拷贝：override 注入不能回写到订阅原始 config。
+    result['proxy-providers'] = deepClone(originalProxyProviders);
+    applyProviderOverrides(result);
   }
 
   // include-all 按名称排序；手动选择与 Telegram 组仍以订阅顺序中的首个节点作为默认选择。
