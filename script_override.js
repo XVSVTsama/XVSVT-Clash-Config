@@ -1677,6 +1677,7 @@ const TEMPLATE = {
   "rules": [
     "AND,((NETWORK,UDP),(DST-PORT,3478-3479/5349-5350/19302-19309),(NOT,((RULE-SET,cncidr))),(NOT,((RULE-SET,cn))),(NOT,((RULE-SET,games))),(NOT,((RULE-SET,echs_direct)))),REJECT",
     "RULE-SET,HijackingPlus,REJECT",
+    "SUB-RULE,(PROCESS-NAME,com.dragon.read.oversea.gp),fanqie",
     "DOMAIN,mirrors.tuna.tsinghua.edu.cn,DIRECT",
     "DOMAIN,mirrors.ustc.edu.cn,DIRECT",
     "DOMAIN,mirrors.bfsu.edu.cn,DIRECT",
@@ -1724,7 +1725,6 @@ const TEMPLATE = {
     "DOMAIN,d3r7nsslvs6aaf.cloudfront.net,💳 金融支付",
     "DOMAIN-SUFFIX,cloudfront.net,DIRECT",
     "RULE-SET,googlefcm,FCM",
-    "SUB-RULE,(PROCESS-NAME,com.dragon.read.oversea.gp),fanqie",
     // 通用直连规则优先，剩余 Apple / Microsoft 域名和 IP 再进入海外组。
     // Bybit 静态资源位于 Microsoft 规则集内，优先保留金融支付分流。
     "DOMAIN,bybit-exchange.github.io,💳 金融支付",
