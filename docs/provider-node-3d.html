@@ -123,7 +123,7 @@ Plotly.newPlot('plot', traces, layout, config).then(() => {
     const s = SOURCES[Number(p.z)];
     if (!f || !m || !s) return;
     const point = POINTS.find(q => q.f === f.id && q.m === m.id && q.s === s.id);
-    const others = MODES.filter(x => x.id !== m.id && POINTS.some(q => q.f === f.id && q.m === x.id));
+    const others = SOURCES.filter(x => x.id !== s.id && POINTS.some(q => q.f === f.id && q.s === x.id));
     let html = '<b>已选中坐标为 (' + f.id + ', ' + m.id + ', ' + s.id + ') 的坐标点</b><br>'
       + 'X 功能：' + f.id + ' ' + f.name + '<br>'
       + 'Y 处理方式：' + m.id + ' ' + m.name + '<br>'
@@ -134,8 +134,8 @@ Plotly.newPlot('plot', traces, layout, config).then(() => {
       html += '该功能只有这一方面的处理办法。';
     } else {
       html += '该功能还有 ' + others.map(x => {
-        const q = POINTS.find(y => y.f === f.id && y.m === x.id);
-        return x.name + ' 方面的处理办法，请点击坐标 (' + f.id + ', ' + x.id + ', ' + q.s + ')';
+        const q = POINTS.find(y => y.f === f.id && y.s === x.id);
+        return x.full + ' 方面的处理办法，请点击坐标 (' + f.id + ', ' + q.m + ', ' + x.id + ')';
       }).join('；') + '。';
     }
     document.getElementById('detail').innerHTML = html;
