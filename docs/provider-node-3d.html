@@ -24,10 +24,10 @@
 </head>
 <body>
 <h1>节点处理三维视图</h1>
-<p class="hint">拖拽旋转、双指捏合或滚轮缩放、双击重置视角；也可用图上方工具栏。点击坐标点查看详情。轴刻度使用编号：X 功能（F1–F10）、Y 处理方式（M1–M3）、Z 节点来源（S1–S3），对照见下方。</p>
+<p class="hint">拖拽旋转、双指捏合或滚轮缩放、双击重置视角；也可用图上方工具栏。点击坐标点，详情显示在下方。轴刻度使用编号：X 功能（F1–F10）、Y 处理方式（M1–M3）、Z 节点来源（S1–S3），对照见下方。</p>
 <div class="toolbar"><button id="fs" type="button">全屏查看</button></div>
 <div id="plot"></div>
-<div id="detail"><span class="muted">点击坐标点查看详情。</span></div>
+<div id="detail"><span class="muted">点击坐标点，详情显示在下方。</span></div>
 <div class="legend" id="legend"></div>
 <div class="funcs" id="sources"></div>
 <div class="funcs" id="funcs"></div>
@@ -90,8 +90,8 @@ const traces = MODES.map(mode => {
     y: pts.map(p => modeIndex[p.m]),
     z: pts.map(p => sourceIndex[p.s]),
     customdata: pts.map(p => [funcById[p.f].name, mode.name, sourceById[p.s].full, p.desc]),
-    marker: { size: 6, color: mode.color, opacity: 0.95, line: { color: '#fff', width: 0.8 } },
-    hovertemplate: '%{customdata[0]}<br>%{customdata[1]} · %{customdata[2]}<br>%{customdata[3]}<extra></extra>'
+    marker: { size: 4, color: mode.color, opacity: 0.95, line: { color: '#fff', width: 0.6 } },
+    hoverinfo: 'none'
   };
 });
 
