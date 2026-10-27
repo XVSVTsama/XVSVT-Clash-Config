@@ -179,7 +179,7 @@ const ruleOptionsEnable = {
   // LINE 通讯软件策略组
   '💬 LINE': true,
 
-  // --- 节点与网络功能开关 ---
+  // --- 节点字段修正 ---
   // 开启时统一把订阅节点 skip-cert-verify 置为 false（强制校验证书）；关闭时不干预，保留订阅节点原有设置。
   // provider 节点不在此遍历范围内，开启时改由 override.skip-cert-verify 生效。
   '强制证书验证': false,
@@ -193,12 +193,14 @@ const ruleOptionsEnable = {
   // 开启后按节点 ip-version 优先使用 IPv6；provider 节点不在此遍历范围内，
   // 开启时改由 override.ip-version（统一 ipv6-prefer）生效。
   'IPv6优先': false,
+  // --- 组与实验 ---
   // 默认打开：隐藏组 FCM 仅含 DIRECT；关闭后优先使用 👉 手动切换，若该组已关闭则回退到 🌍 PROXY，再回退到 DIRECT（不移除 FCM 组）。开关图标取自 FCM 代理组的 icon 字段。
   'FCM直连': true,
   // 开启 Telegram DC/地区实验分流；关闭时不改变原 Telegram 规则、策略组和规则集。
   'TGDC实验分流': false,
   // 开启后注入 SukkaW/Surge 的 reject 规则集与广告拦截策略组；关闭时不注入其策略组、规则集和规则。
   'SKK广告拦截': false,
+  // --- 节点筛选与分组 ---
   // 为合格的订阅顶层节点生成按国家/地区划分的策略组；与入口解析开关独立。
   // 只读取订阅顶层 proxies，不枚举 proxy-providers。
   '国家/地区分组': false,
@@ -207,6 +209,7 @@ const ruleOptionsEnable = {
   '低倍率筛选': false,
   // 开启后，维护区所有运营商的入口节点统一加入“国内入口解析”组，不进入其他代理组。
   '入口解析': false,
+  // --- 网络与规则 ---
   // 最后为节点解析 DNS 的无协议地址补 tcp://；不改变显式协议、出口后缀或 DNS 优先级。
   '代理节点 DNS 使用 TCP': false,
   // 默认保留 WebRTC 阻断规则；关闭后删除所有同时包含指定 UDP 网络和端口特征的规则。

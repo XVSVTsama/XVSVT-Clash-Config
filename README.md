@@ -239,7 +239,7 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 </tbody>
 </table>
 
-**同样不在 `policyGroupOptions`、也不对应任何策略组的开关（9 个）**
+**同样不在 `policyGroupOptions`、也不对应任何策略组的开关（9 个，按节点字段修正、筛选分组、网络规则排序）**
 
 <table width="100%">
 <thead>
@@ -248,13 +248,13 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 <tbody>
 <tr><td><code>强制证书验证</code></td><td>关闭</td><td>开启时统一把订阅顶层节点的 <code>skip-cert-verify</code> 置为 <code>false</code>；provider 节点经 <code>override.skip-cert-verify</code> 同步生效；关闭时不干预订阅原有设置</td></tr>
 <tr><td><code>启用 Reality 增强</code></td><td>开启</td><td>为带非空 <code>public-key</code> / <code>short-id</code> 的订阅顶层 Reality 节点启用 X25519MLKEM768 后量子密钥协商；provider 的 <code>override</code> 只能改固定字段、无法改写嵌套 <code>reality-opts</code>，因此不涉及 provider 节点</td></tr>
+<tr><td><code>试开启节点UDP</code></td><td>关闭</td><td>开启时为订阅顶层节点设置 <code>udp: true</code>，provider 节点经 <code>override.udp</code> 同步生效；关闭时不改动原有设置。Mihomo <a href="https://wiki.metacubex.one/config/proxies/">官方通用字段文档</a> 说明该字段默认通常为 <code>false</code>，TUIC 等基于 UDP 的协议以及 <code>direct</code>、<code>dns</code> 类型默认开启</td></tr>
 <tr><td><code>IPv6优先</code></td><td>关闭</td><td>改写订阅顶层节点 <code>ip-version</code>：<code>ipv6</code> 保持不变，<code>ipv6-prefer</code> 改为 <code>ipv6</code>，其余设为 <code>ipv6-prefer</code>；provider 节点经 <code>override.ip-version</code> 统一设为 <code>ipv6-prefer</code>，无法按节点区分原值</td></tr>
-<tr><td><code>国家/地区分组</code></td><td>关闭</td><td>只用订阅顶层节点生成国家/地区选择组；共用官网、流量说明等节点过滤，但不改变原节点列表或目标组的 <code>include-all</code>。该开关独立于 <code>入口解析</code></td></tr>
 <tr><td><code>高倍率筛选</code></td><td>关闭</td><td>删除名称中显式标记倍率 <code>&gt;=2x</code> 的订阅顶层节点，并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
 <tr><td><code>低倍率筛选</code></td><td>关闭</td><td>删除名称中显式标记倍率 <code>&lt;=0.5x</code> 的订阅顶层节点，并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
+<tr><td><code>国家/地区分组</code></td><td>关闭</td><td>只用订阅顶层节点生成国家/地区选择组；共用官网、流量说明等节点过滤，但不改变原节点列表或目标组的 <code>include-all</code>。该开关独立于 <code>入口解析</code></td></tr>
 <tr><td><code>代理节点 DNS 使用 TCP</code></td><td>关闭</td><td>为代理节点解析 DNS 中未标协议的地址启用 TCP；显式协议不变</td></tr>
 <tr><td><code>WebRTC阻断</code></td><td>开启</td><td>开启时保持模板规则不变；关闭时移除所有同时包含 <code>NETWORK,UDP</code> 与 <code>DST-PORT,3478-3479/5349-5350/19302-19309</code> 的规则</td></tr>
-<tr><td><code>试开启节点UDP</code></td><td>关闭</td><td>开启时为订阅顶层节点设置 <code>udp: true</code>，provider 节点经 <code>override.udp</code> 同步生效；关闭时不改动原有设置。Mihomo <a href="https://wiki.metacubex.one/config/proxies/">官方通用字段文档</a> 说明该字段默认通常为 <code>false</code>，TUIC 等基于 UDP 的协议以及 <code>direct</code>、<code>dns</code> 类型默认开启</td></tr>
 </tbody>
 </table>
 
