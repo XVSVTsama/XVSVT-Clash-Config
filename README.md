@@ -188,7 +188,7 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 
 图中是脚本对 YAML 节点已实现的处理办法。
 
-局限：`http` / `file` 型 `proxy-providers` 的节点脚本无法获取，只有证书、UDP、IPv6 能通过 `override` 生效。
+局限：脚本不读取 `proxy-providers` 的节点，只有证书、UDP、IPv6 能通过 `override` 生效。
 
 ### 🔀 hosts / DNS 处理流程
 
