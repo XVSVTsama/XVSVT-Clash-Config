@@ -134,8 +134,9 @@ Plotly.newPlot('plot', traces, layout, config).then(() => {
       html += '该功能只有这一方面的处理办法。';
     } else {
       html += '该功能还有 ' + others.map(x => {
-        const q = POINTS.find(y => y.f === f.id && y.s === x.id);
-        return x.full + ' 方面的处理办法，请点击坐标 (' + f.id + ', ' + q.m + ', ' + x.id + ')';
+        const coords = POINTS.filter(y => y.f === f.id && y.s === x.id)
+          .map(y => '(' + f.id + ', ' + y.m + ', ' + x.id + ')').join('、');
+        return x.full + ' 方面的处理办法，请点击坐标 ' + coords;
       }).join('；') + '。';
     }
     document.getElementById('detail').innerHTML = html;
