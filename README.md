@@ -41,16 +41,17 @@
 
 ## 🔗 远程覆写脚本地址
 
-   默认地址：
-
 ```text
 https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
 ```
 
-| 镜像 | 地址 |
-| --- | --- |
-| gh-proxy | `https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js` |
-| jsdmirror | `https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.js` |
+```text
+https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
+```
+
+```text
+https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.js
+```
 
 <a id="yaml-config"></a>
 
