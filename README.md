@@ -182,11 +182,11 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 
 **能不能加速代理**：不能。脚本不参与运行时代理，不测延迟、不选节点、不改路由决策；它只能修改节点字段或组结构来影响内核行为。代理快慢由节点质量与内核决定，脚本不会让它更快。
 
-#### 三维视图
+#### JS 对 proxy-provider 的处理局限，与尽可能的逼近
 
 [<kbd>打开三维视图</kbd>](https://XVSVTsama.github.io/XVSVT-Clash-Config/provider-node-3d.html)
 
-展示脚本已实现的 YAML 节点处理办法。
+图中是脚本对 YAML 节点已实现的处理办法。
 
 局限：`http` / `file` 型 `proxy-providers` 的节点脚本无法获取，只有证书、UDP、IPv6 能通过 `override` 生效。
 
