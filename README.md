@@ -47,8 +47,6 @@
 https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
 ```
 
-   CDN 加速地址：
-
 gh-proxy：
 
 ```text
