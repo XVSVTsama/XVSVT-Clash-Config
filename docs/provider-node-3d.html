@@ -24,7 +24,7 @@
 </head>
 <body>
 <h1>节点处理三维视图</h1>
-<p class="hint">拖拽旋转、双指捏合或滚轮缩放、双击重置视角；也可用图上方工具栏。点击坐标点查看详情。轴刻度使用编号：X 节点来源（S1–S3）、Y 处理方式（M1–M3）、Z 功能编号（F1–F10），对照见下方。</p>
+<p class="hint">拖拽旋转、双指捏合或滚轮缩放、双击重置视角；也可用图上方工具栏。点击坐标点查看详情。轴刻度使用编号：X 功能（F1–F10）、Y 处理方式（M1–M3）、Z 节点来源（S1–S3），对照见下方。</p>
 <div class="toolbar"><button id="fs" type="button">全屏查看</button></div>
 <div id="plot"></div>
 <div id="detail"><span class="muted">点击坐标点查看详情。</span></div>
@@ -86,9 +86,9 @@ const traces = MODES.map(mode => {
     type: 'scatter3d',
     mode: 'markers',
     name: mode.name,
-    x: pts.map(p => sourceIndex[p.s]),
+    x: pts.map(p => funcIndex[p.f]),
     y: pts.map(p => modeIndex[p.m]),
-    z: pts.map(p => funcIndex[p.f]),
+    z: pts.map(p => sourceIndex[p.s]),
     customdata: pts.map(p => [funcById[p.f].name, mode.name, sourceById[p.s].full, p.desc]),
     marker: { size: 6, color: mode.color, opacity: 0.95, line: { color: '#fff', width: 0.8 } },
     hovertemplate: '%{customdata[0]}<br>%{customdata[1]} · %{customdata[2]}<br>%{customdata[3]}<extra></extra>'
@@ -103,11 +103,11 @@ const layout = {
   showlegend: false,
   scene: {
     dragmode: 'orbit',
-    xaxis: { title: { text: '节点来源', font: { size: 10 } }, tickvals: [0, 1, 2], ticktext: SOURCES.map(s => s.id), range: [-0.6, 2.6], tickfont: { size: 9 } },
+    xaxis: { title: { text: '功能', font: { size: 10 } }, tickvals: FUNCS.map((f, i) => i + 1), ticktext: FUNCS.map(f => f.id), range: [0.5, 10.5], tickfont: { size: 9 } },
     yaxis: { title: { text: '处理方式', font: { size: 10 } }, tickvals: [0, 1, 2], ticktext: MODES.map(m => m.id), range: [-0.6, 2.6], tickfont: { size: 9 } },
-    zaxis: { title: { text: '功能编号', font: { size: 10 } }, tickvals: FUNCS.map((f, i) => i + 1), ticktext: FUNCS.map(f => f.id), range: [0.5, 10.5], tickfont: { size: 9 } },
-    aspectratio: { x: 1.1, y: 1.1, z: 1.5 },
-    camera: { eye: { x: 2.3, y: 2.3, z: 1.4 } }
+    zaxis: { title: { text: '节点来源', font: { size: 10 } }, tickvals: [0, 1, 2], ticktext: SOURCES.map(s => s.id), range: [-0.6, 2.6], tickfont: { size: 9 } },
+    aspectratio: { x: 2, y: 1, z: 1 },
+    camera: { eye: { x: 2.2, y: -2.4, z: 1.4 }, up: { x: 0, y: 0, z: 1 } }
   }
 };
 
