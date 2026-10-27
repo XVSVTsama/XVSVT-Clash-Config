@@ -41,6 +41,8 @@
 
 ## 🔗 远程覆写脚本地址
 
+   默认地址：
+
 ```text
 https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
 ```
