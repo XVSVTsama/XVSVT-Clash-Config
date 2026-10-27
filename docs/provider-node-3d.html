@@ -119,22 +119,12 @@ Plotly.newPlot('plot', traces, layout, config).then(() => {
     const f = FUNCS[Number(p.z) - 1];
     if (!f || !m || !s) return;
     const point = POINTS.find(q => q.f === f.id && q.m === m.id && q.s === s.id);
-    const others = SOURCES.filter(x => x.id !== s.id && POINTS.some(q => q.f === f.id && q.s === x.id));
-    let html = '<b>已选中坐标为 (' + s.id + ', ' + m.id + ', ' + f.id + ') 的坐标点</b><br>'
+    const html = '<b>已选中坐标为 (' + s.id + ', ' + m.id + ', ' + f.id + ') 的坐标点</b><br>'
       + 'X 节点来源：' + s.id + ' ' + s.full + '<br>'
       + 'Y 节点处理办法：' + m.id + ' ' + m.name + '<br>'
       + 'Z 功能名称：' + f.id + ' ' + f.name + '<br>'
-      + f.name + ' 功能中按 ' + m.name + ' 处理的节点，来源是 ' + s.full + '。'
-      + (point ? '具体：' + point.desc + '。' : '') + '<br>';
-    if (others.length === 0) {
-      html += '该功能只有这一来源的处理办法。';
-    } else {
-      html += '该功能还有 ' + others.map(x => {
-        const coords = POINTS.filter(y => y.f === f.id && y.s === x.id)
-          .map(y => '(' + x.id + ', ' + y.m + ', ' + f.id + ')').join('、');
-        return x.full + ' 方面的处理办法，请点击坐标 ' + coords;
-      }).join('；') + '。';
-    }
+      + 'x+y 没有实际意义；x+y+z 表示：' + f.name + ' 功能中按 ' + m.name + ' 处理的节点，来源为 ' + s.full + '。<br>'
+      + f.name + ' 对 ' + s.full + ' 的节点处理办法：' + (point ? point.desc : '') + '。';
     document.getElementById('detail').innerHTML = html;
   });
 });
