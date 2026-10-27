@@ -49,7 +49,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 <table width="100%">
 <thead>
-<tr><th width="100%" align="center">地址<img src="assets/table-spacer.png" width="1280" height="1" alt=""></th></tr>
+<tr><th width="100%" align="center">GitHub 覆写脚本 CDN 链接<img src="assets/table-spacer.png" width="1280" height="1" alt=""></th></tr>
 </thead>
 <tbody>
 <tr><td align="center"><div align="center"><a href="https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js">gh-proxy</a>：国内加速 GitHub，更新即时，无缓存</div></td></tr>
