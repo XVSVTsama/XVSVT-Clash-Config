@@ -41,13 +41,13 @@
 
 ## 🔗 远程覆写脚本地址
 
-   默认远程覆写脚本地址（代码块右上角可直接复制）：
+   默认远程覆写脚本地址：
 
 ```text
 https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
 ```
 
-   CDN 加速地址（内容与默认地址相同，按需二选一）：
+   CDN 加速地址：
 
 gh-proxy 代理：
 
