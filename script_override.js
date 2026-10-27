@@ -58,23 +58,38 @@ const Compatible_With_Bettbox = {
  *       若订阅自带 proxy-providers，会保留并注入最终配置；仅在相关节点级开关开启时
  *       合并 provider.override 字段（见下），其余内容不改。
  *
- *   ⚠️ proxy-providers 作用域（重要）：
- *    provider 的节点由内核在运行时按 url 拉取并健康检查后才存在，脚本执行时只能
- *    看到 provider 的定义对象，看不到、也无法展开其中的节点。因此节点级处理
- *    一律不读取 provider 节点数据，只允许修改 provider 定义里的 override 段：
- *      - 不读取 provider 节点：倍率筛选、国家/地区分组、TGDC 候选、模块候选、
- *        hosts 改写节点 server 都只遍历订阅顶层 proxies；
- *      - 不枚举 provider 节点：组内 include-all 由内核展开，provider 节点仍会
- *        出现在含 include-all 的业务组里，不受上述筛选影响；
- *      - 唯一例外是内核层 exclude-filter（入口解析用它排除入口节点命名空间），
- *        它对 include-all 引入的 provider 节点同样生效，但不筛选节点本身。
- *    节点级开关里能对 provider 生效的只有 override 可表达的字段，由
- *    applyProviderOverrides() 在开关开启时写入 provider.override：
- *      强制证书验证 -> override.skip-cert-verify=false
- *      试开启节点UDP -> override.udp=true
- *      IPv6优先     -> override.ip-version=ipv6-prefer（统一值，无法按节点区分）
- *    Reality 增强依赖嵌套的 reality-opts，而 provider 的 override 只能改固定字段，
- *    因此只作用于订阅顶层节点。
+ *  能力边界（脚本本身能做什么）：
+ *    脚本只接收配置对象、在内存中改写并返回，不读写文件、不发起网络请求、
+ *    不启动进程，也没有异步、定时器或跨次执行的状态。因此：
+ *      - 能读配置中已存在的内容：顶层节点、规则、rule-providers 与
+ *        proxy-providers 的定义及其 URL；
+ *      - 能写返回的整份配置：节点字段、策略组、规则、provider 定义；
+ *      - 不能联网/下载/上传/测速/读运行状态，也不能调用客户端 API。
+ *    安全上，脚本虽不能直接上传，但能把读到的内容写进返回的配置，由内核
+ *    后续请求带出；是否可信取决于脚本来源。
+ *
+ *  节点处理与 proxy-providers（重要）：
+ *    节点级处理只有两类：
+ *      1) 筛选/剔除：高/低倍率筛选、国家/地区分组、TGDC 候选、入口解析；
+ *      2) 修正字段：强制证书验证、启用 Reality 增强、试开启节点UDP、
+ *         IPv6优先、hosts 改写节点 server。
+ *    http/file 型 provider 的节点由内核运行时按 url 拉取，脚本执行时不存在，
+ *    只能看到 provider 定义（url/path/interval/override/filter 等）：
+ *      - 筛选/剔除类到不了 provider：节点不在配置里，无法枚举或删除；
+ *        include-all 由内核展开，provider 节点仍会进入业务组；
+ *      - 修正字段类只有 override 固定字段能覆盖 provider，由
+ *        applyProviderOverrides() 在开关开启时写入：
+ *          强制证书验证 -> override.skip-cert-verify=false
+ *          试开启节点UDP -> override.udp=true
+ *          IPv6优先     -> override.ip-version=ipv6-prefer（统一值）
+ *        Reality 需要嵌套 reality-opts，hosts 需要逐节点 server，均无法
+ *        通过 override 表达，只作用于顶层节点；
+ *      - 入口解析的 exclude-filter 由内核应用，会排除 provider 中的同名
+ *        节点，但不筛选 provider 本身；
+ *      - inline 型 provider 的 payload 在配置里可见，但本脚本仍只把顶层
+ *        proxies 当作节点来源，不筛选、不改写。
+ *    rule-providers 同理：http/file 型只能看到定义，脚本只增删定义与规则
+ *    引用，不读取、不筛选、不改写规则内容；inline payload 也不处理。
  *
  *    2. proxies：使用订阅原始配置里的真实节点列表（模板里这一项本来就是空的，
  *       只是占位）。
@@ -2842,7 +2857,7 @@ function main(config, profileName) {
   // ---- 1. 从订阅原始配置里取出会被模板覆盖、但需要保留/合并的动态数据 ----
   // 启用入口解析时保留强制命名空间给维护区；同时避免重载已有输出时污染 TGDC 保底及默认选择。
   // 节点级逻辑（Reality/UDP/证书/IPv6/倍率/地区分组/TGDC 候选/hosts）只遍历这个
-  // 数组，即订阅顶层 proxies；provider 节点此时尚未由内核加载，详见文件头作用域说明。
+  // 数组，即订阅顶层 proxies；provider 节点此时尚未由内核加载，详见文件头的节点处理说明。
   const entryNamePattern = new RegExp(ENTRY_RESOLUTION_EXCLUDE_FILTER);
   const originalProxies = (Array.isArray(config.proxies) ? config.proxies : []).filter(
     (proxy) => ruleOptionsEnable['入口解析'] !== true ||
