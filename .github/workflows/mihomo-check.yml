@@ -16,7 +16,41 @@ concurrency:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            target: linux-amd64
+            prefix: mihomo-linux-amd64-
+            archive: gz
+            qemu: ""
+          - runner: ubuntu-latest
+            target: linux-arm64
+            prefix: mihomo-linux-arm64-
+            archive: gz
+            qemu: qemu-aarch64
+          - runner: ubuntu-latest
+            target: linux-armv7
+            prefix: mihomo-linux-armv7-
+            archive: gz
+            qemu: qemu-arm
+          - runner: ubuntu-latest
+            target: android-arm64-v8
+            prefix: mihomo-android-arm64-v8-
+            archive: gz
+            qemu: qemu-aarch64
+          - runner: windows-latest
+            target: windows-amd64
+            prefix: mihomo-windows-amd64-
+            archive: zip
+            qemu: ""
+          - runner: macos-latest
+            target: darwin-arm64
+            prefix: mihomo-darwin-arm64-
+            archive: gz
+            qemu: ""
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -25,95 +59,23 @@ jobs:
           python-version: "3.12"
       - name: Install PyYAML
         run: pip install pyyaml
-      - name: Download mihomo (latest release)
-        id: version
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Install qemu
+        if: matrix.qemu != ''
         run: |
-          API_HEADERS=(-H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GH_TOKEN}")
-          TAG="$(curl -fsSL "${API_HEADERS[@]}" "https://api.github.com/repos/MetaCubeX/mihomo/releases?per_page=30" | jq -r '[.[] | select(.draft == false)] | sort_by(.published_at) | reverse | .[0].tag_name')"
-          if [ -z "$TAG" ] || [ "$TAG" = "null" ]; then
-            echo "::error::Unable to resolve the latest mihomo release"
-            exit 1
-          fi
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          ASSET="$(curl -fsSL "${API_HEADERS[@]}" "https://api.github.com/repos/MetaCubeX/mihomo/releases/tags/${TAG}" | jq -r '[.assets[].name | select(test("^mihomo-linux-amd64-.*\\.gz$") and (test("-v[0-9]+-") | not) and (test("-compatible-") | not))][0]')"
-          if [ -z "$ASSET" ]; then
-            echo "::error::No compatible mihomo-linux-amd64 asset found for tag ${TAG}"
-            exit 1
-          fi
-          URL="https://github.com/MetaCubeX/mihomo/releases/download/${TAG}/${ASSET}"
-          curl -fsSL "$URL" -o mihomo.gz
-          gunzip mihomo.gz
-          chmod +x mihomo
-      - name: Inject fake nodes
-        run: |
-          PATCHED="patched-mihomo.yaml"
-          python - mihomo.yaml "$PATCHED" <<'PY'
-          import sys
-          import yaml
-
-          src, dst = sys.argv[1], sys.argv[2]
-          with open(src, encoding="utf-8") as fh:
-              data = yaml.safe_load(fh)
-
-          proxies = data.get("proxies") or []
-          if not proxies:
-              data["proxies"] = [
-                  {
-                      "name": "fake-node-1",
-                      "type": "ss",
-                      "server": "127.0.0.1",
-                      "port": 8388,
-                      "cipher": "aes-128-gcm",
-                      "password": "test",
-                  },
-                  {
-                      "name": "fake-node-2",
-                      "type": "ss",
-                      "server": "127.0.0.1",
-                      "port": 8389,
-                      "cipher": "aes-128-gcm",
-                      "password": "test",
-                  },
-              ]
-
-          fake_names = [proxy["name"] for proxy in data["proxies"]]
-          for group in data.get("proxy-groups") or []:
-              if not group.get("proxies") and not group.get("use"):
-                  group["proxies"] = fake_names
-
-          with open(dst, "w", encoding="utf-8") as fh:
-              yaml.safe_dump(data, fh, allow_unicode=True, default_flow_style=False)
-          PY
+          sudo apt-get update
+          sudo apt-get install -y qemu-user-static binfmt-support
+      - name: Prepare config
+        run: python .github/scripts/patch_config.py mihomo.yaml patched-mihomo.yaml
       - name: Test config with mihomo
-        run: |
-          set +e
-          timeout 300 ./mihomo -t -d . -f patched-mihomo.yaml 2>&1 | tee mihomo-test.log
-          STATUS=${PIPESTATUS[0]}
-          {
-            echo "### Mihomo test"
-            echo ""
-            echo "- version: ${{ steps.version.outputs.tag }}"
-          } >> "$GITHUB_STEP_SUMMARY"
-          if [ "$STATUS" -eq 0 ]; then
-            echo "- result: passed" >> "$GITHUB_STEP_SUMMARY"
-            echo "mihomo test passed"
-          elif [ "$STATUS" -eq 124 ]; then
-            echo "- result: timed out after 5 minutes" >> "$GITHUB_STEP_SUMMARY"
-            echo "::error::mihomo test timed out after 5 minutes"
-          else
-            echo "- result: failed (exit $STATUS)" >> "$GITHUB_STEP_SUMMARY"
-            echo "- errors:" >> "$GITHUB_STEP_SUMMARY"
-            grep -iE "error|fatal|panic" mihomo-test.log | head -20 | sed 's/^/  - /' >> "$GITHUB_STEP_SUMMARY" || true
-            echo "::error::mihomo test failed with exit code $STATUS"
-          fi
-          exit "$STATUS"
-      - name: Upload test log
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          MIHOMO_QEMU: ${{ matrix.qemu }}
+        run: python .github/scripts/mihomo_check.py --target ${{ matrix.target }} --prefix ${{ matrix.prefix }} --archive ${{ matrix.archive }} --config patched-mihomo.yaml --timeout 300
+      - name: Upload log
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: mihomo-test-log
+          name: mihomo-test-${{ matrix.target }}
           path: |
             mihomo-test.log
             patched-mihomo.yaml
