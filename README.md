@@ -186,27 +186,27 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 
 `http` / `file` 型 provider 的节点由内核在运行时拉取，脚本只能看到 `url`、`path`、`interval`、`override`、`filter` 等定义字段，看不到节点列表；`inline` 型的 `payload` 虽然在配置里可见，本脚本也不把它当作节点来源。
 
-节点级处理分三类：筛选、注入、修正字段。对 provider 的实际效果如下。
+节点级处理分三类：筛选、注入、修正字段。三类节点来源的涉及情况如下。
 
 <table width="100%">
 <thead>
-<tr><th width="22%">功能</th><th width="14%">处理方式</th><th width="64%">对 proxy-providers 的实际效果</th></tr>
+<tr><th width="20%">功能</th><th width="12%">处理方式</th><th width="22%">原始 YAML 的 proxies</th><th width="24%">原生 YAML 的 proxy-providers</th><th width="22%">JS 外部定义补充</th></tr>
 </thead>
 <tbody>
-<tr><td><code>高倍率筛选</code></td><td>筛选</td><td>删除顶层 <code>&gt;=2x</code> 节点；provider 做不到，仍由 <code>include-all</code> 引入</td></tr>
-<tr><td><code>低倍率筛选</code></td><td>筛选</td><td>删除顶层 <code>&lt;=0.5x</code> 节点；provider 做不到</td></tr>
-<tr><td><code>国家/地区分组</code></td><td>筛选</td><td>从顶层筛出地区候选，生成显式列表组；provider 不参与，也不进入地区组</td></tr>
-<tr><td><code>TGDC实验分流</code></td><td>筛选</td><td>从顶层筛出地区候选，生成保底列表；provider 不参与</td></tr>
-<tr><td><code>入口解析</code></td><td>注入</td><td>入口节点属顶层；<code>exclude-filter</code> 会排除 provider 中的同名节点，但不筛选 provider</td></tr>
-<tr><td><code>强制证书验证</code></td><td>修正字段</td><td>顶层 <code>skip-cert-verify=false</code>；provider 经 <code>override.skip-cert-verify=false</code> 生效</td></tr>
-<tr><td><code>试开启节点UDP</code></td><td>修正字段</td><td>顶层 <code>udp=true</code>；provider 经 <code>override.udp=true</code> 生效</td></tr>
-<tr><td><code>IPv6优先</code></td><td>修正字段</td><td>顶层按原值改写；provider 统一 <code>override.ip-version=ipv6-prefer</code></td></tr>
-<tr><td><code>启用 Reality 增强</code></td><td>修正字段</td><td>顶层写 <code>reality-opts.support-x25519mlkem768=true</code>；provider 做不到，override 只能改固定字段</td></tr>
-<tr><td><code>hosts</code> 改写节点 server</td><td>修正字段</td><td>顶层改 <code>server</code>；provider 做不到，只遍历顶层节点</td></tr>
+<tr><td><code>高倍率筛选</code></td><td>筛选</td><td>是</td><td>否</td><td>否</td></tr>
+<tr><td><code>低倍率筛选</code></td><td>筛选</td><td>是</td><td>否</td><td>否</td></tr>
+<tr><td><code>国家/地区分组</code></td><td>筛选</td><td>是</td><td>否</td><td>否</td></tr>
+<tr><td><code>TGDC实验分流</code></td><td>筛选</td><td>是</td><td>否</td><td>否</td></tr>
+<tr><td><code>入口解析</code></td><td>注入</td><td>是</td><td>否</td><td>是</td></tr>
+<tr><td><code>强制证书验证</code></td><td>修正字段</td><td>是</td><td>是</td><td>否</td></tr>
+<tr><td><code>试开启节点UDP</code></td><td>修正字段</td><td>是</td><td>是</td><td>否</td></tr>
+<tr><td><code>IPv6优先</code></td><td>修正字段</td><td>是</td><td>是</td><td>否</td></tr>
+<tr><td><code>启用 Reality 增强</code></td><td>修正字段</td><td>是</td><td>否</td><td>否</td></tr>
+<tr><td><code>hosts</code> 改写节点 server</td><td>修正字段</td><td>是</td><td>否</td><td>否</td></tr>
 </tbody>
 </table>
 
-筛选类只覆盖顶层节点：provider 节点由内核按 `include-all` 展开，脚本在生成阶段无法枚举或删除，只能靠 provider 自己的 `filter` / `exclude-filter`。修正字段类只有 `override` 固定字段能写到 provider；Reality 需要嵌套 `reality-opts`，hosts 需要逐节点 `server`，都只作用于顶层。`rule-providers` 同理：`http` / `file` 型只看得到定义，脚本不改写其中的规则。
+筛选类只能处理原始 YAML 的顶层 `proxies`：provider 节点由内核按 `include-all` 展开，脚本在生成阶段无法枚举或删除。修正字段类里，只有 `override` 的固定字段能写到 provider（证书、UDP、IPv6），Reality 需要嵌套 `reality-opts`、hosts 需要逐节点 `server`，都只能改顶层节点。入口解析注入的节点来自脚本维护区，会写入顶层 `proxies`；它的 `exclude-filter` 由内核应用，会连带排除 provider 中的同名节点，但不会筛选 provider。`rule-providers` 同理：`http` / `file` 型只看得到定义，脚本不改写其中的规则。
 
 ### 🔀 hosts / DNS 处理流程
 

@@ -74,6 +74,9 @@ const Compatible_With_Bettbox = {
  *      2) 注入：入口解析（注入入口节点，并用 exclude-filter 排除同名节点）；
  *      3) 修正字段：强制证书验证、启用 Reality 增强、试开启节点UDP、
  *         IPv6优先、hosts 改写节点 server。
+ *    按来源看：筛选类只涉及顶层 proxies；入口解析的节点来自脚本维护区，
+ *    写入顶层 proxies；修正字段类中证书/UDP/IPv6 也覆盖 proxy-providers，
+ *    Reality 与 hosts 只改顶层节点。
  *    http/file 型 provider 的节点由内核运行时按 url 拉取，脚本执行时不存在，
  *    只能看到 provider 定义（url/path/interval/override/filter 等）：
  *      - 筛选/剔除类到不了 provider：节点不在配置里，无法枚举或删除；
