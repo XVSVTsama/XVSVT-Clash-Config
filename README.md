@@ -184,7 +184,9 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 
 #### 三维视图
 
-[查看节点处理图](https://XVSVTsama.github.io/XVSVT-Clash-Config/provider-node-3d.html)：脚本已实现的 YAML 节点处理办法。
+[<kbd>打开三维视图</kbd>](https://XVSVTsama.github.io/XVSVT-Clash-Config/provider-node-3d.html)
+
+展示脚本已实现的 YAML 节点处理办法。
 
 局限：`http` / `file` 型 `proxy-providers` 的节点脚本无法获取，只有证书、UDP、IPv6 能通过 `override` 生效。
 
