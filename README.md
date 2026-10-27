@@ -144,7 +144,7 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 
 本配置按个人使用习惯定制，并非开箱即用的通用模板，尤其是对于直接导入 YAML 的使用形式。使用前请完成以下必要设置；如不熟悉 Mihomo、TUN、DNS 或策略组过滤规则，请先了解相关机制再使用。
 
-1. **直接使用 YAML (`mihomo.yaml`)**：不使用 JavaScript 覆写脚本时，将 `proxy-providers.subscription.url` 的占位地址在本地替换为自己的 Clash/Mihomo 订阅链接；`include-all` 策略组会自动纳入 provider 节点。也可删除不用的示例 provider，将 `proxies: ~` 替换为自己的节点列表。模板不会自动读取客户端中的其他订阅，请勿把真实订阅链接或凭据提交到公开仓库。
+1. **直接使用 YAML (`mihomo.yaml`)**：不使用 JavaScript 覆写脚本时，将 `proxy-providers.subscription.url` 的占位地址在本地替换为自己的 Clash/Mihomo 订阅链接；`include-all` 策略组会自动纳入 provider 节点。也可删除不用的示例 provider，将 `proxies: ~` 替换为自己的节点列表。模板不会自动读取客户端中的其他订阅，请勿把真实订阅链接或凭据提交到公开仓库。脚本的节点级开关只处理订阅顶层节点；开关开启时，其中可表达的部分另通过 provider 的 `override` 生效，范围差异见 [proxy-providers 作用域](#provider-scope)。
 2. **按需删减规则**：本配置的规则内容都有性能消耗，不需要的规则、规则集与策略组都可按需删减，例如不屏蔽番茄小说海外版广告的，删除 `sub-rules` 中的 `fanqie` 规则。`🛑 广告拦截`（SukkaW/Surge reject 规则集）在模板中为 `proxy-groups`、`rule-providers`、`rules` 三处注释段，不用时保持注释，需要时成套取消注释启用。
 
 <a id="script-override"></a>
@@ -160,11 +160,70 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 合并产物：
 
 - **节点与代理组**：订阅里的真实节点填入顶层 `proxies`；常规动态节点组通过 Mihomo 原生 `include-all` 引入顶层节点与 provider 节点。固定策略项保留在各组的 `proxies` 列表中。
-- **订阅自带 `proxy-providers`**：原样保留；使用 `include-all` 的代理组会原生纳入这些 provider。脚本生成的 TGDC 实验地区组仍使用 `include-all-proxies` 或显式保底列表，不纳入 provider 运行时节点。
+- **订阅自带 `proxy-providers`**：定义原样保留，脚本不展开、不筛选、不逐节点改写其中的节点；节点级开关能作用到 provider 的只有 `override` 通道。完整范围见 [proxy-providers 作用域](#provider-scope)。
 - **国家/地区分组**：`国家/地区分组` 开启后，只从订阅顶层 `proxies` 生成香港、日本、新加坡、台湾、韩国、马来西亚、美国、加拿大、英国、法国、荷兰、德国、澳大利亚及“其他国家/地区”策略组；不枚举 `proxy-providers`。倍率筛选在地区组生成之后执行；即使某地区的节点全部被筛除，父组和三个隐藏子组仍保留。
 - **倍率筛选**：`高倍率筛选` 删除名称中明确标记为 `2x` 或更高的订阅顶层节点；`低倍率筛选` 删除明确标记为 `0.5x` 或更低的节点。只识别显式数值倍率（例如 `5x`），不猜测模糊标签；过滤同步清理代理组 `proxies` 中的节点名称引用，不处理 `proxy-providers`，并在国内入口解析节点注入之前执行。
 - **DNS**：动态合并出 `dns.proxy-server-nameserver-policy`（模板不预置该键，以脚本计算结果为准），细节见下方流程图。
 - **开关声明**：脚本首行的 `Compatible_With_Bettbox` 兼容声明必须置顶——Bettbox 只在脚本开头识别该声明，删除或下移会导致"自定义规则开关"入口不显示；声明中的 `policyGroupOptions` 列出归入图形化开关分类的 23 个策略组，`ruleOptionsEnable` 则是实际生效的开关表，键名需与声明保持一致。`🌍 PROXY` 始终保留为基础/兜底组，不提供关闭开关。
+
+<a id="provider-scope"></a>
+
+### ⚠️ 设计局限：JS 覆写能做什么、不能做什么
+
+脚本只在生成配置时运行一次，不参与运行时代理；这一边界决定了部分开关无法覆盖 provider 节点。
+
+#### proxy-providers：脚本看不到的节点（重点）
+
+> provider 的节点由内核按 `url` 在运行时拉取并健康检查后才存在。脚本执行时它们还不存在，所以脚本对 provider 只能“原样保留定义”，无法展开、筛选或逐节点改写；能改的只有 provider 定义里的 override 固定字段。配置不会因此出错，但“筛掉高倍率”“只保留某地区”这类预期对 provider 节点不成立。
+
+<table width="100%">
+<thead>
+<tr><th width="26%">功能或开关</th><th width="14%">类型</th><th width="60%">对 proxy-providers 的效果</th></tr>
+</thead>
+<tbody>
+<tr><td><code>高倍率筛选</code> / <code>低倍率筛选</code></td><td>删除节点</td><td>不涉及。只删除订阅顶层节点并清理静态引用；provider 节点仍由 <code>include-all</code> 引入</td></tr>
+<tr><td><code>国家/地区分组</code></td><td>按名称生成组</td><td>不涉及。候选与组内列表只来自顶层节点；地区组是显式列表、不含 <code>include-all</code>，provider 节点不会进入</td></tr>
+<tr><td><code>强制证书验证</code></td><td>改写节点</td><td>顶层节点直接改写；provider 节点经 <code>override.skip-cert-verify=false</code> 生效（开关开启时注入）</td></tr>
+<tr><td><code>试开启节点UDP</code></td><td>改写节点</td><td>顶层节点直接改写；provider 节点经 <code>override.udp=true</code> 生效</td></tr>
+<tr><td><code>IPv6优先</code></td><td>改写节点</td><td>顶层节点按原值分别处理；provider 节点统一写 <code>override.ip-version=ipv6-prefer</code>，无法按节点区分</td></tr>
+<tr><td><code>启用 Reality 增强</code></td><td>改写节点</td><td>不涉及。provider 的 <code>override</code> 只能改固定字段，无法改写嵌套 <code>reality-opts</code>，因此只作用于顶层节点</td></tr>
+<tr><td><code>TGDC实验分流</code></td><td>候选节点</td><td>不涉及。候选取自顶层节点，<code>include-all-proxies</code> 不含 provider</td></tr>
+<tr><td><code>入口解析</code></td><td>注入与排除</td><td>注入的入口节点属于顶层节点；<code>exclude-filter</code> 由内核应用，会作用于 provider 节点，但只排除入口命名空间、不筛选 provider 节点</td></tr>
+<tr><td><code>hosts</code> 改写节点 server</td><td>改写节点</td><td>不涉及。只遍历顶层节点，provider 节点的 server 域名不会被改写</td></tr>
+<tr><td>DNS 节点 policy</td><td>DNS 配置</td><td>部分涉及。policy 的 key 来自顶层节点域名，provider 专用域名不会自动加入；与顶层节点同名的域名仍会命中</td></tr>
+<tr><td><code>代理节点 DNS 使用 TCP</code></td><td>DNS 配置</td><td>不是节点筛选。改的是 DNS 端点协议，对内核对所有节点（含 provider）的解析同样生效</td></tr>
+<tr><td>业务组开关 / <code>FCM直连</code></td><td>组结构</td><td>不涉及节点。只改代理组与组内引用</td></tr>
+<tr><td><code>SKK广告拦截</code> / <code>WebRTC阻断</code></td><td>规则</td><td>不涉及节点。只改规则与规则集</td></tr>
+</tbody>
+</table>
+
+三个直接后果：
+
+- 模板中几乎所有业务组都是 `include-all: true`，provider 节点会直接出现在这些组的选择列表里，与地区组、筛选后的顶层节点并列；
+- 最终节点池 = 订阅顶层 `proxies` + provider 节点，倍率筛选与国家/地区分组只处理前者；
+- 要真正约束 provider 节点，只能在订阅源侧处理，或给 provider 配 `filter` / `exclude-filter` / `override`（字段支持以所用 Mihomo 版本为准）。
+
+`强制证书验证`、`试开启节点UDP`、`IPv6优先` 开启时，脚本会把可表达的字段合并进每个 provider 的 `override`，原有 `override` 的其他键（例如 `additional-prefix`）保持不变：
+
+```yaml
+proxy-providers:
+  subscription:
+    override:
+      skip-cert-verify: false
+      udp: true
+      ip-version: ipv6-prefer
+```
+
+关闭这三个开关时只表示“不写入”，不会删除订阅原有的 `override` 字段；因此订阅里已经写死的 `skip-cert-verify: true` 仍会保留。
+
+#### 远程脚本的安全边界
+
+> 远程覆写等于把“配置生成权”交给脚本作者。脚本能改 `dns`、`tun`、`hosts` 与 `rules`，直接决定流量走向，不需要额外权限，也没有权限分级。
+
+- 没有签名校验，脚本更新即时生效；
+- CDN 缓存会造成“你看到的版本 ≠ 实际运行的版本”，各 CDN 的缓存时长见页首；
+- 建议锁定 commit、审阅 diff、必要时自托管，不要挂来源不明的脚本；
+- `Compatible_With_Bettbox` 必须置顶的约束见上方“开关声明”。
 
 ### 🔀 hosts / DNS 处理流程
 
@@ -234,15 +293,15 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 <tr><th width="18%">开关<img src="assets/table-spacer.png" width="288" height="1" alt=""></th><th width="8%">默认<img src="assets/table-spacer.png" width="128" height="1" alt=""></th><th width="74%">作用<img src="assets/table-spacer.png" width="1184" height="1" alt=""></th></tr>
 </thead>
 <tbody>
-<tr><td><code>强制证书验证</code></td><td>关闭</td><td>开启时统一把订阅节点的 <code>skip-cert-verify</code> 置为 <code>false</code>；关闭时不干预订阅节点原有设置</td></tr>
-<tr><td><code>启用 Reality 增强</code></td><td>开启</td><td>为带非空 <code>public-key</code> / <code>short-id</code> 的 Reality 节点启用 X25519MLKEM768 后量子密钥协商</td></tr>
-<tr><td><code>IPv6优先</code></td><td>关闭</td><td>改写顶层节点 <code>ip-version</code>：<code>ipv6</code> 保持不变，<code>ipv6-prefer</code> 改为 <code>ipv6</code>，其余设为 <code>ipv6-prefer</code>；不处理 provider 运行时节点</td></tr>
+<tr><td><code>强制证书验证</code></td><td>关闭</td><td>开启时统一把订阅顶层节点的 <code>skip-cert-verify</code> 置为 <code>false</code>；provider 节点经 <code>override.skip-cert-verify</code> 同步生效；关闭时不干预订阅原有设置</td></tr>
+<tr><td><code>启用 Reality 增强</code></td><td>开启</td><td>为带非空 <code>public-key</code> / <code>short-id</code> 的订阅顶层 Reality 节点启用 X25519MLKEM768 后量子密钥协商；provider 的 <code>override</code> 只能改固定字段、无法改写嵌套 <code>reality-opts</code>，因此不涉及 provider 节点</td></tr>
+<tr><td><code>IPv6优先</code></td><td>关闭</td><td>改写订阅顶层节点 <code>ip-version</code>：<code>ipv6</code> 保持不变，<code>ipv6-prefer</code> 改为 <code>ipv6</code>，其余设为 <code>ipv6-prefer</code>；provider 节点经 <code>override.ip-version</code> 统一设为 <code>ipv6-prefer</code>，无法按节点区分原值</td></tr>
 <tr><td><code>国家/地区分组</code></td><td>关闭</td><td>只用订阅顶层节点生成国家/地区选择组；共用官网、流量说明等节点过滤，但不改变原节点列表或目标组的 <code>include-all</code>。该开关独立于 <code>入口解析</code></td></tr>
 <tr><td><code>高倍率筛选</code></td><td>关闭</td><td>删除名称中显式标记倍率 <code>&gt;=2x</code> 的订阅顶层节点，并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
 <tr><td><code>低倍率筛选</code></td><td>关闭</td><td>删除名称中显式标记倍率 <code>&lt;=0.5x</code> 的订阅顶层节点，并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
 <tr><td><code>代理节点 DNS 使用 TCP</code></td><td>关闭</td><td>为代理节点解析 DNS 中未标协议的地址启用 TCP；显式协议不变</td></tr>
 <tr><td><code>WebRTC阻断</code></td><td>开启</td><td>开启时保持模板规则不变；关闭时移除所有同时包含 <code>NETWORK,UDP</code> 与 <code>DST-PORT,3478-3479/5349-5350/19302-19309</code> 的规则</td></tr>
-<tr><td><code>试开启节点UDP</code></td><td>关闭</td><td>开启时为订阅顶层节点设置 <code>udp: true</code>，允许 UDP 通过代理；关闭时不改动节点原值。Mihomo <a href="https://wiki.metacubex.one/config/proxies/">官方通用字段文档</a> 说明该字段默认通常为 <code>false</code>，TUIC 等基于 UDP 的协议以及 <code>direct</code>、<code>dns</code> 类型默认开启</td></tr>
+<tr><td><code>试开启节点UDP</code></td><td>关闭</td><td>开启时为订阅顶层节点设置 <code>udp: true</code>，provider 节点经 <code>override.udp</code> 同步生效；关闭时不改动原有设置。Mihomo <a href="https://wiki.metacubex.one/config/proxies/">官方通用字段文档</a> 说明该字段默认通常为 <code>false</code>，TUIC 等基于 UDP 的协议以及 <code>direct</code>、<code>dns</code> 类型默认开启</td></tr>
 </tbody>
 </table>
 
