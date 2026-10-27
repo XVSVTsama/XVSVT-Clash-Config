@@ -90,7 +90,7 @@ const traces = MODES.map(mode => {
     y: pts.map(p => modeIndex[p.m]),
     z: pts.map(p => funcIndex[p.f]),
     customdata: pts.map(p => [funcById[p.f].name, mode.name, sourceById[p.s].full, p.desc]),
-    marker: { size: 9, color: mode.color, opacity: 0.95, line: { color: '#fff', width: 1 } },
+    marker: { size: 6, color: mode.color, opacity: 0.95, line: { color: '#fff', width: 0.8 } },
     hovertemplate: '%{customdata[0]}<br>%{customdata[1]} · %{customdata[2]}<br>%{customdata[3]}<extra></extra>'
   };
 });
