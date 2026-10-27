@@ -186,23 +186,23 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 
 `http` / `file` 型 provider 的节点由内核在运行时拉取，脚本只能看到 `url`、`path`、`interval`、`override`、`filter` 等定义字段，看不到节点列表；`inline` 型的 `payload` 虽然在配置里可见，本脚本也不把它当作节点来源。
 
-节点级处理分三类：筛选、注入、修正字段。三类节点来源的涉及情况如下。
+节点级处理分三类：筛选、注入、修正字段。三类节点来源的涉及情况如下（✓ 涉及，✗ 不涉及）。
 
 <table width="100%">
 <thead>
 <tr><th width="20%">功能</th><th width="12%">处理方式</th><th width="22%">原始 YAML 的 proxies</th><th width="24%">原生 YAML 的 proxy-providers</th><th width="22%">JS 外部定义补充</th></tr>
 </thead>
 <tbody>
-<tr><td><code>高倍率筛选</code></td><td>筛选</td><td><strong>是</strong></td><td><em>否</em></td><td><em>否</em></td></tr>
-<tr><td><code>低倍率筛选</code></td><td>筛选</td><td><strong>是</strong></td><td><em>否</em></td><td><em>否</em></td></tr>
-<tr><td><code>国家/地区分组</code></td><td>筛选</td><td><strong>是</strong></td><td><em>否</em></td><td><em>否</em></td></tr>
-<tr><td><code>TGDC实验分流</code></td><td>筛选</td><td><strong>是</strong></td><td><em>否</em></td><td><em>否</em></td></tr>
-<tr><td><code>入口解析</code></td><td>注入</td><td><strong>是</strong></td><td><em>否</em></td><td><strong>是</strong></td></tr>
-<tr><td><code>强制证书验证</code></td><td>修正字段</td><td><strong>是</strong></td><td><strong>是</strong></td><td><em>否</em></td></tr>
-<tr><td><code>试开启节点UDP</code></td><td>修正字段</td><td><strong>是</strong></td><td><strong>是</strong></td><td><em>否</em></td></tr>
-<tr><td><code>IPv6优先</code></td><td>修正字段</td><td><strong>是</strong></td><td><strong>是</strong></td><td><em>否</em></td></tr>
-<tr><td><code>启用 Reality 增强</code></td><td>修正字段</td><td><strong>是</strong></td><td><em>否</em></td><td><em>否</em></td></tr>
-<tr><td><code>hosts</code> 改写节点 server</td><td>修正字段</td><td><strong>是</strong></td><td><em>否</em></td><td><em>否</em></td></tr>
+<tr><td><code>高倍率筛选</code></td><td>筛选</td><td><strong>✓</strong></td><td><em>✗</em></td><td><em>✗</em></td></tr>
+<tr><td><code>低倍率筛选</code></td><td>筛选</td><td><strong>✓</strong></td><td><em>✗</em></td><td><em>✗</em></td></tr>
+<tr><td><code>国家/地区分组</code></td><td>筛选</td><td><strong>✓</strong></td><td><em>✗</em></td><td><em>✗</em></td></tr>
+<tr><td><code>TGDC实验分流</code></td><td>筛选</td><td><strong>✓</strong></td><td><em>✗</em></td><td><em>✗</em></td></tr>
+<tr><td><code>入口解析</code></td><td>注入</td><td><strong>✓</strong></td><td><em>✗</em></td><td><strong>✓</strong></td></tr>
+<tr><td><code>强制证书验证</code></td><td>修正字段</td><td><strong>✓</strong></td><td><strong>✓</strong></td><td><em>✗</em></td></tr>
+<tr><td><code>试开启节点UDP</code></td><td>修正字段</td><td><strong>✓</strong></td><td><strong>✓</strong></td><td><em>✗</em></td></tr>
+<tr><td><code>IPv6优先</code></td><td>修正字段</td><td><strong>✓</strong></td><td><strong>✓</strong></td><td><em>✗</em></td></tr>
+<tr><td><code>启用 Reality 增强</code></td><td>修正字段</td><td><strong>✓</strong></td><td><em>✗</em></td><td><em>✗</em></td></tr>
+<tr><td><code>hosts</code> 改写节点 server</td><td>修正字段</td><td><strong>✓</strong></td><td><em>✗</em></td><td><em>✗</em></td></tr>
 </tbody>
 </table>
 
