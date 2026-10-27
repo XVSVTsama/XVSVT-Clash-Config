@@ -188,6 +188,8 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 
 节点级处理分三类，表格用颜色区分：🔵 筛选/剔除、🟡 注入、🟣 修正字段。一个功能或一个来源可以同时有多个颜色，没有对应处理时留空。
 
+> 可旋转、可点击查看详情的三维视图：[provider-node-3d.html](https://XVSVTsama.github.io/XVSVT-Clash-Config/provider-node-3d.html)
+
 <table width="100%">
 <thead>
 <tr><th width="20%">功能</th><th width="12%">处理方式</th><th width="22%">原始 YAML 的 proxies</th><th width="24%">原生 YAML 的 proxy-providers</th><th width="22%">JS 外部定义补充</th></tr>
