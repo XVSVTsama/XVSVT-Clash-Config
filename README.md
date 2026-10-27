@@ -144,7 +144,7 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 
 本配置按个人使用习惯定制，并非开箱即用的通用模板，尤其是对于直接导入 YAML 的使用形式。使用前请完成以下必要设置；如不熟悉 Mihomo、TUN、DNS 或策略组过滤规则，请先了解相关机制再使用。
 
-1. **直接使用 YAML (`mihomo.yaml`)**：不使用 JavaScript 覆写脚本时，将 `proxy-providers.subscription.url` 的占位地址在本地替换为自己的 Clash/Mihomo 订阅链接；`include-all` 策略组会自动纳入 provider 节点。也可删除不用的示例 provider，将 `proxies: ~` 替换为自己的节点列表。模板不会自动读取客户端中的其他订阅，请勿把真实订阅链接或凭据提交到公开仓库。脚本的节点级开关只处理订阅顶层节点；开关开启时，其中可表达的部分另通过 provider 的 `override` 生效，范围差异见 [三维视图](#provider-scope)。
+1. **直接使用 YAML (`mihomo.yaml`)**：不使用 JavaScript 覆写脚本时，将 `proxy-providers.subscription.url` 的占位地址在本地替换为自己的 Clash/Mihomo 订阅链接；`include-all` 策略组会自动纳入 provider 节点。也可删除不用的示例 provider，将 `proxies: ~` 替换为自己的节点列表。模板不会自动读取客户端中的其他订阅，请勿把真实订阅链接或凭据提交到公开仓库。脚本的节点级开关只处理订阅顶层节点；开关开启时，其中可表达的部分另通过 provider 的 `override` 生效。
 2. **按需删减规则**：本配置的规则内容都有性能消耗，不需要的规则、规则集与策略组都可按需删减，例如不屏蔽番茄小说海外版广告的，删除 `sub-rules` 中的 `fanqie` 规则。`🛑 广告拦截`（SukkaW/Surge reject 规则集）在模板中为 `proxy-groups`、`rule-providers`、`rules` 三处注释段，不用时保持注释，需要时成套取消注释启用。
 
 <a id="script-override"></a>
@@ -160,7 +160,7 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 合并产物：
 
 - **节点与代理组**：订阅里的真实节点填入顶层 `proxies`；常规动态节点组通过 Mihomo 原生 `include-all` 引入顶层节点与 provider 节点。固定策略项保留在各组的 `proxies` 列表中。
-- **订阅自带 `proxy-providers`**：定义原样保留，脚本不展开、不筛选、不逐节点改写其中的节点；节点级开关能作用到 provider 的只有 `override` 通道。完整范围见 [三维视图](#provider-scope)。
+- **订阅自带 `proxy-providers`**：定义原样保留，脚本不展开、不筛选、不逐节点改写其中的节点；节点级开关能作用到 provider 的只有 `override` 通道。
 - **国家/地区分组**：`国家/地区分组` 开启后，只从订阅顶层 `proxies` 生成香港、日本、新加坡、台湾、韩国、马来西亚、美国、加拿大、英国、法国、荷兰、德国、澳大利亚及“其他国家/地区”策略组；不枚举 `proxy-providers`。倍率筛选在地区组生成之后执行；即使某地区的节点全部被筛除，父组和三个隐藏子组仍保留。
 - **倍率筛选**：`高倍率筛选` 删除名称中明确标记为 `2x` 或更高的订阅顶层节点；`低倍率筛选` 删除明确标记为 `0.5x` 或更低的节点。只识别显式数值倍率（例如 `5x`），不猜测模糊标签；过滤同步清理代理组 `proxies` 中的节点名称引用，不处理 `proxy-providers`，并在国内入口解析节点注入之前执行。
 - **DNS**：动态合并出 `dns.proxy-server-nameserver-policy`（模板不预置该键，以脚本计算结果为准），细节见下方流程图。
@@ -182,7 +182,7 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 
 **能不能加速代理**：不能。脚本不参与运行时代理，不测延迟、不选节点、不改路由决策；它只能修改节点字段或组结构来影响内核行为。代理快慢由节点质量与内核决定，脚本不会让它更快。
 
-#### 三维视图：节点处理与来源
+#### 三维视图
 
 按「节点来源 × 节点处理办法 × 功能名称」展示，可拖拽旋转、捏合缩放，点击坐标点查看详情：
 
