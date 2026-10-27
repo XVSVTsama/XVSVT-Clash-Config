@@ -146,7 +146,7 @@ https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.j
 
 1. **直接使用 YAML (`mihomo.yaml`)**：不使用 JavaScript 覆写脚本时，将 `proxy-providers.subscription.url` 的占位地址在本地替换为自己的 Clash/Mihomo 订阅链接；`include-all` 策略组会自动纳入 provider 节点。也可删除不用的示例 provider，将 `proxies: ~` 替换为自己的节点列表。模板不会自动读取客户端中的其他订阅，请勿把真实订阅链接或凭据提交到公开仓库。
 2. **按需删减规则**：如果你不需要屏蔽番茄小说海外版的广告，建议删除 `sub-rules` 中 `fanqie` 相关的规则，以节省性能。
-3. **广告拦截（可选，默认关闭）**：使用覆写脚本时，打开 `SKK广告拦截` 开关即可，脚本会成套注入 `🛑 广告拦截` 策略组、4 个规则集（SukkaW/Surge reject 系列）与 4 条规则。**直接使用 YAML 时没有开关**：模板中对应的代理组、`rule-providers`、`rules` 三处都是注释段，必须三处一起取消注释才能启用，只启用其中一段会报规则集未定义或规则指向不存在的策略组；不需要时保持注释原样，不要改动。
+3. **广告拦截**：`🛑 广告拦截` 策略组、其 4 个规则集（SukkaW/Surge reject 系列）与 4 条规则在模板中均为注释段，分别位于 `proxy-groups`、`rule-providers`、`rules` 三处，保持注释即不生效；需要时将三处一起取消注释，只启用其中一段会报规则集未定义或规则指向不存在的策略组。**性能提醒**：规则集体量较大（仅域名集约 14.5 万条），启用后核心的内存占用与规则匹配开销都会增加，低配设备上可能比较明显，介意性能就不要启用。
 
 <a id="script-override"></a>
 
