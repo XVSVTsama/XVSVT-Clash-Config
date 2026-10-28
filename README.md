@@ -155,8 +155,8 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 - **节点与代理组**：订阅里的真实节点填入顶层 `proxies`；常规动态节点组通过 Mihomo 原生 `include-all` 引入顶层节点与 provider 节点。固定策略项保留在各组的 `proxies` 列表中。
 - **订阅自带 `proxy-providers`**：定义原样保留，脚本不展开、不筛选、不逐节点改写其中的节点；节点级开关能作用到 provider 的只有 `override` 通道。
-- **国家/地区分组**：`国家/地区分组` 开启后，只从订阅顶层 `proxies` 生成香港、日本、新加坡、台湾、韩国、马来西亚、美国、加拿大、英国、法国、荷兰、德国、澳大利亚及“其他国家/地区”策略组；不枚举 `proxy-providers`。倍率筛选在地区组生成之后执行；即使某地区的节点全部被筛除，父组和三个隐藏子组仍保留。
-- **倍率筛选**：`高倍率筛选` 删除名称中明确标记为 `2x` 或更高的订阅顶层节点；`低倍率筛选` 删除明确标记为 `0.5x` 或更低的节点。只识别显式数值倍率（例如 `5x`），不猜测模糊标签；过滤同步清理代理组 `proxies` 中的节点名称引用，不处理 `proxy-providers`，并在国内入口解析节点注入之前执行。
+- **国家/地区分组**：`国家/地区分组` 开启后，只从订阅顶层 `proxies` 生成香港、日本、新加坡、台湾、韩国、马来西亚、美国、加拿大、英国、法国、荷兰、德国、澳大利亚及“其他国家/地区”策略组；不枚举 `proxy-providers`。倍率筛选先于地区分组执行，地区组只用幸存节点生成；某地区节点全部被筛除时不生成该地区的父组与三个隐藏子组。
+- **倍率筛选**：`高倍率筛选` 删除名称中明确标记为 `2x` 或更高的订阅顶层节点；`低倍率筛选` 删除明确标记为 `0.5x` 或更低的节点。只识别显式数值倍率（例如 `5x`），不猜测模糊标签；过滤同步清理代理组 `proxies` 中的节点名称引用，不处理 `proxy-providers`；执行顺序在地区分组与国内入口解析之前。
 - **DNS**：动态合并出 `dns.proxy-server-nameserver-policy`（模板不预置该键，以脚本计算结果为准），细节见下方流程图。
 - **开关声明**：脚本首行的 `Compatible_With_Bettbox` 兼容声明必须置顶——Bettbox 只在脚本开头识别该声明，删除或下移会导致"自定义规则开关"入口不显示；声明中的 `policyGroupOptions` 列出归入图形化开关分类的 23 个策略组，`ruleOptionsEnable` 则是实际生效的开关表，键名需与声明保持一致。`🌍 PROXY` 始终保留为基础/兜底组，不提供关闭开关。
 
@@ -229,7 +229,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><td><strong>📲 Telegram-DC5-SG</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>同上，DC5 同时匹配新加坡与香港节点</td></tr>
 <tr><td><em><strong>🛑 广告拦截</strong></em></td><td><em><strong><code>SKK广告拦截</code></strong></em></td><td><em><strong>关闭</strong></em></td><td><em><strong>开关关闭时本组、其 4 个规则集与 4 条规则都不生成；开启时组内可选 <code>REJECT</code> / <code>REJECT-DROP</code> / <code>PASS</code>，承接 SukkaW/Surge 的 reject 域名集与 non_ip 规则集，规则置于置顶拦截守卫之后；reject-drop 与 reject_ip 两条规则不经本组，分别直达 <code>REJECT-DROP</code> 与 <code>REJECT</code></strong></em></td></tr>
 <tr><td><strong>国内入口解析</strong></td><td><code>入口解析</code></td><td>关闭</td><td>开关开启时统一注入维护区所有运营商的入口节点并建立该组，由用户手动选择入口；每个运营商支持多个节点，排列顺序不代表优先级</td></tr>
-<tr><td><strong>国家/地区父组及隐藏子组</strong></td><td><code>国家/地区分组</code></td><td>关闭</td><td>根据地区候选节点创建分组；将父组追加到 15 个指定流量目标中，跳过已禁用或不存在的目标；倍率筛选后即使组内无节点也保留父组和三个隐藏子组</td></tr>
+<tr><td><strong>国家/地区父组及隐藏子组</strong></td><td><code>国家/地区分组</code></td><td>关闭</td><td>根据地区候选节点创建分组；将父组追加到 15 个指定流量目标中，跳过已禁用或不存在的目标；地区节点被倍率筛选全部剔除时不生成该地区的父组与三个隐藏子组</td></tr>
 </tbody>
 </table>
 
@@ -244,9 +244,9 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><td><code>启用 Reality 增强</code></td><td>开启</td><td>为带非空 <code>public-key</code> / <code>short-id</code> 的订阅顶层 Reality 节点启用 X25519MLKEM768 后量子密钥协商；provider 的 <code>override</code> 只能改固定字段、无法改写嵌套 <code>reality-opts</code>，因此不涉及 provider 节点</td></tr>
 <tr><td><code>试开启节点UDP</code></td><td>关闭</td><td>开启时为订阅顶层节点设置 <code>udp: true</code>，provider 节点经 <code>override.udp</code> 同步生效；关闭时不改动原有设置</td></tr>
 <tr><td><code>IPv6优先</code></td><td>关闭</td><td>改写订阅顶层节点 <code>ip-version</code>：<code>ipv6</code> 保持不变，<code>ipv6-prefer</code> 改为 <code>ipv6</code>，其余设为 <code>ipv6-prefer</code>；provider 节点经 <code>override.ip-version</code> 统一设为 <code>ipv6-prefer</code>，无法按节点区分原值</td></tr>
-<tr><td><code>高倍率筛选</code></td><td>关闭</td><td>删除名称中显式标记倍率 <code>&gt;=2x</code> 的订阅顶层节点，并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
-<tr><td><code>低倍率筛选</code></td><td>关闭</td><td>删除名称中显式标记倍率 <code>&lt;=0.5x</code> 的订阅顶层节点，并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
-<tr><td><code>国家/地区分组</code></td><td>关闭</td><td>只用订阅顶层节点生成国家/地区选择组；共用官网、流量说明等节点过滤，但不改变原节点列表或目标组的 <code>include-all</code>。该开关独立于 <code>入口解析</code></td></tr>
+<tr><td><code>高倍率筛选</code></td><td>关闭</td><td>在地区分组之前删除名称中显式标记倍率 <code>&gt;=2x</code> 的订阅顶层节点，并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
+<tr><td><code>低倍率筛选</code></td><td>关闭</td><td>在地区分组之前删除名称中显式标记倍率 <code>&lt;=0.5x</code> 的订阅顶层节点，并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
+<tr><td><code>国家/地区分组</code></td><td>关闭</td><td>只用倍率筛选后的订阅顶层节点生成国家/地区选择组；共用官网、流量说明等节点过滤，但不改变目标组的 <code>include-all</code>。该开关独立于 <code>入口解析</code></td></tr>
 <tr><td><code>代理节点 DNS 使用 TCP</code></td><td>关闭</td><td>为代理节点解析 DNS 中未标协议的地址启用 TCP；显式协议不变</td></tr>
 <tr><td><code>WebRTC阻断</code></td><td>开启</td><td>开启时保持模板规则不变；关闭时移除所有同时包含 <code>NETWORK,UDP</code> 与 <code>DST-PORT,3478-3479/5349-5350/19302-19309</code> 的规则</td></tr>
 </tbody>

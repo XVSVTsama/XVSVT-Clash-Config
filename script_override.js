@@ -204,7 +204,8 @@ const ruleOptionsEnable = {
   // 为合格的订阅顶层节点生成按国家/地区划分的策略组；与入口解析开关独立。
   // 只读取订阅顶层 proxies，不枚举 proxy-providers。
   '国家/地区分组': false,
-  // 国家/地区组生成后，按节点名称中的显式数值倍率筛选；不处理 proxy-providers。
+  // 先按节点名称中的显式数值倍率筛选顶层节点，再据此生成国家/地区组；
+  // 某地区节点全部被筛除时不建该地区组。不处理 proxy-providers。
   '高倍率筛选': false,
   '低倍率筛选': false,
   // 开启后，维护区所有运营商的入口节点统一加入“国内入口解析”组，不进入其他代理组。
@@ -632,15 +633,17 @@ function getExplicitProxyMultipliers(name) {
   return Array.from(matches, (match) => Number(match[1]));
 }
 
-// 在地区组生成后过滤顶层订阅节点，并清理静态引用；保持代理组结构（包括空地区组）不变。
+// 过滤订阅顶层节点，并清理静态引用；必须在地区分组之前调用，
+// 让地区组只用幸存节点生成，避免某地区节点全被筛除后留下空子组（内核报 `use` or `proxies` missing）。
+// 返回被剔除的节点名集合，供地区分组判定候选。
 // provider 节点不受影响：它们由内核按 include-all 展开，仍会出现在相关组里。
 function applyProxyMultiplierFilters(result) {
+  const removedProxyNames = new Set();
   const filterHigh = ruleOptionsEnable['高倍率筛选'] === true;
   const filterLow = ruleOptionsEnable['低倍率筛选'] === true;
-  if (!filterHigh && !filterLow) return;
-  if (!Array.isArray(result.proxies)) return;
+  if (!filterHigh && !filterLow) return removedProxyNames;
+  if (!Array.isArray(result.proxies)) return removedProxyNames;
 
-  const removedProxyNames = new Set();
   result.proxies = result.proxies.filter((proxy) => {
     if (!proxy || typeof proxy !== 'object' || typeof proxy.name !== 'string') return true;
     const multipliers = getExplicitProxyMultipliers(proxy.name);
@@ -651,11 +654,11 @@ function applyProxyMultiplierFilters(result) {
     return !shouldRemove;
   });
 
-  if (removedProxyNames.size === 0) return;
+  if (removedProxyNames.size === 0) return removedProxyNames;
   const firstRemainingProxyName = result.proxies
     .map((proxy) => proxy && proxy.name)
     .find((name) => typeof name === 'string' && name.length > 0);
-  if (!Array.isArray(result['proxy-groups'])) return;
+  if (!Array.isArray(result['proxy-groups'])) return removedProxyNames;
 
   result['proxy-groups'].forEach((group) => {
     if (!group || typeof group !== 'object') return;
@@ -670,6 +673,8 @@ function applyProxyMultiplierFilters(result) {
       }
     }
   });
+
+  return removedProxyNames;
 }
 
 // ============================================================================
@@ -3075,11 +3080,14 @@ function main(config, profileName) {
     result
   );
 
-  // ---- 8. 国家/地区策略组：DNS/hosts 完成后生成，筛选仅作用于模块候选。 ----
-  applyCountryRegionGrouping(result, originalProxies);
+  // ---- 8. 倍率筛选：先剔除订阅顶层节点，仅处理顶层 proxies ----
+  const removedProxyNames = applyProxyMultiplierFilters(result);
 
-  // ---- 8.5 倍率筛选：国家/地区组生成后、国内入口解析注入前，仅处理订阅顶层节点。 ----
-  applyProxyMultiplierFilters(result);
+  // ---- 8.5 国家/地区策略组：只用倍率筛选后的候选节点生成，整组被筛除的地区不建组 ----
+  applyCountryRegionGrouping(
+    result,
+    originalProxies.filter((proxy) => !(proxy && removedProxyNames.has(proxy.name)))
+  );
 
   // ---- 9. 国内入口解析：倍率筛选完成后，再追加运营商入口节点。 ----
   applyEntryResolution(result);
