@@ -83,7 +83,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><td><strong>🌍 PROXY</strong></td><td>唯一的顶层入口，不直接纳入节点（无 <code>include-all</code>），实际节点经被嵌套的三组进入；组内只有以下四项：<br><code>👉 手动切换</code><br><code>♻️ 自动选择</code><br><code>🔄 负载均衡</code><br><code>DIRECT</code></td></tr>
 <tr><td><strong>👉 手动切换</strong></td><td>被 <strong>🌍 PROXY</strong> 嵌套；自身以 <code>include-all</code> 纳入所有可用节点，不再嵌套其他代理组</td></tr>
 <tr><td><strong>♻️ 自动选择</strong></td><td>被 <strong>🌍 PROXY</strong> 嵌套；自身以 <code>include-all</code> 纳入所有可用节点，不再嵌套其他代理组</td></tr>
-<tr><td><strong>🔄 负载均衡</strong></td><td>被 <strong>🌍 PROXY</strong> 嵌套，是一个策略选择器；下含三个隐藏子组：<code>粘性会话</code>（<code>sticky-sessions</code>，默认首项）、<code>轮询</code>（<code>round-robin</code>）与 <code>一致性哈希</code>（<code>consistent-hashing</code>）。每个子组均使用 <code>include-all</code> 纳入可用节点</td></tr>
+<tr><td><strong>🔄 负载均衡</strong></td><td>被 <strong>🌍 PROXY</strong> 嵌套，是一个策略选择器；下含三个隐藏子组：<code>consistent-hashing</code>（默认首项）、<code>sticky-sessions</code> 与 <code>round-robin</code>。每个子组均使用 <code>include-all</code> 纳入可用节点</td></tr>
 </tbody>
 </table>
 

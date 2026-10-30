@@ -268,10 +268,10 @@ proxy-groups:
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-clash-verge-rev-balance.svg"
     type: select
     proxies:
-      - 粘性会话
-      - 轮询
-      - 一致性哈希
-  - name: 粘性会话
+      - consistent-hashing
+      - sticky-sessions
+      - round-robin
+  - name: sticky-sessions
     type: load-balance
     include-all: true
     url: 'https://g.cn/generate_204'
@@ -280,7 +280,7 @@ proxy-groups:
     max-failed-times: 1
     strategy: sticky-sessions
     hidden: true
-  - name: 轮询
+  - name: round-robin
     type: load-balance
     include-all: true
     url: 'https://g.cn/generate_204'
@@ -289,7 +289,7 @@ proxy-groups:
     max-failed-times: 1
     strategy: round-robin
     hidden: true
-  - name: 一致性哈希
+  - name: consistent-hashing
     type: load-balance
     include-all: true
     url: 'https://g.cn/generate_204'
