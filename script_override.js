@@ -491,6 +491,14 @@ const COUNTRY_REGION_DEFINITIONS = [
   { name: '🇩🇪 德国', pattern: /🇩🇪|德国|德國|法兰克福|法蘭克福|柏林|Frankfurt|Berlin|Germany|\bDE\b|\bDEU\b/iu },
   { name: '🇦🇺 澳大利亚', pattern: /🇦🇺|澳大利亚|澳大利亞|悉尼|墨尔本|墨爾本|Sydney|Melbourne|Perth|Australia|\bAU\b|\bAUS\b/iu },
 ];
+const COUNTRY_REGION_PRIORITY_NAMES = new Set([
+  '🇨🇳🇭🇰 香港',
+  '🇨🇳🇲🇴 澳门',
+  '🇨🇳🇹🇼 台湾',
+  '🇺🇸 美国',
+  '🇸🇬 新加坡',
+  '🇯🇵 日本',
+]);
 const OTHER_COUNTRY_REGION_NAME = '🌐 其他国家/地区';
 const COUNTRY_REGION_TARGET_GROUPS = [
   '📲 Telegram',
@@ -542,9 +550,45 @@ function buildCountryRegionProxyGroups(originalProxies) {
   }
   const parentGroups = [];
   const childGroups = [];
+  const regionMembershipByProxy = new Map();
+  const otherRegionProxies = new Set();
+
+  candidates.forEach((proxy) => {
+    const matchedRegions = COUNTRY_REGION_DEFINITIONS.filter((definition) =>
+      definition.pattern.test(proxy.name)
+    );
+    let selectedRegions = matchedRegions;
+
+    // ① 仅未命中常用地区的候选节点归入“其他国家/地区”。
+    if (matchedRegions.length === 0) {
+      otherRegionProxies.add(proxy);
+      selectedRegions = [];
+    }
+
+    // ② 恰好命中两个地区且跨越优先地区与其他常用地区时，只保留优先地区。
+    if (
+      selectedRegions.length === 2 &&
+      selectedRegions.some((definition) => COUNTRY_REGION_PRIORITY_NAMES.has(definition.name)) &&
+      selectedRegions.some((definition) => !COUNTRY_REGION_PRIORITY_NAMES.has(definition.name))
+    ) {
+      selectedRegions = selectedRegions.filter((definition) =>
+        COUNTRY_REGION_PRIORITY_NAMES.has(definition.name)
+      );
+    }
+
+    // ③ 处理后的地区组命中数达到三个及以上时，仅归入“其他国家/地区”。
+    if (selectedRegions.length >= 3) {
+      otherRegionProxies.add(proxy);
+      selectedRegions = [];
+    }
+
+    regionMembershipByProxy.set(proxy, selectedRegions);
+  });
 
   COUNTRY_REGION_DEFINITIONS.forEach((definition) => {
-    const regionProxies = candidates.filter((proxy) => definition.pattern.test(proxy.name));
+    const regionProxies = candidates.filter((proxy) =>
+      regionMembershipByProxy.get(proxy).includes(definition)
+    );
     if (regionProxies.length === 0) return;
     const nodeNames = Array.from(new Set(regionProxies.map((proxy) => proxy.name)));
     const children = nodeNames.length > 3
@@ -577,9 +621,7 @@ function buildCountryRegionProxyGroups(originalProxies) {
     childGroups.push(...children);
   });
 
-  const otherProxies = candidates.filter((proxy) =>
-    !COUNTRY_REGION_DEFINITIONS.some((definition) => definition.pattern.test(proxy.name))
-  );
+  const otherProxies = candidates.filter((proxy) => otherRegionProxies.has(proxy));
   if (otherProxies.length > 0) {
     parentGroups.push({
       name: OTHER_COUNTRY_REGION_NAME,
