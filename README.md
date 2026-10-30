@@ -80,8 +80,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><th width="20%">代理组<img src="assets/table-spacer.png" width="320" height="1" alt=""></th><th width="80%">嵌套关系<img src="assets/table-spacer.png" width="1280" height="1" alt=""></th></tr>
 </thead>
 <tbody>
-<tr><td><strong>🌍 PROXY</strong></td><td>顶层策略入口，组内包含 <code>👉 手动切换</code>、<code>♻️ 自动选择</code>、<code>🔄 负载均衡</code> 与 <code>DIRECT</code></td></tr>
-<tr><td><strong>🔄 负载均衡</strong></td><td>由三个隐藏子组提供策略选择：<code>consistent-hashing</code>（默认首项）、<code>sticky-sessions</code>、<code>round-robin</code></td></tr>
+<tr><td><strong>🌍 PROXY</strong></td><td>顶层策略入口，组内包含 <code>👉 手动切换</code> 与 <code>DIRECT</code></td></tr>
 <tr><td><strong>👉 手动切换</strong></td><td>被 <strong>🌍 PROXY</strong> 嵌套，以 <code>include-all</code> 纳入所有可用节点</td></tr>
 </tbody>
 </table>
@@ -120,7 +119,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 - **节点与代理组**：订阅里的真实节点填入顶层 `proxies`；常规动态节点组通过 Mihomo 原生 `include-all` 引入顶层节点与 provider 节点。固定策略项保留在各组的 `proxies` 列表中。
 - **订阅自带 `proxy-providers`**：定义原样保留，脚本不展开、不筛选、不逐节点改写其中的节点；节点级开关能作用到 provider 的只有 `override` 通道。
-- **国家/地区分组**：`国家/地区分组` 开启后，只从订阅顶层 `proxies` 生成香港、台湾、澳门、日本、新加坡、韩国、马来西亚、美国、加拿大、英国、法国、荷兰、德国、澳大利亚及“其他国家/地区”策略组；香港、台湾和澳门组名使用中国旗与地区旗双图标；地区名称支持常见简体与繁体写法；不枚举 `proxy-providers`。倍率筛选先于地区分组执行，地区组只用幸存的有效节点。节点命中一个或两个常用地区时不进入“其他国家/地区”；同时命中香港、台湾、澳门、美国、新加坡、日本之一和其他常用地区时，只保留优先地区组；处理后仍命中三个及以上常用地区的节点仅进入“其他国家/地区”，不进入常用地区组；其余重合保留。常见地区有 1–3 个不同有效节点时保留父组及 `DIRECT`、`REJECT` 和节点选项，但不创建自动选择、负载均衡、故障转移子组；超过 3 个才创建三个隐藏子组。地区没有幸存节点时不生成父组；“其他国家/地区”组不受此阈值影响。TGDC 按节点名称识别对应地区；没有地区匹配时提供合格节点兜底。
+- **国家/地区分组**：`国家/地区分组` 开启后，只从订阅顶层 `proxies` 生成香港、澳门、日本、新加坡、台湾、韩国、马来西亚、美国、加拿大、英国、法国、荷兰、德国、澳大利亚及“其他国家/地区”策略组；香港、澳门和台湾组名使用中国旗与地区旗双图标；不枚举 `proxy-providers`。倍率筛选先于地区分组执行，地区组只用幸存的有效节点。节点命中一个或两个常用地区时不进入“其他国家/地区”；同时命中香港、澳门、台湾、美国、新加坡、日本之一和其他常用地区时，只保留优先地区组；处理后仍命中三个及以上常用地区的节点仅进入“其他国家/地区”，不进入常用地区组；其余重合保留。常见地区有 1–3 个不同有效节点时保留父组及 `DIRECT`、`REJECT` 和节点选项，但不创建自动选择、负载均衡、故障转移子组；超过 3 个才创建三个隐藏子组。地区没有幸存节点时不生成父组；“其他国家/地区”组不受此阈值影响。JS 候选过滤与地区匹配是脚本侧机制；TGDC 引用共用地区定义，JS 匹配在临时规范化名称上进行且不改写原始节点名。若合格顶层节点只有在 JS 零宽字符规范化后才匹配地区词项，脚本只把这些节点名作为额外显式 `proxies`；Mihomo 原生 `include-all-proxies` 与 `filter` 仍提供常规动态成员集合，Mihomo 对该集合保持权威性。若不存在 JS 规范化地区匹配且合格显式保底节点列表非空，脚本移除原生 `filter` 与 `include-all-proxies`，并按源顺序显式列出全部合格节点；若该列表为空，则保留原生 `filter`、`include-all-proxies` 与 `empty-fallback: COMPATIBLE`。
 - **倍率筛选**：`高倍率筛选` 删除名称中明确标记为 `2x` 或更高的订阅顶层节点；`低倍率筛选` 删除明确标记为 `0.5x` 或更低的节点。只识别显式数值倍率（例如 `5x`），不猜测模糊标签；过滤同步清理代理组 `proxies` 中的节点名称引用，不处理 `proxy-providers`；执行顺序在地区分组与国内入口解析之前。
 - **DNS**：动态合并出 `dns.proxy-server-nameserver-policy`（模板不预置该键，以脚本计算结果为准），细节见下方流程图。
 - **开关声明**：脚本首行的 `Compatible_With_Bettbox` 兼容声明必须置顶——Bettbox 只在脚本开头识别该声明，删除或下移会导致"自定义规则开关"入口不显示；声明中的 `policyGroupOptions` 列出归入图形化开关分类的 23 个策略组，`ruleOptionsEnable` 则是实际生效的开关表，键名需与声明保持一致。`🌍 PROXY` 始终保留为基础/兜底组，不提供关闭开关。
@@ -189,9 +188,9 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tbody>
 <tr><td><strong>FCM</strong></td><td><code>FCM直连</code></td><td>开启</td><td>开关不移除本组，只改写组内节点：开启=<code>DIRECT</code>；关闭且 <code>👉 手动切换</code> 已禁用时回退到全局兜底。脚本内嵌模板把本组标记为隐藏组（<code>hidden</code>）</td></tr>
 <tr><td><em><strong>📲 Telegram(兜底)</strong></em></td><td><em><strong><code>TGDC实验分流</code></strong></em></td><td><em><strong>关闭</strong></em></td><td><em><strong>该开关开启时由 <code>📲 Telegram</code> 更名而来，承接 Telegram 进程、域名与 CIDR 规则</strong></em></td></tr>
-<tr><td><strong>📲 Telegram-DC1-DC3-Miami</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>按节点名称匹配美国地区节点；无地区匹配时列出合格节点供手动选择</td></tr>
-<tr><td><strong>📲 Telegram-DC2-DC4-Amsterdam</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>按节点名称匹配荷兰地区节点；无地区匹配时列出合格节点供手动选择</td></tr>
-<tr><td><strong>📲 Telegram-DC5-SG</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>按节点名称匹配新加坡或香港地区节点；无地区匹配时列出合格节点供手动选择</td></tr>
+<tr><td><strong>📲 Telegram-DC1-DC3-Miami</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>常规动态成员由 Mihomo 原生 <code>include-all-proxies</code> 与美国地区 <code>filter</code> 提供；仅把依赖 JS 名称规范化才能命中的合格顶层节点作为额外显式 <code>proxies</code>。无 JS 规范化地区匹配且合格显式保底节点列表非空时，移除原生 <code>filter</code>/<code>include-all-proxies</code> 并按源顺序列出全部合格顶层节点；若列表为空，则保留原生 <code>filter</code>/<code>include-all-proxies</code> 与 <code>empty-fallback: COMPATIBLE</code></td></tr>
+<tr><td><strong>📲 Telegram-DC2-DC4-Amsterdam</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>同上，引用荷兰地区定义及其独立的 Mihomo 表达式</td></tr>
+<tr><td><strong>📲 Telegram-DC5-SG</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>同上，引用新加坡与香港地区定义的 Mihomo 表达式</td></tr>
 <tr><td><em><strong>🛑 广告拦截</strong></em></td><td><em><strong><code>SKK广告拦截</code></strong></em></td><td><em><strong>关闭</strong></em></td><td><em><strong>开关关闭时本组、其 4 个规则集与 4 条规则都不生成；开启时组内可选 <code>REJECT</code> / <code>REJECT-DROP</code> / <code>PASS</code>，承接 SukkaW/Surge 的 reject 域名集与 non_ip 规则集，规则置于置顶拦截守卫之后；reject-drop 与 reject_ip 两条规则不经本组，分别直达 <code>REJECT-DROP</code> 与 <code>REJECT</code></strong></em></td></tr>
 <tr><td><strong>国内入口解析</strong></td><td><code>入口解析</code></td><td>关闭</td><td>开关开启时统一注入维护区所有运营商的入口节点并建立该组，由用户手动选择入口；每个运营商支持多个节点，排列顺序不代表优先级</td></tr>
 <tr><td><strong>国家/地区父组及隐藏子组</strong></td><td><code>国家/地区分组</code></td><td>关闭</td><td>根据倍率筛选后的有效节点创建分组；将父组追加到 15 个指定流量目标中，跳过已禁用或不存在的目标；常见地区 1–3 个不同节点时只生成父组和 DIRECT/REJECT/节点选项，超过 3 个时才加入自动选择、负载均衡、故障转移三个隐藏子组；无候选节点时不生成父组</td></tr>
