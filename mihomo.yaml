@@ -266,6 +266,13 @@ proxy-groups:
         - DIRECT
   - name: 🔄 负载均衡
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-clash-verge-rev-balance.svg"
+    type: select
+    proxies:
+      - 🔄 负载均衡 · 粘性会话
+      - 🔄 负载均衡 · 轮询
+      - 🔄 负载均衡 · 一致性哈希
+  - name: 🔄 负载均衡 · 粘性会话
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-clash-verge-rev-balance.svg"
     type: load-balance
     include-all: true
     url: 'https://g.cn/generate_204'
@@ -273,6 +280,27 @@ proxy-groups:
     lazy: true
     max-failed-times: 1
     strategy: sticky-sessions
+    hidden: true
+  - name: 🔄 负载均衡 · 轮询
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-clash-verge-rev-balance.svg"
+    type: load-balance
+    include-all: true
+    url: 'https://g.cn/generate_204'
+    interval: 300
+    lazy: true
+    max-failed-times: 1
+    strategy: round-robin
+    hidden: true
+  - name: 🔄 负载均衡 · 一致性哈希
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-clash-verge-rev-balance.svg"
+    type: load-balance
+    include-all: true
+    url: 'https://g.cn/generate_204'
+    interval: 300
+    lazy: true
+    max-failed-times: 1
+    strategy: consistent-hashing
+    hidden: true
   - name: 👉 手动切换
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-select.png"
     type: select

@@ -83,7 +83,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><td><strong>🌍 PROXY</strong></td><td>唯一的顶层入口，不直接纳入节点（无 <code>include-all</code>），实际节点经被嵌套的三组进入；组内只有以下四项：<br><code>👉 手动切换</code><br><code>♻️ 自动选择</code><br><code>🔄 负载均衡</code><br><code>DIRECT</code></td></tr>
 <tr><td><strong>👉 手动切换</strong></td><td>被 <strong>🌍 PROXY</strong> 嵌套；自身以 <code>include-all</code> 纳入所有可用节点，不再嵌套其他代理组</td></tr>
 <tr><td><strong>♻️ 自动选择</strong></td><td>被 <strong>🌍 PROXY</strong> 嵌套；自身以 <code>include-all</code> 纳入所有可用节点，不再嵌套其他代理组</td></tr>
-<tr><td><strong>🔄 负载均衡</strong></td><td>被 <strong>🌍 PROXY</strong> 嵌套；自身以 <code>include-all</code> 纳入所有可用节点，不再嵌套其他代理组</td></tr>
+<tr><td><strong>🔄 负载均衡</strong></td><td>被 <strong>🌍 PROXY</strong> 嵌套，是一个策略选择器；下含三个隐藏子组：<code>粘性会话</code>（<code>sticky-sessions</code>，默认首项）、<code>轮询</code>（<code>round-robin</code>）与 <code>一致性哈希</code>（<code>consistent-hashing</code>）。每个子组均使用 <code>include-all</code> 纳入可用节点</td></tr>
 </tbody>
 </table>
 
@@ -155,7 +155,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 - **节点与代理组**：订阅里的真实节点填入顶层 `proxies`；常规动态节点组通过 Mihomo 原生 `include-all` 引入顶层节点与 provider 节点。固定策略项保留在各组的 `proxies` 列表中。
 - **订阅自带 `proxy-providers`**：定义原样保留，脚本不展开、不筛选、不逐节点改写其中的节点；节点级开关能作用到 provider 的只有 `override` 通道。
-- **国家/地区分组**：`国家/地区分组` 开启后，只从订阅顶层 `proxies` 生成香港、日本、新加坡、台湾、韩国、马来西亚、美国、加拿大、英国、法国、荷兰、德国、澳大利亚及“其他国家/地区”策略组；不枚举 `proxy-providers`。倍率筛选先于地区分组执行，地区组只用幸存节点生成；某地区节点全部被筛除时不生成该地区的父组与三个隐藏子组。
+- **国家/地区分组**：`国家/地区分组` 开启后，只从订阅顶层 `proxies` 生成香港、日本、新加坡、台湾、韩国、马来西亚、美国、加拿大、英国、法国、荷兰、德国、澳大利亚及“其他国家/地区”策略组；不枚举 `proxy-providers`。倍率筛选先于地区分组执行，地区组只用幸存的有效节点；常见地区有 1–3 个不同有效节点时保留父组及 `DIRECT`、`REJECT` 和节点选项，但不创建自动选择、负载均衡、故障转移子组；超过 3 个才创建三个隐藏子组。地区没有幸存节点时不生成父组；“其他国家/地区”组不受此阈值影响。
 - **倍率筛选**：`高倍率筛选` 删除名称中明确标记为 `2x` 或更高的订阅顶层节点；`低倍率筛选` 删除明确标记为 `0.5x` 或更低的节点。只识别显式数值倍率（例如 `5x`），不猜测模糊标签；过滤同步清理代理组 `proxies` 中的节点名称引用，不处理 `proxy-providers`；执行顺序在地区分组与国内入口解析之前。
 - **DNS**：动态合并出 `dns.proxy-server-nameserver-policy`（模板不预置该键，以脚本计算结果为准），细节见下方流程图。
 - **开关声明**：脚本首行的 `Compatible_With_Bettbox` 兼容声明必须置顶——Bettbox 只在脚本开头识别该声明，删除或下移会导致"自定义规则开关"入口不显示；声明中的 `policyGroupOptions` 列出归入图形化开关分类的 23 个策略组，`ruleOptionsEnable` 则是实际生效的开关表，键名需与声明保持一致。`🌍 PROXY` 始终保留为基础/兜底组，不提供关闭开关。
@@ -213,7 +213,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 </tbody>
 </table>
 
-这 23 个开关默认全部开启。关闭 20 个业务分流组时，会移除该组并删除指向它的路由规则，而不是把规则改写到 `🌍 PROXY`；只有在剩余规则和配置中均无引用的规则集才会清理。关闭 `🔄 负载均衡`、`👉 手动切换` 或 `♻️ 自动选择` 时仍沿用原有组引用和兜底处理。`🌍 PROXY` 始终保留为基础/兜底组。
+这 23 个开关默认全部开启。关闭 20 个业务分流组时，会移除该组并删除指向它的路由规则，而不是把规则改写到 `🌍 PROXY`；只有在剩余规则和配置中均无引用的规则集才会清理。关闭 `🔄 负载均衡` 时会一并移除原组和三个隐藏策略子组，并清理对原组的引用；该功能不增加新的开关。关闭 `👉 手动切换` 或 `♻️ 自动选择` 时仍沿用原有引用和兜底处理。`🌍 PROXY` 始终保留为基础/兜底组。
 
 **未列入 `policyGroupOptions` 的组**
 
@@ -229,7 +229,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><td><strong>📲 Telegram-DC5-SG</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>同上，DC5 同时匹配新加坡与香港节点</td></tr>
 <tr><td><em><strong>🛑 广告拦截</strong></em></td><td><em><strong><code>SKK广告拦截</code></strong></em></td><td><em><strong>关闭</strong></em></td><td><em><strong>开关关闭时本组、其 4 个规则集与 4 条规则都不生成；开启时组内可选 <code>REJECT</code> / <code>REJECT-DROP</code> / <code>PASS</code>，承接 SukkaW/Surge 的 reject 域名集与 non_ip 规则集，规则置于置顶拦截守卫之后；reject-drop 与 reject_ip 两条规则不经本组，分别直达 <code>REJECT-DROP</code> 与 <code>REJECT</code></strong></em></td></tr>
 <tr><td><strong>国内入口解析</strong></td><td><code>入口解析</code></td><td>关闭</td><td>开关开启时统一注入维护区所有运营商的入口节点并建立该组，由用户手动选择入口；每个运营商支持多个节点，排列顺序不代表优先级</td></tr>
-<tr><td><strong>国家/地区父组及隐藏子组</strong></td><td><code>国家/地区分组</code></td><td>关闭</td><td>根据地区候选节点创建分组；将父组追加到 15 个指定流量目标中，跳过已禁用或不存在的目标；地区节点被倍率筛选全部剔除时不生成该地区的父组与三个隐藏子组</td></tr>
+<tr><td><strong>国家/地区父组及隐藏子组</strong></td><td><code>国家/地区分组</code></td><td>关闭</td><td>根据倍率筛选后的有效节点创建分组；将父组追加到 15 个指定流量目标中，跳过已禁用或不存在的目标；常见地区 1–3 个不同节点时只生成父组和 DIRECT/REJECT/节点选项，超过 3 个时才加入自动选择、负载均衡、故障转移三个隐藏子组；无候选节点时不生成父组</td></tr>
 </tbody>
 </table>
 

@@ -121,6 +121,13 @@ const Compatible_With_Bettbox = {
  */
 
 
+// 隐藏策略子组不单独提供开关；它们始终跟随现有负载均衡开关启停。
+const LOAD_BALANCE_STRATEGY_GROUP_NAMES = [
+  '🔄 负载均衡 · 粘性会话',
+  '🔄 负载均衡 · 轮询',
+  '🔄 负载均衡 · 一致性哈希',
+];
+
 const ruleOptionsEnable = {
 
   /**
@@ -538,29 +545,33 @@ function buildCountryRegionProxyGroups(originalProxies) {
   COUNTRY_REGION_DEFINITIONS.forEach((definition) => {
     const regionProxies = candidates.filter((proxy) => definition.pattern.test(proxy.name));
     if (regionProxies.length === 0) return;
-    const nodeNames = regionProxies.map((proxy) => proxy.name);
-    const children = COUNTRY_REGION_CHILD_GROUP_TYPES.map((childDefinition) => {
-      const child = {
-        name: countryRegionChildGroupName(definition.name, childDefinition.suffix),
-        type: childDefinition.type,
-        proxies: nodeNames.slice(),
-        hidden: true,
-      };
-      if (childDefinition.type === 'url-test') {
-        Object.assign(child, urlTestSettings);
-      } else if (childDefinition.type === 'fallback' || childDefinition.type === 'load-balance') {
-        Object.assign(child, healthCheckSettings);
-        if (childDefinition.type === 'load-balance') {
-          child.strategy = 'consistent-hashing';
+    const nodeNames = Array.from(new Set(regionProxies.map((proxy) => proxy.name)));
+    const children = nodeNames.length > 3
+      ? COUNTRY_REGION_CHILD_GROUP_TYPES.map((childDefinition) => {
+        const child = {
+          name: countryRegionChildGroupName(definition.name, childDefinition.suffix),
+          type: childDefinition.type,
+          proxies: nodeNames.slice(),
+          hidden: true,
+        };
+        if (childDefinition.type === 'url-test') {
+          Object.assign(child, urlTestSettings);
+        } else if (childDefinition.type === 'fallback' || childDefinition.type === 'load-balance') {
+          Object.assign(child, healthCheckSettings);
+          if (childDefinition.type === 'load-balance') {
+            child.strategy = 'consistent-hashing';
+          }
         }
-      }
-      return child;
-    });
+        return child;
+      })
+      : [];
     parentGroups.push({
       name: definition.name,
       type: 'select',
       icon: COUNTRY_REGION_PARENT_ICON,
-      proxies: children.map((child) => child.name).concat(['DIRECT', 'REJECT'], nodeNames),
+      proxies: children.length > 0
+        ? children.map((child) => child.name).concat(['DIRECT', 'REJECT'], nodeNames)
+        : ['DIRECT', 'REJECT', ...nodeNames],
     });
     childGroups.push(...children);
   });
@@ -1074,13 +1085,48 @@ const TEMPLATE = {
     {
       "name": "🔄 负载均衡",
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-clash-verge-rev-balance.svg",
+      "type": "select",
+      "proxies": [
+        "🔄 负载均衡 · 粘性会话",
+        "🔄 负载均衡 · 轮询",
+        "🔄 负载均衡 · 一致性哈希"
+      ]
+    },
+    {
+      "name": "🔄 负载均衡 · 粘性会话",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-clash-verge-rev-balance.svg",
       "type": "load-balance",
       "include-all": true,
       "url": "https://g.cn/generate_204",
       "interval": 300,
       "lazy": true,
       "max-failed-times": 1,
-      "strategy": "sticky-sessions"
+      "strategy": "sticky-sessions",
+      "hidden": true
+    },
+    {
+      "name": "🔄 负载均衡 · 轮询",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-clash-verge-rev-balance.svg",
+      "type": "load-balance",
+      "include-all": true,
+      "url": "https://g.cn/generate_204",
+      "interval": 300,
+      "lazy": true,
+      "max-failed-times": 1,
+      "strategy": "round-robin",
+      "hidden": true
+    },
+    {
+      "name": "🔄 负载均衡 · 一致性哈希",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-clash-verge-rev-balance.svg",
+      "type": "load-balance",
+      "include-all": true,
+      "url": "https://g.cn/generate_204",
+      "interval": 300,
+      "lazy": true,
+      "max-failed-times": 1,
+      "strategy": "consistent-hashing",
+      "hidden": true
     },
     {
       "name": "👉 手动切换",
@@ -3127,6 +3173,9 @@ function main(config, profileName) {
   // ---- 4. 动态过滤策略组：读取 ruleOptionsEnable 的单独开关 ----
   // 识别所有被禁用的策略组名字
   const disabledGroupNames = new Set();
+  if (ruleOptionsEnable['🔄 负载均衡'] === false) {
+    LOAD_BALANCE_STRATEGY_GROUP_NAMES.forEach((groupName) => disabledGroupNames.add(groupName));
+  }
   const activeGroupNames = new Set();
 
   (result['proxy-groups'] || []).forEach(group => {
