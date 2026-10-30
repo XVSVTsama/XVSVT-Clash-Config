@@ -49,7 +49,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 <table width="100%">
 <thead>
-<tr><th width="100%" align="center">CDN地址<img src="assets/table-spacer.png" width="1280" height="1" alt=""></th></tr>
+<tr><th width="100%" align="center">GitHub 覆写脚本 CDN 链接(使用公共免费CDN资源)<img src="assets/table-spacer.png" width="1280" height="1" alt=""></th></tr>
 </thead>
 <tbody>
 <tr><td align="center"><div align="center"><a href="https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js">gh-proxy</a>：全球 Anycast，更新即时，无缓存</div></td></tr>
@@ -71,7 +71,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 ### 🗂 分流组结构（按 `mihomo.yaml` 定义）
 
-本节展示 YAML 中的代理组及其嵌套关系。
+本节分三层：先看核心代理组的骨架与嵌套，再看每个基础代理组的用途与路由规则，最后看三组的特别说明。
 
 #### 核心代理组
 
@@ -80,8 +80,10 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><th width="20%">代理组<img src="assets/table-spacer.png" width="320" height="1" alt=""></th><th width="80%">嵌套关系<img src="assets/table-spacer.png" width="1280" height="1" alt=""></th></tr>
 </thead>
 <tbody>
-<tr><td><strong>🌍 PROXY</strong></td><td>顶层策略入口，组内包含 <code>👉 手动切换</code> 与 <code>DIRECT</code></td></tr>
-<tr><td><strong>👉 手动切换</strong></td><td>被 <strong>🌍 PROXY</strong> 嵌套，以 <code>include-all</code> 纳入所有可用节点</td></tr>
+<tr><td><strong>🌍 PROXY</strong></td><td>唯一的顶层入口，不直接纳入节点（无 <code>include-all</code>），实际节点经被嵌套的三组进入；组内只有以下四项：<br><code>👉 手动切换</code><br><code>♻️ 自动选择</code><br><code>🔄 负载均衡</code><br><code>DIRECT</code></td></tr>
+<tr><td><strong>👉 手动切换</strong></td><td>被 <strong>🌍 PROXY</strong> 嵌套；自身以 <code>include-all</code> 纳入所有可用节点，不再嵌套其他代理组</td></tr>
+<tr><td><strong>♻️ 自动选择</strong></td><td>被 <strong>🌍 PROXY</strong> 嵌套；自身以 <code>include-all</code> 纳入所有可用节点，不再嵌套其他代理组</td></tr>
+<tr><td><strong>🔄 负载均衡</strong></td><td>被 <strong>🌍 PROXY</strong> 嵌套；自身以 <code>include-all</code> 纳入所有可用节点，不再嵌套其他代理组</td></tr>
 </tbody>
 </table>
 
@@ -89,10 +91,44 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 <table width="100%">
 <thead>
-<tr><th width="15%">代理组<img src="assets/table-spacer.png" width="240" height="1" alt=""></th><th width="25%">用途<img src="assets/table-spacer.png" width="400" height="1" alt=""></th><th width="60%">分流说明<img src="assets/table-spacer.png" width="960" height="1" alt=""></th></tr>
+<tr><th width="15%">代理组<img src="assets/table-spacer.png" width="240" height="1" alt=""></th><th width="25%">用途<img src="assets/table-spacer.png" width="400" height="1" alt=""></th><th width="60%">路由规则<img src="assets/table-spacer.png" width="960" height="1" alt=""></th></tr>
 </thead>
 <tbody>
-<tr><td><strong>FCM</strong></td><td>Google FCM 推送流量</td><td>引用规则集 <code>googlefcm</code>；策略组隐藏，固定使用 <code>DIRECT</code></td></tr>
+<tr><td><strong>🍎 海外苹果</strong></td><td>海外 Apple 服务单独选出口</td><td>引用规则集合：<code>apple</code>、<code>apple_ip</code></td></tr>
+<tr><td><strong>💠 海外微软</strong></td><td>海外 Microsoft 服务单独选出口</td><td>引用规则集合：<code>microsoft</code>、<code>microsoft_ip</code></td></tr>
+<tr><td><strong>📲 Telegram</strong></td><td>Telegram 单独选出口</td><td>引用规则集合：<code>telegram_domain</code>、<code>telegramcidr</code><br>使用进程名称正则表达式匹配：telegram、nagram</td></tr>
+<tr><td><strong>✖️ Twitter</strong></td><td>Twitter / X 单独选出口</td><td>引用规则集合：<code>twitter-x-domain</code>、<code>twitter-x-ip</code>、<code>twitter-x-blackmatrix7-No_Resolve</code><br>使用进程名称正则表达式匹配：twitter</td></tr>
+<tr><td><strong>🤖 AI大模型</strong></td><td>AI 服务单独选出口</td><td>引用规则集合：<code>ai-1</code>、<code>ai-2</code>、<code>Gemini_Domain</code>、<code>Grok_Domain</code><br>使用域名后缀匹配：anthropic.com、claude.ai、claude.com、claudeusercontent.com、clau.de、frame.claudeusercontent.com、metaaivm.com、modelcontextprotocol.io、muse.ai、sentry.io、statsigapi.net<br>使用域名精确匹配：共 31 个域名（api.anthropic.com、downloads.claude.ai、api.meta.ai、hatch-api.meta.ai 等）<br>使用域名关键词匹配：datadog、sift<br>使用进程名称匹配：com.facebook.aura<br>使用进程名称正则表达式匹配：claude、anthropic、manus<br>使用 IP 段匹配：160.79.104.0/21、17.253.4.0/23、2607:6bc0::/48</td></tr>
+<tr><td><strong>🎵 TikTok</strong></td><td>TikTok 单独选出口</td><td>引用规则集合：<code>TikTok</code></td></tr>
+<tr><td><strong>💳 金融支付</strong></td><td>支付与加密货币单独选出口</td><td>引用规则集合：<code>category-cryptocurrency</code>、<code>paypal</code>、<code>stripe</code>、<code>visa</code>、<code>mastercard</code>、<code>wise</code><br>使用域名精确匹配：d3r7nsslvs6aaf.cloudfront.net、bybit-exchange.github.io<br>使用进程名称匹配：共 24 个交易所 / 钱包 App 进程名（com.binance.dev、com.coinbase.android、com.okinc.okex.gp 等）</td></tr>
+<tr><td><strong>🔎 Google</strong></td><td>Google 服务单独选出口</td><td>引用规则集合：<code>google</code>、<code>google-cn</code></td></tr>
+<tr><td><strong>♾️ Meta</strong></td><td>Meta 服务单独选出口</td><td>引用规则集合：<code>meta</code></td></tr>
+<tr><td><strong>🎧 Spotify</strong></td><td>Spotify 单独选出口</td><td>引用规则集合：<code>spotify</code></td></tr>
+<tr><td><strong>🎬 Emby</strong></td><td>Emby 类客户端单独选出口</td><td>使用进程名称匹配：com.mountains.hills、com.hamhub.app、com.oumi.utility.media.hub、com.feifeiduck.capyplayer、com.attempt.afusekt、com.hush.yamby、com.railux.mobile</td></tr>
+<tr><td><strong>💬 Discord</strong></td><td>Discord 单独选出口</td><td>引用规则集合：<code>discord</code></td></tr>
+<tr><td><strong>👽 Reddit</strong></td><td>Reddit 单独选出口</td><td>引用规则集合：<code>reddit</code></td></tr>
+<tr><td><strong>🎥 Netflix</strong></td><td>Netflix 单独选出口</td><td>引用规则集合：<code>netflix</code></td></tr>
+<tr><td><strong>💝 Patreon</strong></td><td>Patreon 单独选出口</td><td>引用规则集合：<code>patreon</code></td></tr>
+<tr><td><strong>📚 EHentai</strong></td><td>EHentai 单独选出口</td><td>引用规则集合：<code>ehentai</code></td></tr>
+<tr><td><strong>☁️ PikPak</strong></td><td>PikPak 单独选出口</td><td>引用规则集合：<code>pikpak</code></td></tr>
+<tr><td><strong>💬 LINE</strong></td><td>LINE 单独选出口</td><td>引用规则集合：<code>line</code></td></tr>
+<tr><td><strong>🎮 Games-Global</strong></td><td>游戏流量单独选出口</td><td>引用规则集合：<code>games</code><br>使用进程名称匹配：bf6.exe</td></tr>
+<tr><td><strong>🎮 Steam平台（非下载/CDN）</strong></td><td>Steam 平台流量单独选出口</td><td>引用规则集合：<code>steam</code>、<code>steam_ip</code></td></tr>
+<tr><td><strong>FCM</strong></td><td>Google FCM 推送单独选出口</td><td>引用规则集合：<code>googlefcm</code></td></tr>
+</tbody>
+</table>
+#### 特别组说明
+
+以下三组同时属于基础代理组（见上表），嵌套结构不同于常规业务组，单独列出。
+
+<table width="100%">
+<thead>
+<tr><th width="25%">代理组<img src="assets/table-spacer.png" width="400" height="1" alt=""></th><th width="75%">嵌套结构<img src="assets/table-spacer.png" width="1200" height="1" alt=""></th></tr>
+</thead>
+<tbody>
+<tr><td><strong>🎮 Games-Global</strong></td><td><code>🎮 Steam平台（非下载/CDN）</code>（默认选中）<br>所有可用节点（<code>include-all</code>）</td></tr>
+<tr><td><strong>🎮 Steam平台（非下载/CDN）</strong></td><td><code>DIRECT</code>（默认选中）<br><code>👉 手动切换</code><br><code>♻️ 自动选择</code><br><code>🔄 负载均衡</code><br>所有可用节点（<code>include-all</code>）</td></tr>
+<tr><td><strong>FCM</strong></td><td><code>👉 手动切换</code><br><code>DIRECT</code></td></tr>
 </tbody>
 </table>
 
@@ -102,7 +138,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 本配置按个人使用习惯定制，并非开箱即用的通用模板，尤其是对于直接导入 YAML 的使用形式。使用前请完成以下必要设置；如不熟悉 Mihomo、TUN、DNS 或策略组过滤规则，请先了解相关机制再使用。
 
-1. **直接使用 YAML (`mihomo.yaml`)**：将 `proxy-providers.subscription.url` 的占位地址在本地替换为自己的 Clash/Mihomo 订阅链接；`include-all` 策略组会自动纳入 provider 节点。也可删除不用的示例 provider，或将 `proxies: []` 替换为自己的节点列表。模板不会自动读取客户端中的其他订阅，请勿把真实订阅链接或凭据提交到公开仓库。
+1. **直接使用 YAML (`mihomo.yaml`)**：将 `proxy-providers.subscription.url` 的占位地址在本地替换为自己的 Clash/Mihomo 订阅链接；`include-all` 策略组会自动纳入 provider 节点。也可删除不用的示例 provider，将 `proxies: ~` 替换为自己的节点列表。模板不会自动读取客户端中的其他订阅，请勿把真实订阅链接或凭据提交到公开仓库。
 2. **按需删减规则**：本配置的规则内容都有性能消耗，不需要的规则、规则集与策略组都可按需删减，例如不屏蔽番茄小说海外版广告的，删除 `sub-rules` 中的 `fanqie` 规则。`🛑 广告拦截`（SukkaW/Surge reject 规则集）在模板中为 `proxy-groups`、`rule-providers`、`rules` 三处注释段，不用时保持注释，需要时成套取消注释启用。
 
 <a id="script-override"></a>
@@ -119,7 +155,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 - **节点与代理组**：订阅里的真实节点填入顶层 `proxies`；常规动态节点组通过 Mihomo 原生 `include-all` 引入顶层节点与 provider 节点。固定策略项保留在各组的 `proxies` 列表中。
 - **订阅自带 `proxy-providers`**：定义原样保留，脚本不展开、不筛选、不逐节点改写其中的节点；节点级开关能作用到 provider 的只有 `override` 通道。
-- **国家/地区分组**：`国家/地区分组` 开启后，只从订阅顶层 `proxies` 生成香港、澳门、日本、新加坡、台湾、韩国、马来西亚、美国、加拿大、英国、法国、荷兰、德国、澳大利亚及“其他国家/地区”策略组；香港、澳门和台湾组名使用中国旗与地区旗双图标；不枚举 `proxy-providers`。倍率筛选先于地区分组执行，地区组只用幸存的有效节点。节点命中一个或两个常用地区时不进入“其他国家/地区”；同时命中香港、澳门、台湾、美国、新加坡、日本之一和其他常用地区时，只保留优先地区组；处理后仍命中三个及以上常用地区的节点仅进入“其他国家/地区”，不进入常用地区组；其余重合保留。常见地区有 1–3 个不同有效节点时保留父组及 `DIRECT`、`REJECT` 和节点选项，但不创建自动选择、负载均衡、故障转移子组；超过 3 个才创建三个隐藏子组。地区没有幸存节点时不生成父组；“其他国家/地区”组不受此阈值影响。JS 候选过滤与地区匹配是脚本侧机制；TGDC 引用共用地区定义，JS 匹配在临时规范化名称上进行且不改写原始节点名。若合格顶层节点只有在 JS 零宽字符规范化后才匹配地区词项，脚本只把这些节点名作为额外显式 `proxies`；Mihomo 原生 `include-all-proxies` 与 `filter` 仍提供常规动态成员集合，Mihomo 对该集合保持权威性。若不存在 JS 规范化地区匹配且合格显式保底节点列表非空，脚本移除原生 `filter` 与 `include-all-proxies`，并按源顺序显式列出全部合格节点；若该列表为空，则保留原生 `filter`、`include-all-proxies` 与 `empty-fallback: COMPATIBLE`。
+- **国家/地区分组**：`国家/地区分组` 开启后，只从订阅顶层 `proxies` 生成香港、日本、新加坡、台湾、韩国、马来西亚、美国、加拿大、英国、法国、荷兰、德国、澳大利亚及“其他国家/地区”策略组；不枚举 `proxy-providers`。倍率筛选先于地区分组执行，地区组只用幸存节点生成；某地区节点全部被筛除时不生成该地区的父组与三个隐藏子组。
 - **倍率筛选**：`高倍率筛选` 删除名称中明确标记为 `2x` 或更高的订阅顶层节点；`低倍率筛选` 删除明确标记为 `0.5x` 或更低的节点。只识别显式数值倍率（例如 `5x`），不猜测模糊标签；过滤同步清理代理组 `proxies` 中的节点名称引用，不处理 `proxy-providers`；执行顺序在地区分组与国内入口解析之前。
 - **DNS**：动态合并出 `dns.proxy-server-nameserver-policy`（模板不预置该键，以脚本计算结果为准），细节见下方流程图。
 - **开关声明**：脚本首行的 `Compatible_With_Bettbox` 兼容声明必须置顶——Bettbox 只在脚本开头识别该声明，删除或下移会导致"自定义规则开关"入口不显示；声明中的 `policyGroupOptions` 列出归入图形化开关分类的 23 个策略组，`ruleOptionsEnable` 则是实际生效的开关表，键名需与声明保持一致。`🌍 PROXY` 始终保留为基础/兜底组，不提供关闭开关。
@@ -151,33 +187,33 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><th width="42%">策略组名称<img src="assets/table-spacer.png" width="672" height="1" alt=""></th><th width="43%">Bettbox 开关<img src="assets/table-spacer.png" width="688" height="1" alt=""></th><th width="15%">默认<img src="assets/table-spacer.png" width="240" height="1" alt=""></th></tr>
 </thead>
 <tbody>
-<tr><td><strong>🔄 负载均衡</strong></td><td><code>🔄 负载均衡</code></td><td>关闭</td></tr>
+<tr><td><strong>🔄 负载均衡</strong></td><td><code>🔄 负载均衡</code></td><td>开启</td></tr>
 <tr><td><strong>👉 手动切换</strong></td><td><code>👉 手动切换</code></td><td>开启</td></tr>
-<tr><td><strong>♻️ 自动选择</strong></td><td><code>♻️ 自动选择</code></td><td>关闭</td></tr>
-<tr><td><strong>📲 Telegram</strong></td><td><code>📲 Telegram</code></td><td>关闭</td></tr>
-<tr><td><strong>🎮 Games-Global</strong></td><td><code>🎮 Games-Global</code></td><td>关闭</td></tr>
-<tr><td><strong>🍎 海外苹果</strong></td><td><code>🍎 海外苹果</code></td><td>关闭</td></tr>
-<tr><td><strong>💠 海外微软</strong></td><td><code>💠 海外微软</code></td><td>关闭</td></tr>
-<tr><td><strong>🎮 Steam平台（非下载/CDN）</strong></td><td><code>🎮 Steam平台（非下载/CDN）</code></td><td>关闭</td></tr>
-<tr><td><strong>✖️ Twitter</strong></td><td><code>✖️ Twitter</code></td><td>关闭</td></tr>
-<tr><td><strong>🤖 AI大模型</strong></td><td><code>🤖 AI大模型</code></td><td>关闭</td></tr>
-<tr><td><strong>🎵 TikTok</strong></td><td><code>🎵 TikTok</code></td><td>关闭</td></tr>
-<tr><td><strong>💳 金融支付</strong></td><td><code>💳 金融支付</code></td><td>关闭</td></tr>
-<tr><td><strong>🔎 Google</strong></td><td><code>🔎 Google</code></td><td>关闭</td></tr>
-<tr><td><strong>♾️ Meta</strong></td><td><code>♾️ Meta</code></td><td>关闭</td></tr>
-<tr><td><strong>🎧 Spotify</strong></td><td><code>🎧 Spotify</code></td><td>关闭</td></tr>
-<tr><td><strong>🎬 Emby</strong></td><td><code>🎬 Emby</code></td><td>关闭</td></tr>
-<tr><td><strong>💬 Discord</strong></td><td><code>💬 Discord</code></td><td>关闭</td></tr>
-<tr><td><strong>👽 Reddit</strong></td><td><code>👽 Reddit</code></td><td>关闭</td></tr>
-<tr><td><strong>🎥 Netflix</strong></td><td><code>🎥 Netflix</code></td><td>关闭</td></tr>
-<tr><td><strong>💝 Patreon</strong></td><td><code>💝 Patreon</code></td><td>关闭</td></tr>
-<tr><td><strong>📚 EHentai</strong></td><td><code>📚 EHentai</code></td><td>关闭</td></tr>
-<tr><td><strong>☁️ PikPak</strong></td><td><code>☁️ PikPak</code></td><td>关闭</td></tr>
-<tr><td><strong>💬 LINE</strong></td><td><code>💬 LINE</code></td><td>关闭</td></tr>
+<tr><td><strong>♻️ 自动选择</strong></td><td><code>♻️ 自动选择</code></td><td>开启</td></tr>
+<tr><td><strong>📲 Telegram</strong></td><td><code>📲 Telegram</code></td><td>开启</td></tr>
+<tr><td><strong>🎮 Games-Global</strong></td><td><code>🎮 Games-Global</code></td><td>开启</td></tr>
+<tr><td><strong>🍎 海外苹果</strong></td><td><code>🍎 海外苹果</code></td><td>开启</td></tr>
+<tr><td><strong>💠 海外微软</strong></td><td><code>💠 海外微软</code></td><td>开启</td></tr>
+<tr><td><strong>🎮 Steam平台（非下载/CDN）</strong></td><td><code>🎮 Steam平台（非下载/CDN）</code></td><td>开启</td></tr>
+<tr><td><strong>✖️ Twitter</strong></td><td><code>✖️ Twitter</code></td><td>开启</td></tr>
+<tr><td><strong>🤖 AI大模型</strong></td><td><code>🤖 AI大模型</code></td><td>开启</td></tr>
+<tr><td><strong>🎵 TikTok</strong></td><td><code>🎵 TikTok</code></td><td>开启</td></tr>
+<tr><td><strong>💳 金融支付</strong></td><td><code>💳 金融支付</code></td><td>开启</td></tr>
+<tr><td><strong>🔎 Google</strong></td><td><code>🔎 Google</code></td><td>开启</td></tr>
+<tr><td><strong>♾️ Meta</strong></td><td><code>♾️ Meta</code></td><td>开启</td></tr>
+<tr><td><strong>🎧 Spotify</strong></td><td><code>🎧 Spotify</code></td><td>开启</td></tr>
+<tr><td><strong>🎬 Emby</strong></td><td><code>🎬 Emby</code></td><td>开启</td></tr>
+<tr><td><strong>💬 Discord</strong></td><td><code>💬 Discord</code></td><td>开启</td></tr>
+<tr><td><strong>👽 Reddit</strong></td><td><code>👽 Reddit</code></td><td>开启</td></tr>
+<tr><td><strong>🎥 Netflix</strong></td><td><code>🎥 Netflix</code></td><td>开启</td></tr>
+<tr><td><strong>💝 Patreon</strong></td><td><code>💝 Patreon</code></td><td>开启</td></tr>
+<tr><td><strong>📚 EHentai</strong></td><td><code>📚 EHentai</code></td><td>开启</td></tr>
+<tr><td><strong>☁️ PikPak</strong></td><td><code>☁️ PikPak</code></td><td>开启</td></tr>
+<tr><td><strong>💬 LINE</strong></td><td><code>💬 LINE</code></td><td>开启</td></tr>
 </tbody>
 </table>
 
-业务组开关关闭时，对应策略组及路由规则从输出配置中移除；规则集仅在剩余规则和配置均无引用时清理。关闭 `🔄 负载均衡` 时，其父组、三个隐藏策略子组及相关引用一并移除。`🌍 PROXY` 始终作为基础/兜底组保留。
+这 23 个开关默认全部开启。关闭 20 个业务分流组时，会移除该组并删除指向它的路由规则，而不是把规则改写到 `🌍 PROXY`；只有在剩余规则和配置中均无引用的规则集才会清理。关闭 `🔄 负载均衡`、`👉 手动切换` 或 `♻️ 自动选择` 时仍沿用原有组引用和兜底处理。`🌍 PROXY` 始终保留为基础/兜底组。
 
 **未列入 `policyGroupOptions` 的组**
 
@@ -188,12 +224,12 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tbody>
 <tr><td><strong>FCM</strong></td><td><code>FCM直连</code></td><td>开启</td><td>开关不移除本组，只改写组内节点：开启=<code>DIRECT</code>；关闭且 <code>👉 手动切换</code> 已禁用时回退到全局兜底。脚本内嵌模板把本组标记为隐藏组（<code>hidden</code>）</td></tr>
 <tr><td><em><strong>📲 Telegram(兜底)</strong></em></td><td><em><strong><code>TGDC实验分流</code></strong></em></td><td><em><strong>关闭</strong></em></td><td><em><strong>该开关开启时由 <code>📲 Telegram</code> 更名而来，承接 Telegram 进程、域名与 CIDR 规则</strong></em></td></tr>
-<tr><td><strong>📲 Telegram-DC1-DC3-Miami</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>常规动态成员由 Mihomo 原生 <code>include-all-proxies</code> 与美国地区 <code>filter</code> 提供；仅把依赖 JS 名称规范化才能命中的合格顶层节点作为额外显式 <code>proxies</code>。无 JS 规范化地区匹配且合格显式保底节点列表非空时，移除原生 <code>filter</code>/<code>include-all-proxies</code> 并按源顺序列出全部合格顶层节点；若列表为空，则保留原生 <code>filter</code>/<code>include-all-proxies</code> 与 <code>empty-fallback: COMPATIBLE</code></td></tr>
-<tr><td><strong>📲 Telegram-DC2-DC4-Amsterdam</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>同上，引用荷兰地区定义及其独立的 Mihomo 表达式</td></tr>
-<tr><td><strong>📲 Telegram-DC5-SG</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>同上，引用新加坡与香港地区定义的 Mihomo 表达式</td></tr>
+<tr><td><strong>📲 Telegram-DC1-DC3-Miami</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>开关开启时按 Telegram DC IP 规则优先命中美国/迈阿密节点；地区无候选时列出全部合格节点供手动选择</td></tr>
+<tr><td><strong>📲 Telegram-DC2-DC4-Amsterdam</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>同上，对应荷兰/阿姆斯特丹节点</td></tr>
+<tr><td><strong>📲 Telegram-DC5-SG</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>同上，DC5 同时匹配新加坡与香港节点</td></tr>
 <tr><td><em><strong>🛑 广告拦截</strong></em></td><td><em><strong><code>SKK广告拦截</code></strong></em></td><td><em><strong>关闭</strong></em></td><td><em><strong>开关关闭时本组、其 4 个规则集与 4 条规则都不生成；开启时组内可选 <code>REJECT</code> / <code>REJECT-DROP</code> / <code>PASS</code>，承接 SukkaW/Surge 的 reject 域名集与 non_ip 规则集，规则置于置顶拦截守卫之后；reject-drop 与 reject_ip 两条规则不经本组，分别直达 <code>REJECT-DROP</code> 与 <code>REJECT</code></strong></em></td></tr>
 <tr><td><strong>国内入口解析</strong></td><td><code>入口解析</code></td><td>关闭</td><td>开关开启时统一注入维护区所有运营商的入口节点并建立该组，由用户手动选择入口；每个运营商支持多个节点，排列顺序不代表优先级</td></tr>
-<tr><td><strong>国家/地区父组及隐藏子组</strong></td><td><code>国家/地区分组</code></td><td>关闭</td><td>根据倍率筛选后的有效节点创建分组；将父组追加到 15 个指定流量目标中，跳过已禁用或不存在的目标；常见地区 1–3 个不同节点时只生成父组和 DIRECT/REJECT/节点选项，超过 3 个时才加入自动选择、负载均衡、故障转移三个隐藏子组；无候选节点时不生成父组</td></tr>
+<tr><td><strong>国家/地区父组及隐藏子组</strong></td><td><code>国家/地区分组</code></td><td>关闭</td><td>根据地区候选节点创建分组；将父组追加到 15 个指定流量目标中，跳过已禁用或不存在的目标；地区节点被倍率筛选全部剔除时不生成该地区的父组与三个隐藏子组</td></tr>
 </tbody>
 </table>
 
@@ -279,8 +315,18 @@ venn-beta
 
 三者覆盖的都是"需要走代理的域名"，在 `rules` 中同指 `🌍 PROXY`。
 
-**4. Twitter 规则集**
-Twitter 流量由 `twitter-x-domain`、`twitter-x-ip` 与 `twitter-x-aggregate` 处理，均路由到 `✖️ Twitter`。聚合列表共 36 条规则；与原列表的 33 条相比，原条目全部保留，并新增 `DOMAIN-SUFFIX,twitter.map.fastly.net`、`IP-CIDR,104.244.42.0/21,no-resolve` 和 `IP-CIDR,199.16.156.0/22,no-resolve`。
+**4. Twitter 的三套规则集**
+
+```mermaid
+venn-beta
+  set D["twitter-x-domain（MetaCubeX）"]
+  set I["twitter-x-ip（MetaCubeX）"]
+  set B["twitter-x-blackmatrix7-No_Resolve"]
+  union D,B
+  union I,B
+```
+
+blackmatrix7 的 `No_Resolve` 集同时包含域名与 IP，与 MetaCubeX 的两套各自重合。
 
 **5. 两套 AI 规则集**
 
