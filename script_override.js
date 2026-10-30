@@ -140,51 +140,51 @@ const ruleOptionsEnable = {
 
   // --- 代理组（策略组）单独控制开关 ---
   // 负载均衡策略组
-  '🔄 负载均衡': true,
+  '🔄 负载均衡': false,
   // 手动选择策略组
   '👉 手动切换': true,
   // 延迟自动选择策略组
-  '♻️ 自动选择': true,
+  '♻️ 自动选择': false,
   // Telegram 通讯软件策略组
-  '📲 Telegram': true,
+  '📲 Telegram': false,
   // 游戏策略组
-  '🎮 Games-Global': true,
+  '🎮 Games-Global': false,
   // 海外 Apple 平台服务
-  '🍎 海外苹果': true,
+  '🍎 海外苹果': false,
   // 海外 Microsoft 平台服务
-  '💠 海外微软': true,
+  '💠 海外微软': false,
   // Steam 平台服务，不负责下载/CDN
-  '🎮 Steam平台（非下载/CDN）': true,
+  '🎮 Steam平台（非下载/CDN）': false,
   // Twitter 社交平台策略组
-  '✖️ Twitter': true,
+  '✖️ Twitter': false,
   // AI 大模型策略组
-  '🤖 AI大模型': true,
+  '🤖 AI大模型': false,
   // TikTok 视频平台策略组
-  '🎵 TikTok': true,
+  '🎵 TikTok': false,
   // 金融支付；Instagram 统一归入 Meta。
-  '💳 金融支付': true,
+  '💳 金融支付': false,
   // Google / Google-CN 共用独立策略组；Google FCM 与 AI 特例仍由原规则处理。
-  '🔎 Google': true,
+  '🔎 Google': false,
   // Meta 社交平台策略组
-  '♾️ Meta': true,
+  '♾️ Meta': false,
   // Spotify 音乐流媒体策略组
-  '🎧 Spotify': true,
+  '🎧 Spotify': false,
   // Emby 播放器进程分流策略组
-  '🎬 Emby': true,
+  '🎬 Emby': false,
   // Discord 通讯软件策略组
-  '💬 Discord': true,
+  '💬 Discord': false,
   // Reddit 社交平台策略组
-  '👽 Reddit': true,
+  '👽 Reddit': false,
   // Netflix 流媒体策略组
-  '🎥 Netflix': true,
+  '🎥 Netflix': false,
   // Patreon 赞助平台策略组
-  '💝 Patreon': true,
+  '💝 Patreon': false,
   // EHentai 策略组
-  '📚 EHentai': true,
+  '📚 EHentai': false,
   // PikPak 网盘策略组
-  '☁️ PikPak': true,
+  '☁️ PikPak': false,
   // LINE 通讯软件策略组
-  '💬 LINE': true,
+  '💬 LINE': false,
 
   // --- 节点字段修正 ---
   // 开启时统一把订阅节点 skip-cert-verify 置为 false（强制校验证书）；关闭时不干预，保留订阅节点原有设置。
