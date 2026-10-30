@@ -2310,23 +2310,58 @@ function applyProxyDnsTcp(result) {
   }
 }
 // 公共 DNS 识别表：用于区分“公共可直连 DNS”和“机场/用户的私有 DNS”。
-// 数据参考本地 MyClash 仓库里的公共 DNS 列表，但这里只借用识别表，不照搬其处理逻辑。
+// 数据参考 MyClash 9ae100c4 的公共 DNS 列表；这里只借用端点，不照搬其处理逻辑。
 const publicDnsList = [
   // 国内
   '223.5.5.5', '223.6.6.6', '119.29.29.29', '1.12.12.12',
   '120.53.53.53', '114.114.114.114', '180.76.76.76', '1.2.4.8',
   '116.116.116.116', '101.226.4.6', '123.125.81.6', '180.184.1.1',
   '180.184.2.2',
+  // 国内公共 DNS 补充（参考 MyClash）
+  '2400:3200::1', '2400:3200:baba::1', '119.28.28.28',
+  '182.254.116.116', '182.254.118.118', '2402:4e00::',
+  '114.114.115.115', '114.114.114.119', '114.114.115.119',
+  '114.114.114.110', '114.114.115.110', '2400:da00::6666',
+  '210.2.4.8', '2001:dc7:1000::1', '218.30.118.6',
+  '140.207.198.6', '2400:8800:1::6', '2400:8800:2::6',
+  '117.50.11.11', '117.50.22.22', '52.80.66.66', '117.50.10.10',
+  '52.80.52.52', '117.50.60.30', '52.80.60.30',
+  '101.6.6.6', '2001:da8::666', '240c::6666', '240c::6644',
+  '202.141.162.123', '202.141.178.13',
   // 国外
   '1.1.1.1', '1.0.0.1', '8.8.8.8', '8.8.4.4', '9.9.9.9',
   '149.112.112.112', '208.67.222.222', '208.67.220.220',
   '94.140.14.14', '94.140.15.15', '76.76.2.0', '76.76.10.0',
   '185.228.168.9', '185.228.169.9', '77.88.8.8', '77.88.8.1',
-  '156.154.70.1', '156.154.71.1', '127.0.0.1',
-  // 域名关键词
-  'alidns', 'doh.pub', 'dot.pub', 'dns.pub', 'dnspod', 'dns.baidu',
-  'dns.google', 'cloudflare', 'quad9', 'opendns', 'nextdns', 'adguard',
-  'system'
+  '156.154.70.1', '156.154.71.1',
+  // 国外公共 DNS 补充（参考 MyClash）
+  '1.1.1.2', '1.0.0.2', '1.1.1.3', '1.0.0.3',
+  '2606:4700:4700::1111', '2606:4700:4700::1001',
+  '2606:4700:4700::1112', '2606:4700:4700::1002',
+  '2606:4700:4700::1113', '2606:4700:4700::1003',
+  '2001:4860:4860::8888', '2001:4860:4860::8844',
+  '9.9.9.10', '9.9.9.11', '149.112.112.10', '149.112.112.11',
+  '2620:fe::fe', '2620:fe::9',
+  '208.67.222.123', '208.67.220.123', '2620:119:35::35',
+  '2620:119:53::53', '2620:119:35::123', '2620:119:53::123',
+  '94.140.14.15', '94.140.15.16', '2a10:50c0::ad1:ff',
+  '2a10:50c0::ad2:ff', '2a10:50c0::bad1:ff', '2a10:50c0::bad2:ff',
+  '76.76.19.19', '76.223.122.150',
+  '185.228.168.10', '185.228.169.11', '185.228.168.168',
+  '185.228.169.168', '2a0d:2a00:1::2', '2a0d:2a00:2::2',
+  '2a02:6b8::feed:0ff', '2a02:6b8:0:1::feed:0ff',
+  '156.154.70.2', '156.154.71.2', '2610:a1:1018::1',
+  '2610:a1:1019::1', '194.242.2.2', '2a07:e340::2',
+  '74.82.42.42', '2001:470:20::2',
+  // 公共 DoH/DoT 主机名（完整域名，避免宽泛品牌关键字误判私有端点）
+  'dns.alidns.com', 'doh.pub', 'dot.pub', 'dns.pub',
+  'dnspod.cn', 'dnspod.net', 'dns.baidu.com', 'dns.google',
+  'dns.cloudflare.com', 'cloudflare-dns.com', 'one.one.one.one',
+  'dns.quad9.net', 'doh.opendns.com', 'resolver1.opendns.com',
+  'resolver2.opendns.com', 'dns.nextdns.io',
+  'dns.adguard-dns.com', 'family.adguard-dns.com',
+  'unfiltered.adguard-dns.com', 'dns.cnnic.cn', 'doh.360.cn',
+  'dot.360.cn', 'dns.360.cn', 'onedns.net', 'dns.apple.com'
 ];
 
 function dnsServerAddress(value) {
@@ -2335,9 +2370,72 @@ function dnsServerAddress(value) {
   return (hashIndex === -1 ? str : str.slice(0, hashIndex)).toLowerCase();
 }
 
+function normalizeDnsIpAddress(value) {
+  const rawAddress = String(value).trim().toLowerCase();
+  const zoneIndex = rawAddress.indexOf('%');
+  const address = rawAddress.includes(':') && zoneIndex !== -1
+    ? rawAddress.slice(0, zoneIndex)
+    : rawAddress;
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(address)) {
+    const octets = address.split('.').map(Number);
+    return octets.every((octet) => octet <= 255)
+      ? octets.join('.')
+      : '';
+  }
+  if (!address.includes(':') || address.includes('.')) {
+    return '';
+  }
+  const sections = address.split('::');
+  if (sections.length > 2) {
+    return '';
+  }
+  const left = sections[0] ? sections[0].split(':') : [];
+  const right = sections.length === 2 && sections[1]
+    ? sections[1].split(':')
+    : [];
+  const missing = 8 - left.length - right.length;
+  if ((sections.length === 2 && missing < 1) ||
+      (sections.length === 1 && missing !== 0)) {
+    return '';
+  }
+  const parts = [...left, ...Array(missing).fill('0'), ...right];
+  if (parts.length !== 8 || parts.some((part) => !/^[\da-f]{1,4}$/.test(part))) {
+    return '';
+  }
+  return parts.map((part) => parseInt(part, 16).toString(16).padStart(4, '0')).join(':');
+}
+
 function isPublicDnsServer(value) {
-  const address = dnsServerAddress(value);
-  return publicDnsList.some((dns) => address.includes(dns.toLowerCase()));
+  const hostname = dnsServerHostname(value);
+  return publicDnsList.some((dns) => {
+    const candidate = dns.toLowerCase();
+    if (isIPAddress(candidate)) {
+      const normalizedHostname = normalizeDnsIpAddress(hostname);
+      return normalizedHostname !== '' &&
+        normalizedHostname === normalizeDnsIpAddress(candidate);
+    }
+    return hostname === candidate || hostname.endsWith('.' + candidate);
+  });
+}
+
+// 逐域规则迁移到节点专用 policy 时只剔除公共解析器；保留原值形态。
+function filterPublicDnsPolicy(policy) {
+  if (!policy || typeof policy !== "object" || Array.isArray(policy)) {
+    return {};
+  }
+  const filteredPolicy = {};
+  for (const [rule, value] of Object.entries(policy)) {
+    const nonPublicNameservers = asNameserverList(value).filter(
+      (nameserver) => !isPublicDnsServer(nameserver)
+    );
+    if (nonPublicNameservers.length === 0) {
+      continue;
+    }
+    filteredPolicy[rule] = Array.isArray(value)
+      ? nonPublicNameservers
+      : nonPublicNameservers[0];
+  }
+  return filteredPolicy;
 }
 
 function dnsServerEndpoint(value) {
@@ -2346,11 +2444,38 @@ function dnsServerEndpoint(value) {
   if (schemeIndex !== -1) {
     endpoint = endpoint.slice(schemeIndex + 3);
   }
-  const slashIndex = endpoint.indexOf('/');
-  if (slashIndex !== -1) {
-    endpoint = endpoint.slice(0, slashIndex);
+  const pathIndex = endpoint.search(/[/?]/);
+  if (pathIndex !== -1) {
+    endpoint = endpoint.slice(0, pathIndex);
   }
   return endpoint;
+}
+
+function dnsServerHostname(value) {
+  const endpoint = dnsServerEndpoint(value).trim().toLowerCase();
+  if (endpoint.startsWith('[')) {
+    const closingBracket = endpoint.indexOf(']');
+    return closingBracket === -1
+      ? endpoint
+      : endpoint.slice(1, closingBracket);
+  }
+  const colonCount = (endpoint.match(/:/g) || []).length;
+  const hostname = colonCount === 1 && /:\d+$/.test(endpoint)
+    ? endpoint.replace(/:\d+$/, '')
+    : endpoint;
+  return hostname.replace(/\.$/, '');
+}
+
+// system/loopback 不是公共 DNS，但也不作为机场私有上游的全局兜底来源。
+function isNonPrivateNodeDnsServer(value) {
+  const address = dnsServerAddress(value).trim();
+  const hostname = dnsServerHostname(value);
+  const normalizedIp = normalizeDnsIpAddress(hostname);
+  const isIpv4Loopback = /^127\./.test(normalizedIp);
+  const isIpv6Loopback = normalizedIp === '0000:0000:0000:0000:0000:0000:0000:0001';
+  return /^system(?::\/\/)?$/i.test(address) ||
+    isIpv4Loopback || isIpv6Loopback || hostname === 'localhost' ||
+    hostname.endsWith('.localhost') || hostname === 'localhost.localdomain';
 }
 
 function hasDnsListenLoop(dns) {
@@ -2477,6 +2602,10 @@ function resolveHostsChain(startDomain, hosts) {
 // 根据节点域名补充 DNS
 function smartMergeDnsNode(config, result) {
   const rules = collectDnsRules(config);
+  const proxyServerNameserverPolicy = filterPublicDnsPolicy(
+    rules.proxyServerNameserverPolicy
+  );
+  const nameserverPolicy = filterPublicDnsPolicy(rules.nameserverPolicy);
   const newPolicy = result.dns["proxy-server-nameserver-policy"] || {};
   const newHosts = result.hosts || {};
   const proxies = Array.isArray(config.proxies) ? config.proxies : [];
@@ -2623,18 +2752,18 @@ function smartMergeDnsNode(config, result) {
   // 优先级：proxy-server-nameserver-policy > proxy-server-nameserver（仅私有）
   //           > nameserver-policy > nameserver（仅私有）。
   const matchedProxyPolicyKeys = new Set();
-  for (const rule in rules.proxyServerNameserverPolicy) {
+  for (const rule in proxyServerNameserverPolicy) {
     if (!matchesAnyNodeDomain(rule)) {
       continue;
     }
     matchedProxyPolicyKeys.add(rule);
     if (matchesEffectiveNodeDomain(rule)) {
-      setPolicy(rule, rules.proxyServerNameserverPolicy[rule]);
+      setPolicy(rule, proxyServerNameserverPolicy[rule]);
     }
   }
 
   // proxy-server-nameserver-policy 命中原域名时，其优先级也覆盖映射后的最终域名。
-  copyResolvedDomainPolicy(rules.proxyServerNameserverPolicy, () => true);
+  copyResolvedDomainPolicy(proxyServerNameserverPolicy, () => true);
 
   const proxyCoveredDomains = new Set();
   for (const rule of matchedProxyPolicyKeys) {
@@ -2652,10 +2781,10 @@ function smartMergeDnsNode(config, result) {
   }
 
   const privateProxyServerNameservers = rules.proxyServerNameservers.filter(
-    (nameserver) => !isPublicDnsServer(nameserver)
+    (nameserver) => !isPublicDnsServer(nameserver) && !isNonPrivateNodeDnsServer(nameserver)
   );
   const privateNameservers = rules.nameservers.filter(
-    (nameserver) => !isPublicDnsServer(nameserver)
+    (nameserver) => !isPublicDnsServer(nameserver) && !isNonPrivateNodeDnsServer(nameserver)
   );
 
   if (privateProxyServerNameservers.length > 0) {
@@ -2665,31 +2794,35 @@ function smartMergeDnsNode(config, result) {
       }
     }
   } else {
-    for (const rule in rules.nameserverPolicy) {
+    for (const rule in nameserverPolicy) {
       if (matchedProxyPolicyKeys.has(rule)) {
         continue;
       }
       if (!matchesAnyNodeDomain(rule)) {
         continue;
       }
-      let overlapsProxy = false;
-      for (const domain of allNodeDomains) {
-        if (matchWildcardDomain(rule, domain) && proxyCoveredDomains.has(domain)) {
-          overlapsProxy = true;
-          break;
-        }
-      }
-      if (overlapsProxy) {
+      const matchingEffectiveDomains = Array.from(effectiveNodeDomains).filter(
+        (domain) => matchWildcardDomain(rule, domain)
+      );
+      const uncoveredEffectiveDomains = matchingEffectiveDomains.filter(
+        (domain) => !proxyCoveredDomains.has(domain)
+      );
+      if (uncoveredEffectiveDomains.length === 0) {
         continue;
       }
-      if (matchesEffectiveNodeDomain(rule)) {
-        setPolicy(rule, rules.nameserverPolicy[rule]);
+      if (uncoveredEffectiveDomains.length < matchingEffectiveDomains.length) {
+        // 通配规则只对未被更高优先级 policy 覆盖的节点写精确条目，避免一处重叠丢弃整条规则。
+        for (const domain of uncoveredEffectiveDomains) {
+          setPolicy(domain, nameserverPolicy[rule]);
+        }
+      } else if (matchesEffectiveNodeDomain(rule)) {
+        setPolicy(rule, nameserverPolicy[rule]);
       }
     }
 
     // nameserver-policy 同样可随 hosts 的域名映射链路传递，但不得覆盖更高优先级。
     copyResolvedDomainPolicy(
-      rules.nameserverPolicy,
+      nameserverPolicy,
       ({ effective }) => !proxyCoveredDomains.has(effective)
     );
 
