@@ -925,7 +925,7 @@ const TEMPLATE = {
       "rule-set:apple_ip",
       "rule-set:telegramcidr",
       "rule-set:twitter-x-ip",
-      "rule-set:twitter-x-blackmatrix7-No_Resolve",
+      "rule-set:twitter-x-aggregate",
       "rule-set:steam_ip",
       "160.79.104.0/21",
       "2607:6bc0::/48",
@@ -1688,13 +1688,13 @@ const TEMPLATE = {
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/reddishJade/private_proxy/main/Mihomo/Provider/telegram%40ip.mrs",
       "path": "./ruleset/telegramcidr.mrs"
     },
-    "twitter-x-blackmatrix7-No_Resolve": {
+    "twitter-x-aggregate": {
       "type": "http",
       "interval": 86400,
       "behavior": "classical",
       "format": "yaml",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Twitter/Twitter_No_Resolve.yaml",
-      "path": "./ruleset/twitter-x-blackmartix7-noreslove.mrs"
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Twitter_classical_d405159ccf6c8682.yaml",
+      "path": "./ruleset/twitter-x-aggregate.yaml"
     },
     "twitter-x-domain": {
       "type": "http",
@@ -1938,7 +1938,7 @@ const TEMPLATE = {
     "PROCESS-NAME-REGEX,.*twitter.*,✖️ Twitter",
     "RULE-SET,twitter-x-ip,✖️ Twitter,no-resolve",
     "RULE-SET,twitter-x-domain,✖️ Twitter",
-    "RULE-SET,twitter-x-blackmatrix7-No_Resolve,✖️ Twitter",
+    "RULE-SET,twitter-x-aggregate,✖️ Twitter",
     "RULE-SET,steam_ip,🎮 Steam平台（非下载/CDN）,no-resolve",
     "RULE-SET,steam,🎮 Steam平台（非下载/CDN）",
     "PROCESS-NAME,bf6.exe,🎮 Games-Global",
