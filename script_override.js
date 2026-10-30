@@ -123,9 +123,9 @@ const Compatible_With_Bettbox = {
 
 // 隐藏策略子组不单独提供开关；它们始终跟随现有负载均衡开关启停。
 const LOAD_BALANCE_STRATEGY_GROUP_NAMES = [
-  '🔄 负载均衡 · 粘性会话',
-  '🔄 负载均衡 · 轮询',
-  '🔄 负载均衡 · 一致性哈希',
+  '粘性会话',
+  '轮询',
+  '一致性哈希',
 ];
 
 const ruleOptionsEnable = {
@@ -1087,13 +1087,13 @@ const TEMPLATE = {
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-clash-verge-rev-balance.svg",
       "type": "select",
       "proxies": [
-        "🔄 负载均衡 · 粘性会话",
-        "🔄 负载均衡 · 轮询",
-        "🔄 负载均衡 · 一致性哈希"
+        "粘性会话",
+        "轮询",
+        "一致性哈希"
       ]
     },
     {
-      "name": "🔄 负载均衡 · 粘性会话",
+      "name": "粘性会话",
       "type": "load-balance",
       "include-all": true,
       "url": "https://g.cn/generate_204",
@@ -1104,7 +1104,7 @@ const TEMPLATE = {
       "hidden": true
     },
     {
-      "name": "🔄 负载均衡 · 轮询",
+      "name": "轮询",
       "type": "load-balance",
       "include-all": true,
       "url": "https://g.cn/generate_204",
@@ -1115,7 +1115,7 @@ const TEMPLATE = {
       "hidden": true
     },
     {
-      "name": "🔄 负载均衡 · 一致性哈希",
+      "name": "一致性哈希",
       "type": "load-balance",
       "include-all": true,
       "url": "https://g.cn/generate_204",
