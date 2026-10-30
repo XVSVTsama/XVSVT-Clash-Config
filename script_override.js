@@ -383,8 +383,8 @@ const TGDC_RULE_PROVIDERS = {
   },
 };
 
-// JS-side name normalization is only for matching and never mutates proxy names or config.
-// ZWNJ, ZWJ, and Unicode variation selectors are intentionally preserved.
+// JS 名称规范化只用于匹配，不会修改节点名称或配置。
+// 有意保留 ZWNJ、ZWJ 和 Unicode 变体选择符。
 const JS_INVISIBLE_CHARACTER_NORMALIZATION_REGEX =
   /[\u00AD\u180E\u200B\u200E\u200F\u202A-\u202E\u2060-\u206F\uFEFF\u115F\u1160\u3164\uFFA0]/g;
 
@@ -394,7 +394,7 @@ function normalizeNameForJsMatching(name) {
     : name;
 }
 
-// Shared JS-side candidate exclusion for country/region and TGDC groups.
+// 国家/地区分组与 TGDC 共用此 JS 候选节点排除规则。
 const JS_MODULE_INFORMATION_NODE_EXCLUSION_REGEX =
   /群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|地址|频道|电报|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|优惠|福利|邀请|好友|失联|选择|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|⚠️|@|t\.me\/\+|\bexpire\b|\bhttps?:\/\/|\.com|\btraffic\b/iu;
 const TGDC_FALLBACK_ADDITIONAL_EXCLUDE_FILTER = /国内/iu;
@@ -468,11 +468,11 @@ function buildTelegramDcProxyGroups(originalProxies) {
   });
 }
 
-// JS-side country/region definitions and aliases; one node may match multiple regions.
-// TGDC and country/region groups share these patterns for JS-only candidate membership.
+// JS 国家/地区定义及别名；同一节点可以命中多个地区。
+// TGDC 与国家/地区组共用这些模式进行 JS 候选归属匹配。
 const COUNTRY_REGION_PARENT_ICON =
   'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Global.png';
-// Acronym aliases use a shared boundary class that explicitly includes the Kelvin sign (K) and long-s (ſ), aligning Unicode /iu case-fold behavior; avoid engine-specific \b semantics.
+// 缩写别名使用统一边界字符类，包含开尔文符号（K）和长 s（ſ），使 JS /iu 与 RE2 的 Unicode 大小写折叠保持一致，避免依赖引擎行为不同的 \b。
 const COUNTRY_REGION_DEFINITIONS = [
   { key: 'hk', name: '🇨🇳🇭🇰 香港', jsPattern: /🇭🇰|香港|Hong\s*Kong|HongKong|(^|[^A-Za-z0-9_Kſ])HK($|[^A-Za-z0-9_Kſ])|(^|[^A-Za-z0-9_Kſ])HKG($|[^A-Za-z0-9_Kſ])/iu },
   { key: 'mo', name: '🇨🇳🇲🇴 澳门', jsPattern: /🇲🇴|澳门|澳門|Macau|Macao|\bMO\b|\bMAC\b/iu },
