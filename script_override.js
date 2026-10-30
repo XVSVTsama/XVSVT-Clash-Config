@@ -99,10 +99,10 @@ const Compatible_With_Bettbox = {
  *       只是占位）。
  *       国家分组筛选仅处理订阅顶层 proxies 节点，不处理 proxy-providers 中的运行时节点。
  *
- *    3. proxy-groups 使用 Mihomo 原生 include-all / include-all-proxies
+ *    3. 常规 proxy-groups 使用 Mihomo 原生 include-all / include-all-proxies
  *       动态引入订阅节点和代理提供者；🍎 海外苹果、💠 海外微软、🎮 Steam平台（非下载/CDN）、
  *       🎮 Games-Global、🎬 Emby 保留模板中显式列出的固定策略项。
- *       TGDC 实验组在没有地区节点时仍由脚本显式生成保底节点列表。
+ *       TGDC 实验组则完全由 JS 筛选顶层节点并显式生成节点列表。
  *
  *    4.【特别处理】DNS 与 hosts：
  *       - hosts 仅在 dns.use-hosts=true 且 dns.listen 与真正参与节点解析的 DNS 端点
@@ -394,8 +394,7 @@ function normalizeNameForJsMatching(name) {
     : name;
 }
 
-// This JS-side candidate exclusion is separate from Mihomo proxy-group filter fields.
-// It retains the existing information-node vocabulary and applies only to module candidates.
+// Shared JS-side candidate exclusion for country/region and TGDC groups.
 const JS_MODULE_INFORMATION_NODE_EXCLUSION_REGEX =
   /群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|地址|频道|电报|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|优惠|福利|邀请|好友|失联|选择|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|⚠️|@|t\.me\/\+|\bexpire\b|\bhttps?:\/\/|\.com|\btraffic\b/iu;
 const TGDC_FALLBACK_ADDITIONAL_EXCLUDE_FILTER = /国内/iu;
@@ -422,10 +421,10 @@ function filterModuleCandidateProxies(originalProxies) {
   });
 }
 
-// TGDC 无地区候选时，按订阅原始顺序列出全部合格顶层节点作保底选择。
+// TGDC 无地区候选时，按订阅原始顺序列出合格的非国内顶层节点作保底选择。
 // 若仍无候选，使用 COMPATIBLE；empty-fallback 只接受单节点名称，不能填写策略组或多个节点。
-function selectTelegramDcFallbackNodes(originalProxies) {
-  return filterModuleCandidateProxies(originalProxies)
+function selectTelegramDcFallbackNodes(eligibleCandidates) {
+  return eligibleCandidates
     .filter((proxy) => !TGDC_FALLBACK_ADDITIONAL_EXCLUDE_FILTER.test(normalizeNameForJsMatching(proxy.name)))
     .map((proxy) => proxy.name);
 }
@@ -453,93 +452,47 @@ const TGDC_PROXY_GROUP_DEFINITIONS = [
 function buildTelegramDcProxyGroups(originalProxies) {
   const proxies = Array.isArray(originalProxies) ? originalProxies : [];
   const eligibleCandidates = filterModuleCandidateProxies(proxies);
-  const fallbackNodeNames = selectTelegramDcFallbackNodes(proxies);
+  const fallbackNodeNames = selectTelegramDcFallbackNodes(eligibleCandidates);
   return TGDC_PROXY_GROUP_DEFINITIONS.map((definition) => {
-    const regionDefinitions = definition.regionKeys.map((regionKey) => {
-      const region = COUNTRY_REGION_DEFINITIONS.find((candidate) => candidate.key === regionKey);
-      if (!region) {
-        throw new Error(`TGDC group "${definition.name}" references unknown country/region key "${regionKey}".`);
-      }
-      if (typeof region.mihomoFilter !== 'string' || region.mihomoFilter.trim().length === 0) {
-        throw new Error(`TGDC group "${definition.name}" country/region key "${regionKey}" has no nonempty mihomoFilter.`);
-      }
-      return region;
-    });
-    const group = {
+    const regionNodeNames = eligibleCandidates
+      .filter((proxy) => matchCountryRegionDefinitionsForJs(proxy.name)
+        .some((region) => definition.regionKeys.includes(region.key)))
+      .map((proxy) => proxy.name);
+    return {
       name: definition.name,
       type: 'select',
-      filter: `(?i)${regionDefinitions.map((region) => region.mihomoFilter.replace(/^\(\?i\)/i, '')).join('|')}`,
-      'include-all-proxies': true,
+      proxies: regionNodeNames.length > 0 ? regionNodeNames : fallbackNodeNames.slice(),
       'empty-fallback': 'COMPATIBLE',
       icon: definition.icon,
     };
-    // Readiness scans all original top-level proxies using normalized temporary names.
-    const hasRegionMatch = proxies.some((proxy) =>
-      proxy && typeof proxy.name === 'string' &&
-      matchCountryRegionDefinitionsForJs(proxy.name)
-        .some((region) => definition.regionKeys.includes(region.key))
-    );
-    if (hasRegionMatch) {
-      const supplementalNames = [];
-      const supplementalNameSet = new Set();
-      // Compare the same JS patterns against original names to isolate JS-normalization-dependent matches.
-      // This comparison does not execute Mihomo's native filter.
-      eligibleCandidates.forEach((proxy) => {
-        const matchesNormalizedName = matchCountryRegionDefinitionsForJs(proxy.name)
-          .some((region) => definition.regionKeys.includes(region.key));
-        const matchesOriginalName = matchCountryRegionDefinitionsForJs(proxy.name, { normalize: false })
-          .some((region) => definition.regionKeys.includes(region.key));
-        if (
-          matchesNormalizedName &&
-          !matchesOriginalName &&
-          !supplementalNameSet.has(proxy.name)
-        ) {
-          supplementalNameSet.add(proxy.name);
-          supplementalNames.push(proxy.name);
-        }
-      });
-      if (supplementalNames.length > 0) {
-        // Supplemental explicit names do not replace Mihomo's native dynamic membership.
-        group.proxies = supplementalNames;
-      }
-    } else if (fallbackNodeNames.length > 0) {
-      // 只在地区无候选且存在保底节点时放宽；按源顺序显式列出全部节点。
-      delete group.filter;
-      delete group['include-all-proxies'];
-      group.proxies = fallbackNodeNames.slice();
-    }
-    return group;
   });
 }
 
 // JS-side country/region definitions and aliases; one node may match multiple regions.
-// These JS matching patterns are separate from Mihomo proxy-group filter fields.
+// TGDC and country/region groups share these patterns for JS-only candidate membership.
 const COUNTRY_REGION_PARENT_ICON =
   'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Global.png';
-// Mihomo's RE2 \s is ASCII-only; these native filters spell out JS whitespace separately.
-// Acronym aliases use a shared boundary class that explicitly includes the Kelvin sign (K) and long-s (ſ), aligning JS /iu with Mihomo/RE2 case-fold behavior; avoid engine-specific \b semantics.
+// Acronym aliases use a shared boundary class that explicitly includes the Kelvin sign (K) and long-s (ſ), aligning Unicode /iu case-fold behavior; avoid engine-specific \b semantics.
 const COUNTRY_REGION_DEFINITIONS = [
-  { key: 'hk', name: '🇨🇳🇭🇰 香港', jsPattern: /🇭🇰|香港|Hong\s*Kong|HongKong|(^|[^A-Za-z0-9_Kſ])HK($|[^A-Za-z0-9_Kſ])|(^|[^A-Za-z0-9_Kſ])HKG($|[^A-Za-z0-9_Kſ])/iu, mihomoFilter: '(?i)🇭🇰|香港|Hong[\\s\\x{000B}\\p{Zs}\\x{2028}\\x{2029}\\x{FEFF}]*Kong|HongKong|(^|[^A-Za-z0-9_Kſ])HK($|[^A-Za-z0-9_Kſ])|(^|[^A-Za-z0-9_Kſ])HKG($|[^A-Za-z0-9_Kſ])' },
+  { key: 'hk', name: '🇨🇳🇭🇰 香港', jsPattern: /🇭🇰|香港|Hong\s*Kong|HongKong|(^|[^A-Za-z0-9_Kſ])HK($|[^A-Za-z0-9_Kſ])|(^|[^A-Za-z0-9_Kſ])HKG($|[^A-Za-z0-9_Kſ])/iu },
   { key: 'mo', name: '🇨🇳🇲🇴 澳门', jsPattern: /🇲🇴|澳门|澳門|Macau|Macao|\bMO\b|\bMAC\b/iu },
   { key: 'jp', name: '🇯🇵 日本', jsPattern: /🇯🇵|日本|东京|東京|大阪|京都|Tokyo|Osaka|Kyoto|Japan|\bJP\b|\bJPN\b/iu },
-  { key: 'sg', name: '🇸🇬 新加坡', jsPattern: /🇸🇬|新加坡|狮城|獅城|Singapore|(^|[^A-Za-z0-9_Kſ])SG($|[^A-Za-z0-9_Kſ])|(^|[^A-Za-z0-9_Kſ])SGP($|[^A-Za-z0-9_Kſ])/iu, mihomoFilter: '(?i)🇸🇬|新加坡|狮城|獅城|Singapore|(^|[^A-Za-z0-9_Kſ])SG($|[^A-Za-z0-9_Kſ])|(^|[^A-Za-z0-9_Kſ])SGP($|[^A-Za-z0-9_Kſ])' },
+  { key: 'sg', name: '🇸🇬 新加坡', jsPattern: /🇸🇬|新加坡|狮城|獅城|Singapore|(^|[^A-Za-z0-9_Kſ])SG($|[^A-Za-z0-9_Kſ])|(^|[^A-Za-z0-9_Kſ])SGP($|[^A-Za-z0-9_Kſ])/iu },
   { key: 'tw', name: '🇨🇳🇹🇼 台湾', jsPattern: /🇹🇼|台湾|台灣|臺灣|台北|臺北|高雄|Taipei|Taiwan|\bTW\b|\bTWN\b/iu },
   { key: 'kr', name: '🇰🇷 韩国', jsPattern: /🇰🇷|韩国|韓國|首尔|首爾|Seoul|Korea|\bKR\b|\bKOR\b/iu },
   { key: 'my', name: '🇲🇾 马来西亚', jsPattern: /🇲🇾|马来西亚|馬來西亞|吉隆坡|Kuala\s*Lumpur|Malaysia|\bMY\b|\bMYS\b/iu },
-  { key: 'us', name: '🇺🇸 美国', jsPattern: /🇺🇸|美国|美國|洛杉矶|洛杉磯|纽约|紐約|西雅图|西雅圖|硅谷|矽谷|华盛顿|華盛頓|旧金山|舊金山|芝加哥|休斯顿|休士頓|迈阿密|邁阿密|波士顿|波士頓|拉斯维加斯|拉斯維加斯|圣何塞|聖荷西|Miami|(^|[^A-Za-z0-9_Kſ])MIA($|[^A-Za-z0-9_Kſ])|Los\s*Angeles|New\s*York|Seattle|Washington|San\s*Francisco|Chicago|Houston|Boston|Las\s*Vegas|San\s*Jose|United\s*States|(^|[^A-Za-z0-9_Kſ])USA($|[^A-Za-z0-9_Kſ])|(^|[^A-Za-z0-9_Kſ])US($|[^A-Za-z0-9_Kſ])/iu, mihomoFilter: '(?i)🇺🇸|美国|美國|洛杉矶|洛杉磯|纽约|紐約|西雅图|西雅圖|硅谷|矽谷|华盛顿|華盛頓|旧金山|舊金山|芝加哥|休斯顿|休士頓|迈阿密|邁阿密|波士顿|波士頓|拉斯维加斯|拉斯維加斯|圣何塞|聖荷西|Miami|(^|[^A-Za-z0-9_Kſ])MIA($|[^A-Za-z0-9_Kſ])|Los[\\s\\x{000B}\\p{Zs}\\x{2028}\\x{2029}\\x{FEFF}]*Angeles|New[\\s\\x{000B}\\p{Zs}\\x{2028}\\x{2029}\\x{FEFF}]*York|Seattle|Washington|San[\\s\\x{000B}\\p{Zs}\\x{2028}\\x{2029}\\x{FEFF}]*Francisco|Chicago|Houston|Boston|Las[\\s\\x{000B}\\p{Zs}\\x{2028}\\x{2029}\\x{FEFF}]*Vegas|San[\\s\\x{000B}\\p{Zs}\\x{2028}\\x{2029}\\x{FEFF}]*Jose|United[\\s\\x{000B}\\p{Zs}\\x{2028}\\x{2029}\\x{FEFF}]*States|(^|[^A-Za-z0-9_Kſ])USA($|[^A-Za-z0-9_Kſ])|(^|[^A-Za-z0-9_Kſ])US($|[^A-Za-z0-9_Kſ])' },
+  { key: 'us', name: '🇺🇸 美国', jsPattern: /🇺🇸|美国|美國|洛杉矶|洛杉磯|纽约|紐約|西雅图|西雅圖|硅谷|矽谷|华盛顿|華盛頓|旧金山|舊金山|芝加哥|休斯顿|休士頓|迈阿密|邁阿密|波士顿|波士頓|拉斯维加斯|拉斯維加斯|圣何塞|聖荷西|Miami|(^|[^A-Za-z0-9_Kſ])MIA($|[^A-Za-z0-9_Kſ])|Los\s*Angeles|New\s*York|Seattle|Washington|San\s*Francisco|Chicago|Houston|Boston|Las\s*Vegas|San\s*Jose|United\s*States|(^|[^A-Za-z0-9_Kſ])USA($|[^A-Za-z0-9_Kſ])|(^|[^A-Za-z0-9_Kſ])US($|[^A-Za-z0-9_Kſ])/iu },
   { key: 'ca', name: '🇨🇦 加拿大', jsPattern: /🇨🇦|加拿大|多伦多|多倫多|温哥华|溫哥華|Toronto|Vancouver|Canada|\bCA\b|\bCAN\b/iu },
   { key: 'gb', name: '🇬🇧 英国', jsPattern: /🇬🇧|英国|英國|伦敦|倫敦|London|United\s*Kingdom|\bUK\b|\bGB\b|\bGBR\b/iu },
   { key: 'fr', name: '🇫🇷 法国', jsPattern: /🇫🇷|法国|法國|巴黎|Paris|France|\bFR\b|\bFRA\b/iu },
-  { key: 'nl', name: '🇳🇱 荷兰', jsPattern: /🇳🇱|荷兰|荷蘭|阿姆斯特丹|Amsterdam|(^|[^A-Za-z0-9_Kſ])AMS($|[^A-Za-z0-9_Kſ])|Netherlands|(^|[^A-Za-z0-9_Kſ])NL($|[^A-Za-z0-9_Kſ])|(^|[^A-Za-z0-9_Kſ])NLD($|[^A-Za-z0-9_Kſ])/iu, mihomoFilter: '(?i)🇳🇱|荷兰|荷蘭|阿姆斯特丹|Amsterdam|(^|[^A-Za-z0-9_Kſ])AMS($|[^A-Za-z0-9_Kſ])|(^|[^A-Za-z0-9_Kſ])NL($|[^A-Za-z0-9_Kſ])|Netherlands|(^|[^A-Za-z0-9_Kſ])NLD($|[^A-Za-z0-9_Kſ])' },
+  { key: 'nl', name: '🇳🇱 荷兰', jsPattern: /🇳🇱|荷兰|荷蘭|阿姆斯特丹|Amsterdam|(^|[^A-Za-z0-9_Kſ])AMS($|[^A-Za-z0-9_Kſ])|Netherlands|(^|[^A-Za-z0-9_Kſ])NL($|[^A-Za-z0-9_Kſ])|(^|[^A-Za-z0-9_Kſ])NLD($|[^A-Za-z0-9_Kſ])/iu },
   { key: 'de', name: '🇩🇪 德国', jsPattern: /🇩🇪|德国|德國|法兰克福|法蘭克福|柏林|Frankfurt|Berlin|Germany|\bDE\b|\bDEU\b/iu },
   { key: 'au', name: '🇦🇺 澳大利亚', jsPattern: /🇦🇺|澳大利亚|澳大利亞|悉尼|墨尔本|墨爾本|Sydney|Melbourne|Perth|Australia|\bAU\b|\bAUS\b/iu },
 ];
 
-function matchCountryRegionDefinitionsForJs(rawProxyName, { normalize = true } = {}) {
+function matchCountryRegionDefinitionsForJs(rawProxyName) {
   if (typeof rawProxyName !== 'string') return [];
-  const matchableName = normalize
-    ? normalizeNameForJsMatching(rawProxyName)
-    : rawProxyName;
+  const matchableName = normalizeNameForJsMatching(rawProxyName);
   return COUNTRY_REGION_DEFINITIONS.filter((definition) => definition.jsPattern.test(matchableName));
 }
 
