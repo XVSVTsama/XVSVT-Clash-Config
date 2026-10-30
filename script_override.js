@@ -476,10 +476,11 @@ function buildTelegramDcProxyGroups(originalProxies) {
 const COUNTRY_REGION_PARENT_ICON =
   'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Global.png';
 const COUNTRY_REGION_DEFINITIONS = [
-  { name: '🇭🇰 香港', pattern: /🇭🇰|香港|Hong\s*Kong|HongKong|\bHK\b|\bHKG\b/iu },
+  { name: '🇨🇳🇭🇰 香港', pattern: /🇭🇰|香港|Hong\s*Kong|HongKong|\bHK\b|\bHKG\b/iu },
+  { name: '🇨🇳🇲🇴 澳门', pattern: /🇲🇴|澳门|澳門|Macau|Macao|\bMO\b|\bMAC\b/iu },
   { name: '🇯🇵 日本', pattern: /🇯🇵|日本|东京|東京|大阪|Tokyo|Osaka|Japan|\bJP\b|\bJPN\b/iu },
   { name: '🇸🇬 新加坡', pattern: /🇸🇬|新加坡|狮城|獅城|Singapore|\bSG\b|\bSGP\b/iu },
-  { name: '🇹🇼 台湾', pattern: /🇹🇼|台湾|台灣|臺灣|台北|臺北|Taipei|Taiwan|\bTW\b|\bTWN\b/iu },
+  { name: '🇨🇳🇹🇼 台湾', pattern: /🇹🇼|台湾|台灣|臺灣|台北|臺北|Taipei|Taiwan|\bTW\b|\bTWN\b/iu },
   { name: '🇰🇷 韩国', pattern: /🇰🇷|韩国|韓國|首尔|首爾|Seoul|Korea|\bKR\b|\bKOR\b/iu },
   { name: '🇲🇾 马来西亚', pattern: /🇲🇾|马来西亚|馬來西亞|吉隆坡|Kuala\s*Lumpur|Malaysia|\bMY\b|\bMYS\b/iu },
   { name: '🇺🇸 美国', pattern: /🇺🇸|美国|美國|洛杉矶|洛杉磯|纽约|紐約|西雅图|西雅圖|硅谷|矽谷|华盛顿|華盛頓|Los\s*Angeles|New\s*York|Seattle|Washington|United\s*States|\bUSA\b|\bUS\b/iu },
