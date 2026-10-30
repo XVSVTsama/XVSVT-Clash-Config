@@ -1094,7 +1094,6 @@ const TEMPLATE = {
     },
     {
       "name": "🔄 负载均衡 · 粘性会话",
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-clash-verge-rev-balance.svg",
       "type": "load-balance",
       "include-all": true,
       "url": "https://g.cn/generate_204",
@@ -1106,7 +1105,6 @@ const TEMPLATE = {
     },
     {
       "name": "🔄 负载均衡 · 轮询",
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-clash-verge-rev-balance.svg",
       "type": "load-balance",
       "include-all": true,
       "url": "https://g.cn/generate_204",
@@ -1118,7 +1116,6 @@ const TEMPLATE = {
     },
     {
       "name": "🔄 负载均衡 · 一致性哈希",
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-clash-verge-rev-balance.svg",
       "type": "load-balance",
       "include-all": true,
       "url": "https://g.cn/generate_204",
