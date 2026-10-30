@@ -83,7 +83,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><td><strong>🌍 PROXY</strong></td><td>唯一的顶层入口，不直接纳入节点（无 <code>include-all</code>），实际节点经被嵌套的三组进入；组内只有以下四项：<br><code>👉 手动切换</code><br><code>♻️ 自动选择</code><br><code>🔄 负载均衡</code><br><code>DIRECT</code></td></tr>
 <tr><td><strong>👉 手动切换</strong></td><td>被 <strong>🌍 PROXY</strong> 嵌套；自身以 <code>include-all</code> 纳入所有可用节点，不再嵌套其他代理组</td></tr>
 <tr><td><strong>♻️ 自动选择</strong></td><td>被 <strong>🌍 PROXY</strong> 嵌套；自身以 <code>include-all</code> 纳入所有可用节点，不再嵌套其他代理组</td></tr>
-<tr><td><strong>🔄 负载均衡</strong></td><td>被 <strong>🌍 PROXY</strong> 嵌套；自身以 <code>include-all</code> 纳入所有可用节点，不再嵌套其他代理组</td></tr>
+<tr><td><strong>🔄 负载均衡</strong></td><td>被 <strong>🌍 PROXY</strong> 嵌套；下含三个隐藏策略子组，顺序为 <code>consistent-hashing</code>（默认首项）、<code>sticky-sessions</code>、<code>round-robin</code></td></tr>
 </tbody>
 </table>
 
@@ -155,7 +155,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 - **节点与代理组**：订阅里的真实节点填入顶层 `proxies`；常规动态节点组通过 Mihomo 原生 `include-all` 引入顶层节点与 provider 节点。固定策略项保留在各组的 `proxies` 列表中。
 - **订阅自带 `proxy-providers`**：定义原样保留，脚本不展开、不筛选、不逐节点改写其中的节点；节点级开关能作用到 provider 的只有 `override` 通道。
-- **国家/地区分组**：`国家/地区分组` 开启后，只从订阅顶层 `proxies` 生成香港、日本、新加坡、台湾、韩国、马来西亚、美国、加拿大、英国、法国、荷兰、德国、澳大利亚及“其他国家/地区”策略组；不枚举 `proxy-providers`。倍率筛选先于地区分组执行，地区组只用幸存节点生成；某地区节点全部被筛除时不生成该地区的父组与三个隐藏子组。
+- **国家/地区分组**：`国家/地区分组` 开启后，只从订阅顶层 `proxies` 生成香港、台湾、澳门、日本、新加坡、韩国、马来西亚、美国、加拿大、英国、法国、荷兰、德国、澳大利亚及“其他国家/地区”策略组；香港、台湾和澳门组名使用中国旗与地区旗双图标；不枚举 `proxy-providers`。倍率筛选先于地区分组执行，地区组只用幸存节点生成；某地区节点全部被筛除时不生成该地区的父组与三个隐藏子组。
 - **倍率筛选**：`高倍率筛选` 删除名称中明确标记为 `2x` 或更高的订阅顶层节点；`低倍率筛选` 删除明确标记为 `0.5x` 或更低的节点。只识别显式数值倍率（例如 `5x`），不猜测模糊标签；过滤同步清理代理组 `proxies` 中的节点名称引用，不处理 `proxy-providers`；执行顺序在地区分组与国内入口解析之前。
 - **DNS**：动态合并出 `dns.proxy-server-nameserver-policy`（模板不预置该键，以脚本计算结果为准），细节见下方流程图。
 - **开关声明**：脚本首行的 `Compatible_With_Bettbox` 兼容声明必须置顶——Bettbox 只在脚本开头识别该声明，删除或下移会导致"自定义规则开关"入口不显示；声明中的 `policyGroupOptions` 列出归入图形化开关分类的 23 个策略组，`ruleOptionsEnable` 则是实际生效的开关表，键名需与声明保持一致。`🌍 PROXY` 始终保留为基础/兜底组，不提供关闭开关。
