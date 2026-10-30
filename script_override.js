@@ -475,10 +475,10 @@ const COUNTRY_REGION_PARENT_ICON =
 // 缩写别名使用统一边界字符类，包含开尔文符号（K）和长 s（ſ），使 JS /iu 与 RE2 的 Unicode 大小写折叠保持一致，避免依赖引擎行为不同的 \b。
 const COUNTRY_REGION_DEFINITIONS = [
   { key: 'hk', name: '🇨🇳🇭🇰 香港', jsPattern: /🇭🇰|香港|Hong\s*Kong|HongKong|(^|[^A-Za-z0-9_Kſ])HK($|[^A-Za-z0-9_Kſ])|(^|[^A-Za-z0-9_Kſ])HKG($|[^A-Za-z0-9_Kſ])/iu },
+  { key: 'tw', name: '🇨🇳🇹🇼 台湾', jsPattern: /🇹🇼|台湾|台灣|臺灣|台北|臺北|高雄|Taipei|Taiwan|\bTW\b|\bTWN\b/iu },
   { key: 'mo', name: '🇨🇳🇲🇴 澳门', jsPattern: /🇲🇴|澳门|澳門|Macau|Macao|\bMO\b|\bMAC\b/iu },
   { key: 'jp', name: '🇯🇵 日本', jsPattern: /🇯🇵|日本|东京|東京|大阪|京都|Tokyo|Osaka|Kyoto|Japan|\bJP\b|\bJPN\b/iu },
   { key: 'sg', name: '🇸🇬 新加坡', jsPattern: /🇸🇬|新加坡|狮城|獅城|Singapore|(^|[^A-Za-z0-9_Kſ])SG($|[^A-Za-z0-9_Kſ])|(^|[^A-Za-z0-9_Kſ])SGP($|[^A-Za-z0-9_Kſ])/iu },
-  { key: 'tw', name: '🇨🇳🇹🇼 台湾', jsPattern: /🇹🇼|台湾|台灣|臺灣|台北|臺北|高雄|Taipei|Taiwan|\bTW\b|\bTWN\b/iu },
   { key: 'kr', name: '🇰🇷 韩国', jsPattern: /🇰🇷|韩国|韓國|首尔|首爾|Seoul|Korea|\bKR\b|\bKOR\b/iu },
   { key: 'my', name: '🇲🇾 马来西亚', jsPattern: /🇲🇾|马来西亚|馬來西亞|吉隆坡|Kuala\s*Lumpur|Malaysia|\bMY\b|\bMYS\b/iu },
   { key: 'us', name: '🇺🇸 美国', jsPattern: /🇺🇸|美国|美國|洛杉矶|洛杉磯|纽约|紐約|西雅图|西雅圖|硅谷|矽谷|华盛顿|華盛頓|旧金山|舊金山|芝加哥|休斯顿|休士頓|迈阿密|邁阿密|波士顿|波士頓|拉斯维加斯|拉斯維加斯|圣何塞|聖荷西|Miami|(^|[^A-Za-z0-9_Kſ])MIA($|[^A-Za-z0-9_Kſ])|Los\s*Angeles|New\s*York|Seattle|Washington|San\s*Francisco|Chicago|Houston|Boston|Las\s*Vegas|San\s*Jose|United\s*States|(^|[^A-Za-z0-9_Kſ])USA($|[^A-Za-z0-9_Kſ])|(^|[^A-Za-z0-9_Kſ])US($|[^A-Za-z0-9_Kſ])/iu },
@@ -498,8 +498,8 @@ function matchCountryRegionDefinitionsForJs(rawProxyName) {
 
 const COUNTRY_REGION_PRIORITY_NAMES = new Set([
   '🇨🇳🇭🇰 香港',
-  '🇨🇳🇲🇴 澳门',
   '🇨🇳🇹🇼 台湾',
+  '🇨🇳🇲🇴 澳门',
   '🇺🇸 美国',
   '🇸🇬 新加坡',
   '🇯🇵 日本',
