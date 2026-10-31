@@ -3348,7 +3348,7 @@ function main(config, profileName) {
     originalProxies.filter((proxy) => !(proxy && removedProxyNames.has(proxy.name)))
   );
 
-  // ---- 9. 国内入口解析：倍率筛选完成后，再追加运营商入口节点。 ----
+  // ---- 9. 国内入口解析：倍率筛选完成后，再追加各分类入口节点。 ----
   applyEntryResolution(result);
 
   // ---- 10. 代理节点 DNS 使用 TCP：最后补协议，保留前序合并、hosts 与出口选择结果。 ----
