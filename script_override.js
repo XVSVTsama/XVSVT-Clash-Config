@@ -588,12 +588,33 @@ function buildCountryRegionProxyGroups(originalProxies) {
     regionMembershipByProxy.set(proxy, selectedRegions);
   });
 
+  // ④ 非优先地区若只剩一个不同的有效节点，则不生成该地区组，并将该节点归入“其他”；
+  //    只移除该地区归属，节点在其他常用地区的归属保持不变。优先地区的单节点组保留。
+  COUNTRY_REGION_DEFINITIONS.forEach((definition) => {
+    if (COUNTRY_REGION_PRIORITY_NAMES.has(definition.name)) return;
+    const regionProxies = candidates.filter((proxy) =>
+      regionMembershipByProxy.get(proxy).includes(definition)
+    );
+    const distinctNodeNames = new Set(regionProxies.map((proxy) => proxy.name));
+    if (distinctNodeNames.size !== 1) return;
+    regionProxies.forEach((proxy) => {
+      regionMembershipByProxy.set(
+        proxy,
+        regionMembershipByProxy.get(proxy).filter((region) => region !== definition)
+      );
+      otherRegionProxies.add(proxy);
+    });
+  });
+
   COUNTRY_REGION_DEFINITIONS.forEach((definition) => {
     const regionProxies = candidates.filter((proxy) =>
       regionMembershipByProxy.get(proxy).includes(definition)
     );
     if (regionProxies.length === 0) return;
     const nodeNames = Array.from(new Set(regionProxies.map((proxy) => proxy.name)));
+    // ⑥ 在⑤④处理后的有效节点数上排序：2–3节点先于 DIRECT/REJECT；优先单节点组也保留此顺序。
+    const hasTwoToThreeNodes = nodeNames.length >= 2 && nodeNames.length <= 3;
+    const hasPrioritySingleton = nodeNames.length === 1 && COUNTRY_REGION_PRIORITY_NAMES.has(definition.name);
     const children = nodeNames.length > 3
       ? COUNTRY_REGION_CHILD_GROUP_TYPES.map((childDefinition) => {
         const child = {
@@ -619,19 +640,22 @@ function buildCountryRegionProxyGroups(originalProxies) {
       icon: COUNTRY_REGION_PARENT_ICON,
       proxies: children.length > 0
         ? children.map((child) => child.name).concat(['DIRECT', 'REJECT'], nodeNames)
-        : ['DIRECT', 'REJECT', ...nodeNames],
+        : hasTwoToThreeNodes || hasPrioritySingleton
+          ? nodeNames.concat(['DIRECT', 'REJECT'])
+          : ['DIRECT', 'REJECT', ...nodeNames],
     });
     childGroups.push(...children);
   });
 
   const otherProxies = candidates.filter((proxy) => otherRegionProxies.has(proxy));
-  if (otherProxies.length > 0) {
+  const otherNodeNames = Array.from(new Set(otherProxies.map((proxy) => proxy.name)));
+  if (otherNodeNames.length > 0) {
     parentGroups.push({
       name: OTHER_COUNTRY_REGION_NAME,
       type: 'select',
       icon: COUNTRY_REGION_PARENT_ICON,
-      'default-selected': otherProxies[0].name,
-      proxies: ['DIRECT', 'REJECT', ...otherProxies.map((proxy) => proxy.name)],
+      'default-selected': otherNodeNames[0],
+      proxies: ['DIRECT', 'REJECT', ...otherNodeNames],
     });
   }
 
