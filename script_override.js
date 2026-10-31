@@ -334,13 +334,13 @@ const DOMESTIC_ENTRY_PROXIES = {
 
 // 分类与强制命名前缀的固定映射，不应修改；节点顺序不代表自动优先级。
 const ENTRY_RESOLUTION_OPTIONS = [
-  { category: 'telecom', prefix: '电信入口解析' },
-  { category: 'unicom', prefix: '联通入口解析' },
-  { category: 'mobile', prefix: '移动入口解析' },
-  { category: 'cloud', prefix: '云厂入口解析' }
+  { category: 'telecom', prefix: '电信节点' },
+  { category: 'unicom', prefix: '联通节点' },
+  { category: 'mobile', prefix: '移动节点' },
+  { category: 'cloud', prefix: '云厂节点' }
 ];
 // 保留命名空间：用于排除入口节点，并防止同名订阅节点抢占维护区定义。
-const ENTRY_RESOLUTION_EXCLUDE_FILTER = '^(?:电信|联通|移动|云厂)入口解析-[0-9]{2,}$';
+const ENTRY_RESOLUTION_EXCLUDE_FILTER = '^(?:电信|联通|移动|云厂)节点-[0-9]{2,}$';
 
 // ============================================================================
 // Telegram DC/地区实验分流（仅在 ruleOptionsEnable['TGDC实验分流'] 为 true 时注入）
@@ -2359,7 +2359,8 @@ function applyEntryResolution(result) {
     name: groupName,
     type: 'select',
     proxies: proxyNames,
-    url: 'https://g.cn/generate_204',
+    url: 'https://connect.rom.miui.com/generate_204',
+    'expected-status': '204',
     icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Domestic.png'
   };
   const existingDisplayGroup = (result['proxy-groups'] || []).find(
