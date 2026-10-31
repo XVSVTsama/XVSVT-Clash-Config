@@ -215,7 +215,7 @@ const ruleOptionsEnable = {
   // 某地区节点全部被筛除时不建该地区组。不处理 proxy-providers。
   '高倍率筛选': false,
   '低倍率筛选': false,
-  // 开启后，维护区所有运营商的入口节点统一加入“国内入口解析”组，不进入其他代理组。
+  // 开启后，维护区所有分类的入口节点统一加入“国内入口解析”组，不进入其他代理组。
   '入口解析': false,
   // --- 网络与规则 ---
   // 最后为节点解析 DNS 的无协议地址补 tcp://；不改变显式协议、出口后缀或 DNS 优先级。
@@ -254,85 +254,93 @@ const NAMESERVER_POLICY_PREFER_ORIGINAL = true;
 
 // ============================================================================
 // 国内入口解析节点维护区
-// 每个运营商维护一个数组：可复制数组内的节点对象追加多个节点，填 [] 表示不配置。
+// 每个分类维护一个数组：可复制数组内的节点对象追加多个节点，填 [] 表示不配置。
 // 仅维护 type / server / port 及其他 Mihomo 节点字段，无需填写 name；即使填写也会被覆盖。
-// 名称强制为“电信入口解析-01”等，按各运营商数组顺序独立编号，从 01 开始，超过 99 不截断。
+// 名称按分类前缀和数组顺序独立编号，从 01 开始，超过 99 不截断。
 // ============================================================================
 const DOMESTIC_ENTRY_PROXIES = {
   // 中国电信
   telecom: [{
-    type: 'http',
-    server: '36.111.33.167',
-    port: 13128
-  }, {
-    type: 'socks5',
-    server: '175.6.28.82',
-    port: 59999
-  }, {
     type: 'socks5',
     server: '113.249.111.67',
     port: 1080
-  }, {
-    type: 'socks5',
-    server: '218.95.39.30',
-    port: 59999
   }],
 
   // 中国联通
-  unicom: [{
-    type: 'http',
-    server: '119.188.131.55',
-    port: 17981
-  }, {
-    type: 'socks5',
-    server: '140.207.114.166',
-    port: 10080
-  }, {
-    type: 'socks5',
-    server: '61.182.120.230',
-    port: 7890
-  }],
+  unicom: [],
 
   // 中国移动
   mobile: [{
     type: 'http',
-    server: '116.196.150.180',
-    port: 17981
+    server: '47.121.139.13',
+    port: 3128
+  }],
+
+  // 中国大陆云厂
+  cloud: [{
+    type: 'http',
+    server: '39.104.59.56',
+    port: 9098
   }, {
-    type: 'socks5',
-    server: '223.113.241.216',
-    port: 59999
+    type: 'http',
+    server: '39.102.214.208',
+    port: 9080
   }, {
-    type: 'socks5',
-    server: '120.220.197.200',
-    port: 59999
+    type: 'http',
+    server: '120.79.217.196',
+    port: 9000
   }, {
-    type: 'socks5',
-    server: '120.220.197.196',
-    port: 59999
+    type: 'http',
+    server: '47.104.27.249',
+    port: 8080
   }, {
-    type: 'socks5',
-    server: '120.220.197.199',
-    port: 59999
+    type: 'http',
+    server: '39.102.214.199',
+    port: 10002
   }, {
-    type: 'socks5',
-    server: '112.12.84.4',
-    port: 59999
+    type: 'http',
+    server: '139.224.195.153',
+    port: 8118
   }, {
-    type: 'socks5',
-    server: '112.12.84.5',
-    port: 59999
+    type: 'http',
+    server: '47.121.129.129',
+    port: 6379
+  }, {
+    type: 'http',
+    server: '47.104.28.135',
+    port: 8080
+  }, {
+    type: 'http',
+    server: '47.104.27.165',
+    port: 9080
+  }, {
+    type: 'http',
+    server: '47.106.75.125',
+    port: 3128
+  }, {
+    type: 'http',
+    server: '39.104.69.76',
+    port: 8081
+  }, {
+    type: 'http',
+    server: '39.102.211.64',
+    port: 8443
+  }, {
+    type: 'http',
+    server: '106.14.91.83',
+    port: 8181
   }]
 };
 
-// 运营商与强制命名前缀的固定映射，不应修改；节点顺序不代表自动优先级。
+// 分类与强制命名前缀的固定映射，不应修改；节点顺序不代表自动优先级。
 const ENTRY_RESOLUTION_OPTIONS = [
-  { carrier: 'telecom', prefix: '电信入口解析' },
-  { carrier: 'unicom', prefix: '联通入口解析' },
-  { carrier: 'mobile', prefix: '移动入口解析' }
+  { category: 'telecom', prefix: '电信入口解析' },
+  { category: 'unicom', prefix: '联通入口解析' },
+  { category: 'mobile', prefix: '移动入口解析' },
+  { category: 'cloud', prefix: '云厂入口解析' }
 ];
 // 保留命名空间：用于排除入口节点，并防止同名订阅节点抢占维护区定义。
-const ENTRY_RESOLUTION_EXCLUDE_FILTER = '^(?:电信|联通|移动)入口解析-[0-9]{2,}$';
+const ENTRY_RESOLUTION_EXCLUDE_FILTER = '^(?:电信|联通|移动|云厂)入口解析-[0-9]{2,}$';
 
 // ============================================================================
 // Telegram DC/地区实验分流（仅在 ruleOptionsEnable['TGDC实验分流'] 为 true 时注入）
@@ -2281,13 +2289,13 @@ function selectedEntryResolutionOptions() {
     return [];
   }
   return ENTRY_RESOLUTION_OPTIONS.flatMap((option) => {
-    const proxies = DOMESTIC_ENTRY_PROXIES[option.carrier];
+    const proxies = DOMESTIC_ENTRY_PROXIES[option.category];
     if (!Array.isArray(proxies)) {
-      throw new Error('国内入口解析维护区 ' + option.carrier + ' 必须是节点数组（无节点请填 []）');
+      throw new Error('国内入口解析维护区 ' + option.category + ' 必须是节点数组（无节点请填 []）');
     }
     return proxies.map((proxy, index) => {
       if (!proxy || typeof proxy !== 'object' || Array.isArray(proxy)) {
-        throw new Error('国内入口解析维护区 ' + option.carrier + ' 第 ' + (index + 1) + ' 项必须是节点对象');
+        throw new Error('国内入口解析维护区 ' + option.category + ' 第 ' + (index + 1) + ' 项必须是节点对象');
       }
       return {
         proxyName: option.prefix + '-' + String(index + 1).padStart(2, '0'),
