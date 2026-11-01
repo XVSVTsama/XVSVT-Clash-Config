@@ -281,14 +281,14 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 ```mermaid
 venn-beta
-  set G["geolocation-cn（meta geolocation-cn）"]
+  set G["geolocation-cn（bett-rules）"]
   set A["cn-additional（353355 国内补充）"]
   set S["apple-cn / microsoft-cn / games-cn（DustinWin 平台国内集）"]
   union G,A
   union G,S
 ```
 
-`geolocation-cn` 与 `cn-additional` 有 2557 条完全重合、与 `games-cn` 有 310 条；`cn-additional` 与 `games-cn` 有 194 条；`apple-cn`、`microsoft-cn` 与其余三个无交集。四者同指 `DIRECT`，重合只增加体积，不改变结果。
+`geolocation-cn` 与 `cn-additional` 有 2564 条完全重合、与 `games-cn` 有 310 条；`cn-additional` 与 `games-cn` 有 194 条；`apple-cn`、`microsoft-cn` 与其余三个各只有 1 条交集。四者同指 `DIRECT`，重合只增加体积，不改变结果。
 
 **2. 直连规则集与海外组规则集**
 
