@@ -330,7 +330,7 @@ venn-beta
   union I,B
 ```
 
-`twitter-x-aggregate` 为 classical 类型，可同时容纳域名与 IP 条目，与 MetaCubeX 的两套各自重合。
+`twitter-x-aggregate` 为 classical 类型，可同时容纳域名与 IP 条目，与 MetaCubeX 的两套各自重合。该集本身是有内容的规则集；其来源为 `magicrule.pages.dev` 的构建产物，若该地址当前无法直出 YAML（网络原因或站点行为），客户端会拉到空集，此时 Twitter 分流由 `twitter-x-domain`、`twitter-x-ip` 两套承担。
 
 **5. 三套 AI 规则集**
 
