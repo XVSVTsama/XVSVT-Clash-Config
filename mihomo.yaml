@@ -726,8 +726,6 @@ rules:
   - PROCESS-NAME,com.attempt.afusekt,🎬 Emby
   - PROCESS-NAME,com.hush.yamby,🎬 Emby
   - PROCESS-NAME,com.railux.mobile,🎬 Emby
-  # 该 CloudFront 分发域跟随金融支付组；其余 cloudfront.net 域名按默认链路走（最终指向代理）。
-  - DOMAIN,d3r7nsslvs6aaf.cloudfront.net,💳 金融支付
   - RULE-SET,googlefcm,FCM
   - RULE-SET,microsoft_ip,💠 海外微软,no-resolve
   - RULE-SET,microsoft,💠 海外微软
@@ -745,9 +743,9 @@ rules:
   # 🔎 Google 提前到 AI 组之前：Google 域名先由本组接管，Gemini 规则集也指向本组。
   - RULE-SET,google,🔎 Google
   - RULE-SET,google-cn,🔎 Google
+  - RULE-SET,Gemini_Domain,🔎 Google
   # ♾️ Meta 提前到 AI 组之前：Meta 域名与 Meta AI 规则统一由本组接管。
   - RULE-SET,meta,♾️ Meta
-  - PROCESS-NAME-REGEX,(?i).*(manus|tech\.butterfly\.app).*,🤖 AI大模型
   - DOMAIN-SUFFIX,muse.ai,♾️ Meta
   - DOMAIN,hatch-api.meta.ai,♾️ Meta
   - DOMAIN,api.meta.ai,♾️ Meta
@@ -759,6 +757,7 @@ rules:
   - DOMAIN,shortwave.facebook.com,♾️ Meta
   - DOMAIN,node.hatch.one,♾️ Meta
   - PROCESS-NAME,com.facebook.aura,♾️ Meta
+  - PROCESS-NAME-REGEX,(?i).*(manus|tech\.butterfly\.app).*,🤖 AI大模型
   - PROCESS-NAME-REGEX,(?i).*claude.*,🤖 AI大模型
   - PROCESS-NAME-REGEX,(?i).*anthropic.*,🤖 AI大模型
   - DOMAIN,api.anthropic.com,🤖 AI大模型
@@ -787,18 +786,15 @@ rules:
   - DOMAIN-SUFFIX,claude.com,🤖 AI大模型
   - DOMAIN-SUFFIX,claudeusercontent.com,🤖 AI大模型
   - DOMAIN-SUFFIX,clau.de,🤖 AI大模型
-  - DOMAIN-SUFFIX,frame.claudeusercontent.com,🤖 AI大模型
   - DOMAIN-SUFFIX,modelcontextprotocol.io,🤖 AI大模型
   - IP-CIDR,160.79.104.0/21,🤖 AI大模型,no-resolve
   - IP-CIDR6,2607:6bc0::/48,🤖 AI大模型,no-resolve
   - IP-CIDR,17.253.4.0/23,🤖 AI大模型,no-resolve
-  - RULE-SET,Gemini_Domain,🔎 Google
   - RULE-SET,Grok_Domain,🤖 AI大模型
   - DOMAIN,anthropic.com.cdn.cloudflare.net,🤖 AI大模型
   - DOMAIN,anthropic-com.ghost.io,🤖 AI大模型
   - DOMAIN-SUFFIX,sentry.io,🤖 AI大模型
   - DOMAIN-SUFFIX,statsigapi.net,🤖 AI大模型
-  - DOMAIN,browser-intake-us5-datadoghq.com,🤖 AI大模型
   - DOMAIN-KEYWORD,datadog,🤖 AI大模型
   - DOMAIN-KEYWORD,sift,🤖 AI大模型
   - RULE-SET,ai-1,🤖 AI大模型
@@ -811,6 +807,8 @@ rules:
   - RULE-SET,ehentai,📚 EHentai
   - RULE-SET,pikpak,☁️ PikPak
   - RULE-SET,line,💬 LINE
+  # 该 CloudFront 分发域跟随金融支付组；其余 cloudfront.net 域名按默认链路走（最终指向代理）。
+  - DOMAIN,d3r7nsslvs6aaf.cloudfront.net,💳 金融支付
   - RULE-SET,category-cryptocurrency,💳 金融支付
   - RULE-SET,paypal,💳 金融支付
   - RULE-SET,stripe,💳 金融支付

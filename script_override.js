@@ -4,29 +4,30 @@ const Compatible_With_Bettbox = {
   ruleOptionsEnable: true,
   // 声明属于策略组的开关名称，需与 ruleOptionsEnable 的键完全一致
   policyGroupOptions: [
-    '🔄 负载均衡',
     '👉 手动切换',
     '♻️ 自动选择',
+    '🔄 负载均衡',
+    '🔎 Google',
+    '♾️ Meta',
+    '🤖 AI大模型',
     '📲 Telegram',
-    '🎮 Games-Global',
+    '✖️ Twitter',
+    '💬 Discord',
+    '👽 Reddit',
+    '💬 LINE',
+    '🎵 TikTok',
+    '🎥 Netflix',
+    '🎧 Spotify',
+    '🎬 Emby',
     '🍎 海外苹果',
     '💠 海外微软',
     '🎮 Steam平台（非下载/CDN）',
-    '✖️ Twitter',
-    '🤖 AI大模型',
-    '🎵 TikTok',
+    '🎮 Games-Global',
     '💳 金融支付',
-    '🔎 Google',
-    '♾️ Meta',
-    '🎧 Spotify',
-    '🎬 Emby',
-    '💬 Discord',
-    '👽 Reddit',
-    '🎥 Netflix',
     '💝 Patreon',
     '📚 EHentai',
     '☁️ PikPak',
-    '💬 LINE',
+  
   ]
 };
 /**
@@ -1972,8 +1973,6 @@ const TEMPLATE = {
     "PROCESS-NAME,com.hush.yamby,🎬 Emby",
     "PROCESS-NAME,com.railux.mobile,🎬 Emby",
     // Emby 进程规则需先于 CloudFront 通用直连规则，避免其流量被优先直连。
-    // 指定加密货币 API 仍走金融组；其余 cloudfront.net 域名按默认链路走。
-    "DOMAIN,d3r7nsslvs6aaf.cloudfront.net,💳 金融支付",
     "RULE-SET,googlefcm,FCM",
     // 通用直连规则优先，剩余 Apple / Microsoft 域名和 IP 再进入海外组。
     // Bybit 静态资源位于 Microsoft 规则集内，优先保留金融支付分流。
@@ -1989,8 +1988,8 @@ const TEMPLATE = {
     // Manus AI：覆盖 Manus Desktop、Manus Helper 及 Android 客户端进程
     "RULE-SET,google,🔎 Google",
     "RULE-SET,google-cn,🔎 Google",
+    "RULE-SET,Gemini_Domain,🔎 Google",
     "RULE-SET,meta,♾️ Meta",
-    "PROCESS-NAME-REGEX,(?i).*(manus|tech\\.butterfly\\.app).*,🤖 AI大模型",
     // Muse：覆盖 Muse Android 客户端进程及官网与后端域名
     "DOMAIN-SUFFIX,muse.ai,♾️ Meta",
     "DOMAIN,hatch-api.meta.ai,♾️ Meta",
@@ -2003,6 +2002,7 @@ const TEMPLATE = {
     "DOMAIN,shortwave.facebook.com,♾️ Meta",
     "DOMAIN,node.hatch.one,♾️ Meta",
     "PROCESS-NAME,com.facebook.aura,♾️ Meta",
+    "PROCESS-NAME-REGEX,(?i).*(manus|tech\\.butterfly\\.app).*,🤖 AI大模型",
     "PROCESS-NAME-REGEX,(?i).*claude.*,🤖 AI大模型",
     "PROCESS-NAME-REGEX,(?i).*anthropic.*,🤖 AI大模型",
     "DOMAIN,api.anthropic.com,🤖 AI大模型",
@@ -2031,18 +2031,15 @@ const TEMPLATE = {
     "DOMAIN-SUFFIX,claude.com,🤖 AI大模型",
     "DOMAIN-SUFFIX,claudeusercontent.com,🤖 AI大模型",
     "DOMAIN-SUFFIX,clau.de,🤖 AI大模型",
-    "DOMAIN-SUFFIX,frame.claudeusercontent.com,🤖 AI大模型",
     "DOMAIN-SUFFIX,modelcontextprotocol.io,🤖 AI大模型",
     "IP-CIDR,160.79.104.0/21,🤖 AI大模型,no-resolve",
     "IP-CIDR6,2607:6bc0::/48,🤖 AI大模型,no-resolve",
     "IP-CIDR,17.253.4.0/23,🤖 AI大模型,no-resolve",
-    "RULE-SET,Gemini_Domain,🔎 Google",
     "RULE-SET,Grok_Domain,🤖 AI大模型",
     "DOMAIN,anthropic.com.cdn.cloudflare.net,🤖 AI大模型",
     "DOMAIN,anthropic-com.ghost.io,🤖 AI大模型",
     "DOMAIN-SUFFIX,sentry.io,🤖 AI大模型",
     "DOMAIN-SUFFIX,statsigapi.net,🤖 AI大模型",
-    "DOMAIN,browser-intake-us5-datadoghq.com,🤖 AI大模型",
     "DOMAIN-KEYWORD,datadog,🤖 AI大模型",
     "DOMAIN-KEYWORD,sift,🤖 AI大模型",
     "RULE-SET,ai-1,🤖 AI大模型",
@@ -2055,6 +2052,8 @@ const TEMPLATE = {
     "RULE-SET,ehentai,📚 EHentai",
     "RULE-SET,pikpak,☁️ PikPak",
     "RULE-SET,line,💬 LINE",
+    // 指定加密货币 API 仍走金融组；其余 cloudfront.net 域名按默认链路走。
+    "DOMAIN,d3r7nsslvs6aaf.cloudfront.net,💳 金融支付",
     "RULE-SET,category-cryptocurrency,💳 金融支付",
     "RULE-SET,paypal,💳 金融支付",
     "RULE-SET,stripe,💳 金融支付",
