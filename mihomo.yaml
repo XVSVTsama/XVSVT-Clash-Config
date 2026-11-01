@@ -692,18 +692,6 @@ rules:
   # - RULE-SET,skk_reject_non_ip,🛑 广告拦截
   # - RULE-SET,skk_reject_ip,REJECT,no-resolve
   - SUB-RULE,(PROCESS-NAME,com.dragon.read.oversea.gp),fanqie
-  - DOMAIN,mirrors.tuna.tsinghua.edu.cn,DIRECT
-  - DOMAIN,mirrors.ustc.edu.cn,DIRECT
-  - DOMAIN,mirrors.bfsu.edu.cn,DIRECT
-  - DOMAIN,mirror.nju.edu.cn,DIRECT
-  - DOMAIN,mirrors.hit.edu.cn,DIRECT
-  - DOMAIN,mirror.lzu.edu.cn,DIRECT
-  - DOMAIN,mirrors.aliyun.com,DIRECT
-  - DOMAIN,mirrors.cloud.tencent.com,DIRECT
-  - DOMAIN,mirrors.tencent.com,DIRECT
-  - DOMAIN,mirrors.huaweicloud.com,DIRECT
-  - DOMAIN,repo.huaweicloud.com,DIRECT
-  - DOMAIN,mirrors.163.com,DIRECT
   - DOMAIN,gh-proxy.com,DIRECT
   - DOMAIN-SUFFIX,alipayeshop.com,DIRECT
   - RULE-SET,echs_direct_ip,DIRECT,no-resolve
@@ -725,9 +713,6 @@ rules:
   - RULE-SET,lancidr,DIRECT,no-resolve
   - DOMAIN-WILDCARD,*.deepseek.com,DIRECT
   - DOMAIN-WILDCARD,*.portal101.cn,DIRECT
-  - DOMAIN-SUFFIX,cdnhwcqwg14.com,DIRECT
-  - DOMAIN-SUFFIX,cdnhwcxcy07.com,DIRECT
-  - DOMAIN-SUFFIX,cdngslb.com,DIRECT
   - DOMAIN-SUFFIX,edgekey.net,DIRECT
   - DOMAIN-KEYWORD,ikuuu,🌍 PROXY
   - DOMAIN,lumina.lumina00001.com,DIRECT
