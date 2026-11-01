@@ -277,16 +277,18 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 本小节不属于 YAML 或脚本单方面的说明：本仓库引用的规则集来自多个上游，彼此存在规则集与规则集之间的覆盖重合。下面按重合的集合分组，全部用韦恩图说明。
 
-**1. 国内直连的两个来源**
+**1. 国内直连内部的来源重合**
 
 ```mermaid
 venn-beta
-  set E["国内直连五件套（geolocation-cn / cn-additional / apple-cn / microsoft-cn / games-cn）"]
-  set C["cn（DustinWin 国内域名集）"]
-  union E,C
+  set G["geolocation-cn（meta geolocation-cn）"]
+  set A["cn-additional（353355 国内补充）"]
+  set S["apple-cn / microsoft-cn / games-cn（DustinWin 平台国内集）"]
+  union G,A
+  union G,S
 ```
 
-两组规则有部分重合；重合域名按配置顺序先命中国内直连五件套，两组最终都走 `DIRECT`。
+`geolocation-cn` 与 `cn-additional` 有 2557 条完全重合、与 `games-cn` 有 310 条；`cn-additional` 与 `games-cn` 有 194 条；`apple-cn`、`microsoft-cn` 与其余三个无交集。四者同指 `DIRECT`，重合只增加体积，不改变结果。
 
 **2. 直连规则集与海外组规则集**
 

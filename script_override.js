@@ -1093,7 +1093,7 @@ const TEMPLATE = {
       "rule-set:private": [
         "system"
       ],
-      "rule-set:proxy@direct,cn,geolocation-cn,cn-additional,apple-cn,microsoft-cn,games-cn": [
+      "rule-set:proxy@direct,geolocation-cn,cn-additional,apple-cn,microsoft-cn,games-cn": [
         "https://dns.alidns.com/dns-query#DIRECT",
         "https://doh.pub/dns-query#DIRECT"
       ]
@@ -1107,7 +1107,6 @@ const TEMPLATE = {
     "fake-ip-filter": [
       "rule-set:fakeip-filter_domain",
       "rule-set:private",
-      "rule-set:cn",
       "rule-set:geolocation-cn",
       "rule-set:cn-additional",
       "rule-set:apple-cn",
@@ -1544,14 +1543,6 @@ const TEMPLATE = {
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-cryptocurrency.mrs",
       "path": "./ruleset/category-cryptocurrency.mrs"
     },
-    "cn": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "domain",
-      "format": "mrs",
-      "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/cn.mrs",
-      "path": "./ruleset/cn.mrs"
-    },
     "cncidr": {
       "type": "http",
       "interval": 86400,
@@ -1931,7 +1922,7 @@ const TEMPLATE = {
     ]
   },
   "rules": [
-    "AND,((NETWORK,UDP),(DST-PORT,3478-3479/5349-5350/19302-19309),(NOT,((RULE-SET,cncidr))),(NOT,((RULE-SET,cn))),(NOT,((RULE-SET,games))),(NOT,((RULE-SET,geolocation-cn))),(NOT,((RULE-SET,cn-additional))),(NOT,((RULE-SET,apple-cn))),(NOT,((RULE-SET,microsoft-cn))),(NOT,((RULE-SET,games-cn)))),REJECT",
+    "AND,((NETWORK,UDP),(DST-PORT,3478-3479/5349-5350/19302-19309),(NOT,((RULE-SET,cncidr))),(NOT,((RULE-SET,games))),(NOT,((RULE-SET,geolocation-cn))),(NOT,((RULE-SET,cn-additional))),(NOT,((RULE-SET,apple-cn))),(NOT,((RULE-SET,microsoft-cn))),(NOT,((RULE-SET,games-cn)))),REJECT",
     "RULE-SET,HijackingPlus,REJECT",
     "SUB-RULE,(PROCESS-NAME,com.dragon.read.oversea.gp),fanqie",
     "DOMAIN,mirrors.tuna.tsinghua.edu.cn,DIRECT",
@@ -1956,7 +1947,6 @@ const TEMPLATE = {
     "RULE-SET,microsoft-cn,DIRECT",
     "RULE-SET,games-cn,DIRECT",
     "RULE-SET,cncidr,DIRECT,no-resolve",
-    "RULE-SET,cn,DIRECT",
     "DOMAIN,clash.razord.top,DIRECT",
     "DOMAIN,yacd.haishan.me,DIRECT",
     "PROCESS-NAME,svchost.exe,DIRECT",
