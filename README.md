@@ -190,32 +190,32 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 </thead>
 <tbody>
 <tr><td><strong>👉 手动切换</strong></td><td><code>👉 手动切换</code></td><td>开启</td></tr>
-<tr><td><strong>♻️ 自动选择</strong></td><td><code>♻️ 自动选择</code></td><td>开启</td></tr>
-<tr><td><strong>🔄 负载均衡</strong></td><td><code>🔄 负载均衡</code></td><td>开启</td></tr>
-<tr><td><strong>🔎 Google</strong></td><td><code>🔎 Google</code></td><td>开启</td></tr>
-<tr><td><strong>♾️ Meta</strong></td><td><code>♾️ Meta</code></td><td>开启</td></tr>
-<tr><td><strong>🤖 AI大模型</strong></td><td><code>🤖 AI大模型</code></td><td>开启</td></tr>
-<tr><td><strong>📲 Telegram</strong></td><td><code>📲 Telegram</code></td><td>开启</td></tr>
-<tr><td><strong>✖️ Twitter</strong></td><td><code>✖️ Twitter</code></td><td>开启</td></tr>
-<tr><td><strong>💬 Discord</strong></td><td><code>💬 Discord</code></td><td>开启</td></tr>
-<tr><td><strong>👽 Reddit</strong></td><td><code>👽 Reddit</code></td><td>开启</td></tr>
-<tr><td><strong>💬 LINE</strong></td><td><code>💬 LINE</code></td><td>开启</td></tr>
-<tr><td><strong>🎵 TikTok</strong></td><td><code>🎵 TikTok</code></td><td>开启</td></tr>
-<tr><td><strong>🎥 Netflix</strong></td><td><code>🎥 Netflix</code></td><td>开启</td></tr>
-<tr><td><strong>🎧 Spotify</strong></td><td><code>🎧 Spotify</code></td><td>开启</td></tr>
-<tr><td><strong>🎬 Emby</strong></td><td><code>🎬 Emby</code></td><td>开启</td></tr>
-<tr><td><strong>🍎 海外苹果</strong></td><td><code>🍎 海外苹果</code></td><td>开启</td></tr>
-<tr><td><strong>💠 海外微软</strong></td><td><code>💠 海外微软</code></td><td>开启</td></tr>
-<tr><td><strong>🎮 Steam平台（非下载/CDN）</strong></td><td><code>🎮 Steam平台（非下载/CDN）</code></td><td>开启</td></tr>
-<tr><td><strong>🎮 Games-Global</strong></td><td><code>🎮 Games-Global</code></td><td>开启</td></tr>
-<tr><td><strong>💳 金融支付</strong></td><td><code>💳 金融支付</code></td><td>开启</td></tr>
-<tr><td><strong>💝 Patreon</strong></td><td><code>💝 Patreon</code></td><td>开启</td></tr>
-<tr><td><strong>📚 EHentai</strong></td><td><code>📚 EHentai</code></td><td>开启</td></tr>
-<tr><td><strong>☁️ PikPak</strong></td><td><code>☁️ PikPak</code></td><td>开启</td></tr>
+<tr><td><strong>♻️ 自动选择</strong></td><td><code>♻️ 自动选择</code></td><td>关闭</td></tr>
+<tr><td><strong>🔄 负载均衡</strong></td><td><code>🔄 负载均衡</code></td><td>关闭</td></tr>
+<tr><td><strong>🔎 Google</strong></td><td><code>🔎 Google</code></td><td>关闭</td></tr>
+<tr><td><strong>♾️ Meta</strong></td><td><code>♾️ Meta</code></td><td>关闭</td></tr>
+<tr><td><strong>🤖 AI大模型</strong></td><td><code>🤖 AI大模型</code></td><td>关闭</td></tr>
+<tr><td><strong>📲 Telegram</strong></td><td><code>📲 Telegram</code></td><td>关闭</td></tr>
+<tr><td><strong>✖️ Twitter</strong></td><td><code>✖️ Twitter</code></td><td>关闭</td></tr>
+<tr><td><strong>💬 Discord</strong></td><td><code>💬 Discord</code></td><td>关闭</td></tr>
+<tr><td><strong>👽 Reddit</strong></td><td><code>👽 Reddit</code></td><td>关闭</td></tr>
+<tr><td><strong>💬 LINE</strong></td><td><code>💬 LINE</code></td><td>关闭</td></tr>
+<tr><td><strong>🎵 TikTok</strong></td><td><code>🎵 TikTok</code></td><td>关闭</td></tr>
+<tr><td><strong>🎥 Netflix</strong></td><td><code>🎥 Netflix</code></td><td>关闭</td></tr>
+<tr><td><strong>🎧 Spotify</strong></td><td><code>🎧 Spotify</code></td><td>关闭</td></tr>
+<tr><td><strong>🎬 Emby</strong></td><td><code>🎬 Emby</code></td><td>关闭</td></tr>
+<tr><td><strong>🍎 海外苹果</strong></td><td><code>🍎 海外苹果</code></td><td>关闭</td></tr>
+<tr><td><strong>💠 海外微软</strong></td><td><code>💠 海外微软</code></td><td>关闭</td></tr>
+<tr><td><strong>🎮 Steam平台（非下载/CDN）</strong></td><td><code>🎮 Steam平台（非下载/CDN）</code></td><td>关闭</td></tr>
+<tr><td><strong>🎮 Games-Global</strong></td><td><code>🎮 Games-Global</code></td><td>关闭</td></tr>
+<tr><td><strong>💳 金融支付</strong></td><td><code>💳 金融支付</code></td><td>关闭</td></tr>
+<tr><td><strong>💝 Patreon</strong></td><td><code>💝 Patreon</code></td><td>关闭</td></tr>
+<tr><td><strong>📚 EHentai</strong></td><td><code>📚 EHentai</code></td><td>关闭</td></tr>
+<tr><td><strong>☁️ PikPak</strong></td><td><code>☁️ PikPak</code></td><td>关闭</td></tr>
 </tbody>
 </table>
 
-这 23 个开关默认全部开启。关闭 20 个业务分流组时，会移除该组并删除指向它的路由规则，而不是把规则改写到 `🌍 PROXY`；只有在剩余规则和配置中均无引用的规则集才会清理。关闭 `🔄 负载均衡`、`👉 手动切换` 或 `♻️ 自动选择` 时仍沿用原有组引用和兜底处理。`🌍 PROXY` 始终保留为基础/兜底组。
+这 23 个开关里默认只有 `👉 手动切换` 开启，其余 22 个（`♻️ 自动选择`、`🔄 负载均衡` 与 20 个业务分流组）默认关闭——因此默认生成的配置只保留 `👉 手动切换`、`🌍 PROXY`、`FCM`、`Tailscale` 四个组。关闭 20 个业务分流组时，会移除该组并删除指向它的路由规则，而不是把规则改写到 `🌍 PROXY`；只有在剩余规则和配置中均无引用的规则集才会清理。关闭 `🔄 负载均衡`、`👉 手动切换` 或 `♻️ 自动选择` 时仍沿用原有组引用和兜底处理。`🌍 PROXY` 始终保留为基础/兜底组。
 
 **未列入 `policyGroupOptions` 的组**
 
