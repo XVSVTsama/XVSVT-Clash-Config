@@ -1978,7 +1978,6 @@ const TEMPLATE = {
     "RULE-SET,googlefcm,FCM",
     // 通用直连规则优先，剩余 Apple / Microsoft 域名和 IP 再进入海外组。
     // Bybit 静态资源位于 Microsoft 规则集内，优先保留金融支付分流。
-    "DOMAIN,bybit-exchange.github.io,💳 金融支付",
     "RULE-SET,microsoft_ip,💠 海外微软,no-resolve",
     "RULE-SET,microsoft,💠 海外微软",
     "RULE-SET,apple_ip,🍎 海外苹果,no-resolve",
