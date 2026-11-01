@@ -281,25 +281,25 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 ```mermaid
 venn-beta
-  set E["echs_direct（echs-top 直连域名集）"]
+  set E["国内直连五件套（geolocation-cn / cn-additional / apple-cn / microsoft-cn / games-cn）"]
   set C["cn（DustinWin 国内域名集）"]
   union E,C
 ```
 
-两组规则有部分重合；重合域名按配置顺序先命中 `echs_direct`，两组最终都走 `DIRECT`。
+两组规则有部分重合；重合域名按配置顺序先命中国内直连五件套，两组最终都走 `DIRECT`。
 
 **2. 直连规则集与海外组规则集**
 
 ```mermaid
 venn-beta
-  set E["echs_direct"]
+  set E["国内直连五件套"]
   set P["apple（bett-rules）"]
   set M["microsoft（bett-rules）"]
   union E,P
   union E,M
 ```
 
-`apple` / `microsoft` 的国内部分落在 `echs_direct` 里，`rules` 把 `echs_direct` 排在海外组之前，重合部分先走 `DIRECT`；`games` 与 `echs_direct` 同理。
+`apple` \/ `microsoft` 的国内部分落在 `apple-cn` \/ `microsoft-cn` 里，`rules` 把国内直连五件套排在海外组之前，重合部分先走 `DIRECT`；`games` 与 `games-cn` 同理。
 
 **3. 出海域名集的多个来源**
 

@@ -195,7 +195,7 @@ dns:
     - 180.184.2.2
     'rule-set:private':
     - system
-    'rule-set:proxy@direct,cn,echs_direct':
+    'rule-set:proxy@direct,cn,geolocation-cn,cn-additional,apple-cn,microsoft-cn,games-cn':
     - https://dns.alidns.com/dns-query#DIRECT
     - https://doh.pub/dns-query#DIRECT
   prefer-h3: false
@@ -208,7 +208,11 @@ dns:
     - rule-set:fakeip-filter_domain
     - rule-set:private
     - rule-set:cn
-    - rule-set:echs_direct
+    - rule-set:geolocation-cn
+    - rule-set:cn-additional
+    - rule-set:apple-cn
+    - rule-set:microsoft-cn
+    - rule-set:games-cn
     - rule-set:googlefcm
     - yacd.haishan.me
     - +.alipayeshop.com
@@ -553,7 +557,11 @@ rule-providers:
   cncidr: { <<: *ipcidr_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/cnip.mrs', path: ./ruleset/cncidr.mrs }
   discord: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/discord.mrs', path: ./ruleset/discord.mrs }
   douyin: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/douyin.mrs', path: ./ruleset/douyin.mrs }
-  echs_direct: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/echs-top/proxy/main/mrs/domain/direct.mrs', path: ./ruleset/echs_direct.mrs }
+  geolocation-cn: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-cn.mrs', path: ./ruleset/geolocation-cn.mrs }
+  cn-additional: { <<: *domain_mrs, url: 'https://static-file-global.353355.xyz/rules/cn-additional-list.mrs', path: ./ruleset/cn-additional.mrs }
+  apple-cn: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/apple-cn.mrs', path: ./ruleset/apple-cn.mrs }
+  microsoft-cn: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/microsoft-cn.mrs', path: ./ruleset/microsoft-cn.mrs }
+  games-cn: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/games-cn.mrs', path: ./ruleset/games-cn.mrs }
   echs_direct_ip: { <<: *ipcidr_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/echs-top/proxy/main/mrs/ip/direct.mrs', path: ./ruleset/echs_direct_ip.mrs }
   ehentai: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/ehentai.mrs', path: ./ruleset/ehentai.mrs }
   fakeip-filter_domain: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/fakeip-filter.mrs', path: ./ruleset/fakeip-filter_domain.mrs }
@@ -670,7 +678,7 @@ sub-rules:
 
     - MATCH,DIRECT                                           
 rules:
-  - AND,((NETWORK,UDP),(DST-PORT,3478-3479/5349-5350/19302-19309),(NOT,((RULE-SET,cncidr))),(NOT,((RULE-SET,cn))),(NOT,((RULE-SET,games))),(NOT,((RULE-SET,echs_direct)))),REJECT
+  - AND,((NETWORK,UDP),(DST-PORT,3478-3479/5349-5350/19302-19309),(NOT,((RULE-SET,cncidr))),(NOT,((RULE-SET,cn))),(NOT,((RULE-SET,games))),(NOT,((RULE-SET,geolocation-cn))),(NOT,((RULE-SET,cn-additional))),(NOT,((RULE-SET,apple-cn))),(NOT,((RULE-SET,microsoft-cn))),(NOT,((RULE-SET,games-cn)))),REJECT
   - RULE-SET,HijackingPlus,REJECT
   # SKK 广告拦截规则：启用时取消注释，并同时启用上方 proxy-groups 与 rule-providers 对应段落。
   # - RULE-SET,skk_reject_drop,REJECT-DROP
@@ -693,7 +701,12 @@ rules:
   - DOMAIN,gh-proxy.com,DIRECT
   - DOMAIN-SUFFIX,alipayeshop.com,DIRECT
   - RULE-SET,echs_direct_ip,DIRECT,no-resolve
-  - RULE-SET,echs_direct,DIRECT
+  # 国内直连域名：geolocation-cn + cn-additional + 三个平台国内集，均为显式域名，不含 +.cn 通配。
+  - RULE-SET,geolocation-cn,DIRECT
+  - RULE-SET,cn-additional,DIRECT
+  - RULE-SET,apple-cn,DIRECT
+  - RULE-SET,microsoft-cn,DIRECT
+  - RULE-SET,games-cn,DIRECT
   - RULE-SET,cncidr,DIRECT,no-resolve
   - RULE-SET,cn,DIRECT
   - DOMAIN,clash.razord.top,DIRECT

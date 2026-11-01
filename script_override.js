@@ -1093,7 +1093,7 @@ const TEMPLATE = {
       "rule-set:private": [
         "system"
       ],
-      "rule-set:proxy@direct,cn,echs_direct": [
+      "rule-set:proxy@direct,cn,geolocation-cn,cn-additional,apple-cn,microsoft-cn,games-cn": [
         "https://dns.alidns.com/dns-query#DIRECT",
         "https://doh.pub/dns-query#DIRECT"
       ]
@@ -1108,7 +1108,11 @@ const TEMPLATE = {
       "rule-set:fakeip-filter_domain",
       "rule-set:private",
       "rule-set:cn",
-      "rule-set:echs_direct",
+      "rule-set:geolocation-cn",
+      "rule-set:cn-additional",
+      "rule-set:apple-cn",
+      "rule-set:microsoft-cn",
+      "rule-set:games-cn",
       "rule-set:googlefcm",
       "yacd.haishan.me",
       "+.alipayeshop.com",
@@ -1572,13 +1576,45 @@ const TEMPLATE = {
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/douyin.mrs",
       "path": "./ruleset/douyin.mrs"
     },
-    "echs_direct": {
+    "geolocation-cn": {
       "type": "http",
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/echs-top/proxy/main/mrs/domain/direct.mrs",
-      "path": "./ruleset/echs_direct.mrs"
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-cn.mrs",
+      "path": "./ruleset/geolocation-cn.mrs"
+    },
+    "cn-additional": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://static-file-global.353355.xyz/rules/cn-additional-list.mrs",
+      "path": "./ruleset/cn-additional.mrs"
+    },
+    "apple-cn": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/apple-cn.mrs",
+      "path": "./ruleset/apple-cn.mrs"
+    },
+    "microsoft-cn": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/microsoft-cn.mrs",
+      "path": "./ruleset/microsoft-cn.mrs"
+    },
+    "games-cn": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/games-cn.mrs",
+      "path": "./ruleset/games-cn.mrs"
     },
     "echs_direct_ip": {
       "type": "http",
@@ -1895,7 +1931,7 @@ const TEMPLATE = {
     ]
   },
   "rules": [
-    "AND,((NETWORK,UDP),(DST-PORT,3478-3479/5349-5350/19302-19309),(NOT,((RULE-SET,cncidr))),(NOT,((RULE-SET,cn))),(NOT,((RULE-SET,games))),(NOT,((RULE-SET,echs_direct)))),REJECT",
+    "AND,((NETWORK,UDP),(DST-PORT,3478-3479/5349-5350/19302-19309),(NOT,((RULE-SET,cncidr))),(NOT,((RULE-SET,cn))),(NOT,((RULE-SET,games))),(NOT,((RULE-SET,geolocation-cn))),(NOT,((RULE-SET,cn-additional))),(NOT,((RULE-SET,apple-cn))),(NOT,((RULE-SET,microsoft-cn))),(NOT,((RULE-SET,games-cn)))),REJECT",
     "RULE-SET,HijackingPlus,REJECT",
     "SUB-RULE,(PROCESS-NAME,com.dragon.read.oversea.gp),fanqie",
     "DOMAIN,mirrors.tuna.tsinghua.edu.cn,DIRECT",
@@ -1912,9 +1948,13 @@ const TEMPLATE = {
     "DOMAIN,mirrors.163.com,DIRECT",
     "DOMAIN,gh-proxy.com,DIRECT",
     "DOMAIN-SUFFIX,alipayeshop.com,DIRECT",
-    // 国内 Apple、Microsoft、Games 分类直连统一交给 echs_direct。
+    // 国内 Apple、Microsoft、Games 分类直连统一交给下面五个规则集。
     "RULE-SET,echs_direct_ip,DIRECT,no-resolve",
-    "RULE-SET,echs_direct,DIRECT",
+    "RULE-SET,geolocation-cn,DIRECT",
+    "RULE-SET,cn-additional,DIRECT",
+    "RULE-SET,apple-cn,DIRECT",
+    "RULE-SET,microsoft-cn,DIRECT",
+    "RULE-SET,games-cn,DIRECT",
     "RULE-SET,cncidr,DIRECT,no-resolve",
     "RULE-SET,cn,DIRECT",
     "DOMAIN,clash.razord.top,DIRECT",
