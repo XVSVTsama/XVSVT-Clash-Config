@@ -12,7 +12,7 @@
 
 ## 尺寸与视觉归一化
 
-当前配置引用的 40 张图标（17 PNG、23 SVG）统一按以下原则处理，文件名、格式与配置引用不变：
+当前配置引用的 41 张图标（17 PNG、24 SVG）统一按以下原则处理，文件名、格式与配置引用不变：
 
 - PNG 使用 **144×144 像素**透明画布；SVG 使用 **`viewBox="0 0 100 100"`**。按完整可见图形边界等比缩放并居中，不拉伸、不裁掉可见内容，也不以其他图案替换原稿。
 - 图形最长可见边以画布的**约 80%**为目标，四周保留留白。占比是视觉目标而非逐像素硬阈值；抗锯齿、低透明度边缘和阴影会使实际非透明边界略有差异，处理时仍保留这些内容。
@@ -77,10 +77,11 @@
 | `upstream-simple-icons-netflix.svg` | [`netflix.svg`](https://github.com/simple-icons/simple-icons/blob/90bd1f3e7b77851fd0c56474f6fa43b816babdab/icons/netflix.svg) | Netflix，`#E50914` |
 | `upstream-simple-icons-patreon.svg` | [`patreon.svg`](https://github.com/simple-icons/simple-icons/blob/90bd1f3e7b77851fd0c56474f6fa43b816babdab/icons/patreon.svg) | Patreon，`#000000` |
 | `upstream-simple-icons-line.svg` | [`line.svg`](https://github.com/simple-icons/simple-icons/blob/90bd1f3e7b77851fd0c56474f6fa43b816babdab/icons/line.svg) | LINE，`#00C300` |
+| `upstream-simple-icons-tailscale.svg` | [`tailscale.svg`](https://github.com/simple-icons/simple-icons/blob/90bd1f3e7b77851fd0c56474f6fa43b816babdab/icons/tailscale.svg) | Tailscale，`#242424` |
 
-Simple Icons **项目**采用 [CC0 1.0](https://github.com/simple-icons/simple-icons/blob/90bd1f3e7b77851fd0c56474f6fa43b816babdab/LICENSE.md)。但 [上游免责声明](https://github.com/simple-icons/simple-icons/blob/90bd1f3e7b77851fd0c56474f6fa43b816babdab/DISCLAIMER.md) 明确说明：项目 CC0 不代表所有图标都是 CC0；CC0 不授予商标权；缺少许可或规范字段不代表没有限制。上述十个条目在该版本元数据中均未见单图 `license` 字段，不能据此宣称它们均可不受限制地商用。
+Simple Icons **项目**采用 [CC0 1.0](https://github.com/simple-icons/simple-icons/blob/90bd1f3e7b77851fd0c56474f6fa43b816babdab/LICENSE.md)。但 [上游免责声明](https://github.com/simple-icons/simple-icons/blob/90bd1f3e7b77851fd0c56474f6fa43b816babdab/DISCLAIMER.md) 明确说明：项目 CC0 不代表所有图标都是 CC0；CC0 不授予商标权；缺少许可或规范字段不代表没有限制。上述十一个条目在该版本元数据中均未见单图 `license` 字段，不能据此宣称它们均可不受限制地商用。
 
-复用前请查看各条目的 `source`、`guidelines` 和品牌方的最新规范，例如 [Bitcoin](https://bitcoin.org)、[Google](https://about.google/brand-resource-center/brand-elements/)、[Meta](https://www.facebook.com/brand/resources/meta/company-brand)、[Spotify](https://developer.spotify.com/documentation/general/design-and-branding/#using-our-logo)、[Discord](https://discord.com/branding)、[Reddit](https://www.redditinc.com/brand)、[Netflix](https://brand.netflix.com/en/assets/logos/)、[Patreon](https://www.patreon.com/brand) 和 [LINE](https://www.line.me/en/logo)。LINE 官方指南要求其图标按原样使用；这里仅复用固定版本 Simple Icons 的几何图形及元数据品牌色，不把 Simple Icons 的项目许可视为商标授权。本目录仅链接其项目许可，不另放 Simple Icons 独立许可文件。
+复用前请查看各条目的 `source`、`guidelines` 和品牌方的最新规范，例如 [Bitcoin](https://bitcoin.org)、[Google](https://about.google/brand-resource-center/brand-elements/)、[Meta](https://www.facebook.com/brand/resources/meta/company-brand)、[Spotify](https://developer.spotify.com/documentation/general/design-and-branding/#using-our-logo)、[Discord](https://discord.com/branding)、[Reddit](https://www.redditinc.com/brand)、[Netflix](https://brand.netflix.com/en/assets/logos/)、[Patreon](https://www.patreon.com/brand)、[LINE](https://www.line.me/en/logo) 和 [Tailscale](https://tailscale.com/press)。LINE 官方指南要求其图标按原样使用；这里仅复用固定版本 Simple Icons 的几何图形及元数据品牌色，不把 Simple Icons 的项目许可视为商标授权。本目录仅链接其项目许可，不另放 Simple Icons 独立许可文件。
 
 ## DustinWin / ruleset_geodata
 

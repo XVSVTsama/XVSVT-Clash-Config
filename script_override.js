@@ -203,6 +203,8 @@ const ruleOptionsEnable = {
   // --- 组与实验 ---
   // 默认打开：隐藏组 FCM 仅含 DIRECT；关闭后优先使用 👉 手动切换，若该组已关闭则回退到 🌍 PROXY，再回退到 DIRECT（不移除 FCM 组）。开关图标取自 FCM 代理组的 icon 字段。
   'FCM直连': true,
+  // 默认打开：Tailscale 分组仅含 DIRECT；关闭后优先使用 👉 手动切换，若该组已关闭则回退到 🌍 PROXY，再回退到 DIRECT（不移除该组）。开关图标取自 Tailscale 代理组的 icon 字段。
+  'Tailscale直连': true,
   // 开启 Telegram DC/地区实验分流；关闭时不改变原 Telegram 规则、策略组和规则集。
   'TGDC实验分流': false,
   // 开启后注入 SukkaW/Surge 的 reject 规则集与广告拦截策略组；关闭时不注入其策略组、规则集和规则。
@@ -1084,6 +1086,9 @@ const TEMPLATE = {
       "https://cloudflare-dns.com/dns-query#👉 手动切换"
     ],
     "nameserver-policy": {
+      "+.ts.net": [
+        "100.100.100.100"
+      ],
       "rule-set:douyin": [
         "system",
         "180.184.1.1",
@@ -1465,6 +1470,16 @@ const TEMPLATE = {
       "hidden": true,
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-MiToverG422-Qure-fcm.png",
       "name": "FCM",
+      "proxies": [
+        "👉 手动切换",
+        "DIRECT"
+      ],
+      "type": "select"
+    },
+    {
+      "hidden": true,
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-tailscale.svg",
+      "name": "Tailscale",
       "proxies": [
         "👉 手动切换",
         "DIRECT"
@@ -1940,6 +1955,7 @@ const TEMPLATE = {
     "DOMAIN,clash.razord.top,DIRECT",
     "DOMAIN,yacd.haishan.me,DIRECT",
     "PROCESS-NAME,svchost.exe,DIRECT",
+    "DOMAIN-SUFFIX,ts.net,Tailscale",
     "RULE-SET,private,DIRECT,no-resolve",
     "RULE-SET,lancidr,DIRECT,no-resolve",
     "DOMAIN-WILDCARD,*.deepseek.com,DIRECT",
@@ -2110,6 +2126,10 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     {
       name: 'FCM直连',
       icon: (TEMPLATE['proxy-groups'].find((group) => group && group.name === 'FCM') || {}).icon
+    },
+    {
+      name: 'Tailscale直连',
+      icon: (TEMPLATE['proxy-groups'].find((group) => group && group.name === 'Tailscale') || {}).icon
     },
     {
       name: '强制证书验证',
@@ -3310,20 +3330,25 @@ function main(config, profileName) {
     }
   });
 
-  // ---- 5. FCM 直连开关：默认打开时 FCM 隐藏组仅含 DIRECT；
-  //      关闭后仅保留 👉 手动切换（该开关不移除 FCM 组，仅改写组内节点） ----
-  const fcmDirectEnabled = ruleOptionsEnable['FCM直连'] === true;
-  result['proxy-groups'].forEach((group) => {
-    if (group && group.name === 'FCM') {
-      if (fcmDirectEnabled) {
+  // ---- 5. FCM / Tailscale 直连开关：默认打开时对应隐藏组仅含 DIRECT；
+  //      关闭后仅保留 👉 手动切换（这两个开关不移除对应组，仅改写组内节点） ----
+  const directSwitchGroups = [
+    ['FCM直连', 'FCM'],
+    ['Tailscale直连', 'Tailscale']
+  ];
+  directSwitchGroups.forEach(([optionName, groupName]) => {
+    const directEnabled = ruleOptionsEnable[optionName] === true;
+    result['proxy-groups'].forEach((group) => {
+      if (!group || group.name !== groupName) return;
+      if (directEnabled) {
         group.proxies = ['DIRECT'];
       } else if (disabledGroupNames.has('👉 手动切换')) {
-        // 手动组已关闭时沿用全局兜底，避免 FCM 引用一个不存在的策略组。
+        // 手动组已关闭时沿用全局兜底，避免该组引用一个不存在的策略组。
         group.proxies = [fallbackTarget];
       } else {
         group.proxies = ['👉 手动切换'];
       }
-    }
+    });
   });
 
   // ---- 6. 业务组关闭时删除对应路由；其他被禁用组仍沿用原有兜底改写 ----

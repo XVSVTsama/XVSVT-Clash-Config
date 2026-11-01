@@ -188,6 +188,8 @@ dns:
   # - https://doh.dns.sb/dns-query              # DNS.SB 公共 DNS   # 185.222.222.222     45.11.45.11
   # - https://dns.twnic.tw/dns-query            # Quad101 公共 DNS  # 101.101.101.10      101.102.103.10
   nameserver-policy:
+    '+.ts.net':
+    - 100.100.100.100
     'rule-set:douyin':
     - system
     - 180.184.1.1
@@ -528,6 +530,14 @@ proxy-groups:
     proxies:
       - 👉 手动切换
       - DIRECT
+  # Tailscale：MagicDNS 域名（ts.net）分流目标，由 Tailscale直连 开关控制本组的 proxies。
+  # 开启时使用 DIRECT，关闭时使用 👉 手动切换；开关图标取自本组的 icon 字段。
+  - name: Tailscale
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-tailscale.svg"
+    type: select
+    proxies:
+      - 👉 手动切换
+      - DIRECT
 
 .templates:
   domain_mrs: &domain_mrs { type: http, interval: 86400, behavior: domain, format: mrs }
@@ -706,6 +716,8 @@ rules:
   - DOMAIN,clash.razord.top,DIRECT
   - DOMAIN,yacd.haishan.me,DIRECT
   - PROCESS-NAME,svchost.exe,DIRECT
+  # Tailscale MagicDNS：交给 Tailscale 组，由 Tailscale直连 开关决定直连或代理；须早于 private。
+  - DOMAIN-SUFFIX,ts.net,Tailscale
   - RULE-SET,private,DIRECT,no-resolve    
   - RULE-SET,lancidr,DIRECT,no-resolve
   - DOMAIN-WILDCARD,*.deepseek.com,DIRECT
