@@ -95,8 +95,8 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 </thead>
 <tbody>
 <tr><td><strong>🔎 Google</strong></td><td>Google 与 Gemini 共用出口</td><td>引用规则集合：<code>google</code>、<code>google-cn</code>、<code>Gemini_Domain</code></td></tr>
-<tr><td><strong>♾️ Meta</strong></td><td>Meta 与 Meta AI 共用出口</td><td>引用规则集合：<code>meta</code>（本组规则排在 <strong>🤖 AI大模型</strong> 之前）<br>使用域名后缀匹配：muse.ai、metaaivm.com<br>使用域名精确匹配：hatch-api.meta.ai、api.meta.ai、agent.meta.ai、auth.meta.com、meta.graph.meta.com、edge-metaclaw-http.c10r.facebook.com、shortwave.facebook.com、node.hatch.one<br>使用进程名称匹配：com.facebook.aura</td></tr>
-<tr><td><strong>🤖 AI大模型</strong></td><td>AI 服务单独选出口</td><td>引用规则集合：<code>ai-1</code>、<code>ai-2</code>、<code>Grok_Domain</code><br>使用域名后缀匹配：anthropic.com、claude.ai、claude.com、claudeusercontent.com、clau.de、frame.claudeusercontent.com、modelcontextprotocol.io、sentry.io、statsigapi.net<br>使用域名精确匹配：共 24 个域名（api.anthropic.com、downloads.claude.ai、cdn.growthbook.io、registry.npmjs.org、storage.googleapis.com 等）<br>使用域名关键词匹配：datadog、sift<br>使用进程名称正则表达式匹配：claude、anthropic、manus<br>使用 IP 段匹配：160.79.104.0/21、17.253.4.0/23、2607:6bc0::/48<br>Meta AI 的 <code>muse.ai</code>、<code>*.meta.ai</code> 等改由 <strong>♾️ Meta</strong> 承接；Gemini 域名由 <strong>🔎 Google</strong> 承接</td></tr>
+<tr><td><strong>♾️ Meta</strong></td><td>Meta 与 Meta AI 共用出口</td><td>引用规则集合：<code>meta</code><br>使用域名后缀匹配：muse.ai、metaaivm.com<br>使用域名精确匹配：hatch-api.meta.ai、api.meta.ai、agent.meta.ai、auth.meta.com、meta.graph.meta.com、edge-metaclaw-http.c10r.facebook.com、shortwave.facebook.com、node.hatch.one<br>使用进程名称匹配：com.facebook.aura</td></tr>
+<tr><td><strong>🤖 AI大模型</strong></td><td>AI 服务单独选出口</td><td>引用规则集合：<code>ai-1</code>、<code>ai-2</code>、<code>Grok_Domain</code><br>使用域名后缀匹配：anthropic.com、claude.ai、claude.com、claudeusercontent.com、clau.de、frame.claudeusercontent.com、modelcontextprotocol.io、sentry.io、statsigapi.net<br>使用域名精确匹配：共 24 个域名（api.anthropic.com、downloads.claude.ai、cdn.growthbook.io、registry.npmjs.org、storage.googleapis.com 等）<br>使用域名关键词匹配：datadog、sift<br>使用进程名称正则表达式匹配：claude、anthropic、manus<br>使用 IP 段匹配：160.79.104.0/21、17.253.4.0/23、2607:6bc0::/48</td></tr>
 <tr><td><strong>📲 Telegram</strong></td><td>Telegram 单独选出口</td><td>引用规则集合：<code>telegram_domain</code>、<code>telegramcidr</code><br>使用进程名称正则表达式匹配：telegram、nagram</td></tr>
 <tr><td><strong>✖️ Twitter</strong></td><td>Twitter / X 单独选出口</td><td>引用规则集合：<code>twitter-x-domain</code>、<code>twitter-x-ip</code>、<code>twitter-x-blackmatrix7-No_Resolve</code><br>使用进程名称正则表达式匹配：twitter</td></tr>
 <tr><td><strong>💬 Discord</strong></td><td>Discord 单独选出口</td><td>引用规则集合：<code>discord</code></td></tr>
@@ -110,12 +110,12 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><td><strong>💠 海外微软</strong></td><td>海外 Microsoft 服务单独选出口</td><td>引用规则集合：<code>microsoft</code>、<code>microsoft_ip</code></td></tr>
 <tr><td><strong>🎮 Steam平台（非下载/CDN）</strong></td><td>Steam 平台流量单独选出口</td><td>引用规则集合：<code>steam</code>、<code>steam_ip</code></td></tr>
 <tr><td><strong>🎮 Games-Global</strong></td><td>游戏流量单独选出口</td><td>引用规则集合：<code>games</code><br>使用进程名称匹配：bf6.exe</td></tr>
-<tr><td><strong>💳 金融支付</strong></td><td>支付与加密货币单独选出口</td><td>引用规则集合：<code>category-cryptocurrency</code>、<code>paypal</code>、<code>stripe</code>、<code>visa</code>、<code>mastercard</code>、<code>wise</code><br>使用域名精确匹配：d3r7nsslvs6aaf.cloudfront.net（<code>bybit-exchange.github.io</code> 由 <code>category-cryptocurrency</code> 覆盖）<br>使用进程名称匹配：共 24 个交易所 / 钱包 App 进程名（com.binance.dev、com.coinbase.android、com.okinc.okex.gp 等）</td></tr>
+<tr><td><strong>💳 金融支付</strong></td><td>支付与加密货币单独选出口</td><td>引用规则集合：<code>category-cryptocurrency</code>、<code>paypal</code>、<code>stripe</code>、<code>visa</code>、<code>mastercard</code>、<code>wise</code><br>使用域名精确匹配：d3r7nsslvs6aaf.cloudfront.net<br>使用进程名称匹配：共 24 个交易所 / 钱包 App 进程名（com.binance.dev、com.coinbase.android、com.okinc.okex.gp 等）</td></tr>
 <tr><td><strong>💝 Patreon</strong></td><td>Patreon 单独选出口</td><td>引用规则集合：<code>patreon</code></td></tr>
 <tr><td><strong>📚 EHentai</strong></td><td>EHentai 单独选出口</td><td>引用规则集合：<code>ehentai</code></td></tr>
 <tr><td><strong>☁️ PikPak</strong></td><td>PikPak 单独选出口</td><td>引用规则集合：<code>pikpak</code></td></tr>
 <tr><td><strong>FCM</strong></td><td>Google FCM 推送单独选出口</td><td>引用规则集合：<code>googlefcm</code></td></tr>
-<tr><td><strong>Tailscale</strong></td><td>Tailscale MagicDNS 单独选出口</td><td>使用域名后缀匹配：ts.net<br>组内节点由 <code>Tailscale直连</code> 开关控制：开启为 <code>DIRECT</code>；关闭为 <code>👉 手动切换</code></td></tr>
+<tr><td><strong>Tailscale</strong></td><td>Tailscale MagicDNS 单独选出口</td><td>使用域名后缀匹配：ts.net</td></tr>
 </tbody>
 </table>
 #### 特别组说明
