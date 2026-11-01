@@ -141,7 +141,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 本配置按个人使用习惯定制，并非开箱即用的通用模板，尤其是对于直接导入 YAML 的使用形式。使用前请完成以下必要设置；如不熟悉 Mihomo、TUN、DNS 或策略组过滤规则，请先了解相关机制再使用。
 
 1. **直接使用 YAML (`mihomo.yaml`)**：将 `proxy-providers.subscription.url` 的占位地址在本地替换为自己的 Clash/Mihomo 订阅链接；`include-all` 策略组会自动纳入 provider 节点。也可删除不用的示例 provider，将 `proxies: ~` 替换为自己的节点列表。模板不会自动读取客户端中的其他订阅，请勿把真实订阅链接或凭据提交到公开仓库。
-2. **按需删减规则**：本配置的规则内容都有性能消耗，不需要的规则、规则集与策略组都可按需删减，例如不屏蔽番茄小说海外版广告的，删除 `sub-rules` 中的 `fanqie` 规则。策略组与功能开关的默认值同样只是起点：除 `👉 手动切换` 默认开启外，业务分流组默认关闭，开哪些、关哪些由使用者按自己的网络与订阅决定，本仓库不预设推荐组合。`🛑 广告拦截`（SukkaW/Surge reject 规则集）在模板中为 `proxy-groups`、`rule-providers`、`rules` 三处注释段，不用时保持注释，需要时成套取消注释启用。
+2. **按需删减规则**：本配置的规则内容都有性能消耗，不需要的规则、规则集与策略组都可按需删减，例如不屏蔽番茄小说海外版广告的，删除 `sub-rules` 中的 `fanqie` 规则。`🛑 广告拦截`（SukkaW/Surge reject 规则集）在模板中为 `proxy-groups`、`rule-providers`、`rules` 三处注释段，不用时保持注释，需要时成套取消注释启用。
 
 <a id="script-override"></a>
 
@@ -215,7 +215,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 </tbody>
 </table>
 
-这 23 个开关里默认只有 `👉 手动切换` 开启，其余 22 个（`♻️ 自动选择`、`🔄 负载均衡` 与 20 个业务分流组）默认关闭——因此默认生成的配置只保留 `👉 手动切换`、`🌍 PROXY`、`FCM`、`Tailscale` 四个组。关闭 20 个业务分流组时，会移除该组并删除指向它的路由规则，而不是把规则改写到 `🌍 PROXY`；只有在剩余规则和配置中均无引用的规则集才会清理。关闭 `🔄 负载均衡`、`👉 手动切换` 或 `♻️ 自动选择` 时仍沿用原有组引用和兜底处理。`🌍 PROXY` 始终保留为基础/兜底组。
+表格即当前默认值，可按需改动：默认只有 `👉 手动切换` 开启，因此生成的配置只含 `👉 手动切换`、`🌍 PROXY`、`FCM`、`Tailscale` 四个组。关闭业务组会移除该组并删除其路由规则；`🌍 PROXY` 始终保留为兜底。
 
 **未列入 `policyGroupOptions` 的组**
 
