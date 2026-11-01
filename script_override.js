@@ -145,12 +145,12 @@ const ruleOptionsEnable = {
   // --- 代理组（策略组）单独控制开关 ---
   // 负载均衡策略组
   '🔄 负载均衡': false,
-  // AI 大模型策略组
-  '🤖 AI大模型': false,
   // Google / Google-CN 共用独立策略组；Google FCM 与 AI 特例仍由原规则处理。
   '🔎 Google': false,
   // Meta 社交平台策略组
   '♾️ Meta': false,
+  // AI 大模型策略组
+  '🤖 AI大模型': false,
   // Telegram 通讯软件策略组
   '📲 Telegram': false,
   // Twitter 社交平台策略组
@@ -187,6 +187,8 @@ const ruleOptionsEnable = {
   '📚 EHentai': false,
   // PikPak 网盘策略组
   '☁️ PikPak': false,
+
+
 
   // --- 节点字段修正 ---
   // 开启时统一把订阅节点 skip-cert-verify 置为 false（强制校验证书）；关闭时不干预，保留订阅节点原有设置。
@@ -1219,18 +1221,6 @@ const TEMPLATE = {
       "hidden": true
     },
     {
-      "name": "🤖 AI大模型",
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-ai.png",
-      "type": "select",
-      "proxies": [
-        "👉 手动切换",
-        "♻️ 自动选择",
-        "🔄 负载均衡",
-        "DIRECT"
-      ],
-      "include-all": true
-    },
-    {
       "name": "🔎 Google",
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-google.svg",
       "type": "select",
@@ -1245,6 +1235,18 @@ const TEMPLATE = {
     {
       "name": "♾️ Meta",
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-meta.svg",
+      "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
+      "include-all": true
+    },
+    {
+      "name": "🤖 AI大模型",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-ai.png",
       "type": "select",
       "proxies": [
         "👉 手动切换",
