@@ -726,9 +726,8 @@ rules:
   - PROCESS-NAME,com.attempt.afusekt,🎬 Emby
   - PROCESS-NAME,com.hush.yamby,🎬 Emby
   - PROCESS-NAME,com.railux.mobile,🎬 Emby
-  # 该域名走金融支付组而非直连，必须早于下面 cloudfront.net 的 DIRECT 后缀规则。
+  # 该 CloudFront 分发域跟随金融支付组；其余 cloudfront.net 域名按默认链路走（最终指向代理）。
   - DOMAIN,d3r7nsslvs6aaf.cloudfront.net,💳 金融支付
-  - DOMAIN-SUFFIX,cloudfront.net,DIRECT
   - RULE-SET,googlefcm,FCM
   - RULE-SET,microsoft_ip,💠 海外微软,no-resolve
   - RULE-SET,microsoft,💠 海外微软

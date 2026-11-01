@@ -1972,9 +1972,8 @@ const TEMPLATE = {
     "PROCESS-NAME,com.hush.yamby,🎬 Emby",
     "PROCESS-NAME,com.railux.mobile,🎬 Emby",
     // Emby 进程规则需先于 CloudFront 通用直连规则，避免其流量被优先直连。
-    // 指定加密货币 API 仍走金融组；其余 cloudfront.net 域名直连。
+    // 指定加密货币 API 仍走金融组；其余 cloudfront.net 域名按默认链路走。
     "DOMAIN,d3r7nsslvs6aaf.cloudfront.net,💳 金融支付",
-    "DOMAIN-SUFFIX,cloudfront.net,DIRECT",
     "RULE-SET,googlefcm,FCM",
     // 通用直连规则优先，剩余 Apple / Microsoft 域名和 IP 再进入海外组。
     // Bybit 静态资源位于 Microsoft 规则集内，优先保留金融支付分流。

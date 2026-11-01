@@ -110,7 +110,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><td><strong>💠 海外微软</strong></td><td>海外 Microsoft 服务单独选出口</td><td>引用规则集合：<code>microsoft</code>、<code>microsoft_ip</code></td></tr>
 <tr><td><strong>🎮 Steam平台（非下载/CDN）</strong></td><td>Steam 平台流量单独选出口</td><td>引用规则集合：<code>steam</code>、<code>steam_ip</code></td></tr>
 <tr><td><strong>🎮 Games-Global</strong></td><td>游戏流量单独选出口</td><td>引用规则集合：<code>games</code><br>使用进程名称匹配：bf6.exe</td></tr>
-<tr><td><strong>💳 金融支付</strong></td><td>支付与加密货币单独选出口</td><td>引用规则集合：<code>category-cryptocurrency</code>、<code>paypal</code>、<code>stripe</code>、<code>visa</code>、<code>mastercard</code>、<code>wise</code><br>使用域名精确匹配：d3r7nsslvs6aaf.cloudfront.net、bybit-exchange.github.io<br>使用进程名称匹配：共 24 个交易所 / 钱包 App 进程名（com.binance.dev、com.coinbase.android、com.okinc.okex.gp 等）</td></tr>
+<tr><td><strong>💳 金融支付</strong></td><td>支付与加密货币单独选出口</td><td>引用规则集合：<code>category-cryptocurrency</code>、<code>paypal</code>、<code>stripe</code>、<code>visa</code>、<code>mastercard</code>、<code>wise</code><br>使用域名精确匹配：d3r7nsslvs6aaf.cloudfront.net（<code>bybit-exchange.github.io</code> 由 <code>category-cryptocurrency</code> 覆盖）<br>使用进程名称匹配：共 24 个交易所 / 钱包 App 进程名（com.binance.dev、com.coinbase.android、com.okinc.okex.gp 等）</td></tr>
 <tr><td><strong>💝 Patreon</strong></td><td>Patreon 单独选出口</td><td>引用规则集合：<code>patreon</code></td></tr>
 <tr><td><strong>📚 EHentai</strong></td><td>EHentai 单独选出口</td><td>引用规则集合：<code>ehentai</code></td></tr>
 <tr><td><strong>☁️ PikPak</strong></td><td>PikPak 单独选出口</td><td>引用规则集合：<code>pikpak</code></td></tr>
