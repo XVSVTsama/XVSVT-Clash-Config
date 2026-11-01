@@ -232,7 +232,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><td><strong>📲 Telegram-DC5-SG</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>同上，DC5 同时匹配新加坡与香港节点</td></tr>
 <tr><td><em><strong>🛑 广告拦截</strong></em></td><td><em><strong><code>SKK广告拦截</code></strong></em></td><td><em><strong>关闭</strong></em></td><td><em><strong>开关关闭时本组、其 4 个规则集与 4 条规则都不生成；开启时组内可选 <code>REJECT</code> / <code>REJECT-DROP</code> / <code>PASS</code>，承接 SukkaW/Surge 的 reject 域名集与 non_ip 规则集，规则置于置顶拦截守卫之后；reject-drop 与 reject_ip 两条规则不经本组，分别直达 <code>REJECT-DROP</code> 与 <code>REJECT</code></strong></em></td></tr>
 <tr><td><strong>国内入口解析</strong></td><td><code>入口解析</code></td><td>关闭</td><td>开启后将维护区节点加入本组供手动选择；名称按类别编号，顺序不代表优先级</td></tr>
-<tr><td><strong>国家/地区父组及隐藏子组</strong></td><td><code>国家/地区分组</code></td><td>关闭</td><td>根据地区候选节点创建分组；将父组追加到 15 个指定流量目标中，跳过已禁用或不存在的目标；地区节点被倍率筛选全部剔除时不生成该地区的父组与三个隐藏子组</td></tr>
+<tr><td><strong>国家/地区父组及隐藏子组</strong></td><td><code>国家/地区分组</code></td><td>关闭</td><td>根据地区候选节点创建分组；将父组追加到 15 个指定流量目标中，跳过已禁用或不存在的目标；地区节点被倍率筛选全部剔除时不生成该地区的父组与三个隐藏子组；地区父组列表插在隐藏组 FCM 之前、子组插在 Tailscale 之后，使 FCM 与 Tailscale 始终保持相邻</td></tr>
 </tbody>
 </table>
 

@@ -713,8 +713,12 @@ function applyCountryRegionGrouping(result, originalProxies) {
   const fcmIndex = proxyGroups.findIndex((group) => group && group.name === 'FCM');
   if (fcmIndex >= 0) {
     proxyGroups.splice(fcmIndex, 0, ...parentGroups);
-    const insertedFcmIndex = proxyGroups.findIndex((group) => group && group.name === 'FCM');
-    proxyGroups.splice(insertedFcmIndex + 1, 0, ...childGroups);
+    // 隐藏组（FCM、Tailscale）需保持相邻：地区子组插到 FCM 之后连续的隐藏组之后。
+    let insertAt = proxyGroups.findIndex((group) => group && group.name === 'FCM') + 1;
+    while (insertAt < proxyGroups.length && proxyGroups[insertAt] && proxyGroups[insertAt].hidden === true) {
+      insertAt += 1;
+    }
+    proxyGroups.splice(insertAt, 0, ...childGroups);
   } else {
     proxyGroups.push(...parentGroups, ...childGroups);
   }
