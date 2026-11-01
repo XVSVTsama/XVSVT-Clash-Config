@@ -260,6 +260,14 @@ proxy-providers:
 
 proxies: ~
 proxy-groups:
+  - name: 🌍 PROXY
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-proxy.png"
+    type: select
+    proxies:
+        - 👉 手动切换
+        - ♻️ 自动选择
+        - 🔄 负载均衡
+        - DIRECT
   - name: 👉 手动切换
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-select.png"
     type: select
@@ -514,14 +522,6 @@ proxy-groups:
       - 🔄 负载均衡
       - DIRECT
     include-all: true
-  - name: 🌍 PROXY
-    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-proxy.png"
-    type: select
-    proxies:
-        - 👉 手动切换
-        - ♻️ 自动选择
-        - 🔄 负载均衡
-        - DIRECT
   # FCM：Google FCM 域名分流目标，由 FCM直连 开关控制本组的 proxies。
   # 开启时使用 DIRECT，关闭时使用 👉 手动切换；开关图标取自本组的 icon 字段。
   - name: FCM

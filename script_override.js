@@ -1165,6 +1165,17 @@ const TEMPLATE = {
   "proxies": null,
   "proxy-groups": [
     {
+      "name": "🌍 PROXY",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-proxy.png",
+      "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ]
+    },
+    {
       "name": "👉 手动切换",
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-select.png",
       "type": "select",
@@ -1462,17 +1473,6 @@ const TEMPLATE = {
         "DIRECT"
       ],
       "include-all": true
-    },
-    {
-      "name": "🌍 PROXY",
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-proxy.png",
-      "type": "select",
-      "proxies": [
-        "👉 手动切换",
-        "♻️ 自动选择",
-        "🔄 负载均衡",
-        "DIRECT"
-      ]
     },
     {
       "hidden": true,
