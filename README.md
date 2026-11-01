@@ -98,7 +98,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><td><strong>♾️ Meta</strong></td><td>Meta 与 Meta AI 共用出口</td><td>引用规则集合：<code>meta</code><br>使用域名后缀匹配：muse.ai、metaaivm.com<br>使用域名精确匹配：hatch-api.meta.ai、api.meta.ai、agent.meta.ai、auth.meta.com、meta.graph.meta.com、edge-metaclaw-http.c10r.facebook.com、shortwave.facebook.com、node.hatch.one<br>使用进程名称匹配：com.facebook.aura</td></tr>
 <tr><td><strong>🤖 AI大模型</strong></td><td>AI 服务单独选出口</td><td>引用规则集合：<code>ai-1</code>、<code>ai-2</code>、<code>Grok_Domain</code><br>使用域名后缀匹配：anthropic.com、claude.ai、claude.com、claudeusercontent.com、clau.de、frame.claudeusercontent.com、modelcontextprotocol.io、sentry.io、statsigapi.net<br>使用域名精确匹配：共 24 个域名（api.anthropic.com、downloads.claude.ai、cdn.growthbook.io、registry.npmjs.org、storage.googleapis.com 等）<br>使用域名关键词匹配：datadog、sift<br>使用进程名称正则表达式匹配：claude、anthropic、manus<br>使用 IP 段匹配：160.79.104.0/21、17.253.4.0/23、2607:6bc0::/48</td></tr>
 <tr><td><strong>📲 Telegram</strong></td><td>Telegram 单独选出口</td><td>引用规则集合：<code>telegram_domain</code>、<code>telegramcidr</code><br>使用进程名称正则表达式匹配：telegram、nagram</td></tr>
-<tr><td><strong>✖️ Twitter</strong></td><td>Twitter / X 单独选出口</td><td>引用规则集合：<code>twitter-x-domain</code>、<code>twitter-x-ip</code>、<code>twitter-x-blackmatrix7-No_Resolve</code><br>使用进程名称正则表达式匹配：twitter</td></tr>
+<tr><td><strong>✖️ Twitter</strong></td><td>Twitter / X 单独选出口</td><td>引用规则集合：<code>twitter-x-domain</code>、<code>twitter-x-ip</code>、<code>twitter-x-aggregate</code><br>使用进程名称正则表达式匹配：twitter</td></tr>
 <tr><td><strong>💬 Discord</strong></td><td>Discord 单独选出口</td><td>引用规则集合：<code>discord</code></td></tr>
 <tr><td><strong>👽 Reddit</strong></td><td>Reddit 单独选出口</td><td>引用规则集合：<code>reddit</code></td></tr>
 <tr><td><strong>💬 LINE</strong></td><td>LINE 单独选出口</td><td>引用规则集合：<code>line</code></td></tr>
@@ -120,7 +120,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 </table>
 #### 特别组说明
 
-以下三组同时属于基础代理组（见上表），嵌套结构不同于常规业务组，单独列出。
+以下四组同时属于基础代理组（见上表），嵌套结构不同于常规业务组，单独列出。
 
 <table width="100%">
 <thead>
@@ -236,7 +236,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 </tbody>
 </table>
 
-**同样不在 `policyGroupOptions`、也不对应任何策略组的开关（9 个）**
+**同样不在 `policyGroupOptions`、也不对应任何策略组的开关（8 个）**
 
 <table width="100%">
 <thead>
@@ -249,7 +249,6 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><td><code>IPv6优先</code></td><td>关闭</td><td>改写订阅顶层节点 <code>ip-version</code>：<code>ipv6</code> 保持不变，<code>ipv6-prefer</code> 改为 <code>ipv6</code>，其余设为 <code>ipv6-prefer</code>；provider 节点经 <code>override.ip-version</code> 统一设为 <code>ipv6-prefer</code>，无法按节点区分原值</td></tr>
 <tr><td><code>高倍率筛选</code></td><td>关闭</td><td>在地区分组之前删除名称中显式标记倍率 <code>&gt;=2x</code> 的订阅顶层节点，并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
 <tr><td><code>低倍率筛选</code></td><td>关闭</td><td>在地区分组之前删除名称中显式标记倍率 <code>&lt;=0.5x</code> 的订阅顶层节点，并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
-<tr><td><code>国家/地区分组</code></td><td>关闭</td><td>只用倍率筛选后的订阅顶层节点生成国家/地区选择组；共用官网、流量说明等节点过滤，但不改变目标组的 <code>include-all</code>。该开关独立于 <code>入口解析</code></td></tr>
 <tr><td><code>代理节点 DNS 使用 TCP</code></td><td>关闭</td><td>为代理节点解析 DNS 中未标协议的地址启用 TCP；显式协议不变</td></tr>
 <tr><td><code>WebRTC阻断</code></td><td>开启</td><td>开启时保持模板规则不变；关闭时移除所有同时包含 <code>NETWORK,UDP</code> 与 <code>DST-PORT,3478-3479/5349-5350/19302-19309</code> 的规则</td></tr>
 </tbody>
@@ -291,7 +290,7 @@ venn-beta
   union G,S
 ```
 
-`geolocation-cn` 与 `cn-additional` 有 2564 条完全重合、与 `games-cn` 有 310 条；`cn-additional` 与 `games-cn` 有 194 条；`apple-cn`、`microsoft-cn` 与其余三个各只有 1 条交集。四者同指 `DIRECT`，重合只增加体积，不改变结果。规则段里另有两条补充直连：`DOMAIN-SUFFIX,ac.cn`（中科院各所等 `*.ac.cn`）与 `DOMAIN-SUFFIX,xdf.cn`。
+`geolocation-cn` 与 `cn-additional` 有 2564 条完全重合、与 `games-cn` 有 310 条；`cn-additional` 与 `games-cn` 有 194 条；`apple-cn`、`microsoft-cn` 与其余三个各只有 1 条交集。五者同指 `DIRECT`，重合只增加体积，不改变结果。规则段里另有两条补充直连：`DOMAIN-SUFFIX,ac.cn`（中科院各所等 `*.ac.cn`）与 `DOMAIN-SUFFIX,xdf.cn`。
 
 **2. 直连规则集与海外组规则集**
 
@@ -326,23 +325,25 @@ venn-beta
 venn-beta
   set D["twitter-x-domain（MetaCubeX）"]
   set I["twitter-x-ip（MetaCubeX）"]
-  set B["twitter-x-blackmatrix7-No_Resolve"]
+  set B["twitter-x-aggregate（magicrule 聚合）"]
   union D,B
   union I,B
 ```
 
-blackmatrix7 的 `No_Resolve` 集同时包含域名与 IP，与 MetaCubeX 的两套各自重合。
+`twitter-x-aggregate` 为 classical 类型，可同时容纳域名与 IP 条目，与 MetaCubeX 的两套各自重合。
 
-**5. 两套 AI 规则集**
+**5. 三套 AI 规则集**
 
 ```mermaid
 venn-beta
   set A1["ai-1（DustinWin ai.mrs）"]
   set A2["ai-2（MetaCubeX category-ai-!cn）"]
+  set G["Grok_Domain（Accademia）"]
   union A1,A2
+  union A1,G
 ```
 
-两套来源不同却覆盖同类站点，在 `rules` 中同指 `🤖 AI大模型`。`Gemini_Domain` 已改指 `🔎 Google`，它与 `ai-1`／`ai-2` 在 Gemini 域名上的重叠部分按顺序先命中 `🔎 Google`。
+`ai-1` 与 `ai-2` 有 208 条完全相同；`Grok_Domain` 的 4 条里 `+.x.ai`、`+.grok.com` 两条与两者重复。三者来源不同却覆盖同类站点，在 `rules` 中同指 `🤖 AI大模型`。
 
 > 以上重合关系按各规则集的覆盖范围与来源判断（依据取自 `mihomo.yaml` 的 `rules:` 引用与注释）。
 
