@@ -138,53 +138,55 @@ const ruleOptionsEnable = {
  * 另有功能开关（如 FCM直连）：只调整组内节点，不涉及策略组启停。
  */
 
-  // --- 代理组（策略组）单独控制开关 ---
-  // 负载均衡策略组
-  '🔄 负载均衡': false,
   // 手动选择策略组
   '👉 手动切换': true,
   // 延迟自动选择策略组
   '♻️ 自动选择': false,
+  // --- 代理组（策略组）单独控制开关 ---
+  // 负载均衡策略组
+  '🔄 负载均衡': false,
+  // AI 大模型策略组
+  '🤖 AI大模型': false,
+  // Google / Google-CN 共用独立策略组；Google FCM 与 AI 特例仍由原规则处理。
+  '🔎 Google': false,
+  // Meta 社交平台策略组
+  '♾️ Meta': false,
   // Telegram 通讯软件策略组
   '📲 Telegram': false,
-  // 游戏策略组
-  '🎮 Games-Global': false,
+  // Twitter 社交平台策略组
+  '✖️ Twitter': false,
+  // Discord 通讯软件策略组
+  '💬 Discord': false,
+  // Reddit 社交平台策略组
+  '👽 Reddit': false,
+  // LINE 通讯软件策略组
+  '💬 LINE': false,
+
+
+  // TikTok 视频平台策略组
+  '🎵 TikTok': false,
+  // Netflix 流媒体策略组
+  '🎥 Netflix': false,
+  // Spotify 音乐流媒体策略组
+  '🎧 Spotify': false,
+  // Emby 播放器进程分流策略组
+  '🎬 Emby': false,
   // 海外 Apple 平台服务
   '🍎 海外苹果': false,
   // 海外 Microsoft 平台服务
   '💠 海外微软': false,
   // Steam 平台服务，不负责下载/CDN
   '🎮 Steam平台（非下载/CDN）': false,
-  // Twitter 社交平台策略组
-  '✖️ Twitter': false,
-  // AI 大模型策略组
-  '🤖 AI大模型': false,
-  // TikTok 视频平台策略组
-  '🎵 TikTok': false,
+  // 游戏策略组
+  '🎮 Games-Global': false,
   // 金融支付；Instagram 统一归入 Meta。
   '💳 金融支付': false,
-  // Google / Google-CN 共用独立策略组；Google FCM 与 AI 特例仍由原规则处理。
-  '🔎 Google': false,
-  // Meta 社交平台策略组
-  '♾️ Meta': false,
-  // Spotify 音乐流媒体策略组
-  '🎧 Spotify': false,
-  // Emby 播放器进程分流策略组
-  '🎬 Emby': false,
-  // Discord 通讯软件策略组
-  '💬 Discord': false,
-  // Reddit 社交平台策略组
-  '👽 Reddit': false,
-  // Netflix 流媒体策略组
-  '🎥 Netflix': false,
   // Patreon 赞助平台策略组
   '💝 Patreon': false,
   // EHentai 策略组
   '📚 EHentai': false,
   // PikPak 网盘策略组
   '☁️ PikPak': false,
-  // LINE 通讯软件策略组
-  '💬 LINE': false,
 
   // --- 节点字段修正 ---
   // 开启时统一把订阅节点 skip-cert-verify 置为 false（强制校验证书）；关闭时不干预，保留订阅节点原有设置。
@@ -1157,15 +1159,21 @@ const TEMPLATE = {
   "proxies": null,
   "proxy-groups": [
     {
-      "name": "🌍 PROXY",
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-proxy.png",
+      "name": "👉 手动切换",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-select.png",
       "type": "select",
-      "proxies": [
-        "👉 手动切换",
-        "♻️ 自动选择",
-        "🔄 负载均衡",
-        "DIRECT"
-      ]
+      "include-all": true
+    },
+    {
+      "name": "♻️ 自动选择",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-auto.png",
+      "type": "url-test",
+      "url": "https://g.cn/generate_204",
+      "interval": 300,
+      "tolerance": 10,
+      "lazy": true,
+      "max-failed-times": 1,
+      "include-all": true
     },
     {
       "name": "🔄 负载均衡",
@@ -1176,6 +1184,17 @@ const TEMPLATE = {
         "sticky-sessions",
         "round-robin"
       ]
+    },
+    {
+      "name": "consistent-hashing",
+      "type": "load-balance",
+      "include-all": true,
+      "url": "https://g.cn/generate_204",
+      "interval": 300,
+      "lazy": true,
+      "max-failed-times": 1,
+      "strategy": "consistent-hashing",
+      "hidden": true
     },
     {
       "name": "sticky-sessions",
@@ -1200,31 +1219,147 @@ const TEMPLATE = {
       "hidden": true
     },
     {
-      "name": "consistent-hashing",
-      "type": "load-balance",
-      "include-all": true,
-      "url": "https://g.cn/generate_204",
-      "interval": 300,
-      "lazy": true,
-      "max-failed-times": 1,
-      "strategy": "consistent-hashing",
-      "hidden": true
-    },
-    {
-      "name": "👉 手动切换",
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-select.png",
+      "name": "🤖 AI大模型",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-ai.png",
       "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
       "include-all": true
     },
     {
-      "name": "♻️ 自动选择",
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-auto.png",
-      "type": "url-test",
-      "url": "https://g.cn/generate_204",
-      "interval": 300,
-      "tolerance": 10,
-      "lazy": true,
-      "max-failed-times": 1,
+      "name": "🔎 Google",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-google.svg",
+      "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
+      "include-all": true
+    },
+    {
+      "name": "♾️ Meta",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-meta.svg",
+      "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
+      "include-all": true
+    },
+    {
+      "name": "📲 Telegram",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-telegram.png",
+      "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
+      "include-all": true
+    },
+    {
+      "name": "✖️ Twitter",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-clash-verge-rev-twitter.svg",
+      "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
+      "include-all": true
+    },
+    {
+      "name": "💬 Discord",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-discord.svg",
+      "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
+      "include-all": true
+    },
+    {
+      "name": "👽 Reddit",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-reddit.svg",
+      "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
+      "include-all": true
+    },
+    {
+      "name": "💬 LINE",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-line.svg",
+      "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
+      "include-all": true
+    },
+    {
+      "name": "🎵 TikTok",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-tiktok.png",
+      "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
+      "include-all": true
+    },
+    {
+      "name": "🎥 Netflix",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-netflix.svg",
+      "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
+      "include-all": true
+    },
+    {
+      "name": "🎧 Spotify",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-spotify.svg",
+      "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
+      "include-all": true
+    },
+    {
+      "name": "🎬 Emby",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-emby.svg",
+      "type": "select",
+      "proxies": [
+        "👉 手动切换",
+        "♻️ 自动选择",
+        "🔄 负载均衡",
+        "DIRECT"
+      ],
       "include-all": true
     },
     {
@@ -1265,18 +1400,6 @@ const TEMPLATE = {
       "include-all": true
     },
     {
-      "name": "📲 Telegram",
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-telegram.png",
-      "type": "select",
-      "proxies": [
-        "👉 手动切换",
-        "♻️ 自动选择",
-        "🔄 负载均衡",
-        "DIRECT"
-      ],
-      "include-all": true
-    },
-    {
       "name": "🎮 Games-Global",
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-games-cn.png",
       "type": "select",
@@ -1287,128 +1410,8 @@ const TEMPLATE = {
       "include-all": true
     },
     {
-      "name": "✖️ Twitter",
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-clash-verge-rev-twitter.svg",
-      "type": "select",
-      "proxies": [
-        "👉 手动切换",
-        "♻️ 自动选择",
-        "🔄 负载均衡",
-        "DIRECT"
-      ],
-      "include-all": true
-    },
-    {
-      "name": "🤖 AI大模型",
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-ai.png",
-      "type": "select",
-      "proxies": [
-        "👉 手动切换",
-        "♻️ 自动选择",
-        "🔄 负载均衡",
-        "DIRECT"
-      ],
-      "include-all": true
-    },
-    {
-      "name": "🎵 TikTok",
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-tiktok.png",
-      "type": "select",
-      "proxies": [
-        "👉 手动切换",
-        "♻️ 自动选择",
-        "🔄 负载均衡",
-        "DIRECT"
-      ],
-      "include-all": true
-    },
-    {
       "name": "💳 金融支付",
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-bitcoin.svg",
-      "type": "select",
-      "proxies": [
-        "👉 手动切换",
-        "♻️ 自动选择",
-        "🔄 负载均衡",
-        "DIRECT"
-      ],
-      "include-all": true
-    },
-    {
-      "name": "🔎 Google",
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-google.svg",
-      "type": "select",
-      "proxies": [
-        "👉 手动切换",
-        "♻️ 自动选择",
-        "🔄 负载均衡",
-        "DIRECT"
-      ],
-      "include-all": true
-    },
-    {
-      "name": "♾️ Meta",
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-meta.svg",
-      "type": "select",
-      "proxies": [
-        "👉 手动切换",
-        "♻️ 自动选择",
-        "🔄 负载均衡",
-        "DIRECT"
-      ],
-      "include-all": true
-    },
-    {
-      "name": "🎧 Spotify",
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-spotify.svg",
-      "type": "select",
-      "proxies": [
-        "👉 手动切换",
-        "♻️ 自动选择",
-        "🔄 负载均衡",
-        "DIRECT"
-      ],
-      "include-all": true
-    },
-    {
-      "name": "🎬 Emby",
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-emby.svg",
-      "type": "select",
-      "proxies": [
-        "👉 手动切换",
-        "♻️ 自动选择",
-        "🔄 负载均衡",
-        "DIRECT"
-      ],
-      "include-all": true
-    },
-    {
-      "name": "💬 Discord",
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-discord.svg",
-      "type": "select",
-      "proxies": [
-        "👉 手动切换",
-        "♻️ 自动选择",
-        "🔄 负载均衡",
-        "DIRECT"
-      ],
-      "include-all": true
-    },
-    {
-      "name": "👽 Reddit",
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-reddit.svg",
-      "type": "select",
-      "proxies": [
-        "👉 手动切换",
-        "♻️ 自动选择",
-        "🔄 负载均衡",
-        "DIRECT"
-      ],
-      "include-all": true
-    },
-    {
-      "name": "🎥 Netflix",
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-netflix.svg",
       "type": "select",
       "proxies": [
         "👉 手动切换",
@@ -1455,16 +1458,15 @@ const TEMPLATE = {
       "include-all": true
     },
     {
-      "name": "💬 LINE",
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-line.svg",
+      "name": "🌍 PROXY",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-proxy.png",
       "type": "select",
       "proxies": [
         "👉 手动切换",
         "♻️ 自动选择",
         "🔄 负载均衡",
         "DIRECT"
-      ],
-      "include-all": true
+      ]
     },
     {
       "hidden": true,
@@ -1994,19 +1996,22 @@ const TEMPLATE = {
     "RULE-SET,telegramcidr,📲 Telegram,no-resolve",
     "RULE-SET,telegram_domain,📲 Telegram",
     // Manus AI：覆盖 Manus Desktop、Manus Helper 及 Android 客户端进程
+    "RULE-SET,google,🔎 Google",
+    "RULE-SET,google-cn,🔎 Google",
+    "RULE-SET,meta,♾️ Meta",
     "PROCESS-NAME-REGEX,(?i).*(manus|tech\\.butterfly\\.app).*,🤖 AI大模型",
     // Muse：覆盖 Muse Android 客户端进程及官网与后端域名
-    "DOMAIN-SUFFIX,muse.ai,🤖 AI大模型",
-    "DOMAIN,hatch-api.meta.ai,🤖 AI大模型",
-    "DOMAIN,api.meta.ai,🤖 AI大模型",
-    "DOMAIN,agent.meta.ai,🤖 AI大模型",
-    "DOMAIN-SUFFIX,metaaivm.com,🤖 AI大模型",
-    "DOMAIN,auth.meta.com,🤖 AI大模型",
-    "DOMAIN,meta.graph.meta.com,🤖 AI大模型",
-    "DOMAIN,edge-metaclaw-http.c10r.facebook.com,🤖 AI大模型",
-    "DOMAIN,shortwave.facebook.com,🤖 AI大模型",
-    "DOMAIN,node.hatch.one,🤖 AI大模型",
-    "PROCESS-NAME,com.facebook.aura,🤖 AI大模型",
+    "DOMAIN-SUFFIX,muse.ai,♾️ Meta",
+    "DOMAIN,hatch-api.meta.ai,♾️ Meta",
+    "DOMAIN,api.meta.ai,♾️ Meta",
+    "DOMAIN,agent.meta.ai,♾️ Meta",
+    "DOMAIN-SUFFIX,metaaivm.com,♾️ Meta",
+    "DOMAIN,auth.meta.com,♾️ Meta",
+    "DOMAIN,meta.graph.meta.com,♾️ Meta",
+    "DOMAIN,edge-metaclaw-http.c10r.facebook.com,♾️ Meta",
+    "DOMAIN,shortwave.facebook.com,♾️ Meta",
+    "DOMAIN,node.hatch.one,♾️ Meta",
+    "PROCESS-NAME,com.facebook.aura,♾️ Meta",
     "PROCESS-NAME-REGEX,(?i).*claude.*,🤖 AI大模型",
     "PROCESS-NAME-REGEX,(?i).*anthropic.*,🤖 AI大模型",
     "DOMAIN,api.anthropic.com,🤖 AI大模型",
@@ -2040,7 +2045,7 @@ const TEMPLATE = {
     "IP-CIDR,160.79.104.0/21,🤖 AI大模型,no-resolve",
     "IP-CIDR6,2607:6bc0::/48,🤖 AI大模型,no-resolve",
     "IP-CIDR,17.253.4.0/23,🤖 AI大模型,no-resolve",
-    "RULE-SET,Gemini_Domain,🤖 AI大模型",
+    "RULE-SET,Gemini_Domain,🔎 Google",
     "RULE-SET,Grok_Domain,🤖 AI大模型",
     "DOMAIN,anthropic.com.cdn.cloudflare.net,🤖 AI大模型",
     "DOMAIN,anthropic-com.ghost.io,🤖 AI大模型",
@@ -2051,9 +2056,6 @@ const TEMPLATE = {
     "DOMAIN-KEYWORD,sift,🤖 AI大模型",
     "RULE-SET,ai-1,🤖 AI大模型",
     "RULE-SET,ai-2,🤖 AI大模型",
-    "RULE-SET,google,🔎 Google",
-    "RULE-SET,google-cn,🔎 Google",
-    "RULE-SET,meta,♾️ Meta",
     "RULE-SET,spotify,🎧 Spotify",
     "RULE-SET,discord,💬 Discord",
     "RULE-SET,reddit,👽 Reddit",
@@ -2140,6 +2142,10 @@ const serviceConfigs = TEMPLATE['proxy-groups']
       icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-MiToverG422-Qure-Spark.png'
     },
     {
+      name: '试开启节点UDP',
+      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-udp.svg'
+    },
+    {
       name: 'IPv6优先',
       icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-ipv6-prefer.svg'
     },
@@ -2174,10 +2180,6 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     {
       name: 'WebRTC阻断',
       icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-webrtc-block.svg'
-    },
-    {
-      name: '试开启节点UDP',
-      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-udp.svg'
     }
   ]);
 
