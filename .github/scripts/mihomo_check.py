@@ -147,6 +147,12 @@ def main():
             fh.write("- issues:\n")
             for line in problems[:20]:
                 fh.write("  - `%s`\n" % line.strip()[:300])
+        if status != 0:
+            tail = [line for line in (output or "").splitlines() if line.strip()][-20:]
+            if tail:
+                fh.write("- log tail:\n")
+                for line in tail:
+                    fh.write("  - `%s`\n" % line.strip()[:300])
         fh.write("\n")
 
     if status == 124:
