@@ -71,7 +71,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 ### 🗂 分流组结构（按 `mihomo.yaml` 定义）
 
-本节分三层：先看核心代理组的骨架与嵌套，再看每个基础代理组的用途与路由规则，最后看三组的特别说明。
+本节分三层：先看核心代理组的骨架与嵌套，再看每个基础代理组的用途与路由规则，最后看四组的特别说明。
 
 #### 核心代理组
 
@@ -94,27 +94,28 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><th width="15%">代理组<img src="assets/table-spacer.png" width="240" height="1" alt=""></th><th width="25%">用途<img src="assets/table-spacer.png" width="400" height="1" alt=""></th><th width="60%">路由规则<img src="assets/table-spacer.png" width="960" height="1" alt=""></th></tr>
 </thead>
 <tbody>
-<tr><td><strong>🍎 海外苹果</strong></td><td>海外 Apple 服务单独选出口</td><td>引用规则集合：<code>apple</code>、<code>apple_ip</code></td></tr>
-<tr><td><strong>💠 海外微软</strong></td><td>海外 Microsoft 服务单独选出口</td><td>引用规则集合：<code>microsoft</code>、<code>microsoft_ip</code></td></tr>
+<tr><td><strong>🔎 Google</strong></td><td>Google 与 Gemini 共用出口</td><td>引用规则集合：<code>google</code>、<code>google-cn</code>、<code>Gemini_Domain</code><br>本组规则排在 <strong>🤖 AI大模型</strong> 之前，<code>Gemini_Domain</code> 也指向本组：Gemini（gemini.google.com、generativelanguage.googleapis.com、aistudio.google.com 等）与 Google 搜索、账号、Play、字体与统计走同一节点<br><code>mail</code>／<code>docs</code>／<code>drive</code>／<code>maps</code>／<code>youtube</code> 等仍由 <code>proxy</code> 规则集接走（<strong>🌍 PROXY</strong>）</td></tr>
+<tr><td><strong>♾️ Meta</strong></td><td>Meta 与 Meta AI 共用出口</td><td>引用规则集合：<code>meta</code>（本组规则排在 <strong>🤖 AI大模型</strong> 之前）<br>使用域名后缀匹配：muse.ai、metaaivm.com<br>使用域名精确匹配：hatch-api.meta.ai、api.meta.ai、agent.meta.ai、auth.meta.com、meta.graph.meta.com、edge-metaclaw-http.c10r.facebook.com、shortwave.facebook.com、node.hatch.one<br>使用进程名称匹配：com.facebook.aura</td></tr>
+<tr><td><strong>🤖 AI大模型</strong></td><td>AI 服务单独选出口</td><td>引用规则集合：<code>ai-1</code>、<code>ai-2</code>、<code>Grok_Domain</code><br>使用域名后缀匹配：anthropic.com、claude.ai、claude.com、claudeusercontent.com、clau.de、frame.claudeusercontent.com、modelcontextprotocol.io、sentry.io、statsigapi.net<br>使用域名精确匹配：共 24 个域名（api.anthropic.com、downloads.claude.ai、cdn.growthbook.io、registry.npmjs.org、storage.googleapis.com 等）<br>使用域名关键词匹配：datadog、sift<br>使用进程名称正则表达式匹配：claude、anthropic、manus<br>使用 IP 段匹配：160.79.104.0/21、17.253.4.0/23、2607:6bc0::/48<br>Meta AI 的 <code>muse.ai</code>、<code>*.meta.ai</code> 等改由 <strong>♾️ Meta</strong> 承接；Gemini 域名由 <strong>🔎 Google</strong> 承接</td></tr>
 <tr><td><strong>📲 Telegram</strong></td><td>Telegram 单独选出口</td><td>引用规则集合：<code>telegram_domain</code>、<code>telegramcidr</code><br>使用进程名称正则表达式匹配：telegram、nagram</td></tr>
 <tr><td><strong>✖️ Twitter</strong></td><td>Twitter / X 单独选出口</td><td>引用规则集合：<code>twitter-x-domain</code>、<code>twitter-x-ip</code>、<code>twitter-x-blackmatrix7-No_Resolve</code><br>使用进程名称正则表达式匹配：twitter</td></tr>
-<tr><td><strong>🤖 AI大模型</strong></td><td>AI 服务单独选出口</td><td>引用规则集合：<code>ai-1</code>、<code>ai-2</code>、<code>Gemini_Domain</code>、<code>Grok_Domain</code><br>使用域名后缀匹配：anthropic.com、claude.ai、claude.com、claudeusercontent.com、clau.de、frame.claudeusercontent.com、metaaivm.com、modelcontextprotocol.io、muse.ai、sentry.io、statsigapi.net<br>使用域名精确匹配：共 31 个域名（api.anthropic.com、downloads.claude.ai、api.meta.ai、hatch-api.meta.ai 等）<br>使用域名关键词匹配：datadog、sift<br>使用进程名称匹配：com.facebook.aura<br>使用进程名称正则表达式匹配：claude、anthropic、manus<br>使用 IP 段匹配：160.79.104.0/21、17.253.4.0/23、2607:6bc0::/48</td></tr>
-<tr><td><strong>🎵 TikTok</strong></td><td>TikTok 单独选出口</td><td>引用规则集合：<code>TikTok</code></td></tr>
-<tr><td><strong>💳 金融支付</strong></td><td>支付与加密货币单独选出口</td><td>引用规则集合：<code>category-cryptocurrency</code>、<code>paypal</code>、<code>stripe</code>、<code>visa</code>、<code>mastercard</code>、<code>wise</code><br>使用域名精确匹配：d3r7nsslvs6aaf.cloudfront.net、bybit-exchange.github.io<br>使用进程名称匹配：共 24 个交易所 / 钱包 App 进程名（com.binance.dev、com.coinbase.android、com.okinc.okex.gp 等）</td></tr>
-<tr><td><strong>🔎 Google</strong></td><td>Google 服务单独选出口</td><td>引用规则集合：<code>google</code>、<code>google-cn</code></td></tr>
-<tr><td><strong>♾️ Meta</strong></td><td>Meta 服务单独选出口</td><td>引用规则集合：<code>meta</code></td></tr>
-<tr><td><strong>🎧 Spotify</strong></td><td>Spotify 单独选出口</td><td>引用规则集合：<code>spotify</code></td></tr>
-<tr><td><strong>🎬 Emby</strong></td><td>Emby 类客户端单独选出口</td><td>使用进程名称匹配：com.mountains.hills、com.hamhub.app、com.oumi.utility.media.hub、com.feifeiduck.capyplayer、com.attempt.afusekt、com.hush.yamby、com.railux.mobile</td></tr>
 <tr><td><strong>💬 Discord</strong></td><td>Discord 单独选出口</td><td>引用规则集合：<code>discord</code></td></tr>
 <tr><td><strong>👽 Reddit</strong></td><td>Reddit 单独选出口</td><td>引用规则集合：<code>reddit</code></td></tr>
+<tr><td><strong>💬 LINE</strong></td><td>LINE 单独选出口</td><td>引用规则集合：<code>line</code></td></tr>
+<tr><td><strong>🎵 TikTok</strong></td><td>TikTok 单独选出口</td><td>引用规则集合：<code>TikTok</code></td></tr>
 <tr><td><strong>🎥 Netflix</strong></td><td>Netflix 单独选出口</td><td>引用规则集合：<code>netflix</code></td></tr>
+<tr><td><strong>🎧 Spotify</strong></td><td>Spotify 单独选出口</td><td>引用规则集合：<code>spotify</code></td></tr>
+<tr><td><strong>🎬 Emby</strong></td><td>Emby 类客户端单独选出口</td><td>使用进程名称匹配：com.mountains.hills、com.hamhub.app、com.oumi.utility.media.hub、com.feifeiduck.capyplayer、com.attempt.afusekt、com.hush.yamby、com.railux.mobile</td></tr>
+<tr><td><strong>🍎 海外苹果</strong></td><td>海外 Apple 服务单独选出口</td><td>引用规则集合：<code>apple</code>、<code>apple_ip</code></td></tr>
+<tr><td><strong>💠 海外微软</strong></td><td>海外 Microsoft 服务单独选出口</td><td>引用规则集合：<code>microsoft</code>、<code>microsoft_ip</code></td></tr>
+<tr><td><strong>🎮 Steam平台（非下载/CDN）</strong></td><td>Steam 平台流量单独选出口</td><td>引用规则集合：<code>steam</code>、<code>steam_ip</code></td></tr>
+<tr><td><strong>🎮 Games-Global</strong></td><td>游戏流量单独选出口</td><td>引用规则集合：<code>games</code><br>使用进程名称匹配：bf6.exe</td></tr>
+<tr><td><strong>💳 金融支付</strong></td><td>支付与加密货币单独选出口</td><td>引用规则集合：<code>category-cryptocurrency</code>、<code>paypal</code>、<code>stripe</code>、<code>visa</code>、<code>mastercard</code>、<code>wise</code><br>使用域名精确匹配：d3r7nsslvs6aaf.cloudfront.net、bybit-exchange.github.io<br>使用进程名称匹配：共 24 个交易所 / 钱包 App 进程名（com.binance.dev、com.coinbase.android、com.okinc.okex.gp 等）</td></tr>
 <tr><td><strong>💝 Patreon</strong></td><td>Patreon 单独选出口</td><td>引用规则集合：<code>patreon</code></td></tr>
 <tr><td><strong>📚 EHentai</strong></td><td>EHentai 单独选出口</td><td>引用规则集合：<code>ehentai</code></td></tr>
 <tr><td><strong>☁️ PikPak</strong></td><td>PikPak 单独选出口</td><td>引用规则集合：<code>pikpak</code></td></tr>
-<tr><td><strong>💬 LINE</strong></td><td>LINE 单独选出口</td><td>引用规则集合：<code>line</code></td></tr>
-<tr><td><strong>🎮 Games-Global</strong></td><td>游戏流量单独选出口</td><td>引用规则集合：<code>games</code><br>使用进程名称匹配：bf6.exe</td></tr>
-<tr><td><strong>🎮 Steam平台（非下载/CDN）</strong></td><td>Steam 平台流量单独选出口</td><td>引用规则集合：<code>steam</code>、<code>steam_ip</code></td></tr>
 <tr><td><strong>FCM</strong></td><td>Google FCM 推送单独选出口</td><td>引用规则集合：<code>googlefcm</code></td></tr>
+<tr><td><strong>Tailscale</strong></td><td>Tailscale MagicDNS 单独选出口</td><td>使用域名后缀匹配：ts.net<br>组内节点由 <code>Tailscale直连</code> 开关控制：开启为 <code>DIRECT</code>；关闭为 <code>👉 手动切换</code></td></tr>
 </tbody>
 </table>
 #### 特别组说明
@@ -129,6 +130,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><td><strong>🎮 Games-Global</strong></td><td><code>🎮 Steam平台（非下载/CDN）</code>（默认选中）<br>所有可用节点（<code>include-all</code>）</td></tr>
 <tr><td><strong>🎮 Steam平台（非下载/CDN）</strong></td><td><code>DIRECT</code>（默认选中）<br><code>👉 手动切换</code><br><code>♻️ 自动选择</code><br><code>🔄 负载均衡</code><br>所有可用节点（<code>include-all</code>）</td></tr>
 <tr><td><strong>FCM</strong></td><td><code>👉 手动切换</code><br><code>DIRECT</code></td></tr>
+<tr><td><strong>Tailscale</strong></td><td><code>👉 手动切换</code><br><code>DIRECT</code></td></tr>
 </tbody>
 </table>
 
@@ -187,29 +189,29 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><th width="42%">策略组名称<img src="assets/table-spacer.png" width="672" height="1" alt=""></th><th width="43%">Bettbox 开关<img src="assets/table-spacer.png" width="688" height="1" alt=""></th><th width="15%">默认<img src="assets/table-spacer.png" width="240" height="1" alt=""></th></tr>
 </thead>
 <tbody>
-<tr><td><strong>🔄 负载均衡</strong></td><td><code>🔄 负载均衡</code></td><td>开启</td></tr>
 <tr><td><strong>👉 手动切换</strong></td><td><code>👉 手动切换</code></td><td>开启</td></tr>
 <tr><td><strong>♻️ 自动选择</strong></td><td><code>♻️ 自动选择</code></td><td>开启</td></tr>
+<tr><td><strong>🔄 负载均衡</strong></td><td><code>🔄 负载均衡</code></td><td>开启</td></tr>
+<tr><td><strong>🔎 Google</strong></td><td><code>🔎 Google</code></td><td>开启</td></tr>
+<tr><td><strong>♾️ Meta</strong></td><td><code>♾️ Meta</code></td><td>开启</td></tr>
+<tr><td><strong>🤖 AI大模型</strong></td><td><code>🤖 AI大模型</code></td><td>开启</td></tr>
 <tr><td><strong>📲 Telegram</strong></td><td><code>📲 Telegram</code></td><td>开启</td></tr>
-<tr><td><strong>🎮 Games-Global</strong></td><td><code>🎮 Games-Global</code></td><td>开启</td></tr>
+<tr><td><strong>✖️ Twitter</strong></td><td><code>✖️ Twitter</code></td><td>开启</td></tr>
+<tr><td><strong>💬 Discord</strong></td><td><code>💬 Discord</code></td><td>开启</td></tr>
+<tr><td><strong>👽 Reddit</strong></td><td><code>👽 Reddit</code></td><td>开启</td></tr>
+<tr><td><strong>💬 LINE</strong></td><td><code>💬 LINE</code></td><td>开启</td></tr>
+<tr><td><strong>🎵 TikTok</strong></td><td><code>🎵 TikTok</code></td><td>开启</td></tr>
+<tr><td><strong>🎥 Netflix</strong></td><td><code>🎥 Netflix</code></td><td>开启</td></tr>
+<tr><td><strong>🎧 Spotify</strong></td><td><code>🎧 Spotify</code></td><td>开启</td></tr>
+<tr><td><strong>🎬 Emby</strong></td><td><code>🎬 Emby</code></td><td>开启</td></tr>
 <tr><td><strong>🍎 海外苹果</strong></td><td><code>🍎 海外苹果</code></td><td>开启</td></tr>
 <tr><td><strong>💠 海外微软</strong></td><td><code>💠 海外微软</code></td><td>开启</td></tr>
 <tr><td><strong>🎮 Steam平台（非下载/CDN）</strong></td><td><code>🎮 Steam平台（非下载/CDN）</code></td><td>开启</td></tr>
-<tr><td><strong>✖️ Twitter</strong></td><td><code>✖️ Twitter</code></td><td>开启</td></tr>
-<tr><td><strong>🤖 AI大模型</strong></td><td><code>🤖 AI大模型</code></td><td>开启</td></tr>
-<tr><td><strong>🎵 TikTok</strong></td><td><code>🎵 TikTok</code></td><td>开启</td></tr>
+<tr><td><strong>🎮 Games-Global</strong></td><td><code>🎮 Games-Global</code></td><td>开启</td></tr>
 <tr><td><strong>💳 金融支付</strong></td><td><code>💳 金融支付</code></td><td>开启</td></tr>
-<tr><td><strong>🔎 Google</strong></td><td><code>🔎 Google</code></td><td>开启</td></tr>
-<tr><td><strong>♾️ Meta</strong></td><td><code>♾️ Meta</code></td><td>开启</td></tr>
-<tr><td><strong>🎧 Spotify</strong></td><td><code>🎧 Spotify</code></td><td>开启</td></tr>
-<tr><td><strong>🎬 Emby</strong></td><td><code>🎬 Emby</code></td><td>开启</td></tr>
-<tr><td><strong>💬 Discord</strong></td><td><code>💬 Discord</code></td><td>开启</td></tr>
-<tr><td><strong>👽 Reddit</strong></td><td><code>👽 Reddit</code></td><td>开启</td></tr>
-<tr><td><strong>🎥 Netflix</strong></td><td><code>🎥 Netflix</code></td><td>开启</td></tr>
 <tr><td><strong>💝 Patreon</strong></td><td><code>💝 Patreon</code></td><td>开启</td></tr>
 <tr><td><strong>📚 EHentai</strong></td><td><code>📚 EHentai</code></td><td>开启</td></tr>
 <tr><td><strong>☁️ PikPak</strong></td><td><code>☁️ PikPak</code></td><td>开启</td></tr>
-<tr><td><strong>💬 LINE</strong></td><td><code>💬 LINE</code></td><td>开启</td></tr>
 </tbody>
 </table>
 
@@ -223,6 +225,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 </thead>
 <tbody>
 <tr><td><strong>FCM</strong></td><td><code>FCM直连</code></td><td>开启</td><td>开关不移除本组，只改写组内节点：开启=<code>DIRECT</code>；关闭且 <code>👉 手动切换</code> 已禁用时回退到全局兜底。脚本内嵌模板把本组标记为隐藏组（<code>hidden</code>）</td></tr>
+<tr><td><strong>Tailscale</strong></td><td><code>Tailscale直连</code></td><td>开启</td><td>开关不移除本组，只改写组内节点：开启=<code>DIRECT</code>；关闭且 <code>👉 手动切换</code> 已禁用时回退到全局兜底。脚本内嵌模板把本组标记为隐藏组（<code>hidden</code>）</td></tr>
 <tr><td><em><strong>📲 Telegram(兜底)</strong></em></td><td><em><strong><code>TGDC实验分流</code></strong></em></td><td><em><strong>关闭</strong></em></td><td><em><strong>该开关开启时由 <code>📲 Telegram</code> 更名而来，承接 Telegram 进程、域名与 CIDR 规则</strong></em></td></tr>
 <tr><td><strong>📲 Telegram-DC1-DC3-Miami</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>开关开启时按 Telegram DC IP 规则优先命中美国/迈阿密节点；地区无候选时列出全部合格节点供手动选择</td></tr>
 <tr><td><strong>📲 Telegram-DC2-DC4-Amsterdam</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>同上，对应荷兰/阿姆斯特丹节点</td></tr>
@@ -315,7 +318,7 @@ venn-beta
   union G,O
 ```
 
-三者覆盖的都是"需要走代理的域名"，在 `rules` 中同指 `🌍 PROXY`。
+`proxy`、`gfw` 同指 `🌍 PROXY`；`google`、`google-cn` 指向 `🔎 Google`，且这组规则排在 `🤖 AI大模型` 之前，因此 Google 域名不会被 `proxy`、`gfw` 抢先匹配。
 
 **4. Twitter 的三套规则集**
 
@@ -339,7 +342,7 @@ venn-beta
   union A1,A2
 ```
 
-两套来源不同却覆盖同类站点，在 `rules` 中同指 `🤖 AI大模型`。
+两套来源不同却覆盖同类站点，在 `rules` 中同指 `🤖 AI大模型`。`Gemini_Domain` 已改指 `🔎 Google`，它与 `ai-1`／`ai-2` 在 Gemini 域名上的重叠部分按顺序先命中 `🔎 Google`。
 
 > 以上重合关系按各规则集的覆盖范围与来源判断（依据取自 `mihomo.yaml` 的 `rules:` 引用与注释）。
 
@@ -371,6 +374,7 @@ venn-beta
 - [Accademia/Additional_Rule_For_Clash](https://github.com/Accademia/Additional_Rule_For_Clash)
 - [Loyalsoldier/clash-rules](https://github.com/Loyalsoldier/clash-rules)
 - [blackmatrix7/ios_rule_script](https://github.com/blackmatrix7/ios_rule_script)
+- [static-file-global.353355.xyz](https://static-file-global.353355.xyz/rules/cn-additional-list.mrs)（`cn-additional` 国内补充规则集）
 
 
 
