@@ -1960,6 +1960,8 @@ const TEMPLATE = {
     "RULE-SET,apple-cn,DIRECT",
     "RULE-SET,microsoft-cn,DIRECT",
     "RULE-SET,games-cn,DIRECT",
+    "DOMAIN-SUFFIX,ac.cn,DIRECT",
+    "DOMAIN-SUFFIX,xdf.cn,DIRECT",
     "DOMAIN,clash.razord.top,DIRECT",
     "DOMAIN,yacd.haishan.me,DIRECT",
     "PROCESS-NAME,svchost.exe,DIRECT",

@@ -291,7 +291,7 @@ venn-beta
   union G,S
 ```
 
-`geolocation-cn` 与 `cn-additional` 有 2564 条完全重合、与 `games-cn` 有 310 条；`cn-additional` 与 `games-cn` 有 194 条；`apple-cn`、`microsoft-cn` 与其余三个各只有 1 条交集。四者同指 `DIRECT`，重合只增加体积，不改变结果。
+`geolocation-cn` 与 `cn-additional` 有 2564 条完全重合、与 `games-cn` 有 310 条；`cn-additional` 与 `games-cn` 有 194 条；`apple-cn`、`microsoft-cn` 与其余三个各只有 1 条交集。四者同指 `DIRECT`，重合只增加体积，不改变结果。规则段里另有两条补充直连：`DOMAIN-SUFFIX,ac.cn`（中科院各所等 `*.ac.cn`）与 `DOMAIN-SUFFIX,xdf.cn`。
 
 **2. 直连规则集与海外组规则集**
 

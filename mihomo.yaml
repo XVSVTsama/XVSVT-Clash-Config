@@ -713,6 +713,9 @@ rules:
   - RULE-SET,apple-cn,DIRECT
   - RULE-SET,microsoft-cn,DIRECT
   - RULE-SET,games-cn,DIRECT
+  # 教育与科研补充直连：.ac.cn（中科院各所）与常用教育类商业域。
+  - DOMAIN-SUFFIX,ac.cn,DIRECT
+  - DOMAIN-SUFFIX,xdf.cn,DIRECT
   - DOMAIN,clash.razord.top,DIRECT
   - DOMAIN,yacd.haishan.me,DIRECT
   - PROCESS-NAME,svchost.exe,DIRECT
