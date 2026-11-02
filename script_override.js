@@ -2219,9 +2219,6 @@ function smartMergeDnsNode(config, result) {
 // 公共节点筛选（TGDC 实验分流、国家/地区分组、入口解析共用）
 // ============================================================================
 
-// 保留命名空间：用于排除入口节点，并防止同名订阅节点抢占维护区定义。
-const ENTRY_RESOLUTION_EXCLUDE_FILTER = '^(?:电信|联通|移动|云厂)节点-[0-9]{2,}$';
-
 // JS 名称规范化只用于匹配，不会修改节点名称或配置。
 // 有意保留 ZWNJ、ZWJ 和 Unicode 变体选择符。
 const JS_INVISIBLE_CHARACTER_NORMALIZATION_REGEX =
@@ -2239,6 +2236,7 @@ const JS_MODULE_INFORMATION_NODE_EXCLUSION_REGEX =
 
 function filterModuleCandidateProxies(originalProxies) {
   const proxies = Array.isArray(originalProxies) ? originalProxies : [];
+  // 入口节点命名空间由「国内入口解析」节定义；这里排除它们，避免注入节点被当成订阅节点。
   const entryNamePattern = new RegExp(ENTRY_RESOLUTION_EXCLUDE_FILTER);
   return proxies.filter((proxy) => {
     if (!proxy || typeof proxy !== 'object' || typeof proxy.name !== 'string') {
@@ -2986,6 +2984,9 @@ function applyCountryRegionGrouping(result, originalProxies) {
 // ============================================================================
 // 国内入口解析（仅在 ruleOptionsEnable['入口解析'] 为 true 时注入）
 // ============================================================================
+
+// 保留命名空间：用于排除入口节点，并防止同名订阅节点抢占维护区定义。
+const ENTRY_RESOLUTION_EXCLUDE_FILTER = '^(?:电信|联通|移动|云厂)节点-[0-9]{2,}$';
 
 // 国内入口解析节点维护区
 // 每个分类维护一个数组：可复制数组内的节点对象追加多个节点，填 [] 表示不配置。
