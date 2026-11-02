@@ -1561,10 +1561,6 @@ const serviceConfigs = TEMPLATE['proxy-groups']
 // DNS 与 hosts 处理（私有 DNS 提取 + hosts 真假域名映射）
 // ============================================================================
 
-// 出现同一个域名规则 key 时，订阅原始配置(true) 还是模板(false) 优先（模板目前未配置
-// proxy-server-nameserver-policy，因此该开关当前实际只影响订阅来源之间的合并）
-const NAMESERVER_POLICY_PREFER_ORIGINAL = true;
-
 // 判断 server 是否为 IP
 function isIPAddress(host) {
   if (!host || typeof host !== "string") {
@@ -1644,33 +1640,6 @@ function sameNameserverSet(a, b) {
   const sa = new Set(a);
   const sb = new Set(b);
   return sa.size === sb.size && Array.from(sa).every((value) => sb.has(value));
-}
-
-function selectedEntryResolutionOptions() {
-  if (ruleOptionsEnable['入口解析'] !== true) {
-    return [];
-  }
-  return ENTRY_RESOLUTION_OPTIONS.flatMap((option) => {
-    const proxies = DOMESTIC_ENTRY_PROXIES[option.category];
-    if (!Array.isArray(proxies)) {
-      throw new Error('国内入口解析维护区 ' + option.category + ' 必须是节点数组（无节点请填 []）');
-    }
-    return proxies.map((proxy, index) => {
-      if (!proxy || typeof proxy !== 'object' || Array.isArray(proxy)) {
-        throw new Error('国内入口解析维护区 ' + option.category + ' 第 ' + (index + 1) + ' 项必须是节点对象');
-      }
-      return {
-        proxyName: option.prefix + '-' + String(index + 1).padStart(2, '0'),
-        proxy
-      };
-    });
-  });
-}
-
-function withDnsPolicySuffix(value, suffix) {
-  const str = String(value);
-  const hashIndex = str.indexOf('#');
-  return (hashIndex === -1 ? str : str.slice(0, hashIndex)) + suffix;
 }
 
 // 公共 DNS 识别表：用于区分“公共可直连 DNS”和“机场/用户的私有 DNS”。
@@ -1963,6 +1932,10 @@ function resolveHostsChain(startDomain, hosts) {
   return { target: "", chain, type: "cycle" };
 }
 
+// 出现同一个域名规则 key 时，订阅原始配置(true) 还是模板(false) 优先（模板目前未配置
+// proxy-server-nameserver-policy，因此该开关当前实际只影响订阅来源之间的合并）
+const NAMESERVER_POLICY_PREFER_ORIGINAL = true;
+
 // 根据节点域名补充 DNS
 function smartMergeDnsNode(config, result) {
   const rules = collectDnsRules(config);
@@ -2235,98 +2208,11 @@ function smartMergeDnsNode(config, result) {
 // ============================================================================
 
 // ============================================================================
-// 国内入口解析节点维护区
-// 每个分类维护一个数组：可复制数组内的节点对象追加多个节点，填 [] 表示不配置。
-// 仅维护 type / server / port 及其他 Mihomo 节点字段，无需填写 name；即使填写也会被覆盖。
-// 名称按分类前缀和数组顺序独立编号，从 01 开始，超过 99 不截断。
-// ============================================================================
-const DOMESTIC_ENTRY_PROXIES = {
-  // 中国电信
-  telecom: [{
-    type: 'socks5',
-    server: '113.249.111.67',
-    port: 1080
-  }],
-
-  // 中国联通
-  unicom: [],
-
-  // 中国移动
-  mobile: [{
-    type: 'http',
-    server: '47.121.139.13',
-    port: 3128
-  }],
-
-  // 中国大陆云厂
-  cloud: [{
-    type: 'http',
-    server: '39.104.59.56',
-    port: 9098
-  }, {
-    type: 'http',
-    server: '39.102.214.208',
-    port: 9080
-  }, {
-    type: 'http',
-    server: '120.79.217.196',
-    port: 9000
-  }, {
-    type: 'http',
-    server: '47.104.27.249',
-    port: 8080
-  }, {
-    type: 'http',
-    server: '39.102.214.199',
-    port: 10002
-  }, {
-    type: 'http',
-    server: '139.224.195.153',
-    port: 8118
-  }, {
-    type: 'http',
-    server: '47.121.129.129',
-    port: 6379
-  }, {
-    type: 'http',
-    server: '47.104.28.135',
-    port: 8080
-  }, {
-    type: 'http',
-    server: '47.104.27.165',
-    port: 9080
-  }, {
-    type: 'http',
-    server: '47.106.75.125',
-    port: 3128
-  }, {
-    type: 'http',
-    server: '39.104.69.76',
-    port: 8081
-  }, {
-    type: 'http',
-    server: '39.102.211.64',
-    port: 8443
-  }, {
-    type: 'http',
-    server: '106.14.91.83',
-    port: 8181
-  }]
-};
-
-// 分类与强制命名前缀的固定映射，不应修改；节点顺序不代表自动优先级。
-const ENTRY_RESOLUTION_OPTIONS = [
-  { category: 'telecom', prefix: '电信节点' },
-  { category: 'unicom', prefix: '联通节点' },
-  { category: 'mobile', prefix: '移动节点' },
-  { category: 'cloud', prefix: '云厂节点' }
-];
-// 保留命名空间：用于排除入口节点，并防止同名订阅节点抢占维护区定义。
-const ENTRY_RESOLUTION_EXCLUDE_FILTER = '^(?:电信|联通|移动|云厂)节点-[0-9]{2,}$';
-
-// ============================================================================
 // 公共节点筛选（TGDC 实验分流、国家/地区分组、入口解析共用）
 // ============================================================================
+
+// 保留命名空间：用于排除入口节点，并防止同名订阅节点抢占维护区定义。
+const ENTRY_RESOLUTION_EXCLUDE_FILTER = '^(?:电信|联通|移动|云厂)节点-[0-9]{2,}$';
 
 // JS 名称规范化只用于匹配，不会修改节点名称或配置。
 // 有意保留 ZWNJ、ZWJ 和 Unicode 变体选择符。
@@ -2708,6 +2594,7 @@ function applyProviderOverrides(result) {
 // 不含 reject_extra（源经上游降级，误杀与性能代价更高）、reject_phishing
 // （反钓鱼，非广告）与 reject-no-drop（PCDN，非广告且 mihomo 无对应策略）。
 // ============================================================================
+
 // 开关图标：serviceConfigs 中同值内联（模板区求值时本常量尚未定义）。
 const SKK_ADBLOCK_ICON =
   'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-adblock.svg';
@@ -3082,6 +2969,123 @@ function applyCountryRegionGrouping(result, originalProxies) {
     proxyGroups.push(...parentGroups, ...childGroups);
   }
   result['proxy-groups'] = proxyGroups;
+}
+
+// ============================================================================
+// 国内入口解析（仅在 ruleOptionsEnable['入口解析'] 为 true 时注入）
+// ============================================================================
+
+// 国内入口解析节点维护区
+// 每个分类维护一个数组：可复制数组内的节点对象追加多个节点，填 [] 表示不配置。
+// 仅维护 type / server / port 及其他 Mihomo 节点字段，无需填写 name；即使填写也会被覆盖。
+// 名称按分类前缀和数组顺序独立编号，从 01 开始，超过 99 不截断。
+const DOMESTIC_ENTRY_PROXIES = {
+  // 中国电信
+  telecom: [{
+    type: 'socks5',
+    server: '113.249.111.67',
+    port: 1080
+  }],
+
+  // 中国联通
+  unicom: [],
+
+  // 中国移动
+  mobile: [{
+    type: 'http',
+    server: '47.121.139.13',
+    port: 3128
+  }],
+
+  // 中国大陆云厂
+  cloud: [{
+    type: 'http',
+    server: '39.104.59.56',
+    port: 9098
+  }, {
+    type: 'http',
+    server: '39.102.214.208',
+    port: 9080
+  }, {
+    type: 'http',
+    server: '120.79.217.196',
+    port: 9000
+  }, {
+    type: 'http',
+    server: '47.104.27.249',
+    port: 8080
+  }, {
+    type: 'http',
+    server: '39.102.214.199',
+    port: 10002
+  }, {
+    type: 'http',
+    server: '139.224.195.153',
+    port: 8118
+  }, {
+    type: 'http',
+    server: '47.121.129.129',
+    port: 6379
+  }, {
+    type: 'http',
+    server: '47.104.28.135',
+    port: 8080
+  }, {
+    type: 'http',
+    server: '47.104.27.165',
+    port: 9080
+  }, {
+    type: 'http',
+    server: '47.106.75.125',
+    port: 3128
+  }, {
+    type: 'http',
+    server: '39.104.69.76',
+    port: 8081
+  }, {
+    type: 'http',
+    server: '39.102.211.64',
+    port: 8443
+  }, {
+    type: 'http',
+    server: '106.14.91.83',
+    port: 8181
+  }]
+};
+
+// 分类与强制命名前缀的固定映射，不应修改；节点顺序不代表自动优先级。
+const ENTRY_RESOLUTION_OPTIONS = [
+  { category: 'telecom', prefix: '电信节点' },
+  { category: 'unicom', prefix: '联通节点' },
+  { category: 'mobile', prefix: '移动节点' },
+  { category: 'cloud', prefix: '云厂节点' }
+];
+
+function selectedEntryResolutionOptions() {
+  if (ruleOptionsEnable['入口解析'] !== true) {
+    return [];
+  }
+  return ENTRY_RESOLUTION_OPTIONS.flatMap((option) => {
+    const proxies = DOMESTIC_ENTRY_PROXIES[option.category];
+    if (!Array.isArray(proxies)) {
+      throw new Error('国内入口解析维护区 ' + option.category + ' 必须是节点数组（无节点请填 []）');
+    }
+    return proxies.map((proxy, index) => {
+      if (!proxy || typeof proxy !== 'object' || Array.isArray(proxy)) {
+        throw new Error('国内入口解析维护区 ' + option.category + ' 第 ' + (index + 1) + ' 项必须是节点对象');
+      }
+      return {
+        proxyName: option.prefix + '-' + String(index + 1).padStart(2, '0'),
+        proxy
+      };
+    });
+  });
+}
+
+function withDnsPolicySuffix(value, suffix) {
+  const str = String(value);
+  const hashIndex = str.indexOf('#');
+  return (hashIndex === -1 ? str : str.slice(0, hashIndex)) + suffix;
 }
 
 // 注入的入口节点属于订阅顶层节点；exclude-filter 由内核应用，会作用于 include-all
