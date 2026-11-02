@@ -126,6 +126,18 @@ const Compatible_With_Bettbox = {
 // Bettbox 开关定义（ruleOptionsEnable 的键即客户端开关面板；开关图标表见模板之后的 serviceConfigs）
 // ============================================================================
 
+// 纯功能开关的面板图标：这些开关不生成策略组，图标只出现在开关面板（由 serviceConfigs 引用）。
+const FEATURE_SWITCH_ICONS = {
+  '强制证书验证': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-MiToverG422-Qure-SSL.png',
+  '启用 Reality 增强': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-MiToverG422-Qure-Spark.png',
+  '试开启节点UDP': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-udp.svg',
+  'IPv6优先': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-ipv6-prefer.svg',
+  '高倍率筛选': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-high.svg',
+  '低倍率筛选': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-low.svg',
+  '代理节点 DNS 使用 TCP': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-TCP.png',
+  'WebRTC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-webrtc-block.svg',
+};
+
 const ruleOptionsEnable = {
 
   /**
@@ -1509,19 +1521,19 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     },
     {
       name: '强制证书验证',
-      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-MiToverG422-Qure-SSL.png'
+      icon: FEATURE_SWITCH_ICONS['强制证书验证']
     },
     {
       name: '启用 Reality 增强',
-      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-MiToverG422-Qure-Spark.png'
+      icon: FEATURE_SWITCH_ICONS['启用 Reality 增强']
     },
     {
       name: '试开启节点UDP',
-      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-udp.svg'
+      icon: FEATURE_SWITCH_ICONS['试开启节点UDP']
     },
     {
       name: 'IPv6优先',
-      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-ipv6-prefer.svg'
+      icon: FEATURE_SWITCH_ICONS['IPv6优先']
     },
     {
       name: 'TGDC实验分流',
@@ -1537,11 +1549,11 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     },
     {
       name: '高倍率筛选',
-      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-high.svg'
+      icon: FEATURE_SWITCH_ICONS['高倍率筛选']
     },
     {
       name: '低倍率筛选',
-      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-low.svg'
+      icon: FEATURE_SWITCH_ICONS['低倍率筛选']
     },
     {
       name: '入口解析',
@@ -1549,11 +1561,11 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     },
     {
       name: '代理节点 DNS 使用 TCP',
-      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-TCP.png'
+      icon: FEATURE_SWITCH_ICONS['代理节点 DNS 使用 TCP']
     },
     {
       name: 'WebRTC阻断',
-      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-webrtc-block.svg'
+      icon: FEATURE_SWITCH_ICONS['WebRTC阻断']
     }
   ]);
 
@@ -2752,10 +2764,6 @@ function applyProxyMultiplierFilters(result) {
   return removedProxyNames;
 }
 
-// 国家/地区父组图标。
-const COUNTRY_REGION_PARENT_ICON =
-  'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Global.png';
-
 const COUNTRY_REGION_PRIORITY_NAMES = new Set([
   '🇨🇳🇭🇰 香港',
   '🇨🇳🇹🇼 台湾',
@@ -2791,6 +2799,10 @@ const COUNTRY_REGION_CHILD_GROUP_TYPES = [
 function countryRegionChildGroupName(parentName, suffix) {
   return parentName + ' · ' + suffix;
 }
+
+// 国家/地区父组图标。
+const COUNTRY_REGION_PARENT_ICON =
+  'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Global.png';
 
 // 候选只来自订阅顶层 proxies；provider 节点此阶段尚未加载，不参与地区分组。
 function buildCountryRegionProxyGroups(originalProxies) {
