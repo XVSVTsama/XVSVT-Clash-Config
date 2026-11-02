@@ -275,7 +275,7 @@ proxy-providers:
       interval: 300
       lazy: true
 
-proxies: ~
+proxies: []
 proxy-groups:
   - name: 🌍 PROXY
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-proxy.png"
@@ -602,7 +602,15 @@ sub-rules:
 
     - MATCH,DIRECT                                           
 rules:
-  - AND,((NETWORK,UDP),(DST-PORT,3478-3479/5349-5350/19302-19309),(NOT,((RULE-SET,games))),(NOT,((RULE-SET,geolocation-cn))),(NOT,((RULE-SET,cn-additional))),(NOT,((RULE-SET,apple-cn))),(NOT,((RULE-SET,microsoft-cn))),(NOT,((RULE-SET,games-cn)))),REJECT
+  - >-
+    AND,((NETWORK,UDP),
+    (DST-PORT,3478-3479/5349-5350/19302-19309),
+    (NOT,((RULE-SET,geolocation-cn))),
+    (NOT,((RULE-SET,cn-additional))),
+    (NOT,((RULE-SET,apple-cn))),
+    (NOT,((RULE-SET,microsoft-cn))),
+    (NOT,((RULE-SET,games-cn))),
+    (NOT,((RULE-SET,games)))),REJECT
   - RULE-SET,HijackingPlus,REJECT
   # SKK 广告拦截规则：启用时取消注释，并同时启用上方 proxy-groups 与 rule-providers 对应段落。
   # - RULE-SET,skk_reject_drop,REJECT-DROP

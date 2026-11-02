@@ -1167,7 +1167,7 @@ const TEMPLATE = {
     "gurd.snssdk.com": "0.0.0.0",
     "gurd.snssdk.com.*": "0.0.0.0"
   },
-  "proxies": null,
+  "proxies": [],
   "proxy-groups": [
     {
       "name": "🌍 PROXY",
@@ -1941,7 +1941,14 @@ const TEMPLATE = {
     ]
   },
   "rules": [
-    "AND,((NETWORK,UDP),(DST-PORT,3478-3479/5349-5350/19302-19309),(NOT,((RULE-SET,games))),(NOT,((RULE-SET,geolocation-cn))),(NOT,((RULE-SET,cn-additional))),(NOT,((RULE-SET,apple-cn))),(NOT,((RULE-SET,microsoft-cn))),(NOT,((RULE-SET,games-cn)))),REJECT",
+    "AND,((NETWORK,UDP)," +
+      "(DST-PORT,3478-3479/5349-5350/19302-19309)," +
+      "(NOT,((RULE-SET,geolocation-cn)))," +
+      "(NOT,((RULE-SET,cn-additional)))," +
+      "(NOT,((RULE-SET,apple-cn)))," +
+      "(NOT,((RULE-SET,microsoft-cn)))," +
+      "(NOT,((RULE-SET,games-cn)))," +
+      "(NOT,((RULE-SET,games)))),REJECT",
     "RULE-SET,HijackingPlus,REJECT",
     "SUB-RULE,(PROCESS-NAME,com.dragon.read.oversea.gp),fanqie",
     "DOMAIN,gh-proxy.com,DIRECT",
