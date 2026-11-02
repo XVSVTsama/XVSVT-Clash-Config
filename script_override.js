@@ -1093,7 +1093,9 @@ const TEMPLATE = {
     ],
     "direct-nameserver-follow-policy": true,
     "nameserver": [
-      "https://cloudflare-dns.com/dns-query#👉 手动切换"
+      "https://cloudflare-dns.com/dns-query#👉 手动切换",
+      "https://dns.google/dns-query#👉 手动切换",
+      "https://unfiltered.adguard-dns.com/dns-query#👉 手动切换"
     ],
     "nameserver-policy": {
       "+.ts.net": [
