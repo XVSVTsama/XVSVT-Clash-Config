@@ -175,7 +175,7 @@ dns:
     - https://1.12.12.12/dns-query#DIRECT
   proxy-server-nameserver: 
     - https://hrbgyitz34.cloudflare-gateway.com/dns-query#DIRECT
-  direct-nameserver: 
+  direct-nameserver: &direct_dns_servers
     - https://dns.alidns.com/dns-query#DIRECT
     - https://doh.pub/dns-query#DIRECT
     - https://doh.360.cn/dns-query#DIRECT
@@ -197,10 +197,7 @@ dns:
     - 180.184.2.2
     'rule-set:private':
     - system
-    'rule-set:proxy@direct,geolocation-cn,cn-additional,apple-cn,microsoft-cn,games-cn':
-    - https://dns.alidns.com/dns-query#DIRECT
-    - https://doh.pub/dns-query#DIRECT
-    - https://doh.360.cn/dns-query#DIRECT
+    'rule-set:proxy@direct,geolocation-cn,cn-additional,apple-cn,microsoft-cn,games-cn': *direct_dns_servers
   prefer-h3: false
   respect-rules: false                                            
   enhanced-mode: fake-ip                  
@@ -264,25 +261,25 @@ proxies: ~
 proxy-groups:
   - name: 🌍 PROXY
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-proxy.png"
-    type: select
-    proxies:
+    type: &proxy_select_type select
+    proxies: &proxy_default_choices
         - 👉 手动切换
         - ♻️ 自动选择
         - 🔄 负载均衡
         - DIRECT
   - name: 👉 手动切换
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-select.png"
-    type: select
-    include-all: true
+    type: *proxy_select_type
+    include-all: &proxy_include_all true
   - name: ♻️ 自动选择
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-auto.png"
     type: url-test
-    url: https://g.cn/generate_204
-    interval: 300
+    url: &proxy_health_url https://g.cn/generate_204
+    interval: &proxy_health_interval 300
     tolerance: 10
-    lazy: true
-    max-failed-times: 1
-    include-all: true
+    lazy: &proxy_health_lazy true
+    max-failed-times: &proxy_max_failed_times 1
+    include-all: *proxy_include_all
   # SKK 广告拦截组为可选配置；启用时，需同时取消注释下方 rule-providers 与 rules 对应段落。
   # - name: 🛑 广告拦截
   #   icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-adblock.svg"
@@ -293,174 +290,118 @@ proxy-groups:
   #     - PASS
   - name: 🔄 负载均衡
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-clash-verge-rev-balance.svg"
-    type: select
+    type: *proxy_select_type
     proxies:
       - consistent-hashing
       - sticky-sessions
       - round-robin
   - name: consistent-hashing
-    type: load-balance
-    include-all: true
-    url: 'https://g.cn/generate_204'
-    interval: 300
-    lazy: true
-    max-failed-times: 1
+    type: &proxy_load_balance_type load-balance
+    include-all: *proxy_include_all
+    url: *proxy_health_url
+    interval: *proxy_health_interval
+    lazy: *proxy_health_lazy
+    max-failed-times: *proxy_max_failed_times
     strategy: consistent-hashing
-    hidden: true
+    hidden: &proxy_hidden true
   - name: sticky-sessions
-    type: load-balance
-    include-all: true
-    url: 'https://g.cn/generate_204'
-    interval: 300
-    lazy: true
-    max-failed-times: 1
+    type: *proxy_load_balance_type
+    include-all: *proxy_include_all
+    url: *proxy_health_url
+    interval: *proxy_health_interval
+    lazy: *proxy_health_lazy
+    max-failed-times: *proxy_max_failed_times
     strategy: sticky-sessions
-    hidden: true
+    hidden: *proxy_hidden
   - name: round-robin
-    type: load-balance
-    include-all: true
-    url: 'https://g.cn/generate_204'
-    interval: 300
-    lazy: true
-    max-failed-times: 1
+    type: *proxy_load_balance_type
+    include-all: *proxy_include_all
+    url: *proxy_health_url
+    interval: *proxy_health_interval
+    lazy: *proxy_health_lazy
+    max-failed-times: *proxy_max_failed_times
     strategy: round-robin
-    hidden: true
+    hidden: *proxy_hidden
   - name: 🔎 Google
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-google.svg"
-    type: select
-    proxies:
-      - 👉 手动切换
-      - ♻️ 自动选择
-      - 🔄 负载均衡
-      - DIRECT
-    include-all: true
+    type: *proxy_select_type
+    proxies: *proxy_default_choices
+    include-all: *proxy_include_all
   - name: ♾️ Meta
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-meta.svg"
-    type: select
-    proxies:
-      - 👉 手动切换
-      - ♻️ 自动选择
-      - 🔄 负载均衡
-      - DIRECT
-    include-all: true
+    type: *proxy_select_type
+    proxies: *proxy_default_choices
+    include-all: *proxy_include_all
   - name: 🤖 AI大模型
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-ai.png"
-    type: select
-    proxies:
-      - 👉 手动切换
-      - ♻️ 自动选择
-      - 🔄 负载均衡
-      - DIRECT
-    include-all: true
+    type: *proxy_select_type
+    proxies: *proxy_default_choices
+    include-all: *proxy_include_all
   - name: 📲 Telegram
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-telegram.png"
-    type: select
-    proxies:
-      - 👉 手动切换
-      - ♻️ 自动选择
-      - 🔄 负载均衡
-      - DIRECT
-    include-all: true
+    type: *proxy_select_type
+    proxies: *proxy_default_choices
+    include-all: *proxy_include_all
   - name: ✖️ Twitter
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-clash-verge-rev-twitter.svg"
-    type: select
-    proxies:
-      - 👉 手动切换
-      - ♻️ 自动选择
-      - 🔄 负载均衡
-      - DIRECT
-    include-all: true
+    type: *proxy_select_type
+    proxies: *proxy_default_choices
+    include-all: *proxy_include_all
   - name: 💬 Discord
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-discord.svg"
-    type: select
-    proxies:
-      - 👉 手动切换
-      - ♻️ 自动选择
-      - 🔄 负载均衡
-      - DIRECT
-    include-all: true
+    type: *proxy_select_type
+    proxies: *proxy_default_choices
+    include-all: *proxy_include_all
   - name: 👽 Reddit
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-reddit.svg"
-    type: select
-    proxies:
-      - 👉 手动切换
-      - ♻️ 自动选择
-      - 🔄 负载均衡
-      - DIRECT
-    include-all: true
+    type: *proxy_select_type
+    proxies: *proxy_default_choices
+    include-all: *proxy_include_all
   - name: 💬 LINE
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-line.svg"
-    type: select
-    proxies:
-      - 👉 手动切换
-      - ♻️ 自动选择
-      - 🔄 负载均衡
-      - DIRECT
-    include-all: true
+    type: *proxy_select_type
+    proxies: *proxy_default_choices
+    include-all: *proxy_include_all
   - name: 🎵 TikTok
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-tiktok.png"
-    type: select
-    proxies:
-      - 👉 手动切换
-      - ♻️ 自动选择
-      - 🔄 负载均衡
-      - DIRECT
-    include-all: true
+    type: *proxy_select_type
+    proxies: *proxy_default_choices
+    include-all: *proxy_include_all
   - name: 🎥 Netflix
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-netflix.svg"
-    type: select
-    proxies:
-      - 👉 手动切换
-      - ♻️ 自动选择
-      - 🔄 负载均衡
-      - DIRECT
-    include-all: true
+    type: *proxy_select_type
+    proxies: *proxy_default_choices
+    include-all: *proxy_include_all
   - name: 🎧 Spotify
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-spotify.svg"
-    type: select
-    proxies:
-      - 👉 手动切换
-      - ♻️ 自动选择
-      - 🔄 负载均衡
-      - DIRECT
-    include-all: true
+    type: *proxy_select_type
+    proxies: *proxy_default_choices
+    include-all: *proxy_include_all
   - name: 🎬 Emby
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-emby.svg"
-    type: select
-    proxies:
-      - 👉 手动切换
-      - ♻️ 自动选择
-      - 🔄 负载均衡
-      - DIRECT
-    include-all: true
+    type: *proxy_select_type
+    proxies: *proxy_default_choices
+    include-all: *proxy_include_all
   - name: 🍎 海外苹果
     icon: https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-AIsouler-MyClash-Apple.svg
-    type: select
-    proxies:
-      - 👉 手动切换
-      - ♻️ 自动选择
-      - 🔄 负载均衡
-      - DIRECT
-    include-all: true
+    type: *proxy_select_type
+    proxies: *proxy_default_choices
+    include-all: *proxy_include_all
   - name: 💠 海外微软
     icon: https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-Microsoft.svg
-    type: select
-    proxies:
-      - 👉 手动切换
-      - ♻️ 自动选择
-      - 🔄 负载均衡
-      - DIRECT
-    include-all: true
+    type: *proxy_select_type
+    proxies: *proxy_default_choices
+    include-all: *proxy_include_all
   - name: 🎮 Steam平台（非下载/CDN）
     icon: https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-AIsouler-MyClash-Steam.svg
-    type: select
+    type: *proxy_select_type
     default-selected: DIRECT
     proxies:
       - DIRECT
       - 👉 手动切换
       - ♻️ 自动选择
       - 🔄 负载均衡
-    include-all: true
+    include-all: *proxy_include_all
   # Telegram DC 地区组为可选配置；启用时，需同时取消注释下方 rule-providers 与 rules 对应段落。
   # - name: 📲 Telegram-DC1-DC3-Miami
   #   icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-United_States.png"
@@ -482,64 +423,46 @@ proxy-groups:
   #   empty-fallback: COMPATIBLE
   - name: 🎮 Games-Global
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-games-cn.png"
-    type: select
+    type: *proxy_select_type
     default-selected: 🎮 Steam平台（非下载/CDN）
     proxies:
       - 🎮 Steam平台（非下载/CDN）
-    include-all: true
+    include-all: *proxy_include_all
 
   - name: 💳 金融支付
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-bitcoin.svg"
-    type: select
-    proxies:
-      - 👉 手动切换
-      - ♻️ 自动选择
-      - 🔄 负载均衡
-      - DIRECT
-    include-all: true
+    type: *proxy_select_type
+    proxies: *proxy_default_choices
+    include-all: *proxy_include_all
   - name: 💝 Patreon
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-patreon.svg"
-    type: select
-    proxies:
-      - 👉 手动切换
-      - ♻️ 自动选择
-      - 🔄 负载均衡
-      - DIRECT
-    include-all: true
+    type: *proxy_select_type
+    proxies: *proxy_default_choices
+    include-all: *proxy_include_all
   - name: 📚 EHentai
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-EHentai.svg"
-    type: select
-    proxies:
-      - 👉 手动切换
-      - ♻️ 自动选择
-      - 🔄 负载均衡
-      - DIRECT
-    include-all: true
+    type: *proxy_select_type
+    proxies: *proxy_default_choices
+    include-all: *proxy_include_all
   - name: ☁️ PikPak
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-PikPak.svg"
-    type: select
-    proxies:
-      - 👉 手动切换
-      - ♻️ 自动选择
-      - 🔄 负载均衡
-      - DIRECT
-    include-all: true
+    type: *proxy_select_type
+    proxies: *proxy_default_choices
+    include-all: *proxy_include_all
   # FCM：Google FCM 域名分流目标，由 FCM直连 开关控制本组的 proxies。
   # 开启时使用 DIRECT，关闭时使用 👉 手动切换；开关图标取自本组的 icon 字段。
   - name: FCM
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-MiToverG422-Qure-fcm.png"
-    type: select
-    proxies:
+    type: *proxy_select_type
+    proxies: &proxy_direct_choices
       - 👉 手动切换
       - DIRECT
   # Tailscale：MagicDNS 域名（ts.net）分流目标，由 Tailscale直连 开关控制本组的 proxies。
   # 开启时使用 DIRECT，关闭时使用 👉 手动切换；开关图标取自本组的 icon 字段。
   - name: Tailscale
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-tailscale.svg"
-    type: select
-    proxies:
-      - 👉 手动切换
-      - DIRECT
+    type: *proxy_select_type
+    proxies: *proxy_direct_choices
 
 .templates:
   domain_mrs: &domain_mrs { type: http, interval: 86400, behavior: domain, format: mrs }
