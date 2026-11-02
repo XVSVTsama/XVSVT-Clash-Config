@@ -126,18 +126,6 @@ const Compatible_With_Bettbox = {
 // Bettbox 开关定义（ruleOptionsEnable 的键即客户端开关面板；开关图标表见模板之后的 serviceConfigs）
 // ============================================================================
 
-// 纯功能开关的面板图标：这些开关不生成策略组，图标只出现在开关面板（由 serviceConfigs 引用）。
-const FEATURE_SWITCH_ICONS = {
-  '强制证书验证': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-MiToverG422-Qure-SSL.png',
-  '启用 Reality 增强': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-MiToverG422-Qure-Spark.png',
-  '试开启节点UDP': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-udp.svg',
-  'IPv6优先': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-ipv6-prefer.svg',
-  '高倍率筛选': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-high.svg',
-  '低倍率筛选': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-low.svg',
-  '代理节点 DNS 使用 TCP': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-TCP.png',
-  'WebRTC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-webrtc-block.svg',
-};
-
 const ruleOptionsEnable = {
 
   /**
@@ -1495,6 +1483,18 @@ const LOAD_BALANCE_STRATEGY_GROUP_NAMES = TEMPLATE['proxy-groups']
   .filter((group) => group && group.type === 'load-balance')
   .map((group) => group.name);
 
+// 纯功能开关的面板图标：这些开关不生成策略组，图标只出现在开关面板（由 serviceConfigs 引用）。
+const FEATURE_SWITCH_ICONS = {
+  '强制证书验证': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-MiToverG422-Qure-SSL.png',
+  '启用 Reality 增强': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-MiToverG422-Qure-Spark.png',
+  '试开启节点UDP': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-udp.svg',
+  'IPv6优先': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-ipv6-prefer.svg',
+  '高倍率筛选': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-high.svg',
+  '低倍率筛选': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-low.svg',
+  '代理节点 DNS 使用 TCP': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-TCP.png',
+  'WebRTC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-webrtc-block.svg',
+};
+
 // Bettbox 的可视化开关图标：客户端会读取全局 serviceConfigs（name 对应 ruleOptionsEnable 的 key，
 // icon 为该开关行显示的图标）。上面只覆盖代理组；功能开关的图标来源：
 // FCM直连 从 FCM 代理组的 icon 字段派生；
@@ -2216,10 +2216,6 @@ function smartMergeDnsNode(config, result) {
 }
 
 // ============================================================================
-// 各开关的具体实现（在模板结果上按开关改写 proxies / proxy-groups / rules / dns / hosts）
-// ============================================================================
-
-// ============================================================================
 // 公共节点筛选（TGDC 实验分流、国家/地区分组、入口解析共用）
 // ============================================================================
 
@@ -2288,6 +2284,10 @@ function matchCountryRegionDefinitionsForJs(rawProxyName) {
   const matchableName = normalizeNameForJsMatching(rawProxyName);
   return COUNTRY_REGION_DEFINITIONS.filter((definition) => definition.jsPattern.test(matchableName));
 }
+
+// ============================================================================
+// 各开关的具体实现（在模板结果上按开关改写 proxies / proxy-groups / rules / dns / hosts）
+// ============================================================================
 
 // ============================================================================
 // Telegram DC/地区实验分流（仅在 ruleOptionsEnable['TGDC实验分流'] 为 true 时注入）
