@@ -1088,7 +1088,8 @@ const TEMPLATE = {
     ],
     "direct-nameserver": [
       "https://dns.alidns.com/dns-query#DIRECT",
-      "https://doh.pub/dns-query#DIRECT"
+      "https://doh.pub/dns-query#DIRECT",
+      "https://doh.360.cn/dns-query#DIRECT"
     ],
     "direct-nameserver-follow-policy": true,
     "nameserver": [
