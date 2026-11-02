@@ -254,6 +254,23 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 </tbody>
 </table>
 
+**图标来源（代理组与开关面板）**
+
+<table width="100%">
+<thead>
+<tr><th width="22%">类别<img src="assets/table-spacer.png" width="352" height="1" alt=""></th><th width="7%">开关数<img src="assets/table-spacer.png" width="112" height="1" alt=""></th><th width="9%">代码内图标处数<img src="assets/table-spacer.png" width="144" height="1" alt=""></th><th width="24%">代理组显示<img src="assets/table-spacer.png" width="384" height="1" alt=""></th><th width="26%">开关面板显示（Bettbox 或其他兼容软件）<img src="assets/table-spacer.png" width="416" height="1" alt=""></th><th width="12%">重复<img src="assets/table-spacer.png" width="192" height="1" alt=""></th></tr>
+</thead>
+<tbody>
+<tr><td><strong>A1</strong> 模板内代理组开关（含 FCM直连、Tailscale直连）</td><td>25</td><td>25</td><td>有，JS 内模板各代理组自带</td><td>有，自动沿用对应代理组的图标，不重复写地址</td><td>否</td></tr>
+<tr><td><strong>A2</strong> 模板内无开关的组（🌍 PROXY）</td><td>0</td><td>1</td><td>有，JS 内模板的 🌍 PROXY 组自带</td><td>❌</td><td>否</td></tr>
+<tr><td><strong>B1</strong> 注入整组、开关图标＝组图标（SKK、国家/地区、入口解析）</td><td>3</td><td>6</td><td>有，写在各注入组的定义处（SKK 段、国家/地区段、入口解析处）</td><td>有，开关项里内联同一张图</td><td>是，三对</td></tr>
+<tr><td><strong>B2</strong> 注入整组、开关图标≠组图标（TGDC）</td><td>1</td><td>4</td><td>有，写在 TGDC 组的定义处（三个 DC 组各一张国旗，兜底沿用 Telegram 组图标）</td><td>有，开关项里用 Telegram 标</td><td>否</td></tr>
+<tr><td><strong>C</strong> 纯功能开关（只在开关面板）</td><td>8</td><td>8</td><td>❌</td><td>有，集中在功能开关图标表，开关项引用</td><td>否</td></tr>
+</tbody>
+</table>
+
+> 代码内图标处数 44 ｜ 图标数 41 ｜ 重复对数 3
+
 > **关于客户端**：这套图形化开关由 Bettbox 原生支持——脚本开头的 `Compatible_With_Bettbox` 声明就是给 Bettbox 识别用的。换到其他客户端分两种情况：
 >
 > - 支持 JS 覆写脚本、但没有开关面板的客户端（例如 FlClash）：需要自行打开 `script_override.js`，把 `ruleOptionsEnable` 里对应开关的值改成 `true` 或 `false`，保存后重新加载订阅即可生效；
