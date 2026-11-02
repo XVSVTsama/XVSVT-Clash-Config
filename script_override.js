@@ -1111,7 +1111,8 @@ const TEMPLATE = {
       ],
       "rule-set:proxy@direct,geolocation-cn,cn-additional,apple-cn,microsoft-cn,games-cn": [
         "https://dns.alidns.com/dns-query#DIRECT",
-        "https://doh.pub/dns-query#DIRECT"
+        "https://doh.pub/dns-query#DIRECT",
+        "https://doh.360.cn/dns-query#DIRECT"
       ]
     },
       "prefer-h3": false,
