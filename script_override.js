@@ -30,6 +30,7 @@ const Compatible_With_Bettbox = {
   
   ]
 };
+
 /**
  * ============================================================================
  *  Bettbox（FlClash 系内核 / mihomo 下游客户端）JS 覆写脚本
@@ -121,13 +122,9 @@ const Compatible_With_Bettbox = {
  * ============================================================================
  */
 
-
-// 隐藏策略子组不单独提供开关；它们始终跟随现有负载均衡开关启停。
-const LOAD_BALANCE_STRATEGY_GROUP_NAMES = [
-  'consistent-hashing',
-  'sticky-sessions',
-  'round-robin',
-];
+// ============================================================================
+// Bettbox 开关定义（ruleOptionsEnable 的键即客户端开关面板；图标表在模板之后的 serviceConfigs）
+// ============================================================================
 
 const ruleOptionsEnable = {
 
@@ -163,7 +160,6 @@ const ruleOptionsEnable = {
   // LINE 通讯软件策略组
   '💬 LINE': false,
 
-
   // TikTok 视频平台策略组
   '🎵 TikTok': false,
   // Netflix 流媒体策略组
@@ -188,8 +184,6 @@ const ruleOptionsEnable = {
   '📚 EHentai': false,
   // PikPak 网盘策略组
   '☁️ PikPak': false,
-
-
 
   // --- 节点字段修正 ---
   // 开启时统一把订阅节点 skip-cert-verify 置为 false（强制校验证书）；关闭时不干预，保留订阅节点原有设置。
@@ -231,6 +225,13 @@ const ruleOptionsEnable = {
   'WebRTC阻断': true,
 };
 
+// 隐藏策略子组不单独提供开关；它们始终跟随现有负载均衡开关启停。
+const LOAD_BALANCE_STRATEGY_GROUP_NAMES = [
+  'consistent-hashing',
+  'sticky-sessions',
+  'round-robin',
+];
+
 // 关闭这些业务组时删除指向它们的路由规则，而不是把规则改写到全局兜底。
 const REMOVE_ROUTING_RULES_FOR_DISABLED_GROUPS = new Set([
   '📲 Telegram',
@@ -255,635 +256,9 @@ const REMOVE_ROUTING_RULES_FOR_DISABLED_GROUPS = new Set([
   '💬 LINE',
 ]);
 
-// 出现同一个域名规则 key 时，订阅原始配置(true) 还是模板(false) 优先（模板目前未配置
-// proxy-server-nameserver-policy，因此该开关当前实际只影响订阅来源之间的合并）
-const NAMESERVER_POLICY_PREFER_ORIGINAL = true;
-
-// ============================================================================
-// 国内入口解析节点维护区
-// 每个分类维护一个数组：可复制数组内的节点对象追加多个节点，填 [] 表示不配置。
-// 仅维护 type / server / port 及其他 Mihomo 节点字段，无需填写 name；即使填写也会被覆盖。
-// 名称按分类前缀和数组顺序独立编号，从 01 开始，超过 99 不截断。
-// ============================================================================
-const DOMESTIC_ENTRY_PROXIES = {
-  // 中国电信
-  telecom: [{
-    type: 'socks5',
-    server: '113.249.111.67',
-    port: 1080
-  }],
-
-  // 中国联通
-  unicom: [],
-
-  // 中国移动
-  mobile: [{
-    type: 'http',
-    server: '47.121.139.13',
-    port: 3128
-  }],
-
-  // 中国大陆云厂
-  cloud: [{
-    type: 'http',
-    server: '39.104.59.56',
-    port: 9098
-  }, {
-    type: 'http',
-    server: '39.102.214.208',
-    port: 9080
-  }, {
-    type: 'http',
-    server: '120.79.217.196',
-    port: 9000
-  }, {
-    type: 'http',
-    server: '47.104.27.249',
-    port: 8080
-  }, {
-    type: 'http',
-    server: '39.102.214.199',
-    port: 10002
-  }, {
-    type: 'http',
-    server: '139.224.195.153',
-    port: 8118
-  }, {
-    type: 'http',
-    server: '47.121.129.129',
-    port: 6379
-  }, {
-    type: 'http',
-    server: '47.104.28.135',
-    port: 8080
-  }, {
-    type: 'http',
-    server: '47.104.27.165',
-    port: 9080
-  }, {
-    type: 'http',
-    server: '47.106.75.125',
-    port: 3128
-  }, {
-    type: 'http',
-    server: '39.104.69.76',
-    port: 8081
-  }, {
-    type: 'http',
-    server: '39.102.211.64',
-    port: 8443
-  }, {
-    type: 'http',
-    server: '106.14.91.83',
-    port: 8181
-  }]
-};
-
-// 分类与强制命名前缀的固定映射，不应修改；节点顺序不代表自动优先级。
-const ENTRY_RESOLUTION_OPTIONS = [
-  { category: 'telecom', prefix: '电信节点' },
-  { category: 'unicom', prefix: '联通节点' },
-  { category: 'mobile', prefix: '移动节点' },
-  { category: 'cloud', prefix: '云厂节点' }
-];
-// 保留命名空间：用于排除入口节点，并防止同名订阅节点抢占维护区定义。
-const ENTRY_RESOLUTION_EXCLUDE_FILTER = '^(?:电信|联通|移动|云厂)节点-[0-9]{2,}$';
-
-// ============================================================================
-// Telegram DC/地区实验分流（仅在 ruleOptionsEnable['TGDC实验分流'] 为 true 时注入）
-// DC1/DC3：Miami；DC2/DC4：Amsterdam；DC5：Singapore。
-// 静态 CIDR 无法可靠拆分同城 DC，因此策略组使用 DC 对命名。
-// ============================================================================
-const TGDC_RULE_PROVIDERS = {
-  telegram_dc1_dc3_miami: {
-    type: 'inline',
-    behavior: 'classical',
-    payload: [
-      // DC1 Pluto / DC3 Aurora — Miami, USA
-      'IP-CIDR,91.108.12.0/22,no-resolve',
-      'IP-CIDR,149.154.172.0/22,no-resolve',
-      'IP-CIDR6,2001:b28:f23d::/48,no-resolve',
-    ],
-  },
-  telegram_dc2_dc4_amsterdam: {
-    type: 'inline',
-    behavior: 'classical',
-    payload: [
-      // DC2 Venus / DC4 Vesta — Amsterdam, Netherlands
-      'IP-CIDR,91.108.58.0/23,no-resolve',
-      'IP-CIDR,91.108.4.0/22,no-resolve',
-      'IP-CIDR,91.108.8.0/22,no-resolve',
-      'IP-CIDR,149.154.160.0/21,no-resolve',
-      'IP-CIDR,95.161.64.0/20,no-resolve',
-      'IP-CIDR,91.105.192.0/23,no-resolve',
-      'IP-CIDR,185.76.151.0/24,no-resolve',
-      // Akiker / entire6548 / RClogs 的 EU 补充候选。
-      'IP-CIDR,5.28.192.0/18,no-resolve',
-      'IP-CIDR,109.239.140.0/24,no-resolve',
-      'IP-CIDR6,2001:67c:4e8::/48,no-resolve',
-      'IP-CIDR6,2a0a:f280:203::/48,no-resolve',
-    ],
-  },
-  telegram_dc5_sg: {
-    type: 'inline',
-    behavior: 'classical',
-    payload: [
-      // DC5 Flora — Singapore
-      'IP-CIDR,91.108.16.0/22,no-resolve',
-      'IP-CIDR,91.108.56.0/23,no-resolve',
-      'IP-CIDR,149.154.168.0/22,no-resolve',
-      'IP-CIDR6,2001:b28:f23c::/48,no-resolve',
-      'IP-CIDR6,2001:b28:f23f::/48,no-resolve',
-    ],
-  },
-};
-
-// JS 名称规范化只用于匹配，不会修改节点名称或配置。
-// 有意保留 ZWNJ、ZWJ 和 Unicode 变体选择符。
-const JS_INVISIBLE_CHARACTER_NORMALIZATION_REGEX =
-  /[\u00AD\u180E\u200B\u200E\u200F\u202A-\u202E\u2060-\u206F\uFEFF\u115F\u1160\u3164\uFFA0]/g;
-
-function normalizeNameForJsMatching(name) {
-  return typeof name === 'string'
-    ? name.replace(JS_INVISIBLE_CHARACTER_NORMALIZATION_REGEX, '')
-    : name;
-}
-
-// 国家/地区分组与 TGDC 共用此 JS 候选节点排除规则。
-const JS_MODULE_INFORMATION_NODE_EXCLUSION_REGEX =
-  /群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|地址|频道|电报|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|优惠|福利|邀请|好友|失联|选择|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|⚠️|@|t\.me\/\+|\bexpire\b|\bhttps?:\/\/|\.com|\btraffic\b/iu;
-const TGDC_FALLBACK_ADDITIONAL_EXCLUDE_FILTER = /国内/iu;
-
-function filterModuleCandidateProxies(originalProxies) {
-  const proxies = Array.isArray(originalProxies) ? originalProxies : [];
-  const entryNamePattern = new RegExp(ENTRY_RESOLUTION_EXCLUDE_FILTER);
-  return proxies.filter((proxy) => {
-    if (!proxy || typeof proxy !== 'object' || typeof proxy.name !== 'string') {
-      return false;
-    }
-    const type = String(proxy.type || '').toLowerCase();
-    if (type === 'direct' || type === 'reject' || type === 'rematch') {
-      return false;
-    }
-    const name = normalizeNameForJsMatching(proxy.name);
-    if (name.trim().length === 0) return false;
-    if (
-      JS_MODULE_INFORMATION_NODE_EXCLUSION_REGEX.test(name) ||
-      name === '国内入口解析' ||
-      entryNamePattern.test(name)
-    ) return false;
-    return true;
-  });
-}
-
-// TGDC 无地区候选时，按订阅原始顺序列出合格的非国内顶层节点作保底选择。
-// 若仍无候选，使用 COMPATIBLE；empty-fallback 只接受单节点名称，不能填写策略组或多个节点。
-function selectTelegramDcFallbackNodes(eligibleCandidates) {
-  return eligibleCandidates
-    .filter((proxy) => !TGDC_FALLBACK_ADDITIONAL_EXCLUDE_FILTER.test(normalizeNameForJsMatching(proxy.name)))
-    .map((proxy) => proxy.name);
-}
-
-const TGDC_PROXY_GROUP_DEFINITIONS = [
-  {
-    name: '📲 Telegram-DC1-DC3-Miami',
-    regionKeys: ['us'],
-    icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-United_States.png',
-  },
-  {
-    name: '📲 Telegram-DC2-DC4-Amsterdam',
-    regionKeys: ['nl'],
-    // Qure 无荷兰原生图标，此为按 Qure 风格自绘的荷兰旗，托管于本仓库 assets/icons。
-    icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-Netherlands.png',
-  },
-  {
-    name: '📲 Telegram-DC5-SG',
-    // 根据实际互联情况，DC5 组同时纳入香港与新加坡节点。
-    regionKeys: ['sg', 'hk'],
-    icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Singapore.png',
-  },
-];
-
-function buildTelegramDcProxyGroups(originalProxies) {
-  const proxies = Array.isArray(originalProxies) ? originalProxies : [];
-  const eligibleCandidates = filterModuleCandidateProxies(proxies);
-  const fallbackNodeNames = selectTelegramDcFallbackNodes(eligibleCandidates);
-  return TGDC_PROXY_GROUP_DEFINITIONS.map((definition) => {
-    const regionNodeNames = eligibleCandidates
-      .filter((proxy) => matchCountryRegionDefinitionsForJs(proxy.name)
-        .some((region) => definition.regionKeys.includes(region.key)))
-      .map((proxy) => proxy.name);
-    return {
-      name: definition.name,
-      type: 'select',
-      proxies: regionNodeNames.length > 0 ? regionNodeNames : fallbackNodeNames.slice(),
-      'empty-fallback': 'COMPATIBLE',
-      icon: definition.icon,
-    };
-  });
-}
-
-// JS 国家/地区定义及别名；同一节点可以命中多个地区。
-// TGDC 与国家/地区组共用这些模式进行 JS 候选归属匹配。
-const COUNTRY_REGION_PARENT_ICON =
-  'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Global.png';
-// 缩写别名使用统一边界字符类，包含开尔文符号（K）和长 s（ſ），使 JS /iu 与 RE2 的 Unicode 大小写折叠保持一致，避免依赖引擎行为不同的 \b。
-const COUNTRY_REGION_DEFINITIONS = [
-  { key: 'hk', name: '🇨🇳🇭🇰 香港', jsPattern: /🇭🇰|香港|Hong\s*Kong|HongKong|(^|[^A-Za-z0-9_Kſ])HK($|[^A-Za-z0-9_Kſ])|(^|[^A-Za-z0-9_Kſ])HKG($|[^A-Za-z0-9_Kſ])/iu },
-  { key: 'tw', name: '🇨🇳🇹🇼 台湾', jsPattern: /🇹🇼|台湾|台灣|臺灣|台北|臺北|高雄|Taipei|Taiwan|\bTW\b|\bTWN\b/iu },
-  { key: 'mo', name: '🇨🇳🇲🇴 澳门', jsPattern: /🇲🇴|澳门|澳門|Macau|Macao|\bMO\b|\bMAC\b/iu },
-  { key: 'jp', name: '🇯🇵 日本', jsPattern: /🇯🇵|日本|东京|東京|大阪|京都|Tokyo|Osaka|Kyoto|Japan|\bJP\b|\bJPN\b/iu },
-  { key: 'sg', name: '🇸🇬 新加坡', jsPattern: /🇸🇬|新加坡|狮城|獅城|Singapore|(^|[^A-Za-z0-9_Kſ])SG($|[^A-Za-z0-9_Kſ])|(^|[^A-Za-z0-9_Kſ])SGP($|[^A-Za-z0-9_Kſ])/iu },
-  { key: 'kr', name: '🇰🇷 韩国', jsPattern: /🇰🇷|韩国|韓國|首尔|首爾|Seoul|Korea|\bKR\b|\bKOR\b/iu },
-  { key: 'my', name: '🇲🇾 马来西亚', jsPattern: /🇲🇾|马来西亚|馬來西亞|吉隆坡|Kuala\s*Lumpur|Malaysia|\bMY\b|\bMYS\b/iu },
-  { key: 'us', name: '🇺🇸 美国', jsPattern: /🇺🇸|美国|美國|洛杉矶|洛杉磯|纽约|紐約|西雅图|西雅圖|硅谷|矽谷|华盛顿|華盛頓|旧金山|舊金山|芝加哥|休斯顿|休士頓|迈阿密|邁阿密|波士顿|波士頓|拉斯维加斯|拉斯維加斯|圣何塞|聖荷西|Miami|(^|[^A-Za-z0-9_Kſ])MIA($|[^A-Za-z0-9_Kſ])|Los\s*Angeles|New\s*York|Seattle|Washington|San\s*Francisco|Chicago|Houston|Boston|Las\s*Vegas|San\s*Jose|United\s*States|(^|[^A-Za-z0-9_Kſ])USA($|[^A-Za-z0-9_Kſ])|(^|[^A-Za-z0-9_Kſ])US($|[^A-Za-z0-9_Kſ])/iu },
-  { key: 'ca', name: '🇨🇦 加拿大', jsPattern: /🇨🇦|加拿大|多伦多|多倫多|温哥华|溫哥華|Toronto|Vancouver|Canada|\bCA\b|\bCAN\b/iu },
-  { key: 'gb', name: '🇬🇧 英国', jsPattern: /🇬🇧|英国|英國|伦敦|倫敦|London|United\s*Kingdom|\bUK\b|\bGB\b|\bGBR\b/iu },
-  { key: 'fr', name: '🇫🇷 法国', jsPattern: /🇫🇷|法国|法國|巴黎|Paris|France|\bFR\b|\bFRA\b/iu },
-  { key: 'nl', name: '🇳🇱 荷兰', jsPattern: /🇳🇱|荷兰|荷蘭|阿姆斯特丹|Amsterdam|(^|[^A-Za-z0-9_Kſ])AMS($|[^A-Za-z0-9_Kſ])|Netherlands|(^|[^A-Za-z0-9_Kſ])NL($|[^A-Za-z0-9_Kſ])|(^|[^A-Za-z0-9_Kſ])NLD($|[^A-Za-z0-9_Kſ])/iu },
-  { key: 'de', name: '🇩🇪 德国', jsPattern: /🇩🇪|德国|德國|法兰克福|法蘭克福|柏林|Frankfurt|Berlin|Germany|\bDE\b|\bDEU\b/iu },
-  { key: 'au', name: '🇦🇺 澳大利亚', jsPattern: /🇦🇺|澳大利亚|澳大利亞|悉尼|墨尔本|墨爾本|Sydney|Melbourne|Perth|Australia|\bAU\b|\bAUS\b/iu },
-];
-
-function matchCountryRegionDefinitionsForJs(rawProxyName) {
-  if (typeof rawProxyName !== 'string') return [];
-  const matchableName = normalizeNameForJsMatching(rawProxyName);
-  return COUNTRY_REGION_DEFINITIONS.filter((definition) => definition.jsPattern.test(matchableName));
-}
-
-const COUNTRY_REGION_PRIORITY_NAMES = new Set([
-  '🇨🇳🇭🇰 香港',
-  '🇨🇳🇹🇼 台湾',
-  '🇨🇳🇲🇴 澳门',
-  '🇺🇸 美国',
-  '🇸🇬 新加坡',
-  '🇯🇵 日本',
-]);
-const OTHER_COUNTRY_REGION_NAME = '🌐 其他国家/地区';
-const COUNTRY_REGION_TARGET_GROUPS = [
-  '📲 Telegram',
-  '🎮 Games-Global',
-  '🍎 海外苹果',
-  '💠 海外微软',
-  '🎮 Steam平台（非下载/CDN）',
-  '✖️ Twitter',
-  '🤖 AI大模型',
-  '🎵 TikTok',
-  '💳 金融支付',
-  '🔎 Google',
-  '♾️ Meta',
-  '🎧 Spotify',
-  '🎬 Emby',
-  '💬 Discord',
-  '👽 Reddit',
-];
-const COUNTRY_REGION_CHILD_GROUP_TYPES = [
-  { suffix: '自动选择', type: 'url-test' },
-  { suffix: '故障转移', type: 'fallback' },
-  { suffix: '负载均衡', type: 'load-balance' },
-];
-
-function countryRegionChildGroupName(parentName, suffix) {
-  return parentName + ' · ' + suffix;
-}
-
-// 候选只来自订阅顶层 proxies；provider 节点此阶段尚未加载，不参与地区分组。
-function buildCountryRegionProxyGroups(originalProxies) {
-  const candidates = filterModuleCandidateProxies(originalProxies);
-  const templateAutoGroup = (TEMPLATE['proxy-groups'] || []).find(
-    (group) => group && group.name === '♻️ 自动选择'
-  ) || {};
-  const urlTestSettings = {};
-  ['url', 'interval', 'tolerance', 'lazy', 'max-failed-times'].forEach((key) => {
-    if (Object.prototype.hasOwnProperty.call(templateAutoGroup, key)) {
-      urlTestSettings[key] = templateAutoGroup[key];
-    }
-  });
-  // fallback / load-balance 没有 tolerance，只继承文档列出的健康检查通用字段。
-  const healthCheckSettings = {
-    url: urlTestSettings.url || 'https://g.cn/generate_204',
-    interval: urlTestSettings.interval || 300,
-    lazy: urlTestSettings.lazy === undefined ? true : urlTestSettings.lazy,
-  };
-  if (urlTestSettings['max-failed-times'] !== undefined) {
-    healthCheckSettings['max-failed-times'] = urlTestSettings['max-failed-times'];
-  }
-  const parentGroups = [];
-  const childGroups = [];
-  const regionMembershipByProxy = new Map();
-  const otherRegionProxies = new Set();
-
-  candidates.forEach((proxy) => {
-    const matchedRegions = matchCountryRegionDefinitionsForJs(proxy.name);
-    let selectedRegions = matchedRegions;
-
-    // ① 仅未命中常用地区的候选节点归入“其他国家/地区”。
-    if (matchedRegions.length === 0) {
-      otherRegionProxies.add(proxy);
-      selectedRegions = [];
-    }
-
-    // ② 恰好命中两个地区且跨越优先地区与其他常用地区时，只保留优先地区。
-    if (
-      selectedRegions.length === 2 &&
-      selectedRegions.some((definition) => COUNTRY_REGION_PRIORITY_NAMES.has(definition.name)) &&
-      selectedRegions.some((definition) => !COUNTRY_REGION_PRIORITY_NAMES.has(definition.name))
-    ) {
-      selectedRegions = selectedRegions.filter((definition) =>
-        COUNTRY_REGION_PRIORITY_NAMES.has(definition.name)
-      );
-    }
-
-    // ③ 处理后的地区组命中数达到三个及以上时，仅归入“其他国家/地区”。
-    if (selectedRegions.length >= 3) {
-      otherRegionProxies.add(proxy);
-      selectedRegions = [];
-    }
-
-    regionMembershipByProxy.set(proxy, selectedRegions);
-  });
-
-  // ④ 非优先地区若只剩一个不同的有效节点，则不生成该地区组，并将该节点归入“其他”；
-  //    只移除该地区归属，节点在其他常用地区的归属保持不变。优先地区的单节点组保留。
-  COUNTRY_REGION_DEFINITIONS.forEach((definition) => {
-    if (COUNTRY_REGION_PRIORITY_NAMES.has(definition.name)) return;
-    const regionProxies = candidates.filter((proxy) =>
-      regionMembershipByProxy.get(proxy).includes(definition)
-    );
-    const distinctNodeNames = new Set(regionProxies.map((proxy) => proxy.name));
-    if (distinctNodeNames.size !== 1) return;
-    regionProxies.forEach((proxy) => {
-      regionMembershipByProxy.set(
-        proxy,
-        regionMembershipByProxy.get(proxy).filter((region) => region !== definition)
-      );
-      otherRegionProxies.add(proxy);
-    });
-  });
-
-  COUNTRY_REGION_DEFINITIONS.forEach((definition) => {
-    const regionProxies = candidates.filter((proxy) =>
-      regionMembershipByProxy.get(proxy).includes(definition)
-    );
-    if (regionProxies.length === 0) return;
-    const nodeNames = Array.from(new Set(regionProxies.map((proxy) => proxy.name)));
-    // ⑥ 在⑤④处理后的有效节点数上排序：2–3节点先于 DIRECT/REJECT；优先单节点组也保留此顺序。
-    const hasTwoToThreeNodes = nodeNames.length >= 2 && nodeNames.length <= 3;
-    const hasPrioritySingleton = nodeNames.length === 1 && COUNTRY_REGION_PRIORITY_NAMES.has(definition.name);
-    const children = nodeNames.length > 3
-      ? COUNTRY_REGION_CHILD_GROUP_TYPES.map((childDefinition) => {
-        const child = {
-          name: countryRegionChildGroupName(definition.name, childDefinition.suffix),
-          type: childDefinition.type,
-          proxies: nodeNames.slice(),
-          hidden: true,
-        };
-        if (childDefinition.type === 'url-test') {
-          Object.assign(child, urlTestSettings);
-        } else if (childDefinition.type === 'fallback' || childDefinition.type === 'load-balance') {
-          Object.assign(child, healthCheckSettings);
-          if (childDefinition.type === 'load-balance') {
-            child.strategy = 'consistent-hashing';
-          }
-        }
-        return child;
-      })
-      : [];
-    parentGroups.push({
-      name: definition.name,
-      type: 'select',
-      icon: COUNTRY_REGION_PARENT_ICON,
-      proxies: children.length > 0
-        ? children.map((child) => child.name).concat(['DIRECT', 'REJECT'], nodeNames)
-        : hasTwoToThreeNodes || hasPrioritySingleton
-          ? nodeNames.concat(['DIRECT', 'REJECT'])
-          : ['DIRECT', 'REJECT', ...nodeNames],
-    });
-    childGroups.push(...children);
-  });
-
-  const otherProxies = candidates.filter((proxy) => otherRegionProxies.has(proxy));
-  const otherNodeNames = Array.from(new Set(otherProxies.map((proxy) => proxy.name)));
-  if (otherNodeNames.length > 0) {
-    parentGroups.push({
-      name: OTHER_COUNTRY_REGION_NAME,
-      type: 'select',
-      icon: COUNTRY_REGION_PARENT_ICON,
-      'default-selected': otherNodeNames[0],
-      proxies: ['DIRECT', 'REJECT', ...otherNodeNames],
-    });
-  }
-
-  return { parentGroups, childGroups };
-}
-
-function appendCountryRegionParentsToTargets(proxyGroups, parentGroups) {
-  if (!Array.isArray(proxyGroups) || parentGroups.length === 0) return;
-  const targetNames = new Set(COUNTRY_REGION_TARGET_GROUPS);
-  // TGDC 只会把 Telegram 目标重命名为此兜底组；其他实验组不接收国家组。
-  targetNames.add('📲 Telegram(兜底)');
-  const existingGroupNames = new Set(
-    proxyGroups.filter((group) => group && typeof group.name === 'string').map((group) => group.name)
-  );
-  const parentNames = parentGroups.map((group) => group.name);
-
-  proxyGroups.forEach((group) => {
-    if (!group || !targetNames.has(group.name)) return;
-    if (!Array.isArray(group.proxies)) group.proxies = [];
-    const additions = parentNames.filter((name) => !group.proxies.includes(name));
-    if (additions.length === 0) return;
-    let lastNestedGroupIndex = -1;
-    group.proxies.forEach((name, index) => {
-      if (existingGroupNames.has(name)) lastNestedGroupIndex = index;
-    });
-    if (lastNestedGroupIndex >= 0) {
-      group.proxies.splice(lastNestedGroupIndex + 1, 0, ...additions);
-    } else {
-      group.proxies.push(...additions);
-    }
-  });
-}
-
-function applyCountryRegionGrouping(result, originalProxies) {
-  if (ruleOptionsEnable['国家/地区分组'] !== true) return;
-  const { parentGroups, childGroups } = buildCountryRegionProxyGroups(originalProxies);
-  if (parentGroups.length === 0) return;
-  const proxyGroups = Array.isArray(result['proxy-groups']) ? result['proxy-groups'] : [];
-  appendCountryRegionParentsToTargets(proxyGroups, parentGroups);
-
-  const fcmIndex = proxyGroups.findIndex((group) => group && group.name === 'FCM');
-  if (fcmIndex >= 0) {
-    proxyGroups.splice(fcmIndex, 0, ...parentGroups);
-    // 隐藏组（FCM、Tailscale）需保持相邻：地区子组插到 FCM 之后连续的隐藏组之后。
-    let insertAt = proxyGroups.findIndex((group) => group && group.name === 'FCM') + 1;
-    while (insertAt < proxyGroups.length && proxyGroups[insertAt] && proxyGroups[insertAt].hidden === true) {
-      insertAt += 1;
-    }
-    proxyGroups.splice(insertAt, 0, ...childGroups);
-  } else {
-    proxyGroups.push(...parentGroups, ...childGroups);
-  }
-  result['proxy-groups'] = proxyGroups;
-}
-
-// 只识别节点名称中明确标记的数值倍率（如 0.5x、2x、5×），不推断“高倍”等模糊标签。
-function getExplicitProxyMultipliers(name) {
-  if (typeof name !== 'string') return [];
-  const matches = name.matchAll(/(?:^|[^A-Za-z0-9_.])(\d+(?:\.\d+)?)\s*[x×](?![A-Za-z0-9_])/giu);
-  return Array.from(matches, (match) => Number(match[1]));
-}
-
-// 过滤订阅顶层节点，并清理静态引用；必须在地区分组之前调用，
-// 让地区组只用幸存节点生成，避免某地区节点全被筛除后留下空子组（内核报 `use` or `proxies` missing）。
-// 返回被剔除的节点名集合，供地区分组判定候选。
-// provider 节点不受影响：它们由内核按 include-all 展开，仍会出现在相关组里。
-function applyProxyMultiplierFilters(result) {
-  const removedProxyNames = new Set();
-  const filterHigh = ruleOptionsEnable['高倍率筛选'] === true;
-  const filterLow = ruleOptionsEnable['低倍率筛选'] === true;
-  if (!filterHigh && !filterLow) return removedProxyNames;
-  if (!Array.isArray(result.proxies)) return removedProxyNames;
-
-  result.proxies = result.proxies.filter((proxy) => {
-    if (!proxy || typeof proxy !== 'object' || typeof proxy.name !== 'string') return true;
-    const multipliers = getExplicitProxyMultipliers(proxy.name);
-    const shouldRemove = multipliers.some(
-      (multiplier) => (filterHigh && multiplier >= 2) || (filterLow && multiplier <= 0.5)
-    );
-    if (shouldRemove) removedProxyNames.add(proxy.name);
-    return !shouldRemove;
-  });
-
-  if (removedProxyNames.size === 0) return removedProxyNames;
-  const firstRemainingProxyName = result.proxies
-    .map((proxy) => proxy && proxy.name)
-    .find((name) => typeof name === 'string' && name.length > 0);
-  if (!Array.isArray(result['proxy-groups'])) return removedProxyNames;
-
-  result['proxy-groups'].forEach((group) => {
-    if (!group || typeof group !== 'object') return;
-    if (Array.isArray(group.proxies)) {
-      group.proxies = group.proxies.filter((name) => !removedProxyNames.has(name));
-    }
-    if (removedProxyNames.has(group['default-selected'])) {
-      if (firstRemainingProxyName) {
-        group['default-selected'] = firstRemainingProxyName;
-      } else {
-        delete group['default-selected'];
-      }
-    }
-  });
-
-  return removedProxyNames;
-}
-
-// ============================================================================
-// provider 节点级覆写（仅在对应开关开启时写入 provider.override）
-// provider 节点由内核运行时加载，脚本无法逐节点改写；override 是唯一能让
-// 逐节点改写生效的通道，且只支持固定字段：
-//   skip-cert-verify / udp / ip-version（无法改写嵌套 reality-opts）。
-// 关闭开关时不写入，保留订阅原有的 override 内容。
-// ============================================================================
-function applyProviderOverrides(result) {
-  const providers = result['proxy-providers'];
-  if (!providers || typeof providers !== 'object' || Array.isArray(providers)) return;
-
-  const forceCertVerify = ruleOptionsEnable['强制证书验证'] === true;
-  const enableNodeUdp = ruleOptionsEnable['试开启节点UDP'] === true;
-  const preferIPv6 = ruleOptionsEnable['IPv6优先'] === true;
-  if (!forceCertVerify && !enableNodeUdp && !preferIPv6) return;
-
-  Object.keys(providers).forEach((name) => {
-    const provider = providers[name];
-    if (!provider || typeof provider !== 'object' || Array.isArray(provider)) return;
-    const override = provider.override && typeof provider.override === 'object' &&
-      !Array.isArray(provider.override) ? provider.override : {};
-
-    if (forceCertVerify) {
-      override['skip-cert-verify'] = false;
-    }
-    if (enableNodeUdp) {
-      override.udp = true;
-    }
-    // provider 侧读不到节点原值：统一使用可回退的 ipv6-prefer，
-    // 不把已是 ipv6-prefer 的节点提升为仅 IPv6。
-    if (preferIPv6) {
-      override['ip-version'] = 'ipv6-prefer';
-    }
-    provider.override = override;
-  });
-}
-
-const TGDC_RULES = [
-  'RULE-SET,telegram_dc1_dc3_miami,📲 Telegram-DC1-DC3-Miami,no-resolve',
-  'RULE-SET,telegram_dc2_dc4_amsterdam,📲 Telegram-DC2-DC4-Amsterdam,no-resolve',
-  'RULE-SET,telegram_dc5_sg,📲 Telegram-DC5-SG,no-resolve',
-  'PROCESS-NAME-REGEX,.*nagram.*,📲 Telegram(兜底)',
-  'PROCESS-NAME-REGEX,.*telegram.*,📲 Telegram(兜底)',
-  'RULE-SET,telegramcidr,📲 Telegram(兜底),no-resolve',
-  'RULE-SET,telegram_domain,📲 Telegram(兜底)',
-];
-
-// ============================================================================
-// SKK 广告拦截（仅在 ruleOptionsEnable['SKK广告拦截'] 为 true 时注入）
-// 规则集来自 SukkaW/Surge 的 reject 系列，只取核心四件：基础域名集、non_ip
-// 关键词/通配规则、reject-drop 遥测静默丢弃、ip 劫持/botnet 集。
-// 不含 reject_extra（源经上游降级，误杀与性能代价更高）、reject_phishing
-// （反钓鱼，非广告）与 reject-no-drop（PCDN，非广告且 mihomo 无对应策略）。
-// ============================================================================
+// SKK 广告拦截开关的图标；serviceConfigs 与 SKK_PROXY_GROUP 共用这一处定义。
 const SKK_ADBLOCK_ICON =
   'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-adblock.svg';
-
-const SKK_RULE_PROVIDERS = {
-  skk_reject: {
-    type: 'http',
-    interval: 43200,
-    behavior: 'domain',
-    format: 'text',
-    url: 'https://ruleset.skk.moe/Clash/domainset/reject.txt',
-    path: './ruleset/skk_reject.txt',
-  },
-  skk_reject_non_ip: {
-    type: 'http',
-    interval: 43200,
-    behavior: 'classical',
-    format: 'text',
-    url: 'https://ruleset.skk.moe/Clash/non_ip/reject.txt',
-    path: './ruleset/skk_reject_non_ip.txt',
-  },
-  skk_reject_drop: {
-    type: 'http',
-    interval: 43200,
-    behavior: 'classical',
-    format: 'text',
-    url: 'https://ruleset.skk.moe/Clash/non_ip/reject-drop.txt',
-    path: './ruleset/skk_reject_drop.txt',
-  },
-  skk_reject_ip: {
-    type: 'http',
-    interval: 43200,
-    behavior: 'classical',
-    format: 'text',
-    url: 'https://ruleset.skk.moe/Clash/ip/reject.txt',
-    path: './ruleset/skk_reject_ip.txt',
-  },
-};
-
-const SKK_PROXY_GROUP = {
-  name: '🛑 广告拦截',
-  type: 'select',
-  proxies: ['REJECT', 'REJECT-DROP', 'PASS'],
-  icon: SKK_ADBLOCK_ICON,
-};
-
-// drop 与 ip 不走广告拦截组：前者是会疯狂重试的遥测域名，必须静默丢弃；
-// 后者是劫持/botnet IP。二者在广告拦截组切 PASS 时也不应被放行。
-const SKK_RULES = [
-  'RULE-SET,skk_reject_drop,REJECT-DROP',
-  'RULE-SET,skk_reject,🛑 广告拦截',
-  'RULE-SET,skk_reject_non_ip,🛑 广告拦截',
-  'RULE-SET,skk_reject_ip,REJECT,no-resolve',
-];
 
 // ============================================================================
 // 标准模板配置（mihomo.yaml 的 JSON 表示）
@@ -2186,66 +1561,12 @@ const serviceConfigs = TEMPLATE['proxy-groups']
   ]);
 
 // ============================================================================
-// 工具函数
+// DNS 与 hosts 处理（私有 DNS 提取 + hosts 真假域名映射）
 // ============================================================================
 
-// 深拷贝：避免多次调用 main() 时互相污染同一份 TEMPLATE
-function deepClone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
-function getRuleProxyTargetIndex(rule) {
-  if (typeof rule !== 'string' || /^\s*SUB-RULE\s*,/i.test(rule)) return -1;
-  const fields = rule.split(',');
-  const lastField = fields[fields.length - 1].trim();
-  return lastField.toLowerCase() === 'no-resolve'
-    ? fields.length - 2
-    : fields.length - 1;
-}
-function ruleTargetsProxyGroup(rule, groupName) {
-  const targetIndex = getRuleProxyTargetIndex(rule);
-  const fields = typeof rule === 'string' ? rule.split(',') : [];
-  return targetIndex >= 0 && fields[targetIndex].trim() === groupName;
-}
-function replaceRuleProxyGroup(rule, groupName, replacement) {
-  const fields = typeof rule === 'string' ? rule.split(',') : [];
-  const targetIndex = getRuleProxyTargetIndex(rule);
-  if (targetIndex < 0 || fields[targetIndex].trim() !== groupName) return rule;
-  fields[targetIndex] = replacement;
-  return fields.join(',');
-}
-function collectRuleProviderReferences(value, references = new Set()) {
-  if (typeof value === 'string') {
-    for (const match of value.matchAll(/\bRULE-SET\s*,\s*([^,\s)]+)/gi)) {
-      references.add(match[1]);
-    }
-    for (const match of value.matchAll(/\brule-set:([^\s"'`]+)/gi)) {
-      match[1].replace(/[\])}.,;]+$/, '').split(',').forEach((name) => {
-        if (name) references.add(name);
-      });
-    }
-  } else if (Array.isArray(value)) {
-    value.forEach((item) => collectRuleProviderReferences(item, references));
-  } else if (value && typeof value === 'object') {
-    Object.entries(value).forEach(([key, item]) => {
-      if (key !== 'rule-providers') {
-        collectRuleProviderReferences(key, references);
-        collectRuleProviderReferences(item, references);
-      }
-    });
-  }
-  return references;
-}
-function removeUnusedRuleProviders(result) {
-  const providers = result && result['rule-providers'];
-  if (!providers || typeof providers !== 'object' || Array.isArray(providers)) return;
-  const referencedProviders = collectRuleProviderReferences(result);
-  Object.keys(providers).forEach((name) => {
-    if (!referencedProviders.has(name)) delete providers[name];
-  });
-}
-// =====================================================
-// DNS 节点域名智能补充逻辑
-// =====================================================
+// 出现同一个域名规则 key 时，订阅原始配置(true) 还是模板(false) 优先（模板目前未配置
+// proxy-server-nameserver-policy，因此该开关当前实际只影响订阅来源之间的合并）
+const NAMESERVER_POLICY_PREFER_ORIGINAL = true;
 
 // 判断 server 是否为 IP
 function isIPAddress(host) {
@@ -2355,127 +1676,6 @@ function withDnsPolicySuffix(value, suffix) {
   return (hashIndex === -1 ? str : str.slice(0, hashIndex)) + suffix;
 }
 
-// 注入的入口节点属于订阅顶层节点；exclude-filter 由内核应用，会作用于 include-all
-// 引入的 provider 节点，但只排除入口节点命名空间，不筛选 provider 节点本身。
-function applyEntryResolution(result) {
-  const options = selectedEntryResolutionOptions();
-  if (options.length === 0) {
-    return;
-  }
-
-  const groupName = '国内入口解析';
-  const proxyNames = options.map((option) => option.proxyName);
-
-  const isEntryName = (name) => typeof name === 'string' &&
-    (normalizeNameForJsMatching(name) === groupName ||
-      new RegExp(ENTRY_RESOLUTION_EXCLUDE_FILTER).test(normalizeNameForJsMatching(name)));
-  result.proxies = (result.proxies || []).filter((proxy) => !isEntryName(proxy && proxy.name));
-  options.forEach((option) => {
-    const injectedProxy = deepClone(option.proxy);
-    injectedProxy.name = option.proxyName;
-    result.proxies.push(injectedProxy);
-  });
-
-  // include-all 会动态纳入刚注入的顶层节点，必须由内核排除；显式引用和默认选择也一起清理。
-  // Mihomo 以反引号分隔多个 exclude-filter，避免拼接正则破坏原有内联标志或筛选语义。
-  (result['proxy-groups'] || []).forEach((group) => {
-    if (!group || group.name === groupName) return;
-    const filters = typeof group['exclude-filter'] === 'string' && group['exclude-filter']
-      ? group['exclude-filter'].split('`') : [];
-    if (!filters.includes(ENTRY_RESOLUTION_EXCLUDE_FILTER)) {
-      filters.push(ENTRY_RESOLUTION_EXCLUDE_FILTER);
-    }
-    group['exclude-filter'] = filters.join('`');
-    if (Array.isArray(group.proxies)) {
-      group.proxies = group.proxies.filter((name) => !isEntryName(name));
-      if (group.proxies.length === 0 && !group['include-all'] &&
-          !group['include-all-proxies'] && !group['include-all-providers'] &&
-          !(Array.isArray(group.use) && group.use.length > 0)) {
-        group.proxies = ['DIRECT'];
-      }
-    }
-    if (isEntryName(group['default-selected'])) {
-      delete group['default-selected'];
-    }
-  });
-
-  const displayGroup = {
-    name: groupName,
-    type: 'select',
-    proxies: proxyNames,
-    url: 'https://connect.rom.miui.com/generate_204',
-    'expected-status': '204',
-    icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Domestic.png'
-  };
-  const existingDisplayGroup = (result['proxy-groups'] || []).find(
-    (group) => group && group.name === groupName
-  );
-  if (existingDisplayGroup) {
-    // 重建专用组，不保留可能把其他节点混入的 include-all、use 或筛选字段。
-    result['proxy-groups'][result['proxy-groups'].indexOf(existingDisplayGroup)] = displayGroup;
-  } else {
-    const autoSelectIndex = (result['proxy-groups'] || []).findIndex(
-      (group) => group && group.name === '♻️ 自动选择'
-    );
-    if (autoSelectIndex >= 0) {
-      result['proxy-groups'].splice(autoSelectIndex + 1, 0, displayGroup);
-    } else {
-      result['proxy-groups'].push(displayGroup);
-    }
-  }
-
-  const suffix = '#' + groupName;
-  result.dns['proxy-server-nameserver'] = asNameserverList(
-    result.dns['proxy-server-nameserver']
-  ).map((value) => withDnsPolicySuffix(value, suffix));
-
-  const policy = result.dns['proxy-server-nameserver-policy'];
-  if (!policy || typeof policy !== 'object') {
-    return;
-  }
-  for (const rule of Object.keys(policy)) {
-    const value = policy[rule];
-    if (Array.isArray(value)) {
-      policy[rule] = value.map((item) => withDnsPolicySuffix(item, suffix));
-    } else if (typeof value === 'string') {
-      policy[rule] = withDnsPolicySuffix(value, suffix);
-    }
-  }
-}
-// 仅处理最终节点 DNS：在 DNS/hosts 合并和入口解析后执行，不重新选择来源或改写节点。
-function applyProxyDnsTcp(result) {
-  if (ruleOptionsEnable['代理节点 DNS 使用 TCP'] !== true || !result.dns ||
-      typeof result.dns !== 'object') {
-    return;
-  }
-
-  const withTcp = (value) => {
-    if (typeof value !== 'string') return value;
-    const address = value.split('#', 1)[0];
-    // 保留空值、非规范空白、system 及所有显式 URI 协议（含 dhcp://、rcode://）。
-    if (!address || address !== address.trim() || /^system$/i.test(address) ||
-        /^[a-z][a-z0-9+.-]*:\/\//i.test(address)) {
-      return value;
-    }
-    // 无方括号 IPv6 必须按 URI 语法加方括号；完整保留 #DIRECT、#国内入口解析及其他参数。
-    const colonCount = (address.match(/:/g) || []).length;
-    if (!address.startsWith('[') && colonCount > 1) {
-      return 'tcp://[' + address + ']' + value.slice(address.length);
-    }
-    return 'tcp://' + value;
-  };
-  const mapValue = (value) => Array.isArray(value) ? value.map(withTcp) : withTcp(value);
-  const dns = result.dns;
-  if (Object.prototype.hasOwnProperty.call(dns, 'proxy-server-nameserver')) {
-    dns['proxy-server-nameserver'] = mapValue(dns['proxy-server-nameserver']);
-  }
-  const policy = dns['proxy-server-nameserver-policy'];
-  if (policy && typeof policy === 'object' && !Array.isArray(policy)) {
-    for (const rule of Object.keys(policy)) {
-      policy[rule] = mapValue(policy[rule]);
-    }
-  }
-}
 // 公共 DNS 识别表：用于区分“公共可直连 DNS”和“机场/用户的私有 DNS”。
 // 数据参考 MyClash 9ae100c4 的公共 DNS 列表；这里只借用端点，不照搬其处理逻辑。
 const publicDnsList = [
@@ -3034,6 +2234,275 @@ function smartMergeDnsNode(config, result) {
 }
 
 // ============================================================================
+// 各开关的具体实现（在模板结果上按开关改写 proxies / proxy-groups / rules / dns / hosts）
+// ============================================================================
+
+// ============================================================================
+// 国内入口解析节点维护区
+// 每个分类维护一个数组：可复制数组内的节点对象追加多个节点，填 [] 表示不配置。
+// 仅维护 type / server / port 及其他 Mihomo 节点字段，无需填写 name；即使填写也会被覆盖。
+// 名称按分类前缀和数组顺序独立编号，从 01 开始，超过 99 不截断。
+// ============================================================================
+const DOMESTIC_ENTRY_PROXIES = {
+  // 中国电信
+  telecom: [{
+    type: 'socks5',
+    server: '113.249.111.67',
+    port: 1080
+  }],
+
+  // 中国联通
+  unicom: [],
+
+  // 中国移动
+  mobile: [{
+    type: 'http',
+    server: '47.121.139.13',
+    port: 3128
+  }],
+
+  // 中国大陆云厂
+  cloud: [{
+    type: 'http',
+    server: '39.104.59.56',
+    port: 9098
+  }, {
+    type: 'http',
+    server: '39.102.214.208',
+    port: 9080
+  }, {
+    type: 'http',
+    server: '120.79.217.196',
+    port: 9000
+  }, {
+    type: 'http',
+    server: '47.104.27.249',
+    port: 8080
+  }, {
+    type: 'http',
+    server: '39.102.214.199',
+    port: 10002
+  }, {
+    type: 'http',
+    server: '139.224.195.153',
+    port: 8118
+  }, {
+    type: 'http',
+    server: '47.121.129.129',
+    port: 6379
+  }, {
+    type: 'http',
+    server: '47.104.28.135',
+    port: 8080
+  }, {
+    type: 'http',
+    server: '47.104.27.165',
+    port: 9080
+  }, {
+    type: 'http',
+    server: '47.106.75.125',
+    port: 3128
+  }, {
+    type: 'http',
+    server: '39.104.69.76',
+    port: 8081
+  }, {
+    type: 'http',
+    server: '39.102.211.64',
+    port: 8443
+  }, {
+    type: 'http',
+    server: '106.14.91.83',
+    port: 8181
+  }]
+};
+
+// 分类与强制命名前缀的固定映射，不应修改；节点顺序不代表自动优先级。
+const ENTRY_RESOLUTION_OPTIONS = [
+  { category: 'telecom', prefix: '电信节点' },
+  { category: 'unicom', prefix: '联通节点' },
+  { category: 'mobile', prefix: '移动节点' },
+  { category: 'cloud', prefix: '云厂节点' }
+];
+// 保留命名空间：用于排除入口节点，并防止同名订阅节点抢占维护区定义。
+const ENTRY_RESOLUTION_EXCLUDE_FILTER = '^(?:电信|联通|移动|云厂)节点-[0-9]{2,}$';
+
+// ============================================================================
+// 公共节点筛选（TGDC 实验分流、国家/地区分组、入口解析共用）
+// ============================================================================
+
+// JS 名称规范化只用于匹配，不会修改节点名称或配置。
+// 有意保留 ZWNJ、ZWJ 和 Unicode 变体选择符。
+const JS_INVISIBLE_CHARACTER_NORMALIZATION_REGEX =
+  /[\u00AD\u180E\u200B\u200E\u200F\u202A-\u202E\u2060-\u206F\uFEFF\u115F\u1160\u3164\uFFA0]/g;
+
+function normalizeNameForJsMatching(name) {
+  return typeof name === 'string'
+    ? name.replace(JS_INVISIBLE_CHARACTER_NORMALIZATION_REGEX, '')
+    : name;
+}
+
+// 国家/地区分组与 TGDC 共用此 JS 候选节点排除规则。
+const JS_MODULE_INFORMATION_NODE_EXCLUSION_REGEX =
+  /群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|地址|频道|电报|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|优惠|福利|邀请|好友|失联|选择|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|⚠️|@|t\.me\/\+|\bexpire\b|\bhttps?:\/\/|\.com|\btraffic\b/iu;
+
+function filterModuleCandidateProxies(originalProxies) {
+  const proxies = Array.isArray(originalProxies) ? originalProxies : [];
+  const entryNamePattern = new RegExp(ENTRY_RESOLUTION_EXCLUDE_FILTER);
+  return proxies.filter((proxy) => {
+    if (!proxy || typeof proxy !== 'object' || typeof proxy.name !== 'string') {
+      return false;
+    }
+    const type = String(proxy.type || '').toLowerCase();
+    if (type === 'direct' || type === 'reject' || type === 'rematch') {
+      return false;
+    }
+    const name = normalizeNameForJsMatching(proxy.name);
+    if (name.trim().length === 0) return false;
+    if (
+      JS_MODULE_INFORMATION_NODE_EXCLUSION_REGEX.test(name) ||
+      name === '国内入口解析' ||
+      entryNamePattern.test(name)
+    ) return false;
+    return true;
+  });
+}
+
+// JS 国家/地区定义及别名；同一节点可以命中多个地区。
+// TGDC 与国家/地区组共用这些模式进行 JS 候选归属匹配。
+// 缩写别名使用统一边界字符类，包含开尔文符号（K）和长 s（ſ），使 JS /iu 与 RE2 的 Unicode 大小写折叠保持一致，避免依赖引擎行为不同的 \b。
+const COUNTRY_REGION_DEFINITIONS = [
+  { key: 'hk', name: '🇨🇳🇭🇰 香港', jsPattern: /🇭🇰|香港|Hong\s*Kong|HongKong|(^|[^A-Za-z0-9_Kſ])HK($|[^A-Za-z0-9_Kſ])|(^|[^A-Za-z0-9_Kſ])HKG($|[^A-Za-z0-9_Kſ])/iu },
+  { key: 'tw', name: '🇨🇳🇹🇼 台湾', jsPattern: /🇹🇼|台湾|台灣|臺灣|台北|臺北|高雄|Taipei|Taiwan|\bTW\b|\bTWN\b/iu },
+  { key: 'mo', name: '🇨🇳🇲🇴 澳门', jsPattern: /🇲🇴|澳门|澳門|Macau|Macao|\bMO\b|\bMAC\b/iu },
+  { key: 'jp', name: '🇯🇵 日本', jsPattern: /🇯🇵|日本|东京|東京|大阪|京都|Tokyo|Osaka|Kyoto|Japan|\bJP\b|\bJPN\b/iu },
+  { key: 'sg', name: '🇸🇬 新加坡', jsPattern: /🇸🇬|新加坡|狮城|獅城|Singapore|(^|[^A-Za-z0-9_Kſ])SG($|[^A-Za-z0-9_Kſ])|(^|[^A-Za-z0-9_Kſ])SGP($|[^A-Za-z0-9_Kſ])/iu },
+  { key: 'kr', name: '🇰🇷 韩国', jsPattern: /🇰🇷|韩国|韓國|首尔|首爾|Seoul|Korea|\bKR\b|\bKOR\b/iu },
+  { key: 'my', name: '🇲🇾 马来西亚', jsPattern: /🇲🇾|马来西亚|馬來西亞|吉隆坡|Kuala\s*Lumpur|Malaysia|\bMY\b|\bMYS\b/iu },
+  { key: 'us', name: '🇺🇸 美国', jsPattern: /🇺🇸|美国|美國|洛杉矶|洛杉磯|纽约|紐約|西雅图|西雅圖|硅谷|矽谷|华盛顿|華盛頓|旧金山|舊金山|芝加哥|休斯顿|休士頓|迈阿密|邁阿密|波士顿|波士頓|拉斯维加斯|拉斯維加斯|圣何塞|聖荷西|Miami|(^|[^A-Za-z0-9_Kſ])MIA($|[^A-Za-z0-9_Kſ])|Los\s*Angeles|New\s*York|Seattle|Washington|San\s*Francisco|Chicago|Houston|Boston|Las\s*Vegas|San\s*Jose|United\s*States|(^|[^A-Za-z0-9_Kſ])USA($|[^A-Za-z0-9_Kſ])|(^|[^A-Za-z0-9_Kſ])US($|[^A-Za-z0-9_Kſ])/iu },
+  { key: 'ca', name: '🇨🇦 加拿大', jsPattern: /🇨🇦|加拿大|多伦多|多倫多|温哥华|溫哥華|Toronto|Vancouver|Canada|\bCA\b|\bCAN\b/iu },
+  { key: 'gb', name: '🇬🇧 英国', jsPattern: /🇬🇧|英国|英國|伦敦|倫敦|London|United\s*Kingdom|\bUK\b|\bGB\b|\bGBR\b/iu },
+  { key: 'fr', name: '🇫🇷 法国', jsPattern: /🇫🇷|法国|法國|巴黎|Paris|France|\bFR\b|\bFRA\b/iu },
+  { key: 'nl', name: '🇳🇱 荷兰', jsPattern: /🇳🇱|荷兰|荷蘭|阿姆斯特丹|Amsterdam|(^|[^A-Za-z0-9_Kſ])AMS($|[^A-Za-z0-9_Kſ])|Netherlands|(^|[^A-Za-z0-9_Kſ])NL($|[^A-Za-z0-9_Kſ])|(^|[^A-Za-z0-9_Kſ])NLD($|[^A-Za-z0-9_Kſ])/iu },
+  { key: 'de', name: '🇩🇪 德国', jsPattern: /🇩🇪|德国|德國|法兰克福|法蘭克福|柏林|Frankfurt|Berlin|Germany|\bDE\b|\bDEU\b/iu },
+  { key: 'au', name: '🇦🇺 澳大利亚', jsPattern: /🇦🇺|澳大利亚|澳大利亞|悉尼|墨尔本|墨爾本|Sydney|Melbourne|Perth|Australia|\bAU\b|\bAUS\b/iu },
+];
+
+function matchCountryRegionDefinitionsForJs(rawProxyName) {
+  if (typeof rawProxyName !== 'string') return [];
+  const matchableName = normalizeNameForJsMatching(rawProxyName);
+  return COUNTRY_REGION_DEFINITIONS.filter((definition) => definition.jsPattern.test(matchableName));
+}
+
+// ============================================================================
+// Telegram DC/地区实验分流（仅在 ruleOptionsEnable['TGDC实验分流'] 为 true 时注入）
+// DC1/DC3：Miami；DC2/DC4：Amsterdam；DC5：Singapore。
+// 静态 CIDR 无法可靠拆分同城 DC，因此策略组使用 DC 对命名。
+// ============================================================================
+const TGDC_RULE_PROVIDERS = {
+  telegram_dc1_dc3_miami: {
+    type: 'inline',
+    behavior: 'classical',
+    payload: [
+      // DC1 Pluto / DC3 Aurora — Miami, USA
+      'IP-CIDR,91.108.12.0/22,no-resolve',
+      'IP-CIDR,149.154.172.0/22,no-resolve',
+      'IP-CIDR6,2001:b28:f23d::/48,no-resolve',
+    ],
+  },
+  telegram_dc2_dc4_amsterdam: {
+    type: 'inline',
+    behavior: 'classical',
+    payload: [
+      // DC2 Venus / DC4 Vesta — Amsterdam, Netherlands
+      'IP-CIDR,91.108.58.0/23,no-resolve',
+      'IP-CIDR,91.108.4.0/22,no-resolve',
+      'IP-CIDR,91.108.8.0/22,no-resolve',
+      'IP-CIDR,149.154.160.0/21,no-resolve',
+      'IP-CIDR,95.161.64.0/20,no-resolve',
+      'IP-CIDR,91.105.192.0/23,no-resolve',
+      'IP-CIDR,185.76.151.0/24,no-resolve',
+      // Akiker / entire6548 / RClogs 的 EU 补充候选。
+      'IP-CIDR,5.28.192.0/18,no-resolve',
+      'IP-CIDR,109.239.140.0/24,no-resolve',
+      'IP-CIDR6,2001:67c:4e8::/48,no-resolve',
+      'IP-CIDR6,2a0a:f280:203::/48,no-resolve',
+    ],
+  },
+  telegram_dc5_sg: {
+    type: 'inline',
+    behavior: 'classical',
+    payload: [
+      // DC5 Flora — Singapore
+      'IP-CIDR,91.108.16.0/22,no-resolve',
+      'IP-CIDR,91.108.56.0/23,no-resolve',
+      'IP-CIDR,149.154.168.0/22,no-resolve',
+      'IP-CIDR6,2001:b28:f23c::/48,no-resolve',
+      'IP-CIDR6,2001:b28:f23f::/48,no-resolve',
+    ],
+  },
+};
+
+const TGDC_FALLBACK_ADDITIONAL_EXCLUDE_FILTER = /国内/iu;
+
+// TGDC 无地区候选时，按订阅原始顺序列出合格的非国内顶层节点作保底选择。
+// 若仍无候选，使用 COMPATIBLE；empty-fallback 只接受单节点名称，不能填写策略组或多个节点。
+function selectTelegramDcFallbackNodes(eligibleCandidates) {
+  return eligibleCandidates
+    .filter((proxy) => !TGDC_FALLBACK_ADDITIONAL_EXCLUDE_FILTER.test(normalizeNameForJsMatching(proxy.name)))
+    .map((proxy) => proxy.name);
+}
+
+const TGDC_PROXY_GROUP_DEFINITIONS = [
+  {
+    name: '📲 Telegram-DC1-DC3-Miami',
+    regionKeys: ['us'],
+    icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-United_States.png',
+  },
+  {
+    name: '📲 Telegram-DC2-DC4-Amsterdam',
+    regionKeys: ['nl'],
+    // Qure 无荷兰原生图标，此为按 Qure 风格自绘的荷兰旗，托管于本仓库 assets/icons。
+    icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-Netherlands.png',
+  },
+  {
+    name: '📲 Telegram-DC5-SG',
+    // 根据实际互联情况，DC5 组同时纳入香港与新加坡节点。
+    regionKeys: ['sg', 'hk'],
+    icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Singapore.png',
+  },
+];
+
+function buildTelegramDcProxyGroups(originalProxies) {
+  const proxies = Array.isArray(originalProxies) ? originalProxies : [];
+  const eligibleCandidates = filterModuleCandidateProxies(proxies);
+  const fallbackNodeNames = selectTelegramDcFallbackNodes(eligibleCandidates);
+  return TGDC_PROXY_GROUP_DEFINITIONS.map((definition) => {
+    const regionNodeNames = eligibleCandidates
+      .filter((proxy) => matchCountryRegionDefinitionsForJs(proxy.name)
+        .some((region) => definition.regionKeys.includes(region.key)))
+      .map((proxy) => proxy.name);
+    return {
+      name: definition.name,
+      type: 'select',
+      proxies: regionNodeNames.length > 0 ? regionNodeNames : fallbackNodeNames.slice(),
+      'empty-fallback': 'COMPATIBLE',
+      icon: definition.icon,
+    };
+  });
+}
+
+const TGDC_RULES = [
+  'RULE-SET,telegram_dc1_dc3_miami,📲 Telegram-DC1-DC3-Miami,no-resolve',
+  'RULE-SET,telegram_dc2_dc4_amsterdam,📲 Telegram-DC2-DC4-Amsterdam,no-resolve',
+  'RULE-SET,telegram_dc5_sg,📲 Telegram-DC5-SG,no-resolve',
+  'PROCESS-NAME-REGEX,.*nagram.*,📲 Telegram(兜底)',
+  'PROCESS-NAME-REGEX,.*telegram.*,📲 Telegram(兜底)',
+  'RULE-SET,telegramcidr,📲 Telegram(兜底),no-resolve',
+  'RULE-SET,telegram_domain,📲 Telegram(兜底)',
+];
+
+// ============================================================================
 // TGDC 实验分流：只在开关为 true 时修改 result。
 // ============================================================================
 function applyTelegramDcExperiment(result, originalProxies) {
@@ -3118,6 +2587,175 @@ function applyTelegramDcExperiment(result, originalProxies) {
 }
 
 // ============================================================================
+// 节点字段修正开关（顶层节点通路）
+// 强制证书验证 / 启用 Reality 增强 / 试开启节点UDP / IPv6优先 就地改写顶层节点；
+// provider 节点由 applyProviderOverrides() 走 override 通道，开关语义与这里一致。
+// ============================================================================
+function applyNodeFieldOverrides(proxies) {
+  const nodeList = Array.isArray(proxies) ? proxies : [];
+
+  // Reality 增强开关处理
+  const enableRealityEnhance = ruleOptionsEnable['启用 Reality 增强'] === true;
+
+  if (enableRealityEnhance) {
+    for (const proxy of nodeList) {
+      const reality = proxy?.["reality-opts"];
+
+      if (!reality || typeof reality !== "object") {
+        continue;
+      }
+
+      if (
+        typeof reality["public-key"] !== "string" ||
+        reality["public-key"].length === 0 ||
+        typeof reality["short-id"] !== "string" ||
+        reality["short-id"].length === 0
+      ) {
+        continue;
+      }
+
+      if (reality["support-x25519mlkem768"] === true) {
+        continue;
+      }
+
+      reality["support-x25519mlkem768"] = true;
+    }
+  }
+
+  // 节点 UDP 开关处理：默认关闭时不修改；开启时为订阅顶层节点设置 udp: true。
+  const enableNodeUdp = ruleOptionsEnable['试开启节点UDP'] === true;
+
+  if (enableNodeUdp) {
+    for (const proxy of nodeList) {
+      if (!proxy || typeof proxy !== "object") {
+        continue;
+      }
+
+      proxy.udp = true;
+    }
+  }
+
+  // 节点 TLS 证书验证开关处理：默认不干预订阅节点原有 skip-cert-verify；
+  //     开启「强制证书验证」时统一置为 false（强制校验证书），对全部节点一视同仁
+  const forceCertVerify = ruleOptionsEnable['强制证书验证'] === true;
+
+  for (const proxy of nodeList) {
+    if (!proxy || typeof proxy !== "object") {
+      continue;
+    }
+
+    if (forceCertVerify) {
+      proxy["skip-cert-verify"] = false;
+    }
+  }
+
+  // IPv6 优先开关：仅在开启时修改订阅节点的通用 ip-version 字段。
+  // ipv6 已经是仅 IPv6，保持不变；ipv6-prefer 切换为 ipv6；其他值（包括缺失）设为 ipv6-prefer。
+  const preferIPv6 = ruleOptionsEnable['IPv6优先'] === true;
+
+  if (preferIPv6) {
+    for (const proxy of nodeList) {
+      if (!proxy || typeof proxy !== 'object') {
+        continue;
+      }
+
+      if (proxy['ip-version'] === 'ipv6') {
+        continue;
+      }
+      proxy['ip-version'] = proxy['ip-version'] === 'ipv6-prefer' ? 'ipv6' : 'ipv6-prefer';
+    }
+  }
+}
+
+// ============================================================================
+// provider 节点级覆写（仅在对应开关开启时写入 provider.override）
+// provider 节点由内核运行时加载，脚本无法逐节点改写；override 是唯一能让
+// 逐节点改写生效的通道，且只支持固定字段：
+//   skip-cert-verify / udp / ip-version（无法改写嵌套 reality-opts）。
+// 关闭开关时不写入，保留订阅原有的 override 内容。
+// ============================================================================
+function applyProviderOverrides(result) {
+  const providers = result['proxy-providers'];
+  if (!providers || typeof providers !== 'object' || Array.isArray(providers)) return;
+
+  const forceCertVerify = ruleOptionsEnable['强制证书验证'] === true;
+  const enableNodeUdp = ruleOptionsEnable['试开启节点UDP'] === true;
+  const preferIPv6 = ruleOptionsEnable['IPv6优先'] === true;
+  if (!forceCertVerify && !enableNodeUdp && !preferIPv6) return;
+
+  Object.keys(providers).forEach((name) => {
+    const provider = providers[name];
+    if (!provider || typeof provider !== 'object' || Array.isArray(provider)) return;
+    const override = provider.override && typeof provider.override === 'object' &&
+      !Array.isArray(provider.override) ? provider.override : {};
+
+    if (forceCertVerify) {
+      override['skip-cert-verify'] = false;
+    }
+    if (enableNodeUdp) {
+      override.udp = true;
+    }
+    // provider 侧读不到节点原值：统一使用可回退的 ipv6-prefer，
+    // 不把已是 ipv6-prefer 的节点提升为仅 IPv6。
+    if (preferIPv6) {
+      override['ip-version'] = 'ipv6-prefer';
+    }
+    provider.override = override;
+  });
+}
+
+const SKK_RULE_PROVIDERS = {
+  skk_reject: {
+    type: 'http',
+    interval: 43200,
+    behavior: 'domain',
+    format: 'text',
+    url: 'https://ruleset.skk.moe/Clash/domainset/reject.txt',
+    path: './ruleset/skk_reject.txt',
+  },
+  skk_reject_non_ip: {
+    type: 'http',
+    interval: 43200,
+    behavior: 'classical',
+    format: 'text',
+    url: 'https://ruleset.skk.moe/Clash/non_ip/reject.txt',
+    path: './ruleset/skk_reject_non_ip.txt',
+  },
+  skk_reject_drop: {
+    type: 'http',
+    interval: 43200,
+    behavior: 'classical',
+    format: 'text',
+    url: 'https://ruleset.skk.moe/Clash/non_ip/reject-drop.txt',
+    path: './ruleset/skk_reject_drop.txt',
+  },
+  skk_reject_ip: {
+    type: 'http',
+    interval: 43200,
+    behavior: 'classical',
+    format: 'text',
+    url: 'https://ruleset.skk.moe/Clash/ip/reject.txt',
+    path: './ruleset/skk_reject_ip.txt',
+  },
+};
+
+const SKK_PROXY_GROUP = {
+  name: '🛑 广告拦截',
+  type: 'select',
+  proxies: ['REJECT', 'REJECT-DROP', 'PASS'],
+  icon: SKK_ADBLOCK_ICON,
+};
+
+// drop 与 ip 不走广告拦截组：前者是会疯狂重试的遥测域名，必须静默丢弃；
+// 后者是劫持/botnet IP。二者在广告拦截组切 PASS 时也不应被放行。
+const SKK_RULES = [
+  'RULE-SET,skk_reject_drop,REJECT-DROP',
+  'RULE-SET,skk_reject,🛑 广告拦截',
+  'RULE-SET,skk_reject_non_ip,🛑 广告拦截',
+  'RULE-SET,skk_reject_ip,REJECT,no-resolve',
+];
+
+// ============================================================================
 // SKK 广告拦截：只在开关为 true 时修改 result。
 // ============================================================================
 function applySkkAdBlock(result) {
@@ -3168,9 +2806,462 @@ function applySkkAdBlock(result) {
   result.rules.splice(insertRuleIndex, 0, ...SKK_RULES);
 }
 
+// 只识别节点名称中明确标记的数值倍率（如 0.5x、2x、5×），不推断“高倍”等模糊标签。
+function getExplicitProxyMultipliers(name) {
+  if (typeof name !== 'string') return [];
+  const matches = name.matchAll(/(?:^|[^A-Za-z0-9_.])(\d+(?:\.\d+)?)\s*[x×](?![A-Za-z0-9_])/giu);
+  return Array.from(matches, (match) => Number(match[1]));
+}
+
+// 过滤订阅顶层节点，并清理静态引用；必须在地区分组之前调用，
+// 让地区组只用幸存节点生成，避免某地区节点全被筛除后留下空子组（内核报 `use` or `proxies` missing）。
+// 返回被剔除的节点名集合，供地区分组判定候选。
+// provider 节点不受影响：它们由内核按 include-all 展开，仍会出现在相关组里。
+function applyProxyMultiplierFilters(result) {
+  const removedProxyNames = new Set();
+  const filterHigh = ruleOptionsEnable['高倍率筛选'] === true;
+  const filterLow = ruleOptionsEnable['低倍率筛选'] === true;
+  if (!filterHigh && !filterLow) return removedProxyNames;
+  if (!Array.isArray(result.proxies)) return removedProxyNames;
+
+  result.proxies = result.proxies.filter((proxy) => {
+    if (!proxy || typeof proxy !== 'object' || typeof proxy.name !== 'string') return true;
+    const multipliers = getExplicitProxyMultipliers(proxy.name);
+    const shouldRemove = multipliers.some(
+      (multiplier) => (filterHigh && multiplier >= 2) || (filterLow && multiplier <= 0.5)
+    );
+    if (shouldRemove) removedProxyNames.add(proxy.name);
+    return !shouldRemove;
+  });
+
+  if (removedProxyNames.size === 0) return removedProxyNames;
+  const firstRemainingProxyName = result.proxies
+    .map((proxy) => proxy && proxy.name)
+    .find((name) => typeof name === 'string' && name.length > 0);
+  if (!Array.isArray(result['proxy-groups'])) return removedProxyNames;
+
+  result['proxy-groups'].forEach((group) => {
+    if (!group || typeof group !== 'object') return;
+    if (Array.isArray(group.proxies)) {
+      group.proxies = group.proxies.filter((name) => !removedProxyNames.has(name));
+    }
+    if (removedProxyNames.has(group['default-selected'])) {
+      if (firstRemainingProxyName) {
+        group['default-selected'] = firstRemainingProxyName;
+      } else {
+        delete group['default-selected'];
+      }
+    }
+  });
+
+  return removedProxyNames;
+}
+
+// 国家/地区父组图标。
+const COUNTRY_REGION_PARENT_ICON =
+  'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Global.png';
+
+const COUNTRY_REGION_PRIORITY_NAMES = new Set([
+  '🇨🇳🇭🇰 香港',
+  '🇨🇳🇹🇼 台湾',
+  '🇨🇳🇲🇴 澳门',
+  '🇺🇸 美国',
+  '🇸🇬 新加坡',
+  '🇯🇵 日本',
+]);
+const OTHER_COUNTRY_REGION_NAME = '🌐 其他国家/地区';
+const COUNTRY_REGION_TARGET_GROUPS = [
+  '📲 Telegram',
+  '🎮 Games-Global',
+  '🍎 海外苹果',
+  '💠 海外微软',
+  '🎮 Steam平台（非下载/CDN）',
+  '✖️ Twitter',
+  '🤖 AI大模型',
+  '🎵 TikTok',
+  '💳 金融支付',
+  '🔎 Google',
+  '♾️ Meta',
+  '🎧 Spotify',
+  '🎬 Emby',
+  '💬 Discord',
+  '👽 Reddit',
+];
+const COUNTRY_REGION_CHILD_GROUP_TYPES = [
+  { suffix: '自动选择', type: 'url-test' },
+  { suffix: '故障转移', type: 'fallback' },
+  { suffix: '负载均衡', type: 'load-balance' },
+];
+
+function countryRegionChildGroupName(parentName, suffix) {
+  return parentName + ' · ' + suffix;
+}
+
+// 候选只来自订阅顶层 proxies；provider 节点此阶段尚未加载，不参与地区分组。
+function buildCountryRegionProxyGroups(originalProxies) {
+  const candidates = filterModuleCandidateProxies(originalProxies);
+  const templateAutoGroup = (TEMPLATE['proxy-groups'] || []).find(
+    (group) => group && group.name === '♻️ 自动选择'
+  ) || {};
+  const urlTestSettings = {};
+  ['url', 'interval', 'tolerance', 'lazy', 'max-failed-times'].forEach((key) => {
+    if (Object.prototype.hasOwnProperty.call(templateAutoGroup, key)) {
+      urlTestSettings[key] = templateAutoGroup[key];
+    }
+  });
+  // fallback / load-balance 没有 tolerance，只继承文档列出的健康检查通用字段。
+  const healthCheckSettings = {
+    url: urlTestSettings.url || 'https://g.cn/generate_204',
+    interval: urlTestSettings.interval || 300,
+    lazy: urlTestSettings.lazy === undefined ? true : urlTestSettings.lazy,
+  };
+  if (urlTestSettings['max-failed-times'] !== undefined) {
+    healthCheckSettings['max-failed-times'] = urlTestSettings['max-failed-times'];
+  }
+  const parentGroups = [];
+  const childGroups = [];
+  const regionMembershipByProxy = new Map();
+  const otherRegionProxies = new Set();
+
+  candidates.forEach((proxy) => {
+    const matchedRegions = matchCountryRegionDefinitionsForJs(proxy.name);
+    let selectedRegions = matchedRegions;
+
+    // ① 仅未命中常用地区的候选节点归入“其他国家/地区”。
+    if (matchedRegions.length === 0) {
+      otherRegionProxies.add(proxy);
+      selectedRegions = [];
+    }
+
+    // ② 恰好命中两个地区且跨越优先地区与其他常用地区时，只保留优先地区。
+    if (
+      selectedRegions.length === 2 &&
+      selectedRegions.some((definition) => COUNTRY_REGION_PRIORITY_NAMES.has(definition.name)) &&
+      selectedRegions.some((definition) => !COUNTRY_REGION_PRIORITY_NAMES.has(definition.name))
+    ) {
+      selectedRegions = selectedRegions.filter((definition) =>
+        COUNTRY_REGION_PRIORITY_NAMES.has(definition.name)
+      );
+    }
+
+    // ③ 处理后的地区组命中数达到三个及以上时，仅归入“其他国家/地区”。
+    if (selectedRegions.length >= 3) {
+      otherRegionProxies.add(proxy);
+      selectedRegions = [];
+    }
+
+    regionMembershipByProxy.set(proxy, selectedRegions);
+  });
+
+  // ④ 非优先地区若只剩一个不同的有效节点，则不生成该地区组，并将该节点归入“其他”；
+  //    只移除该地区归属，节点在其他常用地区的归属保持不变。优先地区的单节点组保留。
+  COUNTRY_REGION_DEFINITIONS.forEach((definition) => {
+    if (COUNTRY_REGION_PRIORITY_NAMES.has(definition.name)) return;
+    const regionProxies = candidates.filter((proxy) =>
+      regionMembershipByProxy.get(proxy).includes(definition)
+    );
+    const distinctNodeNames = new Set(regionProxies.map((proxy) => proxy.name));
+    if (distinctNodeNames.size !== 1) return;
+    regionProxies.forEach((proxy) => {
+      regionMembershipByProxy.set(
+        proxy,
+        regionMembershipByProxy.get(proxy).filter((region) => region !== definition)
+      );
+      otherRegionProxies.add(proxy);
+    });
+  });
+
+  COUNTRY_REGION_DEFINITIONS.forEach((definition) => {
+    const regionProxies = candidates.filter((proxy) =>
+      regionMembershipByProxy.get(proxy).includes(definition)
+    );
+    if (regionProxies.length === 0) return;
+    const nodeNames = Array.from(new Set(regionProxies.map((proxy) => proxy.name)));
+    // ⑥ 在⑤④处理后的有效节点数上排序：2–3节点先于 DIRECT/REJECT；优先单节点组也保留此顺序。
+    const hasTwoToThreeNodes = nodeNames.length >= 2 && nodeNames.length <= 3;
+    const hasPrioritySingleton = nodeNames.length === 1 && COUNTRY_REGION_PRIORITY_NAMES.has(definition.name);
+    const children = nodeNames.length > 3
+      ? COUNTRY_REGION_CHILD_GROUP_TYPES.map((childDefinition) => {
+        const child = {
+          name: countryRegionChildGroupName(definition.name, childDefinition.suffix),
+          type: childDefinition.type,
+          proxies: nodeNames.slice(),
+          hidden: true,
+        };
+        if (childDefinition.type === 'url-test') {
+          Object.assign(child, urlTestSettings);
+        } else if (childDefinition.type === 'fallback' || childDefinition.type === 'load-balance') {
+          Object.assign(child, healthCheckSettings);
+          if (childDefinition.type === 'load-balance') {
+            child.strategy = 'consistent-hashing';
+          }
+        }
+        return child;
+      })
+      : [];
+    parentGroups.push({
+      name: definition.name,
+      type: 'select',
+      icon: COUNTRY_REGION_PARENT_ICON,
+      proxies: children.length > 0
+        ? children.map((child) => child.name).concat(['DIRECT', 'REJECT'], nodeNames)
+        : hasTwoToThreeNodes || hasPrioritySingleton
+          ? nodeNames.concat(['DIRECT', 'REJECT'])
+          : ['DIRECT', 'REJECT', ...nodeNames],
+    });
+    childGroups.push(...children);
+  });
+
+  const otherProxies = candidates.filter((proxy) => otherRegionProxies.has(proxy));
+  const otherNodeNames = Array.from(new Set(otherProxies.map((proxy) => proxy.name)));
+  if (otherNodeNames.length > 0) {
+    parentGroups.push({
+      name: OTHER_COUNTRY_REGION_NAME,
+      type: 'select',
+      icon: COUNTRY_REGION_PARENT_ICON,
+      'default-selected': otherNodeNames[0],
+      proxies: ['DIRECT', 'REJECT', ...otherNodeNames],
+    });
+  }
+
+  return { parentGroups, childGroups };
+}
+
+function appendCountryRegionParentsToTargets(proxyGroups, parentGroups) {
+  if (!Array.isArray(proxyGroups) || parentGroups.length === 0) return;
+  const targetNames = new Set(COUNTRY_REGION_TARGET_GROUPS);
+  // TGDC 只会把 Telegram 目标重命名为此兜底组；其他实验组不接收国家组。
+  targetNames.add('📲 Telegram(兜底)');
+  const existingGroupNames = new Set(
+    proxyGroups.filter((group) => group && typeof group.name === 'string').map((group) => group.name)
+  );
+  const parentNames = parentGroups.map((group) => group.name);
+
+  proxyGroups.forEach((group) => {
+    if (!group || !targetNames.has(group.name)) return;
+    if (!Array.isArray(group.proxies)) group.proxies = [];
+    const additions = parentNames.filter((name) => !group.proxies.includes(name));
+    if (additions.length === 0) return;
+    let lastNestedGroupIndex = -1;
+    group.proxies.forEach((name, index) => {
+      if (existingGroupNames.has(name)) lastNestedGroupIndex = index;
+    });
+    if (lastNestedGroupIndex >= 0) {
+      group.proxies.splice(lastNestedGroupIndex + 1, 0, ...additions);
+    } else {
+      group.proxies.push(...additions);
+    }
+  });
+}
+
+function applyCountryRegionGrouping(result, originalProxies) {
+  if (ruleOptionsEnable['国家/地区分组'] !== true) return;
+  const { parentGroups, childGroups } = buildCountryRegionProxyGroups(originalProxies);
+  if (parentGroups.length === 0) return;
+  const proxyGroups = Array.isArray(result['proxy-groups']) ? result['proxy-groups'] : [];
+  appendCountryRegionParentsToTargets(proxyGroups, parentGroups);
+
+  const fcmIndex = proxyGroups.findIndex((group) => group && group.name === 'FCM');
+  if (fcmIndex >= 0) {
+    proxyGroups.splice(fcmIndex, 0, ...parentGroups);
+    // 隐藏组（FCM、Tailscale）需保持相邻：地区子组插到 FCM 之后连续的隐藏组之后。
+    let insertAt = proxyGroups.findIndex((group) => group && group.name === 'FCM') + 1;
+    while (insertAt < proxyGroups.length && proxyGroups[insertAt] && proxyGroups[insertAt].hidden === true) {
+      insertAt += 1;
+    }
+    proxyGroups.splice(insertAt, 0, ...childGroups);
+  } else {
+    proxyGroups.push(...parentGroups, ...childGroups);
+  }
+  result['proxy-groups'] = proxyGroups;
+}
+
+// 注入的入口节点属于订阅顶层节点；exclude-filter 由内核应用，会作用于 include-all
+// 引入的 provider 节点，但只排除入口节点命名空间，不筛选 provider 节点本身。
+function applyEntryResolution(result) {
+  const options = selectedEntryResolutionOptions();
+  if (options.length === 0) {
+    return;
+  }
+
+  const groupName = '国内入口解析';
+  const proxyNames = options.map((option) => option.proxyName);
+
+  const isEntryName = (name) => typeof name === 'string' &&
+    (normalizeNameForJsMatching(name) === groupName ||
+      new RegExp(ENTRY_RESOLUTION_EXCLUDE_FILTER).test(normalizeNameForJsMatching(name)));
+  result.proxies = (result.proxies || []).filter((proxy) => !isEntryName(proxy && proxy.name));
+  options.forEach((option) => {
+    const injectedProxy = deepClone(option.proxy);
+    injectedProxy.name = option.proxyName;
+    result.proxies.push(injectedProxy);
+  });
+
+  // include-all 会动态纳入刚注入的顶层节点，必须由内核排除；显式引用和默认选择也一起清理。
+  // Mihomo 以反引号分隔多个 exclude-filter，避免拼接正则破坏原有内联标志或筛选语义。
+  (result['proxy-groups'] || []).forEach((group) => {
+    if (!group || group.name === groupName) return;
+    const filters = typeof group['exclude-filter'] === 'string' && group['exclude-filter']
+      ? group['exclude-filter'].split('`') : [];
+    if (!filters.includes(ENTRY_RESOLUTION_EXCLUDE_FILTER)) {
+      filters.push(ENTRY_RESOLUTION_EXCLUDE_FILTER);
+    }
+    group['exclude-filter'] = filters.join('`');
+    if (Array.isArray(group.proxies)) {
+      group.proxies = group.proxies.filter((name) => !isEntryName(name));
+      if (group.proxies.length === 0 && !group['include-all'] &&
+          !group['include-all-proxies'] && !group['include-all-providers'] &&
+          !(Array.isArray(group.use) && group.use.length > 0)) {
+        group.proxies = ['DIRECT'];
+      }
+    }
+    if (isEntryName(group['default-selected'])) {
+      delete group['default-selected'];
+    }
+  });
+
+  const displayGroup = {
+    name: groupName,
+    type: 'select',
+    proxies: proxyNames,
+    url: 'https://connect.rom.miui.com/generate_204',
+    'expected-status': '204',
+    icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Domestic.png'
+  };
+  const existingDisplayGroup = (result['proxy-groups'] || []).find(
+    (group) => group && group.name === groupName
+  );
+  if (existingDisplayGroup) {
+    // 重建专用组，不保留可能把其他节点混入的 include-all、use 或筛选字段。
+    result['proxy-groups'][result['proxy-groups'].indexOf(existingDisplayGroup)] = displayGroup;
+  } else {
+    const autoSelectIndex = (result['proxy-groups'] || []).findIndex(
+      (group) => group && group.name === '♻️ 自动选择'
+    );
+    if (autoSelectIndex >= 0) {
+      result['proxy-groups'].splice(autoSelectIndex + 1, 0, displayGroup);
+    } else {
+      result['proxy-groups'].push(displayGroup);
+    }
+  }
+
+  const suffix = '#' + groupName;
+  result.dns['proxy-server-nameserver'] = asNameserverList(
+    result.dns['proxy-server-nameserver']
+  ).map((value) => withDnsPolicySuffix(value, suffix));
+
+  const policy = result.dns['proxy-server-nameserver-policy'];
+  if (!policy || typeof policy !== 'object') {
+    return;
+  }
+  for (const rule of Object.keys(policy)) {
+    const value = policy[rule];
+    if (Array.isArray(value)) {
+      policy[rule] = value.map((item) => withDnsPolicySuffix(item, suffix));
+    } else if (typeof value === 'string') {
+      policy[rule] = withDnsPolicySuffix(value, suffix);
+    }
+  }
+}
+
+// 仅处理最终节点 DNS：在 DNS/hosts 合并和入口解析后执行，不重新选择来源或改写节点。
+function applyProxyDnsTcp(result) {
+  if (ruleOptionsEnable['代理节点 DNS 使用 TCP'] !== true || !result.dns ||
+      typeof result.dns !== 'object') {
+    return;
+  }
+
+  const withTcp = (value) => {
+    if (typeof value !== 'string') return value;
+    const address = value.split('#', 1)[0];
+    // 保留空值、非规范空白、system 及所有显式 URI 协议（含 dhcp://、rcode://）。
+    if (!address || address !== address.trim() || /^system$/i.test(address) ||
+        /^[a-z][a-z0-9+.-]*:\/\//i.test(address)) {
+      return value;
+    }
+    // 无方括号 IPv6 必须按 URI 语法加方括号；完整保留 #DIRECT、#国内入口解析及其他参数。
+    const colonCount = (address.match(/:/g) || []).length;
+    if (!address.startsWith('[') && colonCount > 1) {
+      return 'tcp://[' + address + ']' + value.slice(address.length);
+    }
+    return 'tcp://' + value;
+  };
+  const mapValue = (value) => Array.isArray(value) ? value.map(withTcp) : withTcp(value);
+  const dns = result.dns;
+  if (Object.prototype.hasOwnProperty.call(dns, 'proxy-server-nameserver')) {
+    dns['proxy-server-nameserver'] = mapValue(dns['proxy-server-nameserver']);
+  }
+  const policy = dns['proxy-server-nameserver-policy'];
+  if (policy && typeof policy === 'object' && !Array.isArray(policy)) {
+    for (const rule of Object.keys(policy)) {
+      policy[rule] = mapValue(policy[rule]);
+    }
+  }
+}
+
+// ============================================================================
+// 工具函数
+// ============================================================================
+
+// 深拷贝：避免多次调用 main() 时互相污染同一份 TEMPLATE
+function deepClone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+function getRuleProxyTargetIndex(rule) {
+  if (typeof rule !== 'string' || /^\s*SUB-RULE\s*,/i.test(rule)) return -1;
+  const fields = rule.split(',');
+  const lastField = fields[fields.length - 1].trim();
+  return lastField.toLowerCase() === 'no-resolve'
+    ? fields.length - 2
+    : fields.length - 1;
+}
+function ruleTargetsProxyGroup(rule, groupName) {
+  const targetIndex = getRuleProxyTargetIndex(rule);
+  const fields = typeof rule === 'string' ? rule.split(',') : [];
+  return targetIndex >= 0 && fields[targetIndex].trim() === groupName;
+}
+function replaceRuleProxyGroup(rule, groupName, replacement) {
+  const fields = typeof rule === 'string' ? rule.split(',') : [];
+  const targetIndex = getRuleProxyTargetIndex(rule);
+  if (targetIndex < 0 || fields[targetIndex].trim() !== groupName) return rule;
+  fields[targetIndex] = replacement;
+  return fields.join(',');
+}
+function collectRuleProviderReferences(value, references = new Set()) {
+  if (typeof value === 'string') {
+    for (const match of value.matchAll(/\bRULE-SET\s*,\s*([^,\s)]+)/gi)) {
+      references.add(match[1]);
+    }
+    for (const match of value.matchAll(/\brule-set:([^\s"'`]+)/gi)) {
+      match[1].replace(/[\])}.,;]+$/, '').split(',').forEach((name) => {
+        if (name) references.add(name);
+      });
+    }
+  } else if (Array.isArray(value)) {
+    value.forEach((item) => collectRuleProviderReferences(item, references));
+  } else if (value && typeof value === 'object') {
+    Object.entries(value).forEach(([key, item]) => {
+      if (key !== 'rule-providers') {
+        collectRuleProviderReferences(key, references);
+        collectRuleProviderReferences(item, references);
+      }
+    });
+  }
+  return references;
+}
+function removeUnusedRuleProviders(result) {
+  const providers = result && result['rule-providers'];
+  if (!providers || typeof providers !== 'object' || Array.isArray(providers)) return;
+  const referencedProviders = collectRuleProviderReferences(result);
+  Object.keys(providers).forEach((name) => {
+    if (!referencedProviders.has(name)) delete providers[name];
+  });
+}
+
 // ============================================================================
 // 入口函数：Bettbox / FlClash 系客户端会调用 main(config) 并使用其返回值
 // ============================================================================
+
 function main(config, profileName) {
   config = config || {};
 
@@ -3185,77 +3276,8 @@ function main(config, profileName) {
         entryNamePattern.test(normalizeNameForJsMatching(proxy.name)))
   );
 
-  // 1.1 Reality 增强开关处理
-  const enableRealityEnhance = ruleOptionsEnable['启用 Reality 增强'] === true;
-
-  if (enableRealityEnhance) {
-    for (const proxy of originalProxies) {
-      const reality = proxy?.["reality-opts"];
-
-      if (!reality || typeof reality !== "object") {
-        continue;
-      }
-
-      if (
-        typeof reality["public-key"] !== "string" ||
-        reality["public-key"].length === 0 ||
-        typeof reality["short-id"] !== "string" ||
-        reality["short-id"].length === 0
-      ) {
-        continue;
-      }
-
-      if (reality["support-x25519mlkem768"] === true) {
-        continue;
-      }
-
-      reality["support-x25519mlkem768"] = true;
-    }
-  }
-
-  // 节点 UDP 开关处理：默认关闭时不修改；开启时为订阅顶层节点设置 udp: true。
-  const enableNodeUdp = ruleOptionsEnable['试开启节点UDP'] === true;
-
-  if (enableNodeUdp) {
-    for (const proxy of originalProxies) {
-      if (!proxy || typeof proxy !== "object") {
-        continue;
-      }
-
-      proxy.udp = true;
-    }
-  }
-
-  // 1.2 节点 TLS 证书验证开关处理：默认不干预订阅节点原有 skip-cert-verify；
-  //     开启「强制证书验证」时统一置为 false（强制校验证书），对全部节点一视同仁
-  const forceCertVerify = ruleOptionsEnable['强制证书验证'] === true;
-
-  for (const proxy of originalProxies) {
-    if (!proxy || typeof proxy !== "object") {
-      continue;
-    }
-
-    if (forceCertVerify) {
-      proxy["skip-cert-verify"] = false;
-    }
-  }
-
-  // 1.3 IPv6 优先开关：仅在开启时修改订阅节点的通用 ip-version 字段。
-  // ipv6 已经是仅 IPv6，保持不变；ipv6-prefer 切换为 ipv6；其他值（包括缺失）设为 ipv6-prefer。
-  const preferIPv6 = ruleOptionsEnable['IPv6优先'] === true;
-
-  if (preferIPv6) {
-    for (const proxy of originalProxies) {
-      if (!proxy || typeof proxy !== 'object') {
-        continue;
-      }
-
-      if (proxy['ip-version'] === 'ipv6') {
-        continue;
-      }
-      proxy['ip-version'] = proxy['ip-version'] === 'ipv6-prefer' ? 'ipv6' : 'ipv6-prefer';
-    }
-  }
+  // ---- 1.1 节点字段修正开关（Reality / UDP / 证书 / IPv6），详见 applyNodeFieldOverrides ----
+  applyNodeFieldOverrides(originalProxies);
 
   const originalProxyProviders =
     config['proxy-providers'] && typeof config['proxy-providers'] === 'object'
