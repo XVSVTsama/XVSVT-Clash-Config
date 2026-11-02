@@ -1483,10 +1483,6 @@ const LOAD_BALANCE_STRATEGY_GROUP_NAMES = TEMPLATE['proxy-groups']
   .filter((group) => group && group.type === 'load-balance')
   .map((group) => group.name);
 
-// SKK 广告拦截开关的图标；serviceConfigs 与 SKK_PROXY_GROUP 共用这一处定义。
-const SKK_ADBLOCK_ICON =
-  'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-adblock.svg';
-
 // Bettbox 的可视化开关图标：客户端会读取全局 serviceConfigs（name 对应 ruleOptionsEnable 的 key，
 // icon 为该开关行显示的图标）。上面只覆盖代理组；功能开关的图标来源：
 // FCM直连 从 FCM 代理组的 icon 字段派生；
@@ -1533,7 +1529,7 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     },
     {
       name: 'SKK广告拦截',
-      icon: SKK_ADBLOCK_ICON
+      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-adblock.svg'
     },
     {
       name: '国家/地区分组',
@@ -2704,6 +2700,17 @@ function applyProviderOverrides(result) {
     provider.override = override;
   });
 }
+
+// ============================================================================
+// SKK 广告拦截（仅在 ruleOptionsEnable['SKK广告拦截'] 为 true 时注入）
+// 规则集来自 SukkaW/Surge 的 reject 系列，只取核心四件：基础域名集、non_ip
+// 关键词/通配规则、reject-drop 遥测静默丢弃、ip 劫持/botnet 集。
+// 不含 reject_extra（源经上游降级，误杀与性能代价更高）、reject_phishing
+// （反钓鱼，非广告）与 reject-no-drop（PCDN，非广告且 mihomo 无对应策略）。
+// ============================================================================
+// 开关图标：serviceConfigs 中同值内联（模板区求值时本常量尚未定义）。
+const SKK_ADBLOCK_ICON =
+  'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-adblock.svg';
 
 const SKK_RULE_PROVIDERS = {
   skk_reject: {
