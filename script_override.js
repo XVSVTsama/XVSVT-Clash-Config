@@ -1414,10 +1414,10 @@ const TEMPLATE = {
       "type": "select",
       "default-selected": "DIRECT",
       "proxies": [
-        "DIRECT",
         "👉 手动切换",
         "♻️ 自动选择",
-        "🔄 负载均衡"
+        "🔄 负载均衡",
+        "DIRECT"
       ],
       "include-all": true
     },
