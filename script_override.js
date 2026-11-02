@@ -123,7 +123,7 @@ const Compatible_With_Bettbox = {
  */
 
 // ============================================================================
-// Bettbox 开关定义（ruleOptionsEnable 的键即客户端开关面板；图标表在模板之后的 serviceConfigs）
+// Bettbox 开关定义（ruleOptionsEnable 的键即客户端开关面板；开关图标表见模板之后的 serviceConfigs）
 // ============================================================================
 
 const ruleOptionsEnable = {
@@ -160,6 +160,7 @@ const ruleOptionsEnable = {
   // LINE 通讯软件策略组
   '💬 LINE': false,
 
+
   // TikTok 视频平台策略组
   '🎵 TikTok': false,
   // Netflix 流媒体策略组
@@ -184,6 +185,8 @@ const ruleOptionsEnable = {
   '📚 EHentai': false,
   // PikPak 网盘策略组
   '☁️ PikPak': false,
+
+
 
   // --- 节点字段修正 ---
   // 开启时统一把订阅节点 skip-cert-verify 置为 false（强制校验证书）；关闭时不干预，保留订阅节点原有设置。
@@ -225,13 +228,6 @@ const ruleOptionsEnable = {
   'WebRTC阻断': true,
 };
 
-// 隐藏策略子组不单独提供开关；它们始终跟随现有负载均衡开关启停。
-const LOAD_BALANCE_STRATEGY_GROUP_NAMES = [
-  'consistent-hashing',
-  'sticky-sessions',
-  'round-robin',
-];
-
 // 关闭这些业务组时删除指向它们的路由规则，而不是把规则改写到全局兜底。
 const REMOVE_ROUTING_RULES_FOR_DISABLED_GROUPS = new Set([
   '📲 Telegram',
@@ -256,12 +252,8 @@ const REMOVE_ROUTING_RULES_FOR_DISABLED_GROUPS = new Set([
   '💬 LINE',
 ]);
 
-// SKK 广告拦截开关的图标；serviceConfigs 与 SKK_PROXY_GROUP 共用这一处定义。
-const SKK_ADBLOCK_ICON =
-  'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-adblock.svg';
-
 // ============================================================================
-// 标准模板配置（mihomo.yaml 的 JSON 表示）
+// 标准模板配置（mihomo.yaml 的 JSON 表示），及其派生的开关辅助常量
 // ============================================================================
 
 const TEMPLATE = {
@@ -1485,6 +1477,15 @@ const TEMPLATE = {
     "MATCH,🌍 PROXY"
   ]
 };
+
+// 模板中所有 type=load-balance 的隐藏子组：跟随「🔄 负载均衡」开关启停，不单独提供开关。
+const LOAD_BALANCE_STRATEGY_GROUP_NAMES = TEMPLATE['proxy-groups']
+  .filter((group) => group && group.type === 'load-balance')
+  .map((group) => group.name);
+
+// SKK 广告拦截开关的图标；serviceConfigs 与 SKK_PROXY_GROUP 共用这一处定义。
+const SKK_ADBLOCK_ICON =
+  'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-adblock.svg';
 
 // Bettbox 的可视化开关图标：客户端会读取全局 serviceConfigs（name 对应 ruleOptionsEnable 的 key，
 // icon 为该开关行显示的图标）。上面只覆盖代理组；功能开关的图标来源：
