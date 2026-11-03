@@ -273,8 +273,10 @@ const TEMPLATE = {
   "tcp-concurrent": true,
   "keep-alive-idle": 600,
   "keep-alive-interval": 15,
-  "store-selected": true,
-  "store-fake-ip": true,
+  "profile": {
+    "store-selected": true,
+    "store-fake-ip": true
+  },
   "tun": {
     "enable": true,
     "device": "XVSVT",
