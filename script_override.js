@@ -483,7 +483,81 @@ const TEMPLATE = {
         "https://dns.alidns.com/dns-query#DIRECT",
         "https://doh.pub/dns-query#DIRECT",
         "https://doh.360.cn/dns-query#DIRECT"
-      ]
+      ],
+      // 业务域名解析尽可能跟随路由组；仅覆盖 DOMAIN、DOMAIN-SUFFIX 与 domain/classical 规则集。
+      // Mihomo 不保证重叠匹配按映射文件顺序优先；这些映射用于提高 UDP 解析精度，不承诺完全一致。
+      "rule-set:googlefcm": ["https://cloudflare-dns.com/dns-query#FCM", "https://dns.google/dns-query#FCM", "https://unfiltered.adguard-dns.com/dns-query#FCM"],
+      "rule-set:microsoft": ["https://cloudflare-dns.com/dns-query#💠 海外微软", "https://dns.google/dns-query#💠 海外微软", "https://unfiltered.adguard-dns.com/dns-query#💠 海外微软"],
+      "rule-set:apple": ["https://cloudflare-dns.com/dns-query#🍎 海外苹果", "https://dns.google/dns-query#🍎 海外苹果", "https://unfiltered.adguard-dns.com/dns-query#🍎 海外苹果"],
+      "rule-set:telegram_domain": ["https://cloudflare-dns.com/dns-query#📲 Telegram", "https://dns.google/dns-query#📲 Telegram", "https://unfiltered.adguard-dns.com/dns-query#📲 Telegram"],
+      "rule-set:google": ["https://cloudflare-dns.com/dns-query#🔎 Google", "https://dns.google/dns-query#🔎 Google", "https://unfiltered.adguard-dns.com/dns-query#🔎 Google"],
+      "rule-set:google-cn": ["https://cloudflare-dns.com/dns-query#🔎 Google", "https://dns.google/dns-query#🔎 Google", "https://unfiltered.adguard-dns.com/dns-query#🔎 Google"],
+      "rule-set:Gemini_Domain": ["https://cloudflare-dns.com/dns-query#🔎 Google", "https://dns.google/dns-query#🔎 Google", "https://unfiltered.adguard-dns.com/dns-query#🔎 Google"],
+      "rule-set:meta": ["https://cloudflare-dns.com/dns-query#♾️ Meta", "https://dns.google/dns-query#♾️ Meta", "https://unfiltered.adguard-dns.com/dns-query#♾️ Meta"],
+      "+.muse.ai": ["https://cloudflare-dns.com/dns-query#♾️ Meta", "https://dns.google/dns-query#♾️ Meta", "https://unfiltered.adguard-dns.com/dns-query#♾️ Meta"],
+      "hatch-api.meta.ai": ["https://cloudflare-dns.com/dns-query#♾️ Meta", "https://dns.google/dns-query#♾️ Meta", "https://unfiltered.adguard-dns.com/dns-query#♾️ Meta"],
+      "api.meta.ai": ["https://cloudflare-dns.com/dns-query#♾️ Meta", "https://dns.google/dns-query#♾️ Meta", "https://unfiltered.adguard-dns.com/dns-query#♾️ Meta"],
+      "agent.meta.ai": ["https://cloudflare-dns.com/dns-query#♾️ Meta", "https://dns.google/dns-query#♾️ Meta", "https://unfiltered.adguard-dns.com/dns-query#♾️ Meta"],
+      "+.metaaivm.com": ["https://cloudflare-dns.com/dns-query#♾️ Meta", "https://dns.google/dns-query#♾️ Meta", "https://unfiltered.adguard-dns.com/dns-query#♾️ Meta"],
+      "auth.meta.com": ["https://cloudflare-dns.com/dns-query#♾️ Meta", "https://dns.google/dns-query#♾️ Meta", "https://unfiltered.adguard-dns.com/dns-query#♾️ Meta"],
+      "meta.graph.meta.com": ["https://cloudflare-dns.com/dns-query#♾️ Meta", "https://dns.google/dns-query#♾️ Meta", "https://unfiltered.adguard-dns.com/dns-query#♾️ Meta"],
+      "edge-metaclaw-http.c10r.facebook.com": ["https://cloudflare-dns.com/dns-query#♾️ Meta", "https://dns.google/dns-query#♾️ Meta", "https://unfiltered.adguard-dns.com/dns-query#♾️ Meta"],
+      "shortwave.facebook.com": ["https://cloudflare-dns.com/dns-query#♾️ Meta", "https://dns.google/dns-query#♾️ Meta", "https://unfiltered.adguard-dns.com/dns-query#♾️ Meta"],
+      "node.hatch.one": ["https://cloudflare-dns.com/dns-query#♾️ Meta", "https://dns.google/dns-query#♾️ Meta", "https://unfiltered.adguard-dns.com/dns-query#♾️ Meta"],
+      "api.anthropic.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "console.anthropic.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "statsig.anthropic.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "status.anthropic.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "sentry.anthropic.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "support.anthropic.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "mcp-proxy.anthropic.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "platform.claude.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "code.claude.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "downloads.claude.ai": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "bridge.claudeusercontent.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "cdn.growthbook.io": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "cdn.usefathom.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "registry.npmjs.org": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "storage.googleapis.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "formulae.brew.sh": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "http-intake.logs.us5.datadoghq.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "browser-intake-us5-datadoghq.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "servd-anthropic-website.b-cdn.net": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "claudemcpclient.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "claudemcpcontent.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "+.anthropic.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "+.claude.ai": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "+.claude.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "+.claudeusercontent.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "+.clau.de": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "+.modelcontextprotocol.io": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "rule-set:Grok_Domain": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "anthropic.com.cdn.cloudflare.net": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "anthropic-com.ghost.io": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "+.sentry.io": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "+.statsigapi.net": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "rule-set:ai-1": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "rule-set:ai-2": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "rule-set:spotify": ["https://cloudflare-dns.com/dns-query#🎧 Spotify", "https://dns.google/dns-query#🎧 Spotify", "https://unfiltered.adguard-dns.com/dns-query#🎧 Spotify"],
+      "rule-set:discord": ["https://cloudflare-dns.com/dns-query#💬 Discord", "https://dns.google/dns-query#💬 Discord", "https://unfiltered.adguard-dns.com/dns-query#💬 Discord"],
+      "rule-set:reddit": ["https://cloudflare-dns.com/dns-query#👽 Reddit", "https://dns.google/dns-query#👽 Reddit", "https://unfiltered.adguard-dns.com/dns-query#👽 Reddit"],
+      "rule-set:netflix": ["https://cloudflare-dns.com/dns-query#🎥 Netflix", "https://dns.google/dns-query#🎥 Netflix", "https://unfiltered.adguard-dns.com/dns-query#🎥 Netflix"],
+      "rule-set:patreon": ["https://cloudflare-dns.com/dns-query#💝 Patreon", "https://dns.google/dns-query#💝 Patreon", "https://unfiltered.adguard-dns.com/dns-query#💝 Patreon"],
+      "rule-set:ehentai": ["https://cloudflare-dns.com/dns-query#📚 EHentai", "https://dns.google/dns-query#📚 EHentai", "https://unfiltered.adguard-dns.com/dns-query#📚 EHentai"],
+      "rule-set:pikpak": ["https://cloudflare-dns.com/dns-query#☁️ PikPak", "https://dns.google/dns-query#☁️ PikPak", "https://unfiltered.adguard-dns.com/dns-query#☁️ PikPak"],
+      "rule-set:line": ["https://cloudflare-dns.com/dns-query#💬 LINE", "https://dns.google/dns-query#💬 LINE", "https://unfiltered.adguard-dns.com/dns-query#💬 LINE"],
+      "d3r7nsslvs6aaf.cloudfront.net": ["https://cloudflare-dns.com/dns-query#💳 金融支付", "https://dns.google/dns-query#💳 金融支付", "https://unfiltered.adguard-dns.com/dns-query#💳 金融支付"],
+      "rule-set:category-cryptocurrency": ["https://cloudflare-dns.com/dns-query#💳 金融支付", "https://dns.google/dns-query#💳 金融支付", "https://unfiltered.adguard-dns.com/dns-query#💳 金融支付"],
+      "rule-set:paypal": ["https://cloudflare-dns.com/dns-query#💳 金融支付", "https://dns.google/dns-query#💳 金融支付", "https://unfiltered.adguard-dns.com/dns-query#💳 金融支付"],
+      "rule-set:stripe": ["https://cloudflare-dns.com/dns-query#💳 金融支付", "https://dns.google/dns-query#💳 金融支付", "https://unfiltered.adguard-dns.com/dns-query#💳 金融支付"],
+      "rule-set:visa": ["https://cloudflare-dns.com/dns-query#💳 金融支付", "https://dns.google/dns-query#💳 金融支付", "https://unfiltered.adguard-dns.com/dns-query#💳 金融支付"],
+      "rule-set:mastercard": ["https://cloudflare-dns.com/dns-query#💳 金融支付", "https://dns.google/dns-query#💳 金融支付", "https://unfiltered.adguard-dns.com/dns-query#💳 金融支付"],
+      "rule-set:wise": ["https://cloudflare-dns.com/dns-query#💳 金融支付", "https://dns.google/dns-query#💳 金融支付", "https://unfiltered.adguard-dns.com/dns-query#💳 金融支付"],
+      "rule-set:twitter-x-domain": ["https://cloudflare-dns.com/dns-query#✖️ Twitter", "https://dns.google/dns-query#✖️ Twitter", "https://unfiltered.adguard-dns.com/dns-query#✖️ Twitter"],
+      "rule-set:twitter-x-aggregate": ["https://cloudflare-dns.com/dns-query#✖️ Twitter", "https://dns.google/dns-query#✖️ Twitter", "https://unfiltered.adguard-dns.com/dns-query#✖️ Twitter"],
+      "rule-set:steam": ["https://cloudflare-dns.com/dns-query#🎮 Steam平台（非下载/CDN）", "https://dns.google/dns-query#🎮 Steam平台（非下载/CDN）", "https://unfiltered.adguard-dns.com/dns-query#🎮 Steam平台（非下载/CDN）"],
+      "rule-set:games": ["https://cloudflare-dns.com/dns-query#🎮 Games-Global", "https://dns.google/dns-query#🎮 Games-Global", "https://unfiltered.adguard-dns.com/dns-query#🎮 Games-Global"],
+      "rule-set:TikTok": ["https://cloudflare-dns.com/dns-query#🎵 TikTok", "https://dns.google/dns-query#🎵 TikTok", "https://unfiltered.adguard-dns.com/dns-query#🎵 TikTok"],
     },
       "prefer-h3": false,
     "respect-rules": false,
@@ -3255,6 +3329,32 @@ function replaceRuleProxyGroup(rule, groupName, replacement) {
   fields[targetIndex] = replacement;
   return fields.join(',');
 }
+function removeDisabledDnsNameserverPolicies(dns, disabledGroupNames) {
+  const policy = dns && dns['nameserver-policy'];
+  if (!policy || typeof policy !== 'object' || Array.isArray(policy)) return;
+  // 仅清理关闭时删除业务路由的常规代理组，不处理顶层选择组、FCM 或 Tailscale。
+  const managedDisabledGroups = new Set(
+    Array.from(disabledGroupNames).filter((name) =>
+      REMOVE_ROUTING_RULES_FOR_DISABLED_GROUPS.has(name)
+    )
+  );
+  if (managedDisabledGroups.size === 0) return;
+  Object.keys(policy).forEach((rule) => {
+    const original = policy[rule];
+    const nameservers = Array.isArray(original) ? original : [original];
+    const retained = nameservers.filter((nameserver) => {
+      if (typeof nameserver !== 'string') return true;
+      const groupIndex = nameserver.lastIndexOf('#');
+      if (groupIndex < 0) return true;
+      return !managedDisabledGroups.has(nameserver.slice(groupIndex + 1).trim());
+    });
+    if (retained.length === 0) {
+      delete policy[rule];
+    } else {
+      policy[rule] = Array.isArray(original) ? retained : retained[0];
+    }
+  });
+}
 function collectRuleProviderReferences(value, references = new Set()) {
   if (typeof value === 'string') {
     for (const match of value.matchAll(/\bRULE-SET\s*,\s*([^,\s)]+)/gi)) {
@@ -3423,6 +3523,9 @@ function main(config, profileName) {
       return updatedRule;
     });
   }
+
+  // 同步清理 nameserver-policy 中指向已关闭常规代理组的 DNS 出口引用。
+  removeDisabledDnsNameserverPolicies(result.dns, disabledGroupNames);
 
   // ---- 6.5 WebRTC 阻断开关：默认关闭时不改动模板规则；打开后按指定特征移除全部匹配规则 ----
   if (ruleOptionsEnable['关闭WebRTC阻断'] === true && Array.isArray(result.rules)) {
