@@ -2839,7 +2839,9 @@ const COUNTRY_REGION_TARGET_GROUPS = [
   '🎧 Spotify',
   '🎬 Emby',
   '💬 Discord',
+  '💬 LINE',
   '👽 Reddit',
+  '🎥 Netflix',
 ];
 const COUNTRY_REGION_CHILD_GROUP_TYPES = [
   { suffix: '自动选择', type: 'url-test' },
