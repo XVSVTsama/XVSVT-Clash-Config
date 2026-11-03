@@ -634,7 +634,6 @@ rules:
   - DOMAIN,gh-proxy.com,DIRECT
   - DOMAIN-SUFFIX,alipayeshop.com,DIRECT
   - RULE-SET,echs_direct_ip,DIRECT,no-resolve
-  # 国内直连域名：geolocation-cn + cn-additional + 三个平台国内集，均为显式域名，不含 +.cn 通配。
   - RULE-SET,geolocation-cn,DIRECT
   - RULE-SET,cn-additional,DIRECT
   - RULE-SET,apple-cn,DIRECT
@@ -646,7 +645,6 @@ rules:
   - DOMAIN,clash.razord.top,DIRECT
   - DOMAIN,yacd.haishan.me,DIRECT
   - PROCESS-NAME,svchost.exe,DIRECT
-  # Tailscale MagicDNS：交给 Tailscale 组，由 Tailscale直连 开关决定直连或代理；须早于 private。
   - DOMAIN-SUFFIX,ts.net,Tailscale
   - RULE-SET,private,DIRECT,no-resolve    
   - RULE-SET,lancidr,DIRECT,no-resolve
@@ -658,7 +656,7 @@ rules:
   - DOMAIN,gfwsb.yiku.xyz,DIRECT
   - DOMAIN,bsub.douyincdns.com,DIRECT
   - DOMAIN,sub.rinkitotokiku.online,DIRECT
-  # Verified Android package IDs for apps that officially support Emby.
+  # 支持 Emby 的 Android 应用包名。
   - PROCESS-NAME,com.mountains.hills,🎬 Emby
   - PROCESS-NAME,com.hamhub.app,🎬 Emby
   - PROCESS-NAME,com.oumi.utility.media.hub,🎬 Emby
@@ -680,11 +678,11 @@ rules:
   - "PROCESS-NAME-REGEX,.*telegram.*,📲 Telegram"
   - RULE-SET,telegramcidr,📲 Telegram,no-resolve
   - RULE-SET,telegram_domain,📲 Telegram
-  # 🔎 Google 提前到 AI 组之前：Google 域名先由本组接管，Gemini 规则集也指向本组。
+  # 🔎 Google 域名与 Gemini 规则集由本组接管。
   - RULE-SET,google,🔎 Google
   - RULE-SET,google-cn,🔎 Google
   - RULE-SET,Gemini_Domain,🔎 Google
-  # ♾️ Meta 提前到 AI 组之前：Meta 域名与 Meta AI 规则统一由本组接管。
+  # ♾️ Meta 域名与 Meta AI 规则统一由本组接管。
   - RULE-SET,meta,♾️ Meta
   - DOMAIN-SUFFIX,muse.ai,♾️ Meta
   - DOMAIN,hatch-api.meta.ai,♾️ Meta
@@ -747,7 +745,6 @@ rules:
   - RULE-SET,ehentai,📚 EHentai
   - RULE-SET,pikpak,☁️ PikPak
   - RULE-SET,line,💬 LINE
-  # 该 CloudFront 分发域跟随金融支付组；其余 cloudfront.net 域名按默认链路走（最终指向代理）。
   - DOMAIN,d3r7nsslvs6aaf.cloudfront.net,💳 金融支付
   - RULE-SET,category-cryptocurrency,💳 金融支付
   - RULE-SET,paypal,💳 金融支付
