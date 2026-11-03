@@ -194,6 +194,7 @@ dns:
     - tls://223.5.5.5#DIRECT
     - 114.114.114.114#DIRECT
     - https://1.12.12.12/dns-query#DIRECT
+  # Cloudflare Gateway DoH 端点（自有账户 DNS location: hrbgyitz34），未设置过滤策略；
   proxy-server-nameserver: 
     - https://hrbgyitz34.cloudflare-gateway.com/dns-query#DIRECT
   direct-nameserver: *direct_dns_servers
