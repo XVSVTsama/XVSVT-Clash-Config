@@ -558,7 +558,7 @@ const TEMPLATE = {
       "rule-set:games": ["https://cloudflare-dns.com/dns-query#🎮 Games-Global", "https://dns.google/dns-query#🎮 Games-Global", "https://unfiltered.adguard-dns.com/dns-query#🎮 Games-Global"],
       "rule-set:TikTok": ["https://cloudflare-dns.com/dns-query#🎵 TikTok", "https://dns.google/dns-query#🎵 TikTok", "https://unfiltered.adguard-dns.com/dns-query#🎵 TikTok"],
     },
-      "prefer-h3": false,
+      "prefer-h3": true,
     "respect-rules": false,
     "enhanced-mode": "fake-ip",
     "fake-ip-range": "198.18.0.1/16",
