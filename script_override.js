@@ -39,7 +39,7 @@ const Compatible_With_Bettbox = {
  *  来源：
  *    JS 脚本：
  *    https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
- *    模板：
+ *    YAML 模板：
  *    https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/mihomo.yaml
  *    仓库：
  *    https://github.com/XVSVTsama/XVSVT-Clash-Config

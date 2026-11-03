@@ -1,3 +1,33 @@
+#   JS 脚本：
+#   https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
+#   YAML 模板：
+#   https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/mihomo.yaml
+#   仓库：
+#   https://github.com/XVSVTsama/XVSVT-Clash-Config
+#   作者：
+#   https://github.com/XVSVTsama
+
+.templates:
+  # proxy-groups 共享片段
+  default_choices: &proxy_default_choices
+    - 👉 手动切换
+    - ♻️ 自动选择
+    - 🔄 负载均衡
+    - DIRECT
+  healthcheck: &proxy_healthcheck { url: https://g.cn/generate_204, interval: 300, lazy: true, max-failed-times: 1 }
+  # dns 共享片段
+  direct_dns: &direct_dns_servers
+    - https://dns.alidns.com/dns-query#DIRECT
+    - https://doh.pub/dns-query#DIRECT
+    - https://doh.360.cn/dns-query#DIRECT
+  # rule-providers 共享片段
+  provider_base: &provider_base { type: http, interval: 86400 }
+  domain_mrs: &domain_mrs { <<: *provider_base, behavior: domain, format: mrs }
+  ipcidr_mrs: &ipcidr_mrs { <<: *provider_base, behavior: ipcidr, format: mrs }
+  domain_yaml: &domain_yaml { <<: *provider_base, behavior: domain }
+  ipcidr_yaml: &ipcidr_yaml { <<: *provider_base, behavior: ipcidr }
+  classical_yaml: &classical_yaml { <<: *provider_base, behavior: classical }
+
 mode: rule
 find-process-mode: strict
 mixed-port: 7254
@@ -81,9 +111,12 @@ ntp:
   enable: true              
   write-to-system: false      
   server: 'time.apple.com'   
-  # - 'ntp.aliyun.com'        
-  # - 'time1.cloud.tencent.com' 
+  # server: 'pool.ntp.org'
+  # server: 'ntp.aliyun.com'
+  # server: 'time1.cloud.tencent.com'
   port: 123
+  interval: 30
+  # dialer-proxy: DIRECT
 
 sniffer:
   enable: true
@@ -159,27 +192,6 @@ sniffer:
     - 210.2.4.8/32
     - 101.226.4.6/32
     - 218.30.118.6/32
-
-.templates:
-  # proxy-groups 共享片段
-  default_choices: &proxy_default_choices
-    - 👉 手动切换
-    - ♻️ 自动选择
-    - 🔄 负载均衡
-    - DIRECT
-  healthcheck: &proxy_healthcheck { url: https://g.cn/generate_204, interval: 300, lazy: true, max-failed-times: 1 }
-  # dns 共享片段
-  direct_dns: &direct_dns_servers
-    - https://dns.alidns.com/dns-query#DIRECT
-    - https://doh.pub/dns-query#DIRECT
-    - https://doh.360.cn/dns-query#DIRECT
-  # rule-providers 共享片段
-  provider_base: &provider_base { type: http, interval: 86400 }
-  domain_mrs: &domain_mrs { <<: *provider_base, behavior: domain, format: mrs }
-  ipcidr_mrs: &ipcidr_mrs { <<: *provider_base, behavior: ipcidr, format: mrs }
-  domain_yaml: &domain_yaml { <<: *provider_base, behavior: domain }
-  ipcidr_yaml: &ipcidr_yaml { <<: *provider_base, behavior: ipcidr }
-  classical_yaml: &classical_yaml { <<: *provider_base, behavior: classical }
 
 dns:
   enable: true                                             
