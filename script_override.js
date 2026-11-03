@@ -486,7 +486,6 @@ const TEMPLATE = {
       ],
       // 业务域名解析尽可能跟随路由组；仅覆盖 DOMAIN、DOMAIN-SUFFIX 与 domain/classical 规则集。
       // Mihomo 不保证重叠匹配按映射文件顺序优先；这些映射用于提高 UDP 解析精度，不承诺完全一致。
-      "rule-set:googlefcm": ["https://cloudflare-dns.com/dns-query#FCM", "https://dns.google/dns-query#FCM", "https://unfiltered.adguard-dns.com/dns-query#FCM"],
       "rule-set:microsoft": ["https://cloudflare-dns.com/dns-query#💠 海外微软", "https://dns.google/dns-query#💠 海外微软", "https://unfiltered.adguard-dns.com/dns-query#💠 海外微软"],
       "rule-set:apple": ["https://cloudflare-dns.com/dns-query#🍎 海外苹果", "https://dns.google/dns-query#🍎 海外苹果", "https://unfiltered.adguard-dns.com/dns-query#🍎 海外苹果"],
       "rule-set:telegram_domain": ["https://cloudflare-dns.com/dns-query#📲 Telegram", "https://dns.google/dns-query#📲 Telegram", "https://unfiltered.adguard-dns.com/dns-query#📲 Telegram"],
