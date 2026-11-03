@@ -463,9 +463,9 @@ const TEMPLATE = {
     ],
     "direct-nameserver-follow-policy": true,
     "nameserver": [
-      "https://cloudflare-dns.com/dns-query#👉 手动切换",
-      "https://dns.google/dns-query#👉 手动切换",
-      "https://unfiltered.adguard-dns.com/dns-query#👉 手动切换"
+      "https://cloudflare-dns.com/dns-query#🌍 PROXY",
+      "https://dns.google/dns-query#🌍 PROXY",
+      "https://unfiltered.adguard-dns.com/dns-query#🌍 PROXY"
     ],
     "nameserver-policy": {
       "+.ts.net": [
