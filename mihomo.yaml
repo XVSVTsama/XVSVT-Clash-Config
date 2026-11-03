@@ -460,16 +460,16 @@ proxy-groups:
     type: select
     proxies: *proxy_default_choices
     include-all: true
-  # FCM：Google FCM 域名分流目标，由 FCM直连 开关控制本组的 proxies。
-  # 开启时使用 DIRECT，关闭时使用 👉 手动切换；开关图标取自本组的 icon 字段。
+  # FCM：Google FCM 域名分流目标，由 关闭FCM直连 开关控制本组的 proxies。
+  # 默认关闭时使用 DIRECT，开启后使用 👉 手动切换；开关图标取自本组的 icon 字段。
   - name: FCM
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-MiToverG422-Qure-fcm.png"
     type: select
     proxies:
       - 👉 手动切换
       - DIRECT
-  # Tailscale：MagicDNS 域名（ts.net）分流目标，由 Tailscale直连 开关控制本组的 proxies。
-  # 开启时使用 DIRECT，关闭时使用 👉 手动切换；开关图标取自本组的 icon 字段。
+  # Tailscale：MagicDNS 域名（ts.net）分流目标，由 关闭Tailscale直连 开关控制本组的 proxies。
+  # 默认关闭时使用 DIRECT，开启后使用 👉 手动切换；开关图标取自本组的 icon 字段。
   - name: Tailscale
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-tailscale.svg"
     type: select

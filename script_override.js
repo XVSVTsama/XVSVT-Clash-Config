@@ -74,7 +74,7 @@ const Compatible_With_Bettbox = {
  *    节点级处理分三类：
  *      1) 筛选：高/低倍率筛选、国家/地区分组、TGDC 候选；
  *      2) 注入：入口解析（注入入口节点，并用 exclude-filter 排除同名节点）；
- *      3) 修正字段：强制证书验证、启用 Reality 增强、试开启节点UDP、
+ *      3) 修正字段：强制证书验证、Reality 增强、试开启节点UDP、
  *         IPv6优先、hosts 改写节点 server。
  *    按来源看：筛选类只涉及顶层 proxies；入口解析的节点来自脚本维护区，
  *    写入顶层 proxies；修正字段类中证书/UDP/IPv6 也覆盖 proxy-providers，
@@ -133,7 +133,7 @@ const ruleOptionsEnable = {
  * 为模板里的每个代理组（策略组）单独定义开关：
  * true  = 启用该策略组
  * false = 禁用该策略组（会从 proxy-groups 中移除并清理引用；业务组还会删除对应路由规则）
- * 另有功能开关（如 FCM直连）：只调整组内节点，不涉及策略组启停。
+ * 另有只调整组内节点的功能开关（FCM 与 Tailscale 的直连开关）：不涉及策略组启停。
  */
 
   // 手动选择策略组
@@ -192,10 +192,11 @@ const ruleOptionsEnable = {
   // 开启时统一把订阅节点 skip-cert-verify 置为 false（强制校验证书）；关闭时不干预，保留订阅节点原有设置。
   // provider 节点不在此遍历范围内，开启时改由 override.skip-cert-verify 生效。
   '强制证书验证': false,
-  // 是否为带非空 public-key/short-id 的 Reality 节点启用 support-x25519mlkem768（X25519MLKEM768 后量子密钥协商）；
+  // 默认关闭：为带非空 public-key/short-id 的 Reality 节点启用 support-x25519mlkem768（X25519MLKEM768 后量子密钥协商）；
+  // 打开本开关后不再写入该字段，保留订阅节点原有值。
   // 仅遍历订阅顶层 proxies；provider 的 override 只能改固定字段，
   // 无法改写嵌套 reality-opts，故不涉及 provider 节点。
-  '启用 Reality 增强': true,
+  '关闭 Reality 增强': false,
   // 默认不改动订阅节点的 udp；开启时统一设置为 true，允许 UDP 通过代理。
   // provider 节点不在此遍历范围内，开启时改由 override.udp 生效。
   '试开启节点UDP': false,
@@ -203,10 +204,10 @@ const ruleOptionsEnable = {
   // 开启时改由 override.ip-version（统一 ipv6-prefer）生效。
   'IPv6优先': false,
   // --- 组与实验 ---
-  // 默认打开：隐藏组 FCM 仅含 DIRECT；关闭后优先使用 👉 手动切换，若该组已关闭则回退到 🌍 PROXY，再回退到 DIRECT（不移除 FCM 组）。开关图标取自 FCM 代理组的 icon 字段。
-  'FCM直连': true,
-  // 默认打开：Tailscale 分组仅含 DIRECT；关闭后优先使用 👉 手动切换，若该组已关闭则回退到 🌍 PROXY，再回退到 DIRECT（不移除该组）。开关图标取自 Tailscale 代理组的 icon 字段。
-  'Tailscale直连': true,
+  // 默认关闭：隐藏组 FCM 仅含 DIRECT；打开后优先使用 👉 手动切换，若该组已关闭则回退到 🌍 PROXY，再回退到 DIRECT（不移除 FCM 组）。开关图标取自 FCM 代理组的 icon 字段。
+  '关闭FCM直连': false,
+  // 默认关闭：Tailscale 分组仅含 DIRECT；打开后优先使用 👉 手动切换，若该组已关闭则回退到 🌍 PROXY，再回退到 DIRECT（不移除该组）。开关图标取自 Tailscale 代理组的 icon 字段。
+  '关闭Tailscale直连': false,
   // 开启 Telegram DC/地区实验分流；关闭时不改变原 Telegram 规则、策略组和规则集。
   'TGDC实验分流': false,
   // 开启后注入 SukkaW/Surge 的 reject 规则集与广告拦截策略组；关闭时不注入其策略组、规则集和规则。
@@ -224,8 +225,8 @@ const ruleOptionsEnable = {
   // --- 网络与规则 ---
   // 最后为节点解析 DNS 的无协议地址补 tcp://；不改变显式协议、出口后缀或 DNS 优先级。
   '代理节点 DNS 使用 TCP': false,
-  // 默认保留 WebRTC 阻断规则；关闭后删除所有同时包含指定 UDP 网络和端口特征的规则。
-  'WebRTC阻断': true,
+  // 默认关闭：保留 WebRTC 阻断规则；打开后删除所有同时包含指定 UDP 网络和端口特征的规则。
+  '关闭WebRTC阻断': false,
 };
 
 // 关闭这些业务组时删除指向它们的路由规则，而不是把规则改写到全局兜底。
@@ -1486,18 +1487,18 @@ const LOAD_BALANCE_STRATEGY_GROUP_NAMES = TEMPLATE['proxy-groups']
 // 纯功能开关的面板图标：这些开关不生成策略组，图标只出现在开关面板（由 serviceConfigs 引用）。
 const FEATURE_SWITCH_ICONS = {
   '强制证书验证': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-MiToverG422-Qure-SSL.png',
-  '启用 Reality 增强': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-MiToverG422-Qure-Spark.png',
+  '关闭 Reality 增强': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-MiToverG422-Qure-Spark.png',
   '试开启节点UDP': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-udp.svg',
   'IPv6优先': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-ipv6-prefer.svg',
   '高倍率筛选': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-high.svg',
   '低倍率筛选': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-low.svg',
   '代理节点 DNS 使用 TCP': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-TCP.png',
-  'WebRTC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-webrtc-block.svg',
+  '关闭WebRTC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-webrtc-block.svg',
 };
 
 // Bettbox 的可视化开关图标：客户端会读取全局 serviceConfigs（name 对应 ruleOptionsEnable 的 key，
 // icon 为该开关行显示的图标）。上面只覆盖代理组；功能开关的图标来源：
-// FCM直连 从 FCM 代理组的 icon 字段派生；
+// 关闭FCM直连 从 FCM 代理组的 icon 字段派生；
 // 其余功能开关在此直接指定固定图标；所有图标均由本仓库 assets/icons 通过 jsDelivr 提供。
 const serviceConfigs = TEMPLATE['proxy-groups']
   .filter(
@@ -1512,11 +1513,11 @@ const serviceConfigs = TEMPLATE['proxy-groups']
   }))
   .concat([
     {
-      name: 'FCM直连',
+      name: '关闭FCM直连',
       icon: (TEMPLATE['proxy-groups'].find((group) => group && group.name === 'FCM') || {}).icon
     },
     {
-      name: 'Tailscale直连',
+      name: '关闭Tailscale直连',
       icon: (TEMPLATE['proxy-groups'].find((group) => group && group.name === 'Tailscale') || {}).icon
     },
     {
@@ -1524,8 +1525,8 @@ const serviceConfigs = TEMPLATE['proxy-groups']
       icon: FEATURE_SWITCH_ICONS['强制证书验证']
     },
     {
-      name: '启用 Reality 增强',
-      icon: FEATURE_SWITCH_ICONS['启用 Reality 增强']
+      name: '关闭 Reality 增强',
+      icon: FEATURE_SWITCH_ICONS['关闭 Reality 增强']
     },
     {
       name: '试开启节点UDP',
@@ -1564,8 +1565,8 @@ const serviceConfigs = TEMPLATE['proxy-groups']
       icon: FEATURE_SWITCH_ICONS['代理节点 DNS 使用 TCP']
     },
     {
-      name: 'WebRTC阻断',
-      icon: FEATURE_SWITCH_ICONS['WebRTC阻断']
+      name: '关闭WebRTC阻断',
+      icon: FEATURE_SWITCH_ICONS['关闭WebRTC阻断']
     }
   ]);
 
@@ -2481,16 +2482,16 @@ function applyTelegramDcExperiment(result, originalProxies) {
 
 // ============================================================================
 // 节点字段修正开关（顶层节点通路）
-// 强制证书验证 / 启用 Reality 增强 / 试开启节点UDP / IPv6优先 就地改写顶层节点；
+// 强制证书验证 / Reality 增强 / 试开启节点UDP / IPv6优先 就地改写顶层节点；
 // provider 节点由 applyProviderOverrides() 走 override 通道，开关语义与这里一致。
 // ============================================================================
 function applyNodeFieldOverrides(proxies) {
   const nodeList = Array.isArray(proxies) ? proxies : [];
 
-  // Reality 增强开关处理
-  const enableRealityEnhance = ruleOptionsEnable['启用 Reality 增强'] === true;
+  // Reality 增强开关处理：默认开启（保留写入）；「关闭 Reality 增强」打开后跳过该字段。
+  const disableRealityEnhance = ruleOptionsEnable['关闭 Reality 增强'] === true;
 
-  if (enableRealityEnhance) {
+  if (!disableRealityEnhance) {
     for (const proxy of nodeList) {
       const reality = proxy?.["reality-opts"];
 
@@ -3381,23 +3382,25 @@ function main(config, profileName) {
     }
   });
 
-  // ---- 5. FCM / Tailscale 直连开关：默认打开时对应隐藏组仅含 DIRECT；
-  //      关闭后仅保留 👉 手动切换（这两个开关不移除对应组，仅改写组内节点） ----
+  // ---- 5. FCM / Tailscale 直连开关：默认关闭时对应隐藏组仅含 DIRECT；
+  //      打开后仅保留 👉 手动切换（这两个开关不移除对应组，仅改写组内节点） ----
   const directSwitchGroups = [
-    ['FCM直连', 'FCM'],
-    ['Tailscale直连', 'Tailscale']
+    ['关闭FCM直连', 'FCM'],
+    ['关闭Tailscale直连', 'Tailscale']
   ];
   directSwitchGroups.forEach(([optionName, groupName]) => {
-    const directEnabled = ruleOptionsEnable[optionName] === true;
+    const directDisabled = ruleOptionsEnable[optionName] === true;
     result['proxy-groups'].forEach((group) => {
       if (!group || group.name !== groupName) return;
-      if (directEnabled) {
-        group.proxies = ['DIRECT'];
-      } else if (disabledGroupNames.has('👉 手动切换')) {
-        // 手动组已关闭时沿用全局兜底，避免该组引用一个不存在的策略组。
-        group.proxies = [fallbackTarget];
+      if (directDisabled) {
+        if (disabledGroupNames.has('👉 手动切换')) {
+          // 手动组已关闭时沿用全局兜底，避免该组引用一个不存在的策略组。
+          group.proxies = [fallbackTarget];
+        } else {
+          group.proxies = ['👉 手动切换'];
+        }
       } else {
-        group.proxies = ['👉 手动切换'];
+        group.proxies = ['DIRECT'];
       }
     });
   });
@@ -3419,8 +3422,8 @@ function main(config, profileName) {
     });
   }
 
-  // ---- 6.5 WebRTC 阻断开关：默认开启时不改动模板规则；关闭时按指定特征移除全部匹配规则 ----
-  if (ruleOptionsEnable['WebRTC阻断'] === false && Array.isArray(result.rules)) {
+  // ---- 6.5 WebRTC 阻断开关：默认关闭时不改动模板规则；打开后按指定特征移除全部匹配规则 ----
+  if (ruleOptionsEnable['关闭WebRTC阻断'] === true && Array.isArray(result.rules)) {
     const isWebRtcBlockingRule = (rule) =>
       typeof rule === 'string' &&
       rule.includes('NETWORK,UDP') &&

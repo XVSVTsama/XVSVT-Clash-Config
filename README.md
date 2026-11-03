@@ -224,8 +224,8 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><th width="20%">策略组名称<img src="assets/table-spacer.png" width="320" height="1" alt=""></th><th width="14%">由哪个开关决定<img src="assets/table-spacer.png" width="224" height="1" alt=""></th><th width="8%">默认<img src="assets/table-spacer.png" width="128" height="1" alt=""></th><th width="58%">说明<img src="assets/table-spacer.png" width="928" height="1" alt=""></th></tr>
 </thead>
 <tbody>
-<tr><td><strong>FCM</strong></td><td><code>FCM直连</code></td><td>开启</td><td>开关不移除本组，只改写组内节点：开启=<code>DIRECT</code>；关闭且 <code>👉 手动切换</code> 已禁用时回退到全局兜底。脚本内嵌模板把本组标记为隐藏组（<code>hidden</code>）</td></tr>
-<tr><td><strong>Tailscale</strong></td><td><code>Tailscale直连</code></td><td>开启</td><td>开关不移除本组，只改写组内节点：开启=<code>DIRECT</code>；关闭且 <code>👉 手动切换</code> 已禁用时回退到全局兜底。脚本内嵌模板把本组标记为隐藏组（<code>hidden</code>）</td></tr>
+<tr><td><strong>FCM</strong></td><td><code>关闭FCM直连</code></td><td>关闭</td><td>开关不移除本组，只改写组内节点：默认关闭时组内=<code>DIRECT</code>；打开后改用 <code>👉 手动切换</code>，若 <code>👉 手动切换</code> 已禁用则回退到全局兜底。脚本内嵌模板把本组标记为隐藏组（<code>hidden</code>）</td></tr>
+<tr><td><strong>Tailscale</strong></td><td><code>关闭Tailscale直连</code></td><td>关闭</td><td>开关不移除本组，只改写组内节点：默认关闭时组内=<code>DIRECT</code>；打开后改用 <code>👉 手动切换</code>，若 <code>👉 手动切换</code> 已禁用则回退到全局兜底。脚本内嵌模板把本组标记为隐藏组（<code>hidden</code>）</td></tr>
 <tr><td><em><strong>📲 Telegram(兜底)</strong></em></td><td><em><strong><code>TGDC实验分流</code></strong></em></td><td><em><strong>关闭</strong></em></td><td><em><strong>该开关开启时由 <code>📲 Telegram</code> 更名而来，承接 Telegram 进程、域名与 CIDR 规则</strong></em></td></tr>
 <tr><td><strong>📲 Telegram-DC1-DC3-Miami</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>开关开启时按 Telegram DC IP 规则优先命中美国/迈阿密节点；地区无候选时列出全部合格节点供手动选择</td></tr>
 <tr><td><strong>📲 Telegram-DC2-DC4-Amsterdam</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>同上，对应荷兰/阿姆斯特丹节点</td></tr>
@@ -244,13 +244,13 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 </thead>
 <tbody>
 <tr><td><code>强制证书验证</code></td><td>关闭</td><td>开启时统一把订阅顶层节点的 <code>skip-cert-verify</code> 置为 <code>false</code>；provider 节点经 <code>override.skip-cert-verify</code> 同步生效；关闭时不干预订阅原有设置</td></tr>
-<tr><td><code>启用 Reality 增强</code></td><td>开启</td><td>为带非空 <code>public-key</code> / <code>short-id</code> 的订阅顶层 Reality 节点启用 X25519MLKEM768 后量子密钥协商；provider 的 <code>override</code> 只能改固定字段、无法改写嵌套 <code>reality-opts</code>，因此不涉及 provider 节点</td></tr>
+<tr><td><code>关闭 Reality 增强</code></td><td>关闭</td><td>默认关闭时为带非空 <code>public-key</code> / <code>short-id</code> 的订阅顶层 Reality 节点启用 X25519MLKEM768 后量子密钥协商；打开本开关后不再写入该字段、保留订阅原有值；provider 的 <code>override</code> 只能改固定字段、无法改写嵌套 <code>reality-opts</code>，因此不涉及 provider 节点</td></tr>
 <tr><td><code>试开启节点UDP</code></td><td>关闭</td><td>开启时为订阅顶层节点设置 <code>udp: true</code>，provider 节点经 <code>override.udp</code> 同步生效；关闭时不改动原有设置</td></tr>
 <tr><td><code>IPv6优先</code></td><td>关闭</td><td>改写订阅顶层节点 <code>ip-version</code>：<code>ipv6</code> 保持不变，<code>ipv6-prefer</code> 改为 <code>ipv6</code>，其余设为 <code>ipv6-prefer</code>；provider 节点经 <code>override.ip-version</code> 统一设为 <code>ipv6-prefer</code>，无法按节点区分原值</td></tr>
 <tr><td><code>高倍率筛选</code></td><td>关闭</td><td>在地区分组之前删除名称中显式标记倍率 <code>&gt;=2x</code> 的订阅顶层节点，并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
 <tr><td><code>低倍率筛选</code></td><td>关闭</td><td>在地区分组之前删除名称中显式标记倍率 <code>&lt;=0.5x</code> 的订阅顶层节点，并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
 <tr><td><code>代理节点 DNS 使用 TCP</code></td><td>关闭</td><td>为代理节点解析 DNS 中未标协议的地址启用 TCP；显式协议不变</td></tr>
-<tr><td><code>WebRTC阻断</code></td><td>开启</td><td>开启时保持模板规则不变；关闭时移除所有同时包含 <code>NETWORK,UDP</code> 与 <code>DST-PORT,3478-3479/5349-5350/19302-19309</code> 的规则</td></tr>
+<tr><td><code>关闭WebRTC阻断</code></td><td>关闭</td><td>默认关闭时保持模板规则不变；打开后移除所有同时包含 <code>NETWORK,UDP</code> 与 <code>DST-PORT,3478-3479/5349-5350/19302-19309</code> 的规则</td></tr>
 </tbody>
 </table>
 
@@ -261,7 +261,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><th width="22%">类别<img src="assets/table-spacer.png" width="352" height="1" alt=""></th><th width="7%">开关数<img src="assets/table-spacer.png" width="112" height="1" alt=""></th><th width="9%">代码内图标处数<img src="assets/table-spacer.png" width="144" height="1" alt=""></th><th width="24%">代理组显示<img src="assets/table-spacer.png" width="384" height="1" alt=""></th><th width="26%">开关面板显示（Bettbox 或其他兼容软件）<img src="assets/table-spacer.png" width="416" height="1" alt=""></th><th width="12%">重复<img src="assets/table-spacer.png" width="192" height="1" alt=""></th></tr>
 </thead>
 <tbody>
-<tr><td><strong>A1</strong> 模板内代理组开关（含 FCM直连、Tailscale直连）</td><td>25</td><td>25</td><td>有，JS 内模板各代理组自带</td><td>有，自动沿用对应代理组的图标，不重复写地址</td><td>否</td></tr>
+<tr><td><strong>A1</strong> 模板内代理组开关（含 FCM 与 Tailscale 的直连开关）</td><td>25</td><td>25</td><td>有，JS 内模板各代理组自带</td><td>有，自动沿用对应代理组的图标，不重复写地址</td><td>否</td></tr>
 <tr><td><strong>A2</strong> 模板内无开关的组（🌍 PROXY）</td><td>0</td><td>1</td><td>有，JS 内模板的 🌍 PROXY 组自带</td><td>❌</td><td>否</td></tr>
 <tr><td><strong>B1</strong> 注入整组、开关图标＝组图标（SKK、国家/地区、入口解析）</td><td>3</td><td>6</td><td>有，写在各注入组的定义处（SKK 段、国家/地区段、入口解析处）</td><td>有，开关项里内联同一张图</td><td>是，三对</td></tr>
 <tr><td><strong>B2</strong> 注入整组、开关图标≠组图标（TGDC）</td><td>1</td><td>4</td><td>有，写在 TGDC 组的定义处（三个 DC 组各一张国旗，兜底沿用 Telegram 组图标）</td><td>有，开关项里用 Telegram 标</td><td>否</td></tr>
