@@ -449,17 +449,17 @@ const TEMPLATE = {
     "use-hosts": true,
     "use-system-hosts": false,
     "default-nameserver": [
-      "tls://223.5.5.5#DIRECT",
-      "114.114.114.114#DIRECT",
-      "https://1.12.12.12/dns-query#DIRECT"
+      "tls://223.5.5.5",
+      "114.114.114.114",
+      "https://1.12.12.12/dns-query"
     ],
     "proxy-server-nameserver": [
-      "https://hrbgyitz34.cloudflare-gateway.com/dns-query#DIRECT"
+      "https://hrbgyitz34.cloudflare-gateway.com/dns-query"
     ],
     "direct-nameserver": [
-      "https://dns.alidns.com/dns-query#DIRECT",
-      "https://doh.pub/dns-query#DIRECT",
-      "https://doh.360.cn/dns-query#DIRECT"
+      "https://dns.alidns.com/dns-query",
+      "https://doh.pub/dns-query",
+      "https://doh.360.cn/dns-query"
     ],
     "direct-nameserver-follow-policy": true,
     "nameserver": [
@@ -478,11 +478,6 @@ const TEMPLATE = {
       ],
       "rule-set:private": [
         "system"
-      ],
-      "rule-set:proxy@direct,geolocation-cn,cn-additional,apple-cn,microsoft-cn,games-cn": [
-        "https://dns.alidns.com/dns-query#DIRECT",
-        "https://doh.pub/dns-query#DIRECT",
-        "https://doh.360.cn/dns-query#DIRECT"
       ],
       // 业务域名解析尽可能跟随路由组；仅覆盖 DOMAIN、DOMAIN-SUFFIX 与 domain/classical 规则集。
       // Mihomo 不保证重叠匹配按映射文件顺序优先；这些映射用于提高 UDP 解析精度，不承诺完全一致。
@@ -1101,14 +1096,6 @@ const TEMPLATE = {
       "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/games.mrs",
       "path": "./ruleset/games.mrs"
     },
-    "gfw": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "domain",
-      "format": "mrs",
-      "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/gfw.mrs",
-      "path": "./ruleset/gfw.mrs"
-    },
     "google": {
       "type": "http",
       "interval": 86400,
@@ -1225,14 +1212,6 @@ const TEMPLATE = {
       "behavior": "domain",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/private.txt",
       "path": "./ruleset/private.yaml"
-    },
-    "proxy": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "domain",
-      "format": "mrs",
-      "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/proxy.mrs",
-      "path": "./ruleset/proxy.mrs"
     },
     "proxy@direct": {
       "type": "http",
@@ -1548,8 +1527,6 @@ const TEMPLATE = {
     "PROCESS-NAME,bf6.exe,🎮 Games-Global",
     "RULE-SET,games,🎮 Games-Global",
     "RULE-SET,TikTok,🎵 TikTok",
-    "RULE-SET,proxy,🌍 PROXY",
-    "RULE-SET,gfw,🌍 PROXY",
     "MATCH,🌍 PROXY"
   ]
 };
@@ -3280,7 +3257,7 @@ function applyProxyDnsTcp(result) {
         /^[a-z][a-z0-9+.-]*:\/\//i.test(address)) {
       return value;
     }
-    // 无方括号 IPv6 必须按 URI 语法加方括号；完整保留 #DIRECT、#国内入口解析及其他参数。
+    // 无方括号 IPv6 必须按 URI 语法加方括号；保留其他参数。
     const colonCount = (address.match(/:/g) || []).length;
     if (!address.startsWith('[') && colonCount > 1) {
       return 'tcp://[' + address + ']' + value.slice(address.length);

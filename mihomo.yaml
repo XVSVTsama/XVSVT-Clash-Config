@@ -17,9 +17,9 @@
   healthcheck: &proxy_healthcheck { url: https://g.cn/generate_204, interval: 300, lazy: true, max-failed-times: 1 }
   # dns 共享片段
   direct_dns: &direct_dns_servers
-    - https://dns.alidns.com/dns-query#DIRECT
-    - https://doh.pub/dns-query#DIRECT
-    - https://doh.360.cn/dns-query#DIRECT
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+    - https://doh.360.cn/dns-query
   # rule-providers 共享片段
   provider_base: &provider_base { type: http, interval: 86400 }
   domain_mrs: &domain_mrs { <<: *provider_base, behavior: domain, format: mrs }
@@ -204,12 +204,12 @@ dns:
   use-hosts: true                                            
   use-system-hosts: false                                            
   default-nameserver:     
-    - tls://223.5.5.5#DIRECT
-    - 114.114.114.114#DIRECT
-    - https://1.12.12.12/dns-query#DIRECT
+    - tls://223.5.5.5
+    - 114.114.114.114
+    - https://1.12.12.12/dns-query
   # Cloudflare Gateway DoH 端点（自有账户 DNS location: hrbgyitz34），未设置过滤策略；
   proxy-server-nameserver: 
-    - https://hrbgyitz34.cloudflare-gateway.com/dns-query#DIRECT
+    - https://hrbgyitz34.cloudflare-gateway.com/dns-query
   direct-nameserver: *direct_dns_servers
   direct-nameserver-follow-policy: true
   nameserver:
@@ -229,7 +229,6 @@ dns:
     - 180.184.2.2
     'rule-set:private':
     - system
-    'rule-set:proxy@direct,geolocation-cn,cn-additional,apple-cn,microsoft-cn,games-cn': *direct_dns_servers
     # 业务域名解析尽可能跟随路由组；仅覆盖 DOMAIN、DOMAIN-SUFFIX 与 domain/classical 规则集。
     # Mihomo 不保证重叠匹配按映射文件顺序优先；这些映射用于提高 UDP 解析精度，不承诺完全一致。
     "rule-set:microsoft": ["https://cloudflare-dns.com/dns-query#💠 海外微软", "https://dns.google/dns-query#💠 海外微软", "https://unfiltered.adguard-dns.com/dns-query#💠 海外微软"]
@@ -577,7 +576,7 @@ rule-providers:
   ehentai: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/ehentai.mrs', path: ./ruleset/ehentai.mrs }
   fakeip-filter_domain: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/fakeip-filter.mrs', path: ./ruleset/fakeip-filter_domain.mrs }
   games: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/games.mrs', path: ./ruleset/games.mrs }
-  gfw: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/gfw.mrs', path: ./ruleset/gfw.mrs }
+  # gfw: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/gfw.mrs', path: ./ruleset/gfw.mrs }
   google: { <<: *domain_yaml, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/google.txt', path: ./ruleset/google.yaml }
   google-cn: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/google-cn.mrs', path: ./ruleset/google-cn.mrs }
   googlefcm: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/googlefcm.mrs', path: ./ruleset/googlefcm.mrs }
@@ -593,7 +592,7 @@ rule-providers:
   pikpak: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/pikpak.mrs', path: ./ruleset/pikpak.mrs }
   pixiv: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/pixiv.mrs', path: ./ruleset/pixiv.mrs }
   private: { <<: *domain_yaml, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/private.txt', path: ./ruleset/private.yaml }
-  proxy: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/proxy.mrs', path: ./ruleset/proxy.mrs }
+  # proxy: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/proxy.mrs', path: ./ruleset/proxy.mrs }
   proxy@direct: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/echs-top/proxy/main/mrs/domain/proxy@direct.mrs', path: ./rules/proxy@direct.mrs }
   reddit: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/reddit.mrs', path: ./ruleset/reddit.mrs }
   spotify: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/spotify.mrs', path: ./ruleset/spotify.mrs }
@@ -859,6 +858,6 @@ rules:
   - PROCESS-NAME,bf6.exe,🎮 Games-Global
   - RULE-SET,games,🎮 Games-Global
   - RULE-SET,TikTok,🎵 TikTok
-  - RULE-SET,proxy,🌍 PROXY
-  - RULE-SET,gfw,🌍 PROXY
+  # - RULE-SET,proxy,🌍 PROXY
+  # - RULE-SET,gfw,🌍 PROXY
   - MATCH,🌍 PROXY
