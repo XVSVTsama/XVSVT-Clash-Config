@@ -2842,6 +2842,9 @@ const COUNTRY_REGION_TARGET_GROUPS = [
   '💬 LINE',
   '👽 Reddit',
   '🎥 Netflix',
+  '💝 Patreon',
+  '📚 EHentai',
+  '☁️ PikPak',
 ];
 const COUNTRY_REGION_CHILD_GROUP_TYPES = [
   { suffix: '自动选择', type: 'url-test' },
