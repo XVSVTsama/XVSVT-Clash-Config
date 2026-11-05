@@ -1,5 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <svg x="49.41343" y="37.56466" width="84.46643" height="84.46643" viewBox="0 0 144 144" preserveAspectRatio="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><clipPath id="qure-source-viewport" clipPathUnits="userSpaceOnUse"><rect x="0" y="0" width="144" height="144" /></clipPath></defs><g transform="translate(7.91342756184 7.91342756184) scale(0.586572438163)"><g clip-path="url(#qure-source-viewport)">
 
 <title>荷兰</title>
 
@@ -14,5 +13,4 @@
 <path d="M 1.329,88.52657 l 140.9162,0 l 0,33.52603 L 1.329,122.0526 z" fill="url(#nl-blue)" stroke="url(#nl-blue)" stroke-width=".5" stroke-linejoin="round" />
 </g>
 
-  </svg>
-</svg>
+  </g></g></svg>

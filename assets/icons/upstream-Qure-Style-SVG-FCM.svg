@@ -1,5 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <svg x="39.20723" y="50.00000" width="80.11127" height="80.11127" viewBox="0 0 144 144" preserveAspectRatio="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><clipPath id="qure-source-viewport" clipPathUnits="userSpaceOnUse"><rect x="0" y="0" width="144" height="144" /></clipPath></defs><g transform="translate(10.1158748552 10) scale(0.556199304751)"><g clip-path="url(#qure-source-viewport)">
 
 <g transform="translate(0 0) scale(0.351219512195)">
   <g transform="translate(-0.3907 0.1768) scale(0.3996624)">
@@ -30,5 +29,4 @@
   </g>
 </g>
 
-  </svg>
-</svg>
+  </g></g></svg>

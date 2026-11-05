@@ -1,5 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <svg x="49.41343" y="37.56466" width="84.46643" height="84.46643" viewBox="0 0 144 144" preserveAspectRatio="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><clipPath id="qure-source-viewport" clipPathUnits="userSpaceOnUse"><rect x="0" y="0" width="144" height="144" /></clipPath></defs><g transform="translate(7.91342756184 7.91342756184) scale(0.586572438163)"><g clip-path="url(#qure-source-viewport)">
 
 <title>新加坡</title>
 
@@ -17,5 +16,4 @@
 <path d="M 38.33088,53.27315 L 41.92777,53.15757 L 43.13566,49.76646 L 44.35765,53.15194 L 47.95595,53.25342 L 45.11452,55.46201 L 46.12931,58.91373 L 43.15117,56.894 L 40.18147,58.92641 L 41.18218,55.47047 Z" fill="url(#sg-white)" />
 </g>
 
-  </svg>
-</svg>
+  </g></g></svg>
