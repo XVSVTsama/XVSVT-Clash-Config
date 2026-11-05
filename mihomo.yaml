@@ -379,7 +379,7 @@ proxy-groups:
     include-all: true
   # SKK 广告拦截组为可选配置；启用时，需同时取消注释下方 rule-providers 与 rules 对应段落。
   # - name: 🛑 广告拦截
-  #   icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-adblock.svg"
+  #   icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-AdBlock.svg"
   #   type: select
   #   proxies:
   #     - REJECT
@@ -476,7 +476,7 @@ proxy-groups:
     proxies: *proxy_default_choices
     include-all: true
   - name: 💠 海外微软
-    icon: https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-Microsoft.svg
+    icon: https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Microsoft.svg
     type: select
     proxies: *proxy_default_choices
     include-all: true
@@ -488,19 +488,19 @@ proxy-groups:
     include-all: true
   # Telegram DC 地区组为可选配置；启用时，需同时取消注释下方 rule-providers 与 rules 对应段落。
   # - name: 📲 Telegram-DC1-DC3-Miami
-  #   icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-United_States.png"
+  #   icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-United_States.svg"
   #   type: select
   #   filter: '(?i)🇺🇸|美国|迈阿密|miami|\bMIA\b|\bUSA\b|united\s*states'
   #   include-all: true
   #   empty-fallback: COMPATIBLE
   # - name: 📲 Telegram-DC2-DC4-Amsterdam
-  #   icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-Netherlands.png"
+  #   icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Netherlands.svg"
   #   type: select
   #   filter: '(?i)🇳🇱|荷兰|阿姆斯特丹|amsterdam|\bAMS\b|\bNL\b|netherlands'
   #   include-all: true
   #   empty-fallback: COMPATIBLE
   # - name: 📲 Telegram-DC5-SG
-  #   icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Singapore.png"
+  #   icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Singapore.svg"
   #   type: select
   #   filter: '(?i)🇸🇬|🇭🇰|新加坡|狮城|香港|singapore|hong\s*kong|\bSG\b|\bSGP\b|\bHK\b|\bHKG\b'
   #   include-all: true
@@ -524,19 +524,19 @@ proxy-groups:
     proxies: *proxy_default_choices
     include-all: true
   - name: 📚 EHentai
-    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-EHentai.svg"
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-EHentai.svg"
     type: select
     proxies: *proxy_default_choices
     include-all: true
   - name: ☁️ PikPak
-    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-PikPak.svg"
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-PikPak.svg"
     type: select
     proxies: *proxy_default_choices
     include-all: true
   # FCM：Google FCM 域名分流目标，由 关闭FCM直连 开关控制本组的 proxies。
   # 默认关闭时使用 DIRECT，开启后使用 👉 手动切换；开关图标取自本组的 icon 字段。
   - name: FCM
-    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-MiToverG422-Qure-fcm.png"
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-FCM.svg"
     type: select
     proxies:
       - 👉 手动切换

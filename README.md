@@ -398,12 +398,12 @@ venn-beta
 
 ### 图标作者与原项目
 
-- [Koolson/Qure](https://github.com/Koolson/Qure) 与 [MiToverG422/Qure](https://github.com/MiToverG422/Qure)
+- [Koolson/Qure](https://github.com/Koolson/Qure)
+- [aaANDkk/Qure_Style_SVG](https://github.com/aaANDkk/Qure_Style_SVG)
 - [DustinWin/ruleset_geodata](https://github.com/DustinWin/ruleset_geodata)
 - [AIsouler/MyClash](https://github.com/AIsouler/MyClash)
 - [Clash Verge](https://www.clashverge.dev/)
 - [Simple Icons](https://github.com/simple-icons/simple-icons)
-- 荷兰国旗图标由本项目自行绘制，并托管于 [`assets/icons/self-Netherlands.png`](assets/icons/self-Netherlands.png)。
 
 各图标文件的来源、许可、可使用范围及 SVG 优先维护约定，统一见 [图标资源与使用说明](assets/icons/README.md)。
 

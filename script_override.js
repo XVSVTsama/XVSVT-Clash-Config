@@ -836,7 +836,7 @@ const TEMPLATE = {
     },
     {
       "name": "💠 海外微软",
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-Microsoft.svg",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Microsoft.svg",
       "type": "select",
       "proxies": [
         "👉 手动切换",
@@ -895,7 +895,7 @@ const TEMPLATE = {
     },
     {
       "name": "📚 EHentai",
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-EHentai.svg",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-EHentai.svg",
       "type": "select",
       "proxies": [
         "👉 手动切换",
@@ -907,7 +907,7 @@ const TEMPLATE = {
     },
     {
       "name": "☁️ PikPak",
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-PikPak.svg",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-PikPak.svg",
       "type": "select",
       "proxies": [
         "👉 手动切换",
@@ -919,7 +919,7 @@ const TEMPLATE = {
     },
     {
       "hidden": true,
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-MiToverG422-Qure-fcm.png",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-FCM.svg",
       "name": "FCM",
       "proxies": [
         "👉 手动切换",
@@ -1560,8 +1560,8 @@ function findPriorityGroupInsertionIndex(proxyGroups) {
 
 // 纯功能开关的面板图标：这些开关不生成策略组，图标只出现在开关面板（由 serviceConfigs 引用）。
 const FEATURE_SWITCH_ICONS = {
-  '强制证书验证': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-MiToverG422-Qure-SSL.png',
-  '关闭 Reality 增强': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-MiToverG422-Qure-Spark.png',
+  '强制证书验证': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-SSL.svg',
+  '关闭 Reality 增强': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Spark.svg',
   '试开启节点UDP': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-udp.svg',
   'IPv6优先': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-ipv6-prefer.svg',
   '高倍率筛选': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-high.svg',
@@ -1612,15 +1612,15 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     },
     {
       name: 'TGDC实验分流',
-      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Telegram.png'
+      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Telegram.svg'
     },
     {
       name: 'SKK广告拦截',
-      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-adblock.svg'
+      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-AdBlock.svg'
     },
     {
       name: '国家/地区分组',
-      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Global.png'
+      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Global.svg'
     },
     {
       name: '高倍率筛选',
@@ -1632,7 +1632,7 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     },
     {
       name: '入口解析',
-      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Domestic.png'
+      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Domestic.svg'
     },
     {
       name: '代理节点 DNS 使用 TCP',
@@ -2425,19 +2425,19 @@ const TGDC_PROXY_GROUP_DEFINITIONS = [
   {
     name: '📲 Telegram-DC1-DC3-Miami',
     regionKeys: ['us'],
-    icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-United_States.png',
+    icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-United_States.svg',
   },
   {
     name: '📲 Telegram-DC2-DC4-Amsterdam',
     regionKeys: ['nl'],
-    // Qure 无荷兰原生图标，此为按 Qure 风格自绘的荷兰旗，托管于本仓库 assets/icons。
-    icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-Netherlands.png',
+    // 阿姆斯特丹组使用荷兰地区 SVG 旗帜图标。
+    icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Netherlands.svg',
   },
   {
     name: '📲 Telegram-DC5-SG',
     // 根据实际互联情况，DC5 组同时纳入香港与新加坡节点。
     regionKeys: ['sg', 'hk'],
-    icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Singapore.png',
+    icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Singapore.svg',
   },
 ];
 
@@ -2682,7 +2682,7 @@ function applyProviderOverrides(result) {
 
 // 开关图标：serviceConfigs 中同值内联（模板区求值时本常量尚未定义）。
 const SKK_ADBLOCK_ICON =
-  'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-adblock.svg';
+  'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-AdBlock.svg';
 
 const SKK_RULE_PROVIDERS = {
   skk_reject: {
@@ -2848,7 +2848,7 @@ function countryRegionChildGroupName(parentName, suffix) {
 
 // 国家/地区父组图标。
 const COUNTRY_REGION_PARENT_ICON =
-  'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Global.png';
+  'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Global.svg';
 
 // 候选只来自订阅顶层 proxies；provider 节点此阶段尚未加载，不参与地区分组。
 function buildCountryRegionProxyGroups(originalProxies) {
@@ -3212,7 +3212,7 @@ function applyEntryResolution(result) {
     proxies: proxyNames,
     url: 'https://connect.rom.miui.com/generate_204',
     'expected-status': '204',
-    icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Domestic.png'
+    icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Domestic.svg'
   };
   const proxyGroups = result['proxy-groups'] || [];
   const existingDisplayGroupIndex = proxyGroups.findIndex(

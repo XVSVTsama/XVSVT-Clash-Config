@@ -12,14 +12,14 @@
 
 ## 尺寸与视觉归一化
 
-当前配置引用的 41 张图标（17 PNG、24 SVG）统一按以下原则处理，文件名、格式与配置引用不变：
+当前配置引用的 41 张图标（8 PNG、33 SVG）统一按以下原则处理：
 
 - PNG 使用 **144×144 像素**透明画布；SVG 使用 **`viewBox="0 0 100 100"`**。按完整可见图形边界等比缩放并居中，不拉伸、不裁掉可见内容，也不以其他图案替换原稿。
 - 图形最长可见边以画布的**约 80%**为目标，四周保留留白。占比是视觉目标而非逐像素硬阈值；抗锯齿、低透明度边缘和阴影会使实际非透明边界略有差异，处理时仍保留这些内容。
-- 为平衡横向旗帜与细线图形的小尺寸辨识度，以下文件作轻微光学放大：`self-Netherlands.png`、`upstream-Koolson-Qure-Singapore.png`、`upstream-Koolson-Qure-United_States.png`、`upstream-simple-icons-meta.svg` 的目标约 **83%**；`upstream-clash-verge-rev-balance.svg` 的目标约 **84%**。其他文件按约 80% 处理。
+- 为平衡横向旗帜与细线图形的小尺寸辨识度，以下文件作轻微光学放大：`upstream-Qure-Style-SVG-Netherlands.svg`、`upstream-Qure-Style-SVG-Singapore.svg`、`upstream-Qure-Style-SVG-United_States.svg`、`upstream-simple-icons-meta.svg` 的目标约 **83%**；`upstream-clash-verge-rev-balance.svg` 的目标约 **84%**。其他文件按约 80% 处理。
 - PNG 仅进行等比重采样和透明留白调整；SVG 保留原路径、填色、渐变、裁剪定义及内部引用，通过外层等比变换调整尺寸与位置。原有可辨识设计和配色保留，PNG 不描摹为 SVG，SVG 不栅格化。
 
-本次归一化仅改变尺寸、位置与留白，**不改变来源、许可、署名要求、商业用途限制或品牌权利边界**；下列各来源的说明与限制仍适用。
+尺寸归一化仅改变尺寸、位置与留白，**不改变来源、许可、署名要求、商业用途限制或品牌权利边界**；下列各来源的说明与限制仍适用。
 
 ## 使用范围与许可边界
 
@@ -31,17 +31,44 @@
 
 | 文件 | 用途与来源 | 格式和使用条件 |
 | --- | --- | --- |
-| `self-Microsoft.svg` | 海外微软组；本仓库绘制的四色窗口图形 | 原生 SVG；本仓库原创表达部分遵循根 GPL-3.0，Microsoft 品牌图形、商标及其他第三方权利不因此获得授权。品牌使用应核对 [Microsoft 商标规范](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks)。 |
-| `self-EHentai.svg` | E-Hentai 组；本仓库绘制的通用图库图形，不是 E-Hentai 标志 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不授予 E-Hentai 名称或其他第三方权利。 |
-| `self-PikPak.svg` | PikPak 组；本仓库绘制的通用云存储图形，不是 PikPak 标志 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不授予 PikPak 名称或其他第三方权利。 |
-| `self-Netherlands.png` | TGDC 阿姆斯特丹组；本仓库自行绘制的荷兰旗图标 | 保留现有 PNG；没有可复用的对应矢量原稿，不自动描摹。原创表达部分遵循根 GPL-3.0；参考 Qure 视觉风格不代表得到 Qure 对其他素材的授权。 |
 | `self-TCP.png` | 代理节点 DNS 使用 TCP 开关；本仓库制作的 TCP 盾形图标 | 保留现有 PNG；没有可复用的对应矢量原稿，不自动描摹。原创表达部分遵循根 GPL-3.0，不对可能涉及的第三方图形权利作额外授权。 |
 | `self-filter-high.svg` | 高倍率筛选开关；本仓库原创的漏斗与向上箭头图形 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不包含第三方品牌图形。 |
 | `self-filter-low.svg` | 低倍率筛选开关；本仓库原创的漏斗与向下箭头图形 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不包含第三方品牌图形。 |
 | `self-udp.svg` | 试开启节点 UDP 开关；本仓库原创的数据包流图形 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不包含第三方品牌图形。 |
 | `self-webrtc-block.svg` | WebRTC 阻断开关；本仓库原创的屏蔽网络盾牌图形 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不包含第三方品牌图形。 |
-| `self-adblock.svg` | SKK 广告拦截开关与广告拦截策略组；本仓库原创的禁止标志盾牌图形 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不包含第三方品牌图形。 |
 | `self-ipv6-prefer.svg` | IPv6 优先开关；本仓库原创的地球与向上箭头图形 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不包含第三方品牌图形。 |
+
+## aaANDkk / Qure_Style_SVG
+
+来源固定为 [Qure_Style_SVG](https://github.com/aaANDkk/Qure_Style_SVG/tree/8c483c202fc160aee1ab93eb7e0d68a0854834fd)。图标集包含多种来源，不能整体视为单一许可；具体来源见[上游第三方说明](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/THIRD_PARTY_NOTICES.md)。Qure 参考与重绘素材需保留 Koolson/Qure 署名，仅供学习交流，不用于商业盈利；EHentai 素材注明 Bettbox / GPL-3.0 来源；品牌标志和商标仍归各自权利人所有。部分旗帜几何参考采用 MIT 许可的 [lipis/flag-icons](https://github.com/lipis/flag-icons)，相关来源记录见[上游说明](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/licenses/geometry-and-qure.txt)。
+
+| 本地文件 | 图库原文件 | 用途 |
+| --- | --- | --- |
+| `upstream-Qure-Style-SVG-Microsoft.svg` | [common/Microsoft.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/common/Microsoft.svg) | 海外微软组 |
+| `upstream-Qure-Style-SVG-EHentai.svg` | [common/EHentai.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/common/EHentai.svg) | EHentai 组 |
+| `upstream-Qure-Style-SVG-PikPak.svg` | [common/PikPak.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/common/PikPak.svg) | PikPak 组 |
+| `upstream-Qure-Style-SVG-AdBlock.svg` | [common/AdBlock.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/common/AdBlock.svg) | 广告拦截开关与策略组 |
+| `upstream-Qure-Style-SVG-Netherlands.svg` | [flag/Netherlands.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/flag/Netherlands.svg) | TGDC 阿姆斯特丹组 |
+| `upstream-Qure-Style-SVG-United_States.svg` | [flag/United_States.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/flag/United_States.svg) | TGDC 迈阿密组 |
+| `upstream-Qure-Style-SVG-Singapore.svg` | [flag/Singapore.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/flag/Singapore.svg) | TGDC 新加坡组 |
+| `upstream-Qure-Style-SVG-Global.svg` | [common/Global.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/common/Global.svg) | 国家/地区分组开关及地区父组 |
+| `upstream-Qure-Style-SVG-Telegram.svg` | [common/Telegram.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/common/Telegram.svg) | TGDC 实验分流开关 |
+| `upstream-Qure-Style-SVG-Domestic.svg` | [common/Domestic.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/common/Domestic.svg) | 国内入口解析组及开关 |
+| `upstream-Qure-Style-SVG-FCM.svg` | [common/FCM.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/common/FCM.svg) | FCM 组及其直连开关 |
+| `upstream-Qure-Style-SVG-SSL.svg` | [common/SSL.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/common/SSL.svg) | 强制证书验证开关 |
+| `upstream-Qure-Style-SVG-Spark.svg` | [common/Spark.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/common/Spark.svg) | 关闭 Reality 增强开关 |
+
+部分旗帜图形采用 MIT 许可的 [lipis/flag-icons](https://github.com/lipis/flag-icons) 几何，许可证文本如下：
+
+> The MIT License (MIT)
+>
+> Copyright (c) 2013 Panayiotis Lipiridis
+>
+> Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+>
+> The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+>
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ## AIsouler / MyClash
 
@@ -100,26 +127,3 @@ Simple Icons **项目**采用 [CC0 1.0](https://github.com/simple-icons/simple-i
 上游仓库根目录采用 [GPL-3.0](https://github.com/DustinWin/ruleset_geodata/blob/main/LICENSE)，本仓库保留 [许可文本副本](licenses/DustinWin-ruleset_geodata-LICENSE.txt)。但发布页未明确这七张 PNG 的逐图许可和完整原始权利来源，不能仅凭根许可证认定所有品牌图形均获 GPL 授权。对 GPL 实际覆盖的内容应遵守其条件；单图复用、商业用途及品牌权利仍应向上游或原权利人核实。
 
 以上保留 PNG：没有确认到同上游、保持现有视觉的对应原生 SVG，不用名称近似但图形不同的素材强行替代。
-
-## Koolson / Qure 与 MiToverG422 / Qure
-
-来源分别为 [Koolson 彩色图标目录](https://github.com/Koolson/Qure/tree/master/IconSet/Color) 与 [MiToverG422 彩色图标目录](https://github.com/MiToverG422/Qure/tree/master/IconSet/Color)。本地文件保留来源前缀，下表给出对应的 `IconSet/Color/` 文件名。
-
-| 本地文件 | 上游文件 | 用途 |
-| --- | --- | --- |
-| `upstream-Koolson-Qure-United_States.png` | Koolson / `United_States.png` | TGDC 迈阿密组 |
-| `upstream-Koolson-Qure-Singapore.png` | Koolson / `Singapore.png` | TGDC 新加坡组 |
-| `upstream-Koolson-Qure-Global.png` | Koolson / `Global.png` | 国家/地区分组开关及地区父组 |
-| `upstream-Koolson-Qure-Telegram.png` | Koolson / `Telegram.png` | TGDC 实验分流开关 |
-| `upstream-Koolson-Qure-Domestic.png` | Koolson / `Domestic.png` | 国内入口解析组及开关 |
-| `upstream-MiToverG422-Qure-fcm.png` | MiToverG422 / `fcm.png` | FCM 组及其直连开关 |
-| `upstream-MiToverG422-Qure-SSL.png` | MiToverG422 / `SSL.png` | 强制证书验证开关 |
-| `upstream-MiToverG422-Qure-Spark.png` | MiToverG422 / `Spark.png` | Reality 增强开关 |
-
-两个上游未找到标准许可证文件；适用说明见 [Koolson README](https://github.com/Koolson/Qure#免责声明) 与 [MiToverG422 README](https://github.com/MiToverG422/Qure#免责声明)：
-
-- 转载须注明出处。
-- 图标、LOGO 仅为资源共享、学习参考之目的，**不得用于商业用途或牟利**。
-- 相关版权归原作者及其网站所有，上游不保证资源的合法性、正当性和准确性。
-
-这些限制不被本仓库 GPL 覆盖或解除；非商业学习用途也不等于已获得所有第三方权利授权，需要额外用途时应先向相应权利人确认。本组保留原 PNG：未确认到同上游、保持现有视觉的对应原生 SVG，不嵌入位图或自动描摹。
