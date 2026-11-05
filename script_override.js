@@ -1535,6 +1535,28 @@ const TEMPLATE = {
 const LOAD_BALANCE_STRATEGY_GROUP_NAMES = TEMPLATE['proxy-groups']
   .filter((group) => group && group.type === 'load-balance')
   .map((group) => group.name);
+const LOAD_BALANCE_POSITION_GROUP_NAMES = new Set([
+  '🔄 负载均衡',
+  ...LOAD_BALANCE_STRATEGY_GROUP_NAMES,
+]);
+
+function findPriorityGroupInsertionIndex(proxyGroups) {
+  const priorities = [
+    LOAD_BALANCE_POSITION_GROUP_NAMES,
+    new Set(['♻️ 自动选择']),
+    new Set(['👉 手动切换']),
+  ];
+  const groups = Array.isArray(proxyGroups) ? proxyGroups : [];
+  for (const names of priorities) {
+    let lastIndex = -1;
+    groups.forEach((group, index) => {
+      if (group && names.has(group.name)) lastIndex = index;
+    });
+    if (lastIndex >= 0) return lastIndex + 1;
+  }
+  // 最顶层 🌍 PROXY 是模板必备组，固定放在首位。
+  return 1;
+}
 
 // 纯功能开关的面板图标：这些开关不生成策略组，图标只出现在开关面板（由 serviceConfigs 引用）。
 const FEATURE_SWITCH_ICONS = {
@@ -2729,27 +2751,11 @@ function applySkkAdBlock(result) {
   });
   result['rule-providers'] = providersWithSkk;
 
-  // 策略组插入核心选择组之后、第一个业务组之前；核心组被单独关闭时按
-  // 自动选择、手动切换、负载均衡的顺序回退，都不可用则追加到底部。
+  // 入口组已先按相同定位点插入；只按入口开关偏移，不检查 PROXY 或入口组是否存在。
   const proxyGroups = result['proxy-groups'] || [];
-  const autoSelectIndex = proxyGroups.findIndex(
-    (group) => group && group.name === '♻️ 自动选择'
-  );
-  const manualSwitchIndex = proxyGroups.findIndex(
-    (group) => group && group.name === '👉 手动切换'
-  );
-  const loadBalanceIndex = proxyGroups.findIndex(
-    (group) => group && group.name === '🔄 负载均衡'
-  );
-  let insertIndex = proxyGroups.length;
-  if (autoSelectIndex >= 0) {
-    insertIndex = autoSelectIndex + 1;
-  } else if (manualSwitchIndex >= 0) {
-    insertIndex = manualSwitchIndex + 1;
-  } else if (loadBalanceIndex >= 0) {
-    insertIndex = loadBalanceIndex + 1;
-  }
-  proxyGroups.splice(insertIndex, 0, deepClone(SKK_PROXY_GROUP));
+  const insertIndex = findPriorityGroupInsertionIndex(proxyGroups);
+  const reserveEntryGroupPosition = ruleOptionsEnable['入口解析'] === true ? 1 : 0;
+  proxyGroups.splice(insertIndex + reserveEntryGroupPosition, 0, deepClone(SKK_PROXY_GROUP));
   result['proxy-groups'] = proxyGroups;
 
   // 规则插入现有 REJECT 守卫之后：跳过开头的 AND 守卫与 HijackingPlus，
@@ -3208,22 +3214,14 @@ function applyEntryResolution(result) {
     'expected-status': '204',
     icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Koolson-Qure-Domestic.png'
   };
-  const existingDisplayGroup = (result['proxy-groups'] || []).find(
+  const proxyGroups = result['proxy-groups'] || [];
+  const existingDisplayGroupIndex = proxyGroups.findIndex(
     (group) => group && group.name === groupName
   );
-  if (existingDisplayGroup) {
-    // 重建专用组，不保留可能把其他节点混入的 include-all、use 或筛选字段。
-    result['proxy-groups'][result['proxy-groups'].indexOf(existingDisplayGroup)] = displayGroup;
-  } else {
-    const autoSelectIndex = (result['proxy-groups'] || []).findIndex(
-      (group) => group && group.name === '♻️ 自动选择'
-    );
-    if (autoSelectIndex >= 0) {
-      result['proxy-groups'].splice(autoSelectIndex + 1, 0, displayGroup);
-    } else {
-      result['proxy-groups'].push(displayGroup);
-    }
-  }
+  if (existingDisplayGroupIndex >= 0) proxyGroups.splice(existingDisplayGroupIndex, 1);
+  const insertIndex = findPriorityGroupInsertionIndex(proxyGroups);
+  proxyGroups.splice(insertIndex, 0, displayGroup);
+  result['proxy-groups'] = proxyGroups;
 
   const suffix = '#' + groupName;
   result.dns['proxy-server-nameserver'] = asNameserverList(
@@ -3396,9 +3394,6 @@ function main(config, profileName) {
   // ---- 2.5 TGDC 实验分流（默认关闭；由 UI 开关控制） ----
   applyTelegramDcExperiment(result, originalProxies);
 
-  // ---- 2.6 SKK 广告拦截（默认关闭；由 UI 开关控制） ----
-  applySkkAdBlock(result);
-
   // ---- 3. 节点列表换成订阅里的真实节点 ----
   result.proxies = originalProxies.slice();
   if (originalProxyProviders) {
@@ -3533,6 +3528,9 @@ function main(config, profileName) {
 
   // ---- 9. 国内入口解析：倍率筛选完成后，再追加各分类入口节点。 ----
   applyEntryResolution(result);
+
+  // ---- 9.5 广告屏蔽组：在入口组之后，按共享优先级定位。 ----
+  applySkkAdBlock(result);
 
   // ---- 10. 代理节点 DNS 使用 TCP：最后补协议，保留前序合并、hosts 与出口选择结果。 ----
   applyProxyDnsTcp(result);
