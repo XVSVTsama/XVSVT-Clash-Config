@@ -2824,28 +2824,12 @@ const COUNTRY_REGION_PRIORITY_NAMES = new Set([
   '🇯🇵 日本',
 ]);
 const OTHER_COUNTRY_REGION_NAME = '🌐 其他国家/地区';
-const COUNTRY_REGION_TARGET_GROUPS = [
-  '📲 Telegram',
-  '🎮 Games-Global',
-  '🍎 海外苹果',
-  '💠 海外微软',
-  '🎮 Steam平台（非下载/CDN）',
-  '✖️ Twitter',
-  '🤖 AI大模型',
-  '🎵 TikTok',
-  '💳 金融支付',
-  '🔎 Google',
-  '♾️ Meta',
-  '🎧 Spotify',
-  '🎬 Emby',
-  '💬 Discord',
-  '💬 LINE',
-  '👽 Reddit',
-  '🎥 Netflix',
-  '💝 Patreon',
-  '📚 EHentai',
-  '☁️ PikPak',
-];
+const COUNTRY_REGION_EXCLUDED_TARGET_GROUPS = new Set([
+  '🌍 PROXY',
+  '👉 手动切换',
+  '♻️ 自动选择',
+  '🔄 负载均衡',
+]);
 const COUNTRY_REGION_CHILD_GROUP_TYPES = [
   { suffix: '自动选择', type: 'url-test' },
   { suffix: '故障转移', type: 'fallback' },
@@ -2990,18 +2974,31 @@ function buildCountryRegionProxyGroups(originalProxies) {
   return { parentGroups, childGroups };
 }
 
-function appendCountryRegionParentsToTargets(proxyGroups, parentGroups) {
+function appendCountryRegionParentsToTargets(proxyGroups, parentGroups, rules) {
   if (!Array.isArray(proxyGroups) || parentGroups.length === 0) return;
-  const targetNames = new Set(COUNTRY_REGION_TARGET_GROUPS);
-  // TGDC 只会把 Telegram 目标重命名为此兜底组；其他实验组不接收国家组。
-  targetNames.add('📲 Telegram(兜底)');
+
+  const routedGroupNames = new Set();
+  (Array.isArray(rules) ? rules : []).forEach((rule) => {
+    const targetIndex = getRuleProxyTargetIndex(rule);
+    if (targetIndex < 0) return;
+    routedGroupNames.add(rule.split(',')[targetIndex].trim());
+  });
+
   const existingGroupNames = new Set(
     proxyGroups.filter((group) => group && typeof group.name === 'string').map((group) => group.name)
   );
   const parentNames = parentGroups.map((group) => group.name);
 
   proxyGroups.forEach((group) => {
-    if (!group || !targetNames.has(group.name)) return;
+    // 只注入实际被规则使用且动态纳入节点的可见选择组。
+    if (
+      !group ||
+      group.type !== 'select' ||
+      group.hidden === true ||
+      (group['include-all'] !== true && group['include-all-proxies'] !== true) ||
+      COUNTRY_REGION_EXCLUDED_TARGET_GROUPS.has(group.name) ||
+      !routedGroupNames.has(group.name)
+    ) return;
     if (!Array.isArray(group.proxies)) group.proxies = [];
     const additions = parentNames.filter((name) => !group.proxies.includes(name));
     if (additions.length === 0) return;
@@ -3022,7 +3019,7 @@ function applyCountryRegionGrouping(result, originalProxies) {
   const { parentGroups, childGroups } = buildCountryRegionProxyGroups(originalProxies);
   if (parentGroups.length === 0) return;
   const proxyGroups = Array.isArray(result['proxy-groups']) ? result['proxy-groups'] : [];
-  appendCountryRegionParentsToTargets(proxyGroups, parentGroups);
+  appendCountryRegionParentsToTargets(proxyGroups, parentGroups, result.rules);
 
   const fcmIndex = proxyGroups.findIndex((group) => group && group.name === 'FCM');
   if (fcmIndex >= 0) {
