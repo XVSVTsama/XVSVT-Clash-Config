@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 100 100">
+  <title>Gallery icon for E-Hentai</title>
+  <g fill="none" stroke="#8F285A" stroke-linecap="round" stroke-linejoin="round" stroke-width="7">
+    <rect x="15" y="17" width="70" height="66" rx="10" />
+    <path d="M21 70 39 51l13 13 12-15 15 19" />
+  </g>
+  <circle cx="37" cy="38" r="7" fill="#E95891" />
+</svg>

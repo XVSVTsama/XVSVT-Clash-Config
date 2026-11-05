@@ -31,23 +31,23 @@
 
 | 文件 | 用途与来源 | 格式和使用条件 |
 | --- | --- | --- |
+| `self-Microsoft.svg` | 海外微软组；本仓库绘制的四色窗口图形 | 原生 SVG；本仓库原创表达部分遵循根 GPL-3.0，Microsoft 品牌图形、商标及其他第三方权利不因此获得授权。品牌使用应核对 [Microsoft 商标规范](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks)。 |
+| `self-EHentai.svg` | E-Hentai 组；本仓库绘制的通用图库图形，不是 E-Hentai 标志 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不授予 E-Hentai 名称或其他第三方权利。 |
 | `self-TCP.png` | 代理节点 DNS 使用 TCP 开关；本仓库制作的 TCP 盾形图标 | 保留现有 PNG；没有可复用的对应矢量原稿，不自动描摹。原创表达部分遵循根 GPL-3.0，不对可能涉及的第三方图形权利作额外授权。 |
 | `self-filter-high.svg` | 高倍率筛选开关；本仓库原创的漏斗与向上箭头图形 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不包含第三方品牌图形。 |
 | `self-filter-low.svg` | 低倍率筛选开关；本仓库原创的漏斗与向下箭头图形 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不包含第三方品牌图形。 |
 | `self-udp.svg` | 试开启节点 UDP 开关；本仓库原创的数据包流图形 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不包含第三方品牌图形。 |
 | `self-webrtc-block.svg` | WebRTC 阻断开关；本仓库原创的屏蔽网络盾牌图形 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不包含第三方品牌图形。 |
+| `self-adblock.svg` | SKK 广告拦截开关与广告拦截策略组；本仓库原创的禁止标志盾牌图形 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不包含第三方品牌图形。 |
 | `self-ipv6-prefer.svg` | IPv6 优先开关；本仓库原创的地球与向上箭头图形 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不包含第三方品牌图形。 |
 
 ## aaANDkk / Qure_Style_SVG
 
-来源固定为 [Qure_Style_SVG](https://github.com/aaANDkk/Qure_Style_SVG/tree/8c483c202fc160aee1ab93eb7e0d68a0854834fd)。图标集包含多种来源，不能整体视为单一许可；具体来源见[上游第三方说明](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/THIRD_PARTY_NOTICES.md)。Qure 参考与重绘素材需保留 Koolson/Qure 署名，仅供学习交流，不用于商业盈利；EHentai 素材注明 Bettbox / GPL-3.0 来源；品牌标志和商标仍归各自权利人所有。部分旗帜几何参考采用 MIT 许可的 [lipis/flag-icons](https://github.com/lipis/flag-icons)，相关来源记录见[上游说明](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/licenses/geometry-and-qure.txt)。
+来源固定为 [Qure_Style_SVG](https://github.com/aaANDkk/Qure_Style_SVG/tree/8c483c202fc160aee1ab93eb7e0d68a0854834fd)。图标集包含多种来源，不能整体视为单一许可；具体来源见[上游第三方说明](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/THIRD_PARTY_NOTICES.md)。Qure 参考与重绘素材需保留 Koolson/Qure 署名，仅供学习交流，不用于商业盈利；品牌标志和商标仍归各自权利人所有。部分旗帜几何参考采用 MIT 许可的 [lipis/flag-icons](https://github.com/lipis/flag-icons)，相关来源记录见[上游说明](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/licenses/geometry-and-qure.txt)。
 
 | 本地文件 | 图库原文件 | 用途 |
 | --- | --- | --- |
-| `upstream-Qure-Style-SVG-Microsoft.svg` | [common/Microsoft.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/common/Microsoft.svg) | 海外微软组 |
-| `upstream-Qure-Style-SVG-EHentai.svg` | [common/EHentai.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/common/EHentai.svg) | EHentai 组 |
 | `upstream-Qure-Style-SVG-PikPak.svg` | [common/PikPak.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/common/PikPak.svg) | PikPak 组 |
-| `upstream-Qure-Style-SVG-AdBlock.svg` | [common/AdBlock.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/common/AdBlock.svg) | 广告拦截开关与策略组 |
 | `upstream-Qure-Style-SVG-Netherlands.svg` | [flag/Netherlands.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/flag/Netherlands.svg) | TGDC 阿姆斯特丹组 |
 | `upstream-Qure-Style-SVG-United_States.svg` | [flag/United_States.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/flag/United_States.svg) | TGDC 迈阿密组 |
 | `upstream-Qure-Style-SVG-Singapore.svg` | [flag/Singapore.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/flag/Singapore.svg) | TGDC 新加坡组 |

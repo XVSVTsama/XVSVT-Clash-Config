@@ -379,7 +379,7 @@ proxy-groups:
     include-all: true
   # SKK 广告拦截组为可选配置；启用时，需同时取消注释下方 rule-providers 与 rules 对应段落。
   # - name: 🛑 广告拦截
-  #   icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-AdBlock.svg"
+  #   icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-adblock.svg"
   #   type: select
   #   proxies:
   #     - REJECT
@@ -476,7 +476,7 @@ proxy-groups:
     proxies: *proxy_default_choices
     include-all: true
   - name: 💠 海外微软
-    icon: https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Microsoft.svg
+    icon: https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-Microsoft.svg
     type: select
     proxies: *proxy_default_choices
     include-all: true
@@ -524,7 +524,7 @@ proxy-groups:
     proxies: *proxy_default_choices
     include-all: true
   - name: 📚 EHentai
-    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-EHentai.svg"
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-EHentai.svg"
     type: select
     proxies: *proxy_default_choices
     include-all: true

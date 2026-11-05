@@ -836,7 +836,7 @@ const TEMPLATE = {
     },
     {
       "name": "💠 海外微软",
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Microsoft.svg",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-Microsoft.svg",
       "type": "select",
       "proxies": [
         "👉 手动切换",
@@ -895,7 +895,7 @@ const TEMPLATE = {
     },
     {
       "name": "📚 EHentai",
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-EHentai.svg",
+      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-EHentai.svg",
       "type": "select",
       "proxies": [
         "👉 手动切换",
@@ -1616,7 +1616,7 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     },
     {
       name: 'SKK广告拦截',
-      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-AdBlock.svg'
+      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-adblock.svg'
     },
     {
       name: '国家/地区分组',
@@ -2682,7 +2682,7 @@ function applyProviderOverrides(result) {
 
 // 开关图标：serviceConfigs 中同值内联（模板区求值时本常量尚未定义）。
 const SKK_ADBLOCK_ICON =
-  'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-AdBlock.svg';
+  'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-adblock.svg';
 
 const SKK_RULE_PROVIDERS = {
   skk_reject: {
