@@ -221,6 +221,7 @@ dns:
   # - https://doh.dns.sb/dns-query              # DNS.SB 公共 DNS   # 185.222.222.222     45.11.45.11
   # - https://dns.twnic.tw/dns-query            # Quad101 公共 DNS  # 101.101.101.10      101.102.103.10
   nameserver-policy:
+    # 本节按 rules 中对应规则的先后顺序排列；Tailscale、douyin 等特例条目保留原位。
     '+.ts.net':
     - 100.100.100.100
     'rule-set:douyin':
@@ -229,11 +230,12 @@ dns:
     - 180.184.2.2
     'rule-set:private':
     - system
-    'rule-set:proxy@direct,geolocation-cn,cn-additional,apple-cn,microsoft-cn,games-cn': *direct_dns_servers
+    'rule-set:geolocation-cn,cn-additional,apple-cn,microsoft-cn,games-cn': *direct_dns_servers
     # 业务域名解析尽可能跟随路由组；仅覆盖 DOMAIN、DOMAIN-SUFFIX 与 domain/classical 规则集。
     # nameserver-policy 按文件顺序匹配、先命中者优先；与上方条目重叠的域名以在前条目为准，本段映射仅对未被前面命中的域名生效。
     "rule-set:microsoft": ["https://cloudflare-dns.com/dns-query#💠 海外微软", "https://dns.google/dns-query#💠 海外微软", "https://unfiltered.adguard-dns.com/dns-query#💠 海外微软"]
     "rule-set:apple": ["https://cloudflare-dns.com/dns-query#🍎 海外苹果", "https://dns.google/dns-query#🍎 海外苹果", "https://unfiltered.adguard-dns.com/dns-query#🍎 海外苹果"]
+    'rule-set:proxy@direct': *direct_dns_servers
     "rule-set:telegram_domain": ["https://cloudflare-dns.com/dns-query#📲 Telegram", "https://dns.google/dns-query#📲 Telegram", "https://unfiltered.adguard-dns.com/dns-query#📲 Telegram"]
     "rule-set:google": ["https://cloudflare-dns.com/dns-query#🔎 Google", "https://dns.google/dns-query#🔎 Google", "https://unfiltered.adguard-dns.com/dns-query#🔎 Google"]
     "rule-set:google-cn": ["https://cloudflare-dns.com/dns-query#🔎 Google", "https://dns.google/dns-query#🔎 Google", "https://unfiltered.adguard-dns.com/dns-query#🔎 Google"]

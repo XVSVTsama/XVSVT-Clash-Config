@@ -468,6 +468,7 @@ const TEMPLATE = {
       "https://unfiltered.adguard-dns.com/dns-query#🌍 PROXY"
     ],
     "nameserver-policy": {
+      // 本节按 rules 中对应规则的先后顺序排列；Tailscale、douyin 等特例条目保留原位。
       "+.ts.net": [
         "100.100.100.100"
       ],
@@ -479,7 +480,7 @@ const TEMPLATE = {
       "rule-set:private": [
         "system"
       ],
-      "rule-set:proxy@direct,geolocation-cn,cn-additional,apple-cn,microsoft-cn,games-cn": [
+      "rule-set:geolocation-cn,cn-additional,apple-cn,microsoft-cn,games-cn": [
         "https://dns.alidns.com/dns-query#DIRECT",
         "https://doh.pub/dns-query#DIRECT",
         "https://doh.360.cn/dns-query#DIRECT"
@@ -488,6 +489,11 @@ const TEMPLATE = {
       // nameserver-policy 按文件顺序匹配、先命中者优先；与上方条目重叠的域名以在前条目为准，本段映射仅对未被前面命中的域名生效。
       "rule-set:microsoft": ["https://cloudflare-dns.com/dns-query#💠 海外微软", "https://dns.google/dns-query#💠 海外微软", "https://unfiltered.adguard-dns.com/dns-query#💠 海外微软"],
       "rule-set:apple": ["https://cloudflare-dns.com/dns-query#🍎 海外苹果", "https://dns.google/dns-query#🍎 海外苹果", "https://unfiltered.adguard-dns.com/dns-query#🍎 海外苹果"],
+      "rule-set:proxy@direct": [
+        "https://dns.alidns.com/dns-query#DIRECT",
+        "https://doh.pub/dns-query#DIRECT",
+        "https://doh.360.cn/dns-query#DIRECT"
+      ],
       "rule-set:telegram_domain": ["https://cloudflare-dns.com/dns-query#📲 Telegram", "https://dns.google/dns-query#📲 Telegram", "https://unfiltered.adguard-dns.com/dns-query#📲 Telegram"],
       "rule-set:google": ["https://cloudflare-dns.com/dns-query#🔎 Google", "https://dns.google/dns-query#🔎 Google", "https://unfiltered.adguard-dns.com/dns-query#🔎 Google"],
       "rule-set:google-cn": ["https://cloudflare-dns.com/dns-query#🔎 Google", "https://dns.google/dns-query#🔎 Google", "https://unfiltered.adguard-dns.com/dns-query#🔎 Google"],
