@@ -117,7 +117,7 @@ Simple Icons **项目**采用 [CC0 1.0](https://github.com/simple-icons/simple-i
 | 本地文件 | 上游发布文件 | 用途 |
 | --- | --- | --- |
 | `upstream-DustinWin-ruleset_geodata-proxy.png` | `proxy.png` | PROXY |
-| `upstream-DustinWin-ruleset_geodata-select.png` | `select.png` | 手动切换 |
+| `upstream-DustinWin-ruleset_geodata-select.png` | `select.png` | 手动选择 |
 | `upstream-DustinWin-ruleset_geodata-auto.png` | `auto.png` | 自动选择 |
 | `upstream-DustinWin-ruleset_geodata-telegram.png` | `telegram.png` | Telegram |
 | `upstream-DustinWin-ruleset_geodata-games-cn.png` | `games-cn.png` | Games-Global |

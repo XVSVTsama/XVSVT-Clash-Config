@@ -80,8 +80,8 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><th width="20%">代理组<img src="assets/table-spacer.png" width="320" height="1" alt=""></th><th width="80%">嵌套关系<img src="assets/table-spacer.png" width="1280" height="1" alt=""></th></tr>
 </thead>
 <tbody>
-<tr><td><strong>🌍 PROXY</strong></td><td>唯一的顶层入口，不直接纳入节点（无 <code>include-all</code>），实际节点经被嵌套的三组进入；组内只有以下四项：<br><code>👉 手动切换</code><br><code>♻️ 自动选择</code><br><code>🔄 负载均衡</code><br><code>DIRECT</code></td></tr>
-<tr><td><strong>👉 手动切换</strong></td><td>被 <strong>🌍 PROXY</strong> 嵌套；自身以 <code>include-all</code> 纳入所有可用节点，不再嵌套其他代理组</td></tr>
+<tr><td><strong>🌍 PROXY</strong></td><td>唯一的顶层入口，不直接纳入节点（无 <code>include-all</code>），实际节点经被嵌套的三组进入；组内只有以下四项：<br><code>👉 手动选择</code><br><code>♻️ 自动选择</code><br><code>🔄 负载均衡</code><br><code>DIRECT</code></td></tr>
+<tr><td><strong>👉 手动选择</strong></td><td>被 <strong>🌍 PROXY</strong> 嵌套；自身以 <code>include-all</code> 纳入所有可用节点，不再嵌套其他代理组</td></tr>
 <tr><td><strong>♻️ 自动选择</strong></td><td>被 <strong>🌍 PROXY</strong> 嵌套；自身以 <code>include-all</code> 纳入所有可用节点，不再嵌套其他代理组</td></tr>
 <tr><td><strong>🔄 负载均衡</strong></td><td>被 <strong>🌍 PROXY</strong> 嵌套；下含三个隐藏策略子组，顺序为 <code>consistent-hashing</code>（默认首项）、<code>sticky-sessions</code>、<code>round-robin</code></td></tr>
 </tbody>
@@ -128,9 +128,9 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 </thead>
 <tbody>
 <tr><td><strong>🎮 Games-Global</strong></td><td><code>🎮 Steam平台（非下载/CDN）</code>（默认选中）<br>所有可用节点（<code>include-all</code>）</td></tr>
-<tr><td><strong>🎮 Steam平台（非下载/CDN）</strong></td><td><code>DIRECT</code>（默认选中）<br><code>👉 手动切换</code><br><code>♻️ 自动选择</code><br><code>🔄 负载均衡</code><br>所有可用节点（<code>include-all</code>）</td></tr>
-<tr><td><strong>FCM</strong></td><td><code>👉 手动切换</code><br><code>DIRECT</code></td></tr>
-<tr><td><strong>Tailscale</strong></td><td><code>👉 手动切换</code><br><code>DIRECT</code></td></tr>
+<tr><td><strong>🎮 Steam平台（非下载/CDN）</strong></td><td><code>DIRECT</code>（默认选中）<br><code>👉 手动选择</code><br><code>♻️ 自动选择</code><br><code>🔄 负载均衡</code><br>所有可用节点（<code>include-all</code>）</td></tr>
+<tr><td><strong>FCM</strong></td><td><code>👉 手动选择</code><br><code>DIRECT</code></td></tr>
+<tr><td><strong>Tailscale</strong></td><td><code>👉 手动选择</code><br><code>DIRECT</code></td></tr>
 </tbody>
 </table>
 
@@ -189,7 +189,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><th width="42%">策略组名称<img src="assets/table-spacer.png" width="672" height="1" alt=""></th><th width="43%">Bettbox 开关<img src="assets/table-spacer.png" width="688" height="1" alt=""></th><th width="15%">默认<img src="assets/table-spacer.png" width="240" height="1" alt=""></th></tr>
 </thead>
 <tbody>
-<tr><td><strong>👉 手动切换</strong></td><td><code>👉 手动切换</code></td><td>开启</td></tr>
+<tr><td><strong>👉 手动选择</strong></td><td><code>👉 手动选择</code></td><td>开启</td></tr>
 <tr><td><strong>♻️ 自动选择</strong></td><td><code>♻️ 自动选择</code></td><td>关闭</td></tr>
 <tr><td><strong>🔄 负载均衡</strong></td><td><code>🔄 负载均衡</code></td><td>关闭</td></tr>
 <tr><td><strong>🔎 Google</strong></td><td><code>🔎 Google</code></td><td>关闭</td></tr>
@@ -215,7 +215,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 </tbody>
 </table>
 
-表格即当前默认值，可按需改动：默认只有 `👉 手动切换` 开启，因此生成的配置只含 `👉 手动切换`、`🌍 PROXY`、`FCM`、`Tailscale` 四个组。关闭业务组会移除该组并删除其路由规则；`🌍 PROXY` 始终保留为兜底。
+表格即当前默认值，可按需改动：默认只有 `👉 手动选择` 开启，因此生成的配置只含 `👉 手动选择`、`🌍 PROXY`、`FCM`、`Tailscale` 四个组。关闭业务组会移除该组并删除其路由规则；`🌍 PROXY` 始终保留为兜底。
 
 **未列入 `policyGroupOptions` 的组**
 
@@ -224,8 +224,8 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><th width="20%">策略组名称<img src="assets/table-spacer.png" width="320" height="1" alt=""></th><th width="14%">由哪个开关决定<img src="assets/table-spacer.png" width="224" height="1" alt=""></th><th width="8%">默认<img src="assets/table-spacer.png" width="128" height="1" alt=""></th><th width="58%">说明<img src="assets/table-spacer.png" width="928" height="1" alt=""></th></tr>
 </thead>
 <tbody>
-<tr><td><strong>FCM</strong></td><td><code>关闭FCM直连</code></td><td>关闭</td><td>开关不移除本组，只改写组内节点：默认关闭时组内=<code>DIRECT</code>；打开后改用 <code>👉 手动切换</code>，若 <code>👉 手动切换</code> 已禁用则回退到全局兜底。脚本内嵌模板把本组标记为隐藏组（<code>hidden</code>）</td></tr>
-<tr><td><strong>Tailscale</strong></td><td><code>关闭Tailscale直连</code></td><td>关闭</td><td>开关不移除本组，只改写组内节点：默认关闭时组内=<code>DIRECT</code>；打开后改用 <code>👉 手动切换</code>，若 <code>👉 手动切换</code> 已禁用则回退到全局兜底。脚本内嵌模板把本组标记为隐藏组（<code>hidden</code>）</td></tr>
+<tr><td><strong>FCM</strong></td><td><code>关闭FCM直连</code></td><td>关闭</td><td>开关不移除本组，只改写组内节点：默认关闭时组内=<code>DIRECT</code>；打开后改用 <code>👉 手动选择</code>，若 <code>👉 手动选择</code> 已禁用则回退到全局兜底。脚本内嵌模板把本组标记为隐藏组（<code>hidden</code>）</td></tr>
+<tr><td><strong>Tailscale</strong></td><td><code>关闭Tailscale直连</code></td><td>关闭</td><td>开关不移除本组，只改写组内节点：默认关闭时组内=<code>DIRECT</code>；打开后改用 <code>👉 手动选择</code>，若 <code>👉 手动选择</code> 已禁用则回退到全局兜底。脚本内嵌模板把本组标记为隐藏组（<code>hidden</code>）</td></tr>
 <tr><td><em><strong>📲 Telegram(兜底)</strong></em></td><td><em><strong><code>TGDC实验分流</code></strong></em></td><td><em><strong>关闭</strong></em></td><td><em><strong>该开关开启时由 <code>📲 Telegram</code> 更名而来，承接 Telegram 进程、域名与 CIDR 规则</strong></em></td></tr>
 <tr><td><strong>📲 Telegram-DC1-DC3-Miami</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>开关开启时按 Telegram DC IP 规则优先命中美国/迈阿密节点；地区无候选时列出全部合格节点供手动选择</td></tr>
 <tr><td><strong>📲 Telegram-DC2-DC4-Amsterdam</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>同上，对应荷兰/阿姆斯特丹节点</td></tr>

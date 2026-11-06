@@ -10,7 +10,7 @@
 .templates:
   # proxy-groups 共享片段
   default_choices: &proxy_default_choices
-    - 👉 手动切换
+    - 👉 手动选择
     - ♻️ 自动选择
     - 🔄 负载均衡
     - DIRECT
@@ -370,7 +370,7 @@ proxy-groups:
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-proxy.png"
     type: select
     proxies: *proxy_default_choices
-  - name: 👉 手动切换
+  - name: 👉 手动选择
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-select.png"
     type: select
     include-all: true
@@ -537,20 +537,20 @@ proxy-groups:
     proxies: *proxy_default_choices
     include-all: true
   # FCM：Google FCM 域名分流目标，由 关闭FCM直连 开关控制本组的 proxies。
-  # 默认关闭时使用 DIRECT，开启后使用 👉 手动切换；开关图标取自本组的 icon 字段。
+  # 默认关闭时使用 DIRECT，开启后使用 👉 手动选择；开关图标取自本组的 icon 字段。
   - name: FCM
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-FCM.svg"
     type: select
     proxies:
-      - 👉 手动切换
+      - 👉 手动选择
       - DIRECT
   # Tailscale：MagicDNS 域名（ts.net）分流目标，由 关闭Tailscale直连 开关控制本组的 proxies。
-  # 默认关闭时使用 DIRECT，开启后使用 👉 手动切换；开关图标取自本组的 icon 字段。
+  # 默认关闭时使用 DIRECT，开启后使用 👉 手动选择；开关图标取自本组的 icon 字段。
   - name: Tailscale
     icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-tailscale.svg"
     type: select
     proxies:
-      - 👉 手动切换
+      - 👉 手动选择
       - DIRECT
 
 rule-providers:

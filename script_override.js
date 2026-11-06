@@ -4,7 +4,7 @@ const Compatible_With_Bettbox = {
   ruleOptionsEnable: true,
   // 声明属于策略组的开关名称，需与 ruleOptionsEnable 的键完全一致
   policyGroupOptions: [
-    '👉 手动切换',
+    '👉 手动选择',
     '♻️ 自动选择',
     '🔄 负载均衡',
     '🔎 Google',
@@ -137,7 +137,7 @@ const ruleOptionsEnable = {
  */
 
   // 手动选择策略组
-  '👉 手动切换': true,
+  '👉 手动选择': true,
   // 延迟自动选择策略组
   '♻️ 自动选择': false,
   // --- 代理组（策略组）单独控制开关 ---
@@ -204,9 +204,9 @@ const ruleOptionsEnable = {
   // 开启时改由 override.ip-version（统一 ipv6-prefer）生效。
   'IPv6优先': false,
   // --- 组与实验 ---
-  // 默认关闭：隐藏组 FCM 仅含 DIRECT；打开后优先使用 👉 手动切换，若该组已关闭则回退到 🌍 PROXY，再回退到 DIRECT（不移除 FCM 组）。开关图标取自 FCM 代理组的 icon 字段。
+  // 默认关闭：隐藏组 FCM 仅含 DIRECT；打开后优先使用 👉 手动选择，若该组已关闭则回退到 🌍 PROXY，再回退到 DIRECT（不移除 FCM 组）。开关图标取自 FCM 代理组的 icon 字段。
   '关闭FCM直连': false,
-  // 默认关闭：Tailscale 分组仅含 DIRECT；打开后优先使用 👉 手动切换，若该组已关闭则回退到 🌍 PROXY，再回退到 DIRECT（不移除该组）。开关图标取自 Tailscale 代理组的 icon 字段。
+  // 默认关闭：Tailscale 分组仅含 DIRECT；打开后优先使用 👉 手动选择，若该组已关闭则回退到 🌍 PROXY，再回退到 DIRECT（不移除该组）。开关图标取自 Tailscale 代理组的 icon 字段。
   '关闭Tailscale直连': false,
   // 开启 Telegram DC/地区实验分流；关闭时不改变原 Telegram 规则、策略组和规则集。
   'TGDC实验分流': false,
@@ -625,14 +625,14 @@ const TEMPLATE = {
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-proxy.png",
       "type": "select",
       "proxies": [
-        "👉 手动切换",
+        "👉 手动选择",
         "♻️ 自动选择",
         "🔄 负载均衡",
         "DIRECT"
       ]
     },
     {
-      "name": "👉 手动切换",
+      "name": "👉 手动选择",
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-select.png",
       "type": "select",
       "include-all": true
@@ -696,7 +696,7 @@ const TEMPLATE = {
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-google.svg",
       "type": "select",
       "proxies": [
-        "👉 手动切换",
+        "👉 手动选择",
         "♻️ 自动选择",
         "🔄 负载均衡",
         "DIRECT"
@@ -708,7 +708,7 @@ const TEMPLATE = {
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-meta.svg",
       "type": "select",
       "proxies": [
-        "👉 手动切换",
+        "👉 手动选择",
         "♻️ 自动选择",
         "🔄 负载均衡",
         "DIRECT"
@@ -720,7 +720,7 @@ const TEMPLATE = {
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-ai.png",
       "type": "select",
       "proxies": [
-        "👉 手动切换",
+        "👉 手动选择",
         "♻️ 自动选择",
         "🔄 负载均衡",
         "DIRECT"
@@ -732,7 +732,7 @@ const TEMPLATE = {
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-telegram.png",
       "type": "select",
       "proxies": [
-        "👉 手动切换",
+        "👉 手动选择",
         "♻️ 自动选择",
         "🔄 负载均衡",
         "DIRECT"
@@ -744,7 +744,7 @@ const TEMPLATE = {
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-clash-verge-rev-twitter.svg",
       "type": "select",
       "proxies": [
-        "👉 手动切换",
+        "👉 手动选择",
         "♻️ 自动选择",
         "🔄 负载均衡",
         "DIRECT"
@@ -756,7 +756,7 @@ const TEMPLATE = {
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-discord.svg",
       "type": "select",
       "proxies": [
-        "👉 手动切换",
+        "👉 手动选择",
         "♻️ 自动选择",
         "🔄 负载均衡",
         "DIRECT"
@@ -768,7 +768,7 @@ const TEMPLATE = {
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-reddit.svg",
       "type": "select",
       "proxies": [
-        "👉 手动切换",
+        "👉 手动选择",
         "♻️ 自动选择",
         "🔄 负载均衡",
         "DIRECT"
@@ -780,7 +780,7 @@ const TEMPLATE = {
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-line.svg",
       "type": "select",
       "proxies": [
-        "👉 手动切换",
+        "👉 手动选择",
         "♻️ 自动选择",
         "🔄 负载均衡",
         "DIRECT"
@@ -792,7 +792,7 @@ const TEMPLATE = {
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-tiktok.png",
       "type": "select",
       "proxies": [
-        "👉 手动切换",
+        "👉 手动选择",
         "♻️ 自动选择",
         "🔄 负载均衡",
         "DIRECT"
@@ -804,7 +804,7 @@ const TEMPLATE = {
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-netflix.svg",
       "type": "select",
       "proxies": [
-        "👉 手动切换",
+        "👉 手动选择",
         "♻️ 自动选择",
         "🔄 负载均衡",
         "DIRECT"
@@ -816,7 +816,7 @@ const TEMPLATE = {
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-spotify.svg",
       "type": "select",
       "proxies": [
-        "👉 手动切换",
+        "👉 手动选择",
         "♻️ 自动选择",
         "🔄 负载均衡",
         "DIRECT"
@@ -828,7 +828,7 @@ const TEMPLATE = {
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-emby.svg",
       "type": "select",
       "proxies": [
-        "👉 手动切换",
+        "👉 手动选择",
         "♻️ 自动选择",
         "🔄 负载均衡",
         "DIRECT"
@@ -840,7 +840,7 @@ const TEMPLATE = {
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-AIsouler-MyClash-Apple.svg",
       "type": "select",
       "proxies": [
-        "👉 手动切换",
+        "👉 手动选择",
         "♻️ 自动选择",
         "🔄 负载均衡",
         "DIRECT"
@@ -852,7 +852,7 @@ const TEMPLATE = {
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-Microsoft.svg",
       "type": "select",
       "proxies": [
-        "👉 手动切换",
+        "👉 手动选择",
         "♻️ 自动选择",
         "🔄 负载均衡",
         "DIRECT"
@@ -865,7 +865,7 @@ const TEMPLATE = {
       "type": "select",
       "default-selected": "DIRECT",
       "proxies": [
-        "👉 手动切换",
+        "👉 手动选择",
         "♻️ 自动选择",
         "🔄 负载均衡",
         "DIRECT"
@@ -887,7 +887,7 @@ const TEMPLATE = {
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-bitcoin.svg",
       "type": "select",
       "proxies": [
-        "👉 手动切换",
+        "👉 手动选择",
         "♻️ 自动选择",
         "🔄 负载均衡",
         "DIRECT"
@@ -899,7 +899,7 @@ const TEMPLATE = {
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-patreon.svg",
       "type": "select",
       "proxies": [
-        "👉 手动切换",
+        "👉 手动选择",
         "♻️ 自动选择",
         "🔄 负载均衡",
         "DIRECT"
@@ -911,7 +911,7 @@ const TEMPLATE = {
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-EHentai.svg",
       "type": "select",
       "proxies": [
-        "👉 手动切换",
+        "👉 手动选择",
         "♻️ 自动选择",
         "🔄 负载均衡",
         "DIRECT"
@@ -923,7 +923,7 @@ const TEMPLATE = {
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-PikPak.svg",
       "type": "select",
       "proxies": [
-        "👉 手动切换",
+        "👉 手动选择",
         "♻️ 自动选择",
         "🔄 负载均衡",
         "DIRECT"
@@ -935,7 +935,7 @@ const TEMPLATE = {
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-FCM.svg",
       "name": "FCM",
       "proxies": [
-        "👉 手动切换",
+        "👉 手动选择",
         "DIRECT"
       ],
       "type": "select"
@@ -945,7 +945,7 @@ const TEMPLATE = {
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-tailscale.svg",
       "name": "Tailscale",
       "proxies": [
-        "👉 手动切换",
+        "👉 手动选择",
         "DIRECT"
       ],
       "type": "select"
@@ -1557,7 +1557,7 @@ function findPriorityGroupInsertionIndex(proxyGroups) {
   const priorities = [
     LOAD_BALANCE_POSITION_GROUP_NAMES,
     new Set(['♻️ 自动选择']),
-    new Set(['👉 手动切换']),
+    new Set(['👉 手动选择']),
   ];
   const groups = Array.isArray(proxyGroups) ? proxyGroups : [];
   for (const names of priorities) {
@@ -2507,7 +2507,7 @@ function applyTelegramDcExperiment(result, originalProxies) {
   }
   result['rule-providers'] = providersWithTelegramDc;
 
-  // 显示位置按最终仍启用的组回退：Telegram 兜底组前；否则依次在自动选择、手动切换、负载均衡之后；都不可用则追加到底部。
+  // 显示位置按最终仍启用的组回退：Telegram 兜底组前；否则依次在自动选择、手动选择、负载均衡之后；都不可用则追加到底部。
   const telegramFallback = (result['proxy-groups'] || []).find(
     (group) => group && group.name === '📲 Telegram'
   );
@@ -2520,7 +2520,7 @@ function applyTelegramDcExperiment(result, originalProxies) {
     (group) => group && group.name === '♻️ 自动选择'
   );
   const manualSwitchIndex = proxyGroups.findIndex(
-    (group) => group && group.name === '👉 手动切换'
+    (group) => group && group.name === '👉 手动选择'
   );
   const loadBalanceIndex = proxyGroups.findIndex(
     (group) => group && group.name === '🔄 负载均衡'
@@ -2530,7 +2530,7 @@ function applyTelegramDcExperiment(result, originalProxies) {
   );
   const telegramFallbackEnabled = ruleOptionsEnable['📲 Telegram'] !== false;
   const autoSelectEnabled = ruleOptionsEnable['♻️ 自动选择'] !== false;
-  const manualSwitchEnabled = ruleOptionsEnable['👉 手动切换'] !== false;
+  const manualSwitchEnabled = ruleOptionsEnable['👉 手动选择'] !== false;
   const loadBalanceEnabled = ruleOptionsEnable['🔄 负载均衡'] !== false;
   let insertIndex = proxyGroups.length;
   if (telegramFallbackEnabled && fallbackIndex >= 0) {
@@ -2845,7 +2845,7 @@ const COUNTRY_REGION_PRIORITY_NAMES = new Set([
 const OTHER_COUNTRY_REGION_NAME = '🌐 其他国家/地区';
 const COUNTRY_REGION_EXCLUDED_TARGET_GROUPS = new Set([
   '🌍 PROXY',
-  '👉 手动切换',
+  '👉 手动选择',
   '♻️ 自动选择',
   '🔄 负载均衡',
 ]);
@@ -2854,7 +2854,7 @@ const COUNTRY_REGION_INJECTION_ANCHOR_NAMES = new Set([
 ]);
 const COUNTRY_REGION_CHILD_GROUP_TYPES = [
   { suffix: '自动选择', type: 'url-test' },
-  { suffix: '故障转移', type: 'fallback' },
+  { suffix: '自动回退', type: 'fallback' },
   { suffix: '负载均衡', type: 'load-balance' },
 ];
 
@@ -3431,7 +3431,7 @@ function main(config, profileName) {
     .map((proxy) => proxy && proxy.name)
     .find((name) => typeof name === 'string' && name.length > 0);
   if (firstProxyName) {
-    const defaultSelectedGroups = new Set(['👉 手动切换', '📲 Telegram', '📲 Telegram(兜底)']);
+    const defaultSelectedGroups = new Set(['👉 手动选择', '📲 Telegram', '📲 Telegram(兜底)']);
     (result['proxy-groups'] || []).forEach((group) => {
       if (group && defaultSelectedGroups.has(group.name)) {
         group['default-selected'] = firstProxyName;
@@ -3482,7 +3482,7 @@ function main(config, profileName) {
   });
 
   // ---- 5. FCM / Tailscale 直连开关：默认关闭时对应隐藏组仅含 DIRECT；
-  //      打开后仅保留 👉 手动切换（这两个开关不移除对应组，仅改写组内节点） ----
+  //      打开后仅保留 👉 手动选择（这两个开关不移除对应组，仅改写组内节点） ----
   const directSwitchGroups = [
     ['关闭FCM直连', 'FCM'],
     ['关闭Tailscale直连', 'Tailscale']
@@ -3492,11 +3492,11 @@ function main(config, profileName) {
     result['proxy-groups'].forEach((group) => {
       if (!group || group.name !== groupName) return;
       if (directDisabled) {
-        if (disabledGroupNames.has('👉 手动切换')) {
+        if (disabledGroupNames.has('👉 手动选择')) {
           // 手动组已关闭时沿用全局兜底，避免该组引用一个不存在的策略组。
           group.proxies = [fallbackTarget];
         } else {
-          group.proxies = ['👉 手动切换'];
+          group.proxies = ['👉 手动选择'];
         }
       } else {
         group.proxies = ['DIRECT'];
