@@ -3062,7 +3062,15 @@ const DOMESTIC_ENTRY_PROXIES = {
   }],
 
   // 中国联通
-  unicom: [],
+  unicom: [{
+    type: 'http',
+    server: '222.129.142.219',
+    port: 9000
+  }, {
+    type: 'http',
+    server: '101.251.204.174',
+    port: 8080
+  }],
 
   // 中国移动
   mobile: [{
