@@ -2849,6 +2849,9 @@ const COUNTRY_REGION_EXCLUDED_TARGET_GROUPS = new Set([
   '♻️ 自动选择',
   '🔄 负载均衡',
 ]);
+const COUNTRY_REGION_INJECTION_ANCHOR_NAMES = new Set([
+  'DIRECT',
+]);
 const COUNTRY_REGION_CHILD_GROUP_TYPES = [
   { suffix: '自动选择', type: 'url-test' },
   { suffix: '故障转移', type: 'fallback' },
@@ -3023,7 +3026,7 @@ function appendCountryRegionParentsToTargets(proxyGroups, parentGroups, rules) {
     if (additions.length === 0) return;
     let lastNestedGroupIndex = -1;
     group.proxies.forEach((name, index) => {
-      if (existingGroupNames.has(name)) lastNestedGroupIndex = index;
+      if (existingGroupNames.has(name) || COUNTRY_REGION_INJECTION_ANCHOR_NAMES.has(name)) lastNestedGroupIndex = index;
     });
     if (lastNestedGroupIndex >= 0) {
       group.proxies.splice(lastNestedGroupIndex + 1, 0, ...additions);
