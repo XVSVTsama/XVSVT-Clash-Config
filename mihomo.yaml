@@ -251,6 +251,9 @@ dns:
     "edge-metaclaw-http.c10r.facebook.com": ["https://cloudflare-dns.com/dns-query#♾️ Meta", "https://dns.google/dns-query#♾️ Meta", "https://unfiltered.adguard-dns.com/dns-query#♾️ Meta"]
     "shortwave.facebook.com": ["https://cloudflare-dns.com/dns-query#♾️ Meta", "https://dns.google/dns-query#♾️ Meta", "https://unfiltered.adguard-dns.com/dns-query#♾️ Meta"]
     "node.hatch.one": ["https://cloudflare-dns.com/dns-query#♾️ Meta", "https://dns.google/dns-query#♾️ Meta", "https://unfiltered.adguard-dns.com/dns-query#♾️ Meta"]
+    "+.hark.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "+.wabi.ai": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "+.tabbyml.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
     "api.anthropic.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
     "console.anthropic.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
     "statsig.anthropic.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
@@ -771,9 +774,9 @@ rules:
   - DOMAIN,shortwave.facebook.com,♾️ Meta
   - DOMAIN,node.hatch.one,♾️ Meta
   - PROCESS-NAME,com.facebook.aura,♾️ Meta
-  - PROCESS-NAME-REGEX,(?i).*(manus|tech\.butterfly\.app).*,🤖 AI大模型
-  - PROCESS-NAME-REGEX,(?i).*claude.*,🤖 AI大模型
-  - PROCESS-NAME-REGEX,(?i).*anthropic.*,🤖 AI大模型
+  - DOMAIN-SUFFIX,hark.com,🤖 AI大模型
+  - DOMAIN-SUFFIX,wabi.ai,🤖 AI大模型
+  - DOMAIN-SUFFIX,tabbyml.com,🤖 AI大模型
   - DOMAIN,api.anthropic.com,🤖 AI大模型
   - DOMAIN,console.anthropic.com,🤖 AI大模型
   - DOMAIN,statsig.anthropic.com,🤖 AI大模型
@@ -813,6 +816,11 @@ rules:
   - DOMAIN-KEYWORD,sift,🤖 AI大模型
   - RULE-SET,ai-1,🤖 AI大模型
   - RULE-SET,ai-2,🤖 AI大模型
+  - PROCESS-NAME,com.hark.android,🤖 AI大模型
+  - PROCESS-NAME,ai.wabi.android.app,🤖 AI大模型
+  - PROCESS-NAME-REGEX,(?i).*(manus|tech\.butterfly\.app).*,🤖 AI大模型
+  - PROCESS-NAME-REGEX,(?i).*claude.*,🤖 AI大模型
+  - PROCESS-NAME-REGEX,(?i).*anthropic.*,🤖 AI大模型
   - RULE-SET,spotify,🎧 Spotify
   - RULE-SET,discord,💬 Discord
   - RULE-SET,reddit,👽 Reddit
