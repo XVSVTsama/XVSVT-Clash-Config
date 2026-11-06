@@ -449,17 +449,17 @@ const TEMPLATE = {
     "use-hosts": true,
     "use-system-hosts": false,
     "default-nameserver": [
-      "tls://223.5.5.5",
-      "114.114.114.114",
-      "https://1.12.12.12/dns-query"
+      "tls://223.5.5.5#DIRECT",
+      "114.114.114.114#DIRECT",
+      "https://1.12.12.12/dns-query#DIRECT"
     ],
     "proxy-server-nameserver": [
-      "https://hrbgyitz34.cloudflare-gateway.com/dns-query"
+      "https://hrbgyitz34.cloudflare-gateway.com/dns-query#DIRECT"
     ],
     "direct-nameserver": [
-      "https://dns.alidns.com/dns-query",
-      "https://doh.pub/dns-query",
-      "https://doh.360.cn/dns-query"
+      "https://dns.alidns.com/dns-query#DIRECT",
+      "https://doh.pub/dns-query#DIRECT",
+      "https://doh.360.cn/dns-query#DIRECT"
     ],
     "direct-nameserver-follow-policy": true,
     "nameserver": [
