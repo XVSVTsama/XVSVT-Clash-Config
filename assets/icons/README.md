@@ -12,7 +12,7 @@
 
 ## 尺寸与视觉归一化
 
-当前配置引用的 43 张图标（8 PNG、35 SVG）统一按以下原则处理：
+当前配置引用的 44 张图标（8 PNG、36 SVG）统一按以下原则处理：
 
 - PNG 使用 **144×144 像素**透明画布；SVG 使用 **`viewBox="0 0 100 100"`**。按完整可见图形边界等比缩放并居中，不拉伸、不裁掉可见内容，也不以其他图案替换原稿。
 - 图形最长可见边以画布的**约 80%**为目标，四周保留留白。占比是视觉目标而非逐像素硬阈值；抗锯齿、低透明度边缘和阴影会使实际非透明边界略有差异，处理时仍保留这些内容。
@@ -80,6 +80,7 @@
 | --- | --- | --- |
 | `upstream-AIsouler-MyClash-Apple.svg` | [`Apple.svg`](https://github.com/AIsouler/MyClash/blob/main/Icons/svg/Apple.svg) | 海外苹果 |
 | `upstream-AIsouler-MyClash-Steam.svg` | [`Steam.svg`](https://github.com/AIsouler/MyClash/blob/main/Icons/svg/Steam.svg) | Steam 平台 |
+| `upstream-AIsouler-MyClash-China.svg` | [`China.svg`](https://github.com/AIsouler/MyClash/blob/main/Icons/svg/China.svg) | 使用 AIsouler 直连规则开关 |
 
 ## Clash Verge 官方文档
 

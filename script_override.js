@@ -211,7 +211,12 @@ const ruleOptionsEnable = {
   // 开启 Telegram DC/地区实验分流；关闭时不改变原 Telegram 规则、策略组和规则集。
   'TGDC实验分流': false,
   // 开启后注入 SukkaW/Surge 的 reject 规则集与广告拦截策略组；关闭时不注入其策略组、规则集和规则。
-  'SKK广告拦截': false,
+  '使用SKK广告拦截': false,
+  // 默认关闭：不做任何改动。开启后按 AIsouler/MyClash 的写法替换国内直连类规则（规则集均取自 bett-rules）：
+  // 直连域名改为 geolocation-cn、games_cn、synology、nvidia_cn、apple_cn、microsoft_cn 与 MyClash 的 3 条字面规则，
+  // private 改为 bett 的 geosite/private 并移到直连段最前；cn_ip、private_ip 不加 no-resolve 放在 MATCH 之前兜底；
+  // DNS 与 fake-ip 的国内部分改用 cn（geosite/cn），沿用本配置的 DNS 服务器；UDP 阻断规则的国内排除改为 MyClash 写法。
+  '使用AIsouler直连规则': false,
   // --- 节点筛选与分组 ---
   // 为合格的订阅顶层节点生成按国家/地区划分的策略组；与入口解析开关独立。
   // 只读取订阅顶层 proxies，不枚举 proxy-providers。
@@ -1650,6 +1655,7 @@ const FEATURE_SWITCH_ICONS = {
   '关闭WebRTC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-webrtc-block.svg',
   'QUIC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Quic.svg',
   '开启Sniffer': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Tracking.svg',
+  '使用AIsouler直连规则': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-AIsouler-MyClash-China.svg',
 };
 
 // Bettbox 的可视化开关图标：客户端会读取全局 serviceConfigs（name 对应 ruleOptionsEnable 的 key，
@@ -1697,8 +1703,12 @@ const serviceConfigs = TEMPLATE['proxy-groups']
       icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Telegram.svg'
     },
     {
-      name: 'SKK广告拦截',
+      name: '使用SKK广告拦截',
       icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-adblock.svg'
+    },
+    {
+      name: '使用AIsouler直连规则',
+      icon: FEATURE_SWITCH_ICONS['使用AIsouler直连规则']
     },
     {
       name: '国家/地区分组',
@@ -2763,7 +2773,7 @@ function applyProviderOverrides(result) {
 }
 
 // ============================================================================
-// SKK 广告拦截（仅在 ruleOptionsEnable['SKK广告拦截'] 为 true 时注入）
+// SKK 广告拦截（仅在 ruleOptionsEnable['使用SKK广告拦截'] 为 true 时注入）
 // 规则集来自 SukkaW/Surge 的 reject 系列，只取核心四件：基础域名集、non_ip
 // 关键词/通配规则、reject-drop 遥测静默丢弃、ip 劫持/botnet 集。
 // 不含 reject_extra（源经上游降级，误杀与性能代价更高）、reject_phishing
@@ -2829,7 +2839,7 @@ const SKK_RULES = [
 // SKK 广告拦截：只在开关为 true 时修改 result。
 // ============================================================================
 function applySkkAdBlock(result) {
-  if (ruleOptionsEnable['SKK广告拦截'] !== true) {
+  if (ruleOptionsEnable['使用SKK广告拦截'] !== true) {
     return;
   }
 
@@ -2858,6 +2868,166 @@ function applySkkAdBlock(result) {
   );
   const insertRuleIndex = hijackingIndex >= 0 ? hijackingIndex + 1 : 0;
   result.rules.splice(insertRuleIndex, 0, ...SKK_RULES);
+}
+
+// ============================================================================
+// AIsouler 直连规则（仅在 ruleOptionsEnable['使用AIsouler直连规则'] 为 true 时生效）
+// 参照 AIsouler/MyClash 的国内直连写法，规则集均取自 appshubcc/bett-rules。
+// 只按模板中的原字符串定位与替换；模板改动后需同步修改这里的常量。
+// ============================================================================
+const AISOULER_BETT_BASE = 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo';
+
+function buildAisoulerProvider(name, behavior, geoPath) {
+  return {
+    type: 'http',
+    interval: 86400,
+    behavior,
+    format: 'mrs',
+    url: `${AISOULER_BETT_BASE}/${geoPath}`,
+    path: `./ruleset/${name}.mrs`,
+    'path-in-bundle': `geo/${geoPath}`
+  };
+}
+
+// 这些规则集插在 geolocation-cn 之后；private 直接替换原 Loyalsoldier 定义。
+const AISOULER_RULE_PROVIDERS = {
+  games_cn: buildAisoulerProvider('games_cn', 'domain', 'geosite/category-games@cn.mrs'),
+  synology: buildAisoulerProvider('synology', 'domain', 'geosite/synology.mrs'),
+  nvidia_cn: buildAisoulerProvider('nvidia_cn', 'domain', 'geosite/nvidia@cn.mrs'),
+  apple_cn: buildAisoulerProvider('apple_cn', 'domain', 'geosite/apple@cn.mrs'),
+  microsoft_cn: buildAisoulerProvider('microsoft_cn', 'domain', 'geosite/microsoft@cn.mrs'),
+  cn: buildAisoulerProvider('cn', 'domain', 'geosite/cn.mrs'),
+  cn_ip: buildAisoulerProvider('cn_ip', 'ipcidr', 'geoip/cn.mrs'),
+  private_ip: buildAisoulerProvider('private_ip', 'ipcidr', 'geoip/private.mrs')
+};
+const AISOULER_PRIVATE_PROVIDER = buildAisoulerProvider('private', 'domain', 'geosite/private.mrs');
+
+// UDP 阻断规则（WebRTC，以及 QUIC阻断 生成的 443 规则）中的国内排除。
+// 保留 NETWORK,UDP 与 DST-PORT 子串，关闭WebRTC阻断 的识别不受影响。
+const AISOULER_OLD_UDP_EXCLUSION =
+  '(NOT,((RULE-SET,geolocation-cn))),' +
+  '(NOT,((RULE-SET,cn-additional))),' +
+  '(NOT,((RULE-SET,apple-cn))),' +
+  '(NOT,((RULE-SET,microsoft-cn))),' +
+  '(NOT,((RULE-SET,games-cn))),';
+const AISOULER_NEW_UDP_EXCLUSION =
+  '(NOT,((OR,((RULE-SET,cn),(RULE-SET,cn_ip,no-resolve))))),';
+
+// 从直连段删除的规则（被新规则集取代，或按用户决定删除的字面直连）。
+const AISOULER_REMOVED_RULES = new Set([
+  'DOMAIN-SUFFIX,alipayeshop.com,DIRECT',
+  'RULE-SET,echs_direct_ip,DIRECT,no-resolve',
+  'RULE-SET,cn-additional,DIRECT',
+  'RULE-SET,apple-cn,DIRECT',
+  'RULE-SET,microsoft-cn,DIRECT',
+  'RULE-SET,games-cn,DIRECT',
+  'DOMAIN-SUFFIX,ac.cn,DIRECT',
+  'DOMAIN-SUFFIX,xdf.cn,DIRECT',
+  'RULE-SET,private,DIRECT,no-resolve',
+  'DOMAIN-WILDCARD,*.deepseek.com,DIRECT',
+  'DOMAIN-WILDCARD,*.portal101.cn,DIRECT'
+]);
+// 替换原 geolocation-cn 直连规则所在位置。
+const AISOULER_DIRECT_RULES = [
+  'RULE-SET,geolocation-cn,DIRECT',
+  'RULE-SET,games_cn,DIRECT',
+  'RULE-SET,synology,DIRECT',
+  'RULE-SET,nvidia_cn,DIRECT',
+  'RULE-SET,apple_cn,DIRECT',
+  'RULE-SET,microsoft_cn,DIRECT',
+  'DOMAIN,fsend.cn,DIRECT',
+  'DOMAIN,international-gfe.download.nvidia.com,DIRECT',
+  'DOMAIN-SUFFIX,ctaiot.com,DIRECT'
+];
+// 直连段最前（各类 reject 之后）。
+const AISOULER_PRIVATE_RULE = 'RULE-SET,private,DIRECT';
+// MATCH 之前兜底；不加 no-resolve，未命中的域名会解析一次后按 IP 匹配。
+const AISOULER_FALLBACK_IP_RULES = [
+  'RULE-SET,cn_ip,DIRECT',
+  'RULE-SET,private_ip,DIRECT'
+];
+
+// fake-ip-filter 与 sniffer.skip-domain 中被 cn 取代或删除的条目。
+const AISOULER_REMOVED_DOMAIN_FILTERS = new Set([
+  'rule-set:cn-additional',
+  'rule-set:apple-cn',
+  'rule-set:microsoft-cn',
+  'rule-set:games-cn',
+  '+.alipayeshop.com'
+]);
+const AISOULER_OLD_CN_POLICY = 'rule-set:geolocation-cn,cn-additional,apple-cn,microsoft-cn,games-cn';
+
+function replaceAisoulerDomainFilters(list) {
+  if (!Array.isArray(list)) return list;
+  return list
+    .filter((entry) => !AISOULER_REMOVED_DOMAIN_FILTERS.has(entry))
+    .map((entry) => (entry === 'rule-set:geolocation-cn' ? 'rule-set:cn' : entry));
+}
+
+function applyAisoulerDirectRules(result) {
+  if (ruleOptionsEnable['使用AIsouler直连规则'] !== true) {
+    return;
+  }
+
+  // 规则集：private 原位替换定义，新规则集插在 geolocation-cn 之后；
+  // 不再被引用的旧规则集由 removeUnusedRuleProviders 清理。
+  const originalProviders = result['rule-providers'] || {};
+  const providers = {};
+  Object.keys(originalProviders).forEach((name) => {
+    providers[name] = name === 'private' ? deepClone(AISOULER_PRIVATE_PROVIDER) : originalProviders[name];
+    if (name === 'geolocation-cn') {
+      Object.assign(providers, deepClone(AISOULER_RULE_PROVIDERS));
+    }
+  });
+  result['rule-providers'] = providers;
+
+  // 规则：先改 UDP 阻断的国内排除，再删旧直连，最后插入新直连与兜底。
+  if (Array.isArray(result.rules)) {
+    let rules = result.rules
+      .map((rule) =>
+        typeof rule === 'string' ? rule.replace(AISOULER_OLD_UDP_EXCLUSION, AISOULER_NEW_UDP_EXCLUSION) : rule
+      )
+      .filter((rule) => !AISOULER_REMOVED_RULES.has(rule));
+
+    const cnIndex = rules.indexOf('RULE-SET,geolocation-cn,DIRECT');
+    if (cnIndex >= 0) {
+      rules.splice(cnIndex, 1, ...AISOULER_DIRECT_RULES);
+    }
+    const ghProxyIndex = rules.indexOf('DOMAIN,gh-proxy.com,DIRECT');
+    if (ghProxyIndex >= 0) {
+      rules.splice(ghProxyIndex, 0, AISOULER_PRIVATE_RULE);
+    }
+    const matchIndex = rules.findIndex((rule) => typeof rule === 'string' && rule.startsWith('MATCH,'));
+    if (matchIndex >= 0) {
+      rules.splice(matchIndex, 0, ...AISOULER_FALLBACK_IP_RULES);
+    }
+    result.rules = rules;
+  }
+
+  // DNS：fake-ip-filter 与 nameserver-policy 的国内部分改用 cn，DNS 服务器不变。
+  const dns = result.dns;
+  if (dns && typeof dns === 'object') {
+    dns['fake-ip-filter'] = replaceAisoulerDomainFilters(dns['fake-ip-filter']);
+    const policy = dns['nameserver-policy'];
+    if (policy && typeof policy === 'object' && Object.prototype.hasOwnProperty.call(policy, AISOULER_OLD_CN_POLICY)) {
+      const renamedPolicy = {};
+      Object.keys(policy).forEach((key) => {
+        renamedPolicy[key === AISOULER_OLD_CN_POLICY ? 'rule-set:cn' : key] = policy[key];
+      });
+      dns['nameserver-policy'] = renamedPolicy;
+    }
+  }
+
+  // Sniffer：开启Sniffer 关闭时 sniffer 已被删除，这里不再处理。
+  const sniffer = result.sniffer;
+  if (sniffer && typeof sniffer === 'object') {
+    sniffer['skip-domain'] = replaceAisoulerDomainFilters(sniffer['skip-domain']);
+    if (Array.isArray(sniffer['skip-dst-address'])) {
+      sniffer['skip-dst-address'] = sniffer['skip-dst-address'].flatMap((entry) =>
+        entry === 'rule-set:echs_direct_ip' ? ['rule-set:cn_ip', 'rule-set:private_ip'] : [entry]
+      );
+    }
+  }
 }
 
 // 只识别节点名称中明确标记的数值倍率（如 0.5x、2x、5×），不推断“高倍”等模糊标签。
@@ -3657,6 +3827,9 @@ function main(config, profileName) {
 
   // ---- 9.5 广告屏蔽组：在入口组之后，按共享优先级定位。 ----
   applySkkAdBlock(result);
+
+  // ---- 9.6 AIsouler 直连规则：在 SKK 之后执行，覆盖 QUIC阻断 生成的 UDP 规则。 ----
+  applyAisoulerDirectRules(result);
 
   // ---- 10. 代理节点 DNS 使用 TCP：最后补协议，保留前序合并、hosts 与出口选择结果。 ----
   applyProxyDnsTcp(result);
