@@ -370,9 +370,6 @@ const TEMPLATE = {
         ]
       }
     },
-    "force-domain": [
-      "+.v2ex.com"
-    ],
     "skip-domain": [
       "rule-set:fakeip-filter_domain",
       "rule-set:private",
