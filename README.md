@@ -236,7 +236,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 </tbody>
 </table>
 
-**同样不在 `policyGroupOptions`、也不对应任何策略组的开关（8 个）**
+**同样不在 `policyGroupOptions`、也不对应任何策略组的开关（10 个）**
 
 <table width="100%">
 <thead>
@@ -251,6 +251,8 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><td><code>低倍率筛选</code></td><td>关闭</td><td>在地区分组之前删除名称中显式标记倍率 <code>&lt;=0.5x</code> 的订阅顶层节点，并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
 <tr><td><code>代理节点 DNS 使用 TCP</code></td><td>关闭</td><td>为代理节点解析 DNS 中未标协议的地址启用 TCP；显式协议不变</td></tr>
 <tr><td><code>关闭WebRTC阻断</code></td><td>关闭</td><td>默认关闭时保持模板规则不变；打开后移除所有同时包含 <code>NETWORK,UDP</code> 与 <code>DST-PORT,3478-3479/5349-5350/19302-19309</code> 的规则</td></tr>
+<tr><td><code>QUIC阻断</code></td><td>关闭</td><td>关闭时不做任何处理；开启时阻断非国内、非游戏的 UDP 443（QUIC）：若 <code>关闭WebRTC阻断</code> 未开启，直接在 WebRTC 阻断规则的 <code>DST-PORT</code> 中追加 <code>443</code>；若已开启，则按 WebRTC 阻断规则的同一组 <code>NOT</code> 条件另建一条 <code>AND,((NETWORK,UDP),(DST-PORT,443),…),REJECT</code> 并置顶</td></tr>
+<tr><td><code>关闭Sniffer</code></td><td>关闭</td><td>关闭时不做任何处理；开启时直接从输出配置中删除整个 <code>sniffer</code> 字段（不是改为 <code>enable: false</code>），嗅探行为交由内核或客户端默认值决定</td></tr>
 </tbody>
 </table>
 
@@ -265,11 +267,11 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><td><strong>A2</strong> 模板内无开关的组（🌍 PROXY）</td><td>0</td><td>1</td><td>有，JS 内模板的 🌍 PROXY 组自带</td><td>❌</td><td>否</td></tr>
 <tr><td><strong>B1</strong> 注入整组、开关图标＝组图标（SKK、国家/地区、入口解析）</td><td>3</td><td>6</td><td>有，写在各注入组的定义处（SKK 段、国家/地区段、入口解析处）</td><td>有，开关项里内联同一张图</td><td>是，三对</td></tr>
 <tr><td><strong>B2</strong> 注入整组、开关图标≠组图标（TGDC）</td><td>1</td><td>4</td><td>有，写在 TGDC 组的定义处（三个 DC 组各一张国旗，兜底沿用 Telegram 组图标）</td><td>有，开关项里用 Telegram 标</td><td>否</td></tr>
-<tr><td><strong>C</strong> 纯功能开关（只在开关面板）</td><td>8</td><td>8</td><td>❌</td><td>有，集中在功能开关图标表，开关项引用</td><td>否</td></tr>
+<tr><td><strong>C</strong> 纯功能开关（只在开关面板）</td><td>10</td><td>10</td><td>❌</td><td>有，集中在功能开关图标表，开关项引用</td><td>否</td></tr>
 </tbody>
 </table>
 
-> 代码内图标处数 44 ｜ 图标数 41 ｜ 重复对数 3
+> 代码内图标处数 46 ｜ 图标数 43 ｜ 重复对数 3
 
 > **关于客户端**：这套图形化开关由 Bettbox 原生支持——脚本开头的 `Compatible_With_Bettbox` 声明就是给 Bettbox 识别用的。换到其他客户端分两种情况：
 >

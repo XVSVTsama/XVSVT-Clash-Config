@@ -12,7 +12,7 @@
 
 ## 尺寸与视觉归一化
 
-当前配置引用的 41 张图标（8 PNG、33 SVG）统一按以下原则处理：
+当前配置引用的 43 张图标（8 PNG、35 SVG）统一按以下原则处理：
 
 - PNG 使用 **144×144 像素**透明画布；SVG 使用 **`viewBox="0 0 100 100"`**。按完整可见图形边界等比缩放并居中，不拉伸、不裁掉可见内容，也不以其他图案替换原稿。
 - 图形最长可见边以画布的**约 80%**为目标，四周保留留白。占比是视觉目标而非逐像素硬阈值；抗锯齿、低透明度边缘和阴影会使实际非透明边界略有差异，处理时仍保留这些内容。
@@ -57,6 +57,8 @@
 | `upstream-Qure-Style-SVG-FCM.svg` | [common/FCM.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/common/FCM.svg) | FCM 组及其直连开关 |
 | `upstream-Qure-Style-SVG-SSL.svg` | [common/SSL.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/common/SSL.svg) | 强制证书验证开关 |
 | `upstream-Qure-Style-SVG-Spark.svg` | [common/Spark.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/common/Spark.svg) | 关闭 Reality 增强开关 |
+| `upstream-Qure-Style-SVG-Quic.svg` | [common/Quic.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/common/Quic.svg) | QUIC 阻断开关 |
+| `upstream-Qure-Style-SVG-Tracking.svg` | [common/Tracking.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/common/Tracking.svg) | 关闭 Sniffer 开关（雷达扫描图形，表示嗅探） |
 
 部分旗帜图形采用 MIT 许可的 [lipis/flag-icons](https://github.com/lipis/flag-icons) 几何，许可证文本如下：
 

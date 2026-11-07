@@ -227,6 +227,12 @@ const ruleOptionsEnable = {
   '代理节点 DNS 使用 TCP': false,
   // 默认关闭：保留 WebRTC 阻断规则；打开后删除所有同时包含指定 UDP 网络和端口特征的规则。
   '关闭WebRTC阻断': false,
+  // 默认关闭：不改动规则；打开后阻断非国内、非游戏的 UDP 443（QUIC）。
+  // “关闭WebRTC阻断”未开启时，把 443 并入 WebRTC 阻断规则的 DST-PORT；
+  // 已开启时，按同一组 NOT 条件另建一条 UDP 443 阻断规则并置顶。
+  'QUIC阻断': false,
+  // 默认关闭：保留模板 sniffer；打开后直接从输出中删除整个 sniffer 字段（而非改 enable: false）。
+  '关闭Sniffer': false,
 };
 
 // 关闭这些业务组时删除指向它们的路由规则，而不是把规则改写到全局兜底。
@@ -1619,6 +1625,8 @@ const FEATURE_SWITCH_ICONS = {
   '低倍率筛选': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-low.svg',
   '代理节点 DNS 使用 TCP': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-TCP.png',
   '关闭WebRTC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-webrtc-block.svg',
+  'QUIC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Quic.svg',
+  '关闭Sniffer': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Tracking.svg',
 };
 
 // Bettbox 的可视化开关图标：客户端会读取全局 serviceConfigs（name 对应 ruleOptionsEnable 的 key，
@@ -1692,6 +1700,14 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     {
       name: '关闭WebRTC阻断',
       icon: FEATURE_SWITCH_ICONS['关闭WebRTC阻断']
+    },
+    {
+      name: 'QUIC阻断',
+      icon: FEATURE_SWITCH_ICONS['QUIC阻断']
+    },
+    {
+      name: '关闭Sniffer',
+      icon: FEATURE_SWITCH_ICONS['关闭Sniffer']
     }
   ]);
 
@@ -3563,14 +3579,39 @@ function main(config, profileName) {
   removeDisabledDnsNameserverPolicies(result.dns, disabledGroupNames);
 
   // ---- 6.5 WebRTC 阻断开关：默认关闭时不改动模板规则；打开后按指定特征移除全部匹配规则 ----
+  const WEBRTC_DST_PORT = 'DST-PORT,3478-3479/5349-5350/19302-19309';
+  const isWebRtcBlockingRule = (rule) =>
+    typeof rule === 'string' &&
+    rule.includes('NETWORK,UDP') &&
+    rule.includes(WEBRTC_DST_PORT);
   if (ruleOptionsEnable['关闭WebRTC阻断'] === true && Array.isArray(result.rules)) {
-    const isWebRtcBlockingRule = (rule) =>
-      typeof rule === 'string' &&
-      rule.includes('NETWORK,UDP') &&
-      rule.includes('DST-PORT,3478-3479/5349-5350/19302-19309');
     if (result.rules.some(isWebRtcBlockingRule)) {
       result.rules = result.rules.filter((rule) => !isWebRtcBlockingRule(rule));
     }
+  }
+
+  // ---- 6.6 QUIC 阻断开关：默认关闭时不做任何处理 ----
+  // WebRTC 阻断仍在时，把 443 并入其 DST-PORT；WebRTC 阻断已关闭时，
+  // 以模板 WebRTC 规则为底（保留同一组 NOT 条件），端口换成 443 后置顶。
+  if (ruleOptionsEnable['QUIC阻断'] === true && Array.isArray(result.rules)) {
+    if (ruleOptionsEnable['关闭WebRTC阻断'] === true) {
+      const templateWebRtcRule = (TEMPLATE.rules || []).find(isWebRtcBlockingRule);
+      if (templateWebRtcRule) {
+        const quicRule = templateWebRtcRule.replace(WEBRTC_DST_PORT, 'DST-PORT,443');
+        if (!result.rules.includes(quicRule)) {
+          result.rules.unshift(quicRule);
+        }
+      }
+    } else {
+      result.rules = result.rules.map((rule) =>
+        isWebRtcBlockingRule(rule) ? rule.replace(WEBRTC_DST_PORT, `${WEBRTC_DST_PORT}/443`) : rule
+      );
+    }
+  }
+
+  // ---- 6.7 Sniffer 开关：默认关闭时不做任何处理；打开后从输出中删除整个 sniffer 字段 ----
+  if (ruleOptionsEnable['关闭Sniffer'] === true) {
+    delete result.sniffer;
   }
 
   // ---- 7. DNS 节点智能补充 ----

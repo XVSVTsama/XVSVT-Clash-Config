@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><clipPath id="qure-source-viewport" clipPathUnits="userSpaceOnUse"><rect x="0" y="0" width="144" height="144" /></clipPath></defs><g transform="translate(2.7868852459 2.7868852459) scale(0.655737704918)"><g clip-path="url(#qure-source-viewport)">
+<title>Tracking</title>
+  <desc>Qure-style Telemetry/Tracking radar sweep icon.</desc>
+  <defs>
+    <linearGradient id="p6-track-grad" gradientUnits="userSpaceOnUse" x1="72" y1="15" x2="72" y2="129">
+      <stop offset="0.0" stop-color="#F97316" />
+      <stop offset="0.5" stop-color="#EA580C" />
+      <stop offset="1.0" stop-color="#C2410C" />
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke="url(#p6-track-grad)" stroke-width="8.0" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M 112.27579349,31.71067451 A 56.9801,56.9801 0 0,0 43.44386893,22.65084338" />
+  <path d="M 26.406828,37.807542 l 0.05698007,0" />
+  <path d="M 16.66323603,58.43432734 A 56.9801,56.9801 0 1,0 125.03932917,51.19785845" />
+  <path d="M 96.15043368,47.83603432 A 34.188,34.188 0 1,0 50.50939761,98.60527669" />
+  <path d="M 71.990884,106.183626 l 0.05698007,0" />
+  <path d="M 106.12194593,70.05826162 A 34.188,34.188 0 0,1 93.47237039,98.60527669" />
+  <path d="m 80.02507387,63.96139413 l 32.25071962,-32.25071962" />
+    <circle cx="71.99" cy="72.00" r="11.40" fill="url(#p6-track-grad)" />
+  </g>
+  </g></g></svg>
