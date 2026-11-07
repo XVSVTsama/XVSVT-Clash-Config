@@ -349,8 +349,7 @@ const TEMPLATE = {
   },
   "sniffer": {
     "enable": true,
-    "parse-pure-ip": true,
-    "override-destination": true,
+    "override-destination": false,
     "sniff": {
       "HTTP": {
         "ports": [
@@ -375,6 +374,13 @@ const TEMPLATE = {
       "+.v2ex.com"
     ],
     "skip-domain": [
+      "rule-set:private",
+      "rule-set:geolocation-cn",
+      "rule-set:cn-additional",
+      "rule-set:apple-cn",
+      "rule-set:microsoft-cn",
+      "rule-set:games-cn",
+      "rule-set:apple",
       "Mijia Cloud",
       "dlg.io.mi.com",
       "+.apple.com",
