@@ -486,17 +486,17 @@ const TEMPLATE = {
     "use-hosts": true,
     "use-system-hosts": false,
     "default-nameserver": [
-      "tls://223.5.5.5#DIRECT",
-      "114.114.114.114#DIRECT",
-      "https://1.12.12.12/dns-query#DIRECT"
+      "tls://223.5.5.5",
+      "114.114.114.114",
+      "https://1.12.12.12/dns-query"
     ],
     "proxy-server-nameserver": [
-      "https://hrbgyitz34.cloudflare-gateway.com/dns-query#DIRECT"
+      "https://hrbgyitz34.cloudflare-gateway.com/dns-query"
     ],
     "direct-nameserver": [
-      "https://dns.alidns.com/dns-query#DIRECT",
-      "https://doh.pub/dns-query#DIRECT",
-      "https://doh.360.cn/dns-query#DIRECT"
+      "https://dns.alidns.com/dns-query",
+      "https://doh.pub/dns-query",
+      "https://doh.360.cn/dns-query"
     ],
     "direct-nameserver-follow-policy": true,
     "nameserver": [
@@ -518,18 +518,18 @@ const TEMPLATE = {
         "system"
       ],
       "rule-set:geolocation-cn,cn-additional,apple-cn,microsoft-cn,games-cn": [
-        "https://dns.alidns.com/dns-query#DIRECT",
-        "https://doh.pub/dns-query#DIRECT",
-        "https://doh.360.cn/dns-query#DIRECT"
+        "https://dns.alidns.com/dns-query",
+        "https://doh.pub/dns-query",
+        "https://doh.360.cn/dns-query"
       ],
       // 业务域名解析尽可能跟随路由组；仅覆盖 DOMAIN、DOMAIN-SUFFIX 与 domain/classical 规则集。
       // nameserver-policy 按文件顺序匹配、先命中者优先；与上方条目重叠的域名以在前条目为准，本段映射仅对未被前面命中的域名生效。
       "rule-set:microsoft": ["https://cloudflare-dns.com/dns-query#💠 海外微软", "https://dns.google/dns-query#💠 海外微软", "https://unfiltered.adguard-dns.com/dns-query#💠 海外微软"],
       "rule-set:apple": ["https://cloudflare-dns.com/dns-query#🍎 海外苹果", "https://dns.google/dns-query#🍎 海外苹果", "https://unfiltered.adguard-dns.com/dns-query#🍎 海外苹果"],
       "rule-set:proxy@direct": [
-        "https://dns.alidns.com/dns-query#DIRECT",
-        "https://doh.pub/dns-query#DIRECT",
-        "https://doh.360.cn/dns-query#DIRECT"
+        "https://dns.alidns.com/dns-query",
+        "https://doh.pub/dns-query",
+        "https://doh.360.cn/dns-query"
       ],
       "rule-set:telegram_domain": ["https://cloudflare-dns.com/dns-query#📲 Telegram", "https://dns.google/dns-query#📲 Telegram", "https://unfiltered.adguard-dns.com/dns-query#📲 Telegram"],
       "rule-set:google": ["https://cloudflare-dns.com/dns-query#🔎 Google", "https://dns.google/dns-query#🔎 Google", "https://unfiltered.adguard-dns.com/dns-query#🔎 Google"],
