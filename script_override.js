@@ -379,6 +379,7 @@ const TEMPLATE = {
     },
     "skip-domain": [
       "rule-set:fakeip-filter_domain",
+      "rule-set:connectcheck",
       "rule-set:private",
       "rule-set:geolocation-cn",
       "rule-set:cn-additional",
@@ -612,6 +613,7 @@ const TEMPLATE = {
     "fake-ip-filter-mode": "blacklist",
     "fake-ip-filter": [
       "rule-set:fakeip-filter_domain",
+      "rule-set:connectcheck",
       "rule-set:private",
       "rule-set:geolocation-cn",
       "rule-set:cn-additional",
@@ -1156,6 +1158,15 @@ const TEMPLATE = {
       "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/fakeip-filter.mrs",
       "path": "./ruleset/fakeip-filter_domain.mrs",
       "path-in-bundle": "geo/geosite/fakeip-filter.mrs"
+    },
+    "connectcheck": {
+      "type": "http",
+      "interval": 86400,
+      "behavior": "domain",
+      "format": "mrs",
+      "url": "https://cdn.jsdmirror.com/gh/appshubcc/bett-rules@meta/geo/geosite/connectivity-check.mrs",
+      "path": "./ruleset/connectcheck.mrs",
+      "path-in-bundle": "geo/geosite/connectivity-check.mrs"
     },
     "games": {
       "type": "http",

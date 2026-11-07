@@ -128,6 +128,7 @@ sniffer:
     QUIC: {ports: [443, 8443]}
   skip-domain:
     - 'rule-set:fakeip-filter_domain'
+    - 'rule-set:connectcheck'
     - 'rule-set:private'
     - 'rule-set:geolocation-cn'
     - 'rule-set:cn-additional'
@@ -365,6 +366,7 @@ dns:
   fake-ip-filter-mode: blacklist                    
   fake-ip-filter: 
     - rule-set:fakeip-filter_domain
+    - rule-set:connectcheck
     - rule-set:private
     - rule-set:geolocation-cn
     - rule-set:cn-additional
@@ -630,6 +632,7 @@ rule-providers:
   echs_direct_ip: { <<: *ipcidr_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/echs-top/proxy/main/mrs/ip/direct.mrs', path: ./ruleset/echs_direct_ip.mrs, path-in-bundle: 'geo/geoip/cn.mrs' }
   ehentai: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/ehentai.mrs', path: ./ruleset/ehentai.mrs, path-in-bundle: 'geo/geosite/ehentai.mrs' }
   fakeip-filter_domain: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/fakeip-filter.mrs', path: ./ruleset/fakeip-filter_domain.mrs, path-in-bundle: 'geo/geosite/fakeip-filter.mrs' }
+  connectcheck: { <<: *domain_mrs, url: 'https://cdn.jsdmirror.com/gh/appshubcc/bett-rules@meta/geo/geosite/connectivity-check.mrs', path: ./ruleset/connectcheck.mrs, path-in-bundle: 'geo/geosite/connectivity-check.mrs' }
   games: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/games.mrs', path: ./ruleset/games.mrs, path-in-bundle: 'geo/geosite/category-games-!cn.mrs' }
   # gfw: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/gfw.mrs', path: ./ruleset/gfw.mrs }
   google: { <<: *domain_yaml, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/google.txt', path: ./ruleset/google.yaml }
