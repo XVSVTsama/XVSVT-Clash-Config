@@ -96,7 +96,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tbody>
 <tr><td><strong>🔎 Google</strong></td><td>Google 与 Gemini 共用出口</td><td>引用规则集合：<code>google</code>、<code>google-cn</code>、<code>Gemini_Domain</code></td></tr>
 <tr><td><strong>♾️ Meta</strong></td><td>Meta 与 Meta AI 共用出口</td><td>引用规则集合：<code>meta</code><br>使用域名后缀匹配：muse.ai、metaaivm.com<br>使用域名精确匹配：hatch-api.meta.ai、api.meta.ai、agent.meta.ai、auth.meta.com、meta.graph.meta.com、edge-metaclaw-http.c10r.facebook.com、shortwave.facebook.com、node.hatch.one<br>使用进程名称匹配：com.facebook.aura</td></tr>
-<tr><td><strong>🤖 AI大模型</strong></td><td>AI 服务单独选出口</td><td>引用规则集合：<code>ai-1</code>、<code>ai-2</code>、<code>Grok_Domain</code><br>使用域名后缀匹配：anthropic.com、claude.ai、claude.com、claudeusercontent.com、clau.de、frame.claudeusercontent.com、modelcontextprotocol.io、sentry.io、statsigapi.net、hark.com、wabi.ai、tabbyml.com<br>使用域名精确匹配：共 24 个域名（api.anthropic.com、downloads.claude.ai、cdn.growthbook.io、registry.npmjs.org、storage.googleapis.com 等）<br>使用域名关键词匹配：datadog、sift<br>使用进程名称正则表达式匹配：claude、anthropic、manus<br>使用进程名称匹配：com.hark.android、ai.wabi.android.app<br>使用 IP 段匹配：160.79.104.0/21、17.253.4.0/23、2607:6bc0::/48</td></tr>
+<tr><td><strong>🤖 AI大模型</strong></td><td>AI 服务单独选出口</td><td>引用规则集合：<code>ai</code><br>使用域名后缀匹配：anthropic.com、claude.ai、claude.com、claudeusercontent.com、clau.de、frame.claudeusercontent.com、modelcontextprotocol.io、sentry.io、statsigapi.net、hark.com、wabi.ai、tabbyml.com<br>使用域名精确匹配：共 24 个域名（api.anthropic.com、downloads.claude.ai、cdn.growthbook.io、registry.npmjs.org、storage.googleapis.com 等）<br>使用域名关键词匹配：datadog、sift<br>使用进程名称正则表达式匹配：claude、anthropic、manus<br>使用进程名称匹配：com.hark.android、ai.wabi.android.app<br>使用 IP 段匹配：160.79.104.0/21、17.253.4.0/23、2607:6bc0::/48</td></tr>
 <tr><td><strong>📲 Telegram</strong></td><td>Telegram 单独选出口</td><td>引用规则集合：<code>telegram_domain</code>、<code>telegramcidr</code><br>使用进程名称正则表达式匹配：telegram、nagram</td></tr>
 <tr><td><strong>✖️ Twitter</strong></td><td>Twitter / X 单独选出口</td><td>引用规则集合：<code>twitter-x-domain</code>、<code>twitter-x-ip</code>、<code>twitter-x-aggregate</code><br>使用进程名称正则表达式匹配：twitter</td></tr>
 <tr><td><strong>💬 Discord</strong></td><td>Discord 单独选出口</td><td>引用规则集合：<code>discord</code></td></tr>
@@ -350,19 +350,6 @@ venn-beta
 ```
 
 `twitter-x-aggregate` 为 classical 类型，可同时容纳域名与 IP 条目，与 MetaCubeX 的两套各自重合。该集本身是有内容的规则集；其来源为 `magicrule.pages.dev` 的构建产物，若该地址当前无法直出 YAML（网络原因或站点行为），客户端会拉到空集，此时 Twitter 分流由 `twitter-x-domain`、`twitter-x-ip` 两套承担。
-
-**5. 三套 AI 规则集**
-
-```mermaid
-venn-beta
-  set A1["ai-1（DustinWin ai.mrs）"]
-  set A2["ai-2（MetaCubeX category-ai-!cn）"]
-  set G["Grok_Domain（Accademia）"]
-  union A1,A2
-  union A1,G
-```
-
-`ai-1` 与 `ai-2` 有 208 条完全相同；`Grok_Domain` 的 4 条里 `+.x.ai`、`+.grok.com` 两条与两者重复。三者来源不同却覆盖同类站点，在 `rules` 中同指 `🤖 AI大模型`。
 
 > 以上重合关系按各规则集的覆盖范围与来源判断（依据取自 `mihomo.yaml` 的 `rules:` 引用与注释）。
 

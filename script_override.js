@@ -577,13 +577,11 @@ const TEMPLATE = {
       "+.claudeusercontent.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
       "+.clau.de": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
       "+.modelcontextprotocol.io": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
-      "rule-set:Grok_Domain": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
       "anthropic.com.cdn.cloudflare.net": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
       "anthropic-com.ghost.io": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
       "+.sentry.io": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
       "+.statsigapi.net": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
-      "rule-set:ai-1": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
-      "rule-set:ai-2": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
+      "rule-set:ai": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"],
       "rule-set:spotify": ["https://cloudflare-dns.com/dns-query#🎧 Spotify", "https://dns.google/dns-query#🎧 Spotify", "https://unfiltered.adguard-dns.com/dns-query#🎧 Spotify"],
       "rule-set:discord": ["https://cloudflare-dns.com/dns-query#💬 Discord", "https://dns.google/dns-query#💬 Discord", "https://unfiltered.adguard-dns.com/dns-query#💬 Discord"],
       "rule-set:reddit": ["https://cloudflare-dns.com/dns-query#👽 Reddit", "https://dns.google/dns-query#👽 Reddit", "https://unfiltered.adguard-dns.com/dns-query#👽 Reddit"],
@@ -1001,13 +999,6 @@ const TEMPLATE = {
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/Accademia/Additional_Rule_For_Clash/master/Gemini/Gemini_Domain.yaml",
       "path": "./ruleset/Gemini_Domain.yaml"
     },
-    "Grok_Domain": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "domain",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/Accademia/Additional_Rule_For_Clash/refs/heads/main/Grok/Grok_Domain.yaml",
-      "path": "./ruleset/Grok_Domain.yaml"
-    },
     "HijackingPlus": {
       "type": "http",
       "interval": 86400,
@@ -1024,22 +1015,13 @@ const TEMPLATE = {
       "path": "./ruleset/tiktok.mrs",
       "path-in-bundle": "geo/geosite/tiktok.mrs"
     },
-    "ai-1": {
+    "ai": {
       "type": "http",
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/ai.mrs",
-      "path": "./ruleset/ai-1.mrs",
-      "path-in-bundle": "geo/geosite/category-ai-!cn.mrs"
-    },
-    "ai-2": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "domain",
-      "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs",
-      "path": "./ruleset/ai-2.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/category-ai-!cn.mrs",
+      "path": "./ruleset/ai.mrs",
       "path-in-bundle": "geo/geosite/category-ai-!cn.mrs"
     },
     "apple": {
@@ -1065,7 +1047,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-cryptocurrency.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/category-cryptocurrency.mrs",
       "path": "./ruleset/category-cryptocurrency.mrs",
       "path-in-bundle": "geo/geosite/category-cryptocurrency.mrs"
     },
@@ -1216,7 +1198,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/mastercard.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/mastercard.mrs",
       "path": "./ruleset/mastercard.mrs",
       "path-in-bundle": "geo/geosite/mastercard.mrs"
     },
@@ -1260,7 +1242,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/paypal.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/paypal.mrs",
       "path": "./ruleset/paypal.mrs",
       "path-in-bundle": "geo/geosite/paypal.mrs"
     },
@@ -1347,7 +1329,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/stripe.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/stripe.mrs",
       "path": "./ruleset/stripe.mrs",
       "path-in-bundle": "geo/geosite/stripe.mrs"
     },
@@ -1400,7 +1382,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/visa.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/visa.mrs",
       "path": "./ruleset/visa.mrs",
       "path-in-bundle": "geo/geosite/visa.mrs"
     },
@@ -1409,7 +1391,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/wise.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/wise.mrs",
       "path": "./ruleset/wise.mrs",
       "path-in-bundle": "geo/geosite/wise.mrs"
     }
@@ -1564,15 +1546,13 @@ const TEMPLATE = {
     "IP-CIDR,160.79.104.0/21,🤖 AI大模型,no-resolve",
     "IP-CIDR6,2607:6bc0::/48,🤖 AI大模型,no-resolve",
     "IP-CIDR,17.253.4.0/23,🤖 AI大模型,no-resolve",
-    "RULE-SET,Grok_Domain,🤖 AI大模型",
     "DOMAIN,anthropic.com.cdn.cloudflare.net,🤖 AI大模型",
     "DOMAIN,anthropic-com.ghost.io,🤖 AI大模型",
     "DOMAIN-SUFFIX,sentry.io,🤖 AI大模型",
     "DOMAIN-SUFFIX,statsigapi.net,🤖 AI大模型",
     "DOMAIN-KEYWORD,datadog,🤖 AI大模型",
     "DOMAIN-KEYWORD,sift,🤖 AI大模型",
-    "RULE-SET,ai-1,🤖 AI大模型",
-    "RULE-SET,ai-2,🤖 AI大模型",
+    "RULE-SET,ai,🤖 AI大模型",
     "PROCESS-NAME,com.hark.android,🤖 AI大模型",
     "PROCESS-NAME,ai.wabi.android.app,🤖 AI大模型",
     "PROCESS-NAME-REGEX,(?i).*(manus|tech\\.butterfly\\.app).*,🤖 AI大模型",

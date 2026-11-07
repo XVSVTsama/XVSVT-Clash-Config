@@ -331,13 +331,11 @@ dns:
     "+.claudeusercontent.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
     "+.clau.de": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
     "+.modelcontextprotocol.io": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
-    "rule-set:Grok_Domain": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
     "anthropic.com.cdn.cloudflare.net": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
     "anthropic-com.ghost.io": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
     "+.sentry.io": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
     "+.statsigapi.net": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
-    "rule-set:ai-1": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
-    "rule-set:ai-2": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "rule-set:ai": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
     "rule-set:spotify": ["https://cloudflare-dns.com/dns-query#🎧 Spotify", "https://dns.google/dns-query#🎧 Spotify", "https://unfiltered.adguard-dns.com/dns-query#🎧 Spotify"]
     "rule-set:discord": ["https://cloudflare-dns.com/dns-query#💬 Discord", "https://dns.google/dns-query#💬 Discord", "https://unfiltered.adguard-dns.com/dns-query#💬 Discord"]
     "rule-set:reddit": ["https://cloudflare-dns.com/dns-query#👽 Reddit", "https://dns.google/dns-query#👽 Reddit", "https://unfiltered.adguard-dns.com/dns-query#👽 Reddit"]
@@ -614,14 +612,12 @@ rule-providers:
   # skk_reject_drop: { <<: *classical_yaml, format: text, interval: 43200, url: 'https://ruleset.skk.moe/Clash/non_ip/reject-drop.txt', path: ./ruleset/skk_reject_drop.txt }
   # skk_reject_ip: { <<: *classical_yaml, format: text, interval: 43200, url: 'https://ruleset.skk.moe/Clash/ip/reject.txt', path: ./ruleset/skk_reject_ip.txt }
   Gemini_Domain: { <<: *domain_yaml, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/Accademia/Additional_Rule_For_Clash/master/Gemini/Gemini_Domain.yaml', path: ./ruleset/Gemini_Domain.yaml }
-  Grok_Domain: { <<: *domain_yaml, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/Accademia/Additional_Rule_For_Clash/refs/heads/main/Grok/Grok_Domain.yaml', path: ./ruleset/Grok_Domain.yaml }
   HijackingPlus: { <<: *classical_yaml, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/Accademia/Additional_Rule_For_Clash/refs/heads/main/HijackingPlus/HijackingPlus_No_Resolve.yaml', path: ./ruleset/HijackingPlus.yaml }
   TikTok: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/tiktok.mrs', path: ./ruleset/tiktok.mrs, path-in-bundle: 'geo/geosite/tiktok.mrs' }
-  ai-1: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/ai.mrs', path: ./ruleset/ai-1.mrs, path-in-bundle: 'geo/geosite/category-ai-!cn.mrs' }
-  ai-2: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs', path: ./ruleset/ai-2.mrs, path-in-bundle: 'geo/geosite/category-ai-!cn.mrs' }
+  ai: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/category-ai-!cn.mrs', path: ./ruleset/ai.mrs, path-in-bundle: 'geo/geosite/category-ai-!cn.mrs' }
   apple: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/apple.mrs', path: ./ruleset/apple.mrs, path-in-bundle: 'geo/geosite/apple.mrs' }
   apple_ip: { <<: *ipcidr_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geoip/apple.mrs', path: ./ruleset/apple_ip.mrs, path-in-bundle: 'geo/geoip/apple.mrs' }
-  category-cryptocurrency: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-cryptocurrency.mrs', path: ./ruleset/category-cryptocurrency.mrs, path-in-bundle: 'geo/geosite/category-cryptocurrency.mrs' }
+  category-cryptocurrency: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/category-cryptocurrency.mrs', path: ./ruleset/category-cryptocurrency.mrs, path-in-bundle: 'geo/geosite/category-cryptocurrency.mrs' }
   discord: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/discord.mrs', path: ./ruleset/discord.mrs, path-in-bundle: 'geo/geosite/discord.mrs' }
   douyin: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/douyin.mrs', path: ./ruleset/douyin.mrs, path-in-bundle: 'geo/geosite/douyin.mrs' }
   geolocation-cn: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/geolocation-cn.mrs', path: ./ruleset/geolocation-cn.mrs, path-in-bundle: 'geo/geosite/geolocation-cn.mrs' }
@@ -639,12 +635,12 @@ rule-providers:
   google-cn: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/google-cn.mrs', path: ./ruleset/google-cn.mrs, path-in-bundle: 'geo/geosite/google@cn.mrs' }
   googlefcm: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/googlefcm.mrs', path: ./ruleset/googlefcm.mrs, path-in-bundle: 'geo/geosite/googlefcm.mrs' }
   line: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/line.mrs', path: ./ruleset/line.mrs, path-in-bundle: 'geo/geosite/line.mrs' }
-  mastercard: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/mastercard.mrs', path: ./ruleset/mastercard.mrs, path-in-bundle: 'geo/geosite/mastercard.mrs' }
+  mastercard: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/mastercard.mrs', path: ./ruleset/mastercard.mrs, path-in-bundle: 'geo/geosite/mastercard.mrs' }
   meta: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/meta.mrs', path: ./ruleset/meta.mrs, path-in-bundle: 'geo/geosite/meta.mrs' }
   netflix: { <<: *classical_yaml, format: text, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/DustinWin/domain-list-custom/domains/netflix.list', path: ./ruleset/netflix.list }
   microsoft_ip: { <<: *ipcidr_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geoip/microsoft.mrs', path: ./ruleset/microsoft_ip.mrs, path-in-bundle: 'geo/geoip/microsoft.mrs' }
   microsoft: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/microsoft.mrs', path: ./ruleset/microsoft.mrs, path-in-bundle: 'geo/geosite/microsoft.mrs' }
-  paypal: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/paypal.mrs', path: ./ruleset/paypal.mrs, path-in-bundle: 'geo/geosite/paypal.mrs' }
+  paypal: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/paypal.mrs', path: ./ruleset/paypal.mrs, path-in-bundle: 'geo/geosite/paypal.mrs' }
   patreon: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/patreon.mrs', path: ./ruleset/patreon.mrs, path-in-bundle: 'geo/geosite/patreon.mrs' }
   pikpak: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/pikpak.mrs', path: ./ruleset/pikpak.mrs, path-in-bundle: 'geo/geosite/pikpak.mrs' }
   pixiv: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/pixiv.mrs', path: ./ruleset/pixiv.mrs, path-in-bundle: 'geo/geosite/pixiv.mrs' }
@@ -687,14 +683,14 @@ rule-providers:
   #     - IP-CIDR,149.154.168.0/22,no-resolve
   #     - IP-CIDR6,2001:b28:f23c::/48,no-resolve
   #     - IP-CIDR6,2001:b28:f23f::/48,no-resolve
-  stripe: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/stripe.mrs', path: ./ruleset/stripe.mrs, path-in-bundle: 'geo/geosite/stripe.mrs' }
+  stripe: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/stripe.mrs', path: ./ruleset/stripe.mrs, path-in-bundle: 'geo/geosite/stripe.mrs' }
   telegram_domain: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.mrs', path: ./rules/telegram_domain.mrs, path-in-bundle: 'geo/geosite/telegram.mrs' }
   telegramcidr: { <<: *ipcidr_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/reddishJade/private_proxy/main/Mihomo/Provider/telegram%40ip.mrs', path: ./ruleset/telegramcidr.mrs, path-in-bundle: 'geo/geoip/telegram.mrs' }
   twitter-x-aggregate: { <<: *classical_yaml, format: yaml, url: 'https://magicrule.pages.dev/data/_shared/artifacts/Twitter_classical_d405159ccf6c8682.yaml', path: ./ruleset/twitter-x-aggregate.yaml }
   twitter-x-domain: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/twitter.mrs', path: ./ruleset/twitter/x-domain.mrs, path-in-bundle: 'geo/geosite/twitter.mrs' }
   twitter-x-ip: { <<: *ipcidr_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/twitter.mrs', path: ./ruleset/twitter/x-ip.mrs, path-in-bundle: 'geo/geoip/twitter.mrs' }
-  visa: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/visa.mrs', path: ./ruleset/visa.mrs, path-in-bundle: 'geo/geosite/visa.mrs' }
-  wise: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/wise.mrs', path: ./ruleset/wise.mrs, path-in-bundle: 'geo/geosite/wise.mrs' }
+  visa: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/visa.mrs', path: ./ruleset/visa.mrs, path-in-bundle: 'geo/geosite/visa.mrs' }
+  wise: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/wise.mrs', path: ./ruleset/wise.mrs, path-in-bundle: 'geo/geosite/wise.mrs' }
 sub-rules:
   fanqie:
     - DOMAIN,p6-ad-sign.byteimg.com,REJECT
@@ -857,15 +853,13 @@ rules:
   - IP-CIDR,160.79.104.0/21,🤖 AI大模型,no-resolve
   - IP-CIDR6,2607:6bc0::/48,🤖 AI大模型,no-resolve
   - IP-CIDR,17.253.4.0/23,🤖 AI大模型,no-resolve
-  - RULE-SET,Grok_Domain,🤖 AI大模型
   - DOMAIN,anthropic.com.cdn.cloudflare.net,🤖 AI大模型
   - DOMAIN,anthropic-com.ghost.io,🤖 AI大模型
   - DOMAIN-SUFFIX,sentry.io,🤖 AI大模型
   - DOMAIN-SUFFIX,statsigapi.net,🤖 AI大模型
   - DOMAIN-KEYWORD,datadog,🤖 AI大模型
   - DOMAIN-KEYWORD,sift,🤖 AI大模型
-  - RULE-SET,ai-1,🤖 AI大模型
-  - RULE-SET,ai-2,🤖 AI大模型
+  - RULE-SET,ai,🤖 AI大模型
   - PROCESS-NAME,com.hark.android,🤖 AI大模型
   - PROCESS-NAME,ai.wabi.android.app,🤖 AI大模型
   - PROCESS-NAME-REGEX,(?i).*(manus|tech\.butterfly\.app).*,🤖 AI大模型
