@@ -231,8 +231,9 @@ const ruleOptionsEnable = {
   // “关闭WebRTC阻断”未开启时，把 443 并入 WebRTC 阻断规则的 DST-PORT；
   // 已开启时，按同一组 NOT 条件另建一条 UDP 443 阻断规则并置顶。
   'QUIC阻断': false,
-  // 默认关闭：保留模板 sniffer；打开后直接从输出中删除整个 sniffer 字段（而非改 enable: false）。
-  '关闭Sniffer': false,
+  // 默认关闭：直接从输出中删除整个 sniffer 字段（而非改 enable: false），嗅探交由内核或客户端默认值决定；
+  // 打开后保留模板 sniffer。
+  '开启Sniffer': false,
 };
 
 // 关闭这些业务组时删除指向它们的路由规则，而不是把规则改写到全局兜底。
@@ -1626,7 +1627,7 @@ const FEATURE_SWITCH_ICONS = {
   '代理节点 DNS 使用 TCP': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-TCP.png',
   '关闭WebRTC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-webrtc-block.svg',
   'QUIC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Quic.svg',
-  '关闭Sniffer': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Tracking.svg',
+  '开启Sniffer': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Tracking.svg',
 };
 
 // Bettbox 的可视化开关图标：客户端会读取全局 serviceConfigs（name 对应 ruleOptionsEnable 的 key，
@@ -1706,8 +1707,8 @@ const serviceConfigs = TEMPLATE['proxy-groups']
       icon: FEATURE_SWITCH_ICONS['QUIC阻断']
     },
     {
-      name: '关闭Sniffer',
-      icon: FEATURE_SWITCH_ICONS['关闭Sniffer']
+      name: '开启Sniffer',
+      icon: FEATURE_SWITCH_ICONS['开启Sniffer']
     }
   ]);
 
@@ -3609,8 +3610,8 @@ function main(config, profileName) {
     }
   }
 
-  // ---- 6.7 Sniffer 开关：默认关闭时不做任何处理；打开后从输出中删除整个 sniffer 字段 ----
-  if (ruleOptionsEnable['关闭Sniffer'] === true) {
+  // ---- 6.7 Sniffer 开关：默认关闭时从输出中删除整个 sniffer 字段；打开后保留模板 sniffer ----
+  if (ruleOptionsEnable['开启Sniffer'] !== true) {
     delete result.sniffer;
   }
 

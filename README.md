@@ -252,7 +252,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><td><code>代理节点 DNS 使用 TCP</code></td><td>关闭</td><td>为代理节点解析 DNS 中未标协议的地址启用 TCP；显式协议不变</td></tr>
 <tr><td><code>关闭WebRTC阻断</code></td><td>关闭</td><td>默认关闭时保持模板规则不变；打开后移除所有同时包含 <code>NETWORK,UDP</code> 与 <code>DST-PORT,3478-3479/5349-5350/19302-19309</code> 的规则</td></tr>
 <tr><td><code>QUIC阻断</code></td><td>关闭</td><td>关闭时不做任何处理；开启时阻断非国内、非游戏的 UDP 443（QUIC）：若 <code>关闭WebRTC阻断</code> 未开启，直接在 WebRTC 阻断规则的 <code>DST-PORT</code> 中追加 <code>443</code>；若已开启，则按 WebRTC 阻断规则的同一组 <code>NOT</code> 条件另建一条 <code>AND,((NETWORK,UDP),(DST-PORT,443),…),REJECT</code> 并置顶</td></tr>
-<tr><td><code>关闭Sniffer</code></td><td>关闭</td><td>关闭时不做任何处理；开启时直接从输出配置中删除整个 <code>sniffer</code> 字段（不是改为 <code>enable: false</code>），嗅探行为交由内核或客户端默认值决定</td></tr>
+<tr><td><code>开启Sniffer</code></td><td>关闭</td><td>关闭时直接从输出配置中删除整个 <code>sniffer</code> 字段（不是改为 <code>enable: false</code>），嗅探行为交由内核或客户端默认值决定；开启时保留模板中的 <code>sniffer</code> 配置</td></tr>
 </tbody>
 </table>
 

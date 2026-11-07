@@ -58,7 +58,7 @@
 | `upstream-Qure-Style-SVG-SSL.svg` | [common/SSL.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/common/SSL.svg) | 强制证书验证开关 |
 | `upstream-Qure-Style-SVG-Spark.svg` | [common/Spark.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/common/Spark.svg) | 关闭 Reality 增强开关 |
 | `upstream-Qure-Style-SVG-Quic.svg` | [common/Quic.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/common/Quic.svg) | QUIC 阻断开关 |
-| `upstream-Qure-Style-SVG-Tracking.svg` | [common/Tracking.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/common/Tracking.svg) | 关闭 Sniffer 开关（雷达扫描图形，表示嗅探） |
+| `upstream-Qure-Style-SVG-Tracking.svg` | [common/Tracking.svg](https://github.com/aaANDkk/Qure_Style_SVG/blob/8c483c202fc160aee1ab93eb7e0d68a0854834fd/icon/svg/common/Tracking.svg) | 开启 Sniffer 开关（雷达扫描图形，表示嗅探） |
 
 部分旗帜图形采用 MIT 许可的 [lipis/flag-icons](https://github.com/lipis/flag-icons) 几何，许可证文本如下：
 
