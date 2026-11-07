@@ -1019,7 +1019,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/tiktok.mrs",
-      "path": "./ruleset/tiktok.mrs"
+      "path": "./ruleset/tiktok.mrs",
+      "path-in-bundle": "geo/geosite/tiktok.mrs"
     },
     "ai-1": {
       "type": "http",
@@ -1027,7 +1028,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/ai.mrs",
-      "path": "./ruleset/ai-1.mrs"
+      "path": "./ruleset/ai-1.mrs",
+      "path-in-bundle": "geo/geosite/category-ai-!cn.mrs"
     },
     "ai-2": {
       "type": "http",
@@ -1035,7 +1037,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs",
-      "path": "./ruleset/ai-2.mrs"
+      "path": "./ruleset/ai-2.mrs",
+      "path-in-bundle": "geo/geosite/category-ai-!cn.mrs"
     },
     "apple": {
       "type": "http",
@@ -1043,7 +1046,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/apple.mrs",
-      "path": "./ruleset/apple.mrs"
+      "path": "./ruleset/apple.mrs",
+      "path-in-bundle": "geo/geosite/apple.mrs"
     },
     "apple_ip": {
       "type": "http",
@@ -1051,7 +1055,8 @@ const TEMPLATE = {
       "behavior": "ipcidr",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geoip/apple.mrs",
-      "path": "./ruleset/apple_ip.mrs"
+      "path": "./ruleset/apple_ip.mrs",
+      "path-in-bundle": "geo/geoip/apple.mrs"
     },
     "category-cryptocurrency": {
       "type": "http",
@@ -1059,7 +1064,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-cryptocurrency.mrs",
-      "path": "./ruleset/category-cryptocurrency.mrs"
+      "path": "./ruleset/category-cryptocurrency.mrs",
+      "path-in-bundle": "geo/geosite/category-cryptocurrency.mrs"
     },
     "discord": {
       "type": "http",
@@ -1067,7 +1073,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/discord.mrs",
-      "path": "./ruleset/discord.mrs"
+      "path": "./ruleset/discord.mrs",
+      "path-in-bundle": "geo/geosite/discord.mrs"
     },
     "douyin": {
       "type": "http",
@@ -1075,7 +1082,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/douyin.mrs",
-      "path": "./ruleset/douyin.mrs"
+      "path": "./ruleset/douyin.mrs",
+      "path-in-bundle": "geo/geosite/douyin.mrs"
     },
     "geolocation-cn": {
       "type": "http",
@@ -1083,7 +1091,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/geolocation-cn.mrs",
-      "path": "./ruleset/geolocation-cn.mrs"
+      "path": "./ruleset/geolocation-cn.mrs",
+      "path-in-bundle": "geo/geosite/geolocation-cn.mrs"
     },
     "cn-additional": {
       "type": "http",
@@ -1091,7 +1100,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://static-file-global.353355.xyz/rules/cn-additional-list.mrs",
-      "path": "./ruleset/cn-additional.mrs"
+      "path": "./ruleset/cn-additional.mrs",
+      "path-in-bundle": "geo/geosite/cn.mrs"
     },
     "apple-cn": {
       "type": "http",
@@ -1099,7 +1109,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/apple-cn.mrs",
-      "path": "./ruleset/apple-cn.mrs"
+      "path": "./ruleset/apple-cn.mrs",
+      "path-in-bundle": "geo/geosite/apple@cn.mrs"
     },
     "microsoft-cn": {
       "type": "http",
@@ -1107,7 +1118,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/microsoft-cn.mrs",
-      "path": "./ruleset/microsoft-cn.mrs"
+      "path": "./ruleset/microsoft-cn.mrs",
+      "path-in-bundle": "geo/geosite/microsoft@cn.mrs"
     },
     "games-cn": {
       "type": "http",
@@ -1115,7 +1127,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/games-cn.mrs",
-      "path": "./ruleset/games-cn.mrs"
+      "path": "./ruleset/games-cn.mrs",
+      "path-in-bundle": "geo/geosite/category-games-cn.mrs"
     },
     "echs_direct_ip": {
       "type": "http",
@@ -1123,7 +1136,8 @@ const TEMPLATE = {
       "behavior": "ipcidr",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/echs-top/proxy/main/mrs/ip/direct.mrs",
-      "path": "./ruleset/echs_direct_ip.mrs"
+      "path": "./ruleset/echs_direct_ip.mrs",
+      "path-in-bundle": "geo/geoip/cn.mrs"
     },
     "ehentai": {
       "type": "http",
@@ -1131,7 +1145,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/ehentai.mrs",
-      "path": "./ruleset/ehentai.mrs"
+      "path": "./ruleset/ehentai.mrs",
+      "path-in-bundle": "geo/geosite/ehentai.mrs"
     },
     "fakeip-filter_domain": {
       "type": "http",
@@ -1139,7 +1154,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/fakeip-filter.mrs",
-      "path": "./ruleset/fakeip-filter_domain.mrs"
+      "path": "./ruleset/fakeip-filter_domain.mrs",
+      "path-in-bundle": "geo/geosite/fakeip-filter.mrs"
     },
     "games": {
       "type": "http",
@@ -1147,7 +1163,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/games.mrs",
-      "path": "./ruleset/games.mrs"
+      "path": "./ruleset/games.mrs",
+      "path-in-bundle": "geo/geosite/category-games-!cn.mrs"
     },
     "google": {
       "type": "http",
@@ -1162,7 +1179,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/google-cn.mrs",
-      "path": "./ruleset/google-cn.mrs"
+      "path": "./ruleset/google-cn.mrs",
+      "path-in-bundle": "geo/geosite/google@cn.mrs"
     },
     "googlefcm": {
       "type": "http",
@@ -1170,7 +1188,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/googlefcm.mrs",
-      "path": "./ruleset/googlefcm.mrs"
+      "path": "./ruleset/googlefcm.mrs",
+      "path-in-bundle": "geo/geosite/googlefcm.mrs"
     },
     "lancidr": {
       "type": "http",
@@ -1185,7 +1204,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/line.mrs",
-      "path": "./ruleset/line.mrs"
+      "path": "./ruleset/line.mrs",
+      "path-in-bundle": "geo/geosite/line.mrs"
     },
     "mastercard": {
       "type": "http",
@@ -1193,7 +1213,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/mastercard.mrs",
-      "path": "./ruleset/mastercard.mrs"
+      "path": "./ruleset/mastercard.mrs",
+      "path-in-bundle": "geo/geosite/mastercard.mrs"
     },
     "meta": {
       "type": "http",
@@ -1201,7 +1222,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/meta.mrs",
-      "path": "./ruleset/meta.mrs"
+      "path": "./ruleset/meta.mrs",
+      "path-in-bundle": "geo/geosite/meta.mrs"
     },
     "netflix": {
       "type": "http",
@@ -1217,7 +1239,8 @@ const TEMPLATE = {
       "behavior": "ipcidr",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geoip/microsoft.mrs",
-      "path": "./ruleset/microsoft_ip.mrs"
+      "path": "./ruleset/microsoft_ip.mrs",
+      "path-in-bundle": "geo/geoip/microsoft.mrs"
     },
     "microsoft": {
       "type": "http",
@@ -1225,7 +1248,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/microsoft.mrs",
-      "path": "./ruleset/microsoft.mrs"
+      "path": "./ruleset/microsoft.mrs",
+      "path-in-bundle": "geo/geosite/microsoft.mrs"
     },
     "paypal": {
       "type": "http",
@@ -1233,7 +1257,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/paypal.mrs",
-      "path": "./ruleset/paypal.mrs"
+      "path": "./ruleset/paypal.mrs",
+      "path-in-bundle": "geo/geosite/paypal.mrs"
     },
     "patreon": {
       "type": "http",
@@ -1241,7 +1266,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/patreon.mrs",
-      "path": "./ruleset/patreon.mrs"
+      "path": "./ruleset/patreon.mrs",
+      "path-in-bundle": "geo/geosite/patreon.mrs"
     },
     "pikpak": {
       "type": "http",
@@ -1249,7 +1275,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/pikpak.mrs",
-      "path": "./ruleset/pikpak.mrs"
+      "path": "./ruleset/pikpak.mrs",
+      "path-in-bundle": "geo/geosite/pikpak.mrs"
     },
     "pixiv": {
       "type": "http",
@@ -1257,7 +1284,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/pixiv.mrs",
-      "path": "./ruleset/pixiv.mrs"
+      "path": "./ruleset/pixiv.mrs",
+      "path-in-bundle": "geo/geosite/pixiv.mrs"
     },
     "private": {
       "type": "http",
@@ -1280,7 +1308,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/reddit.mrs",
-      "path": "./ruleset/reddit.mrs"
+      "path": "./ruleset/reddit.mrs",
+      "path-in-bundle": "geo/geosite/reddit.mrs"
     },
     "spotify": {
       "type": "http",
@@ -1288,7 +1317,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/spotify.mrs",
-      "path": "./ruleset/spotify.mrs"
+      "path": "./ruleset/spotify.mrs",
+      "path-in-bundle": "geo/geosite/spotify.mrs"
     },
     "steam_ip": {
       "type": "http",
@@ -1296,7 +1326,8 @@ const TEMPLATE = {
       "behavior": "ipcidr",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geoip/steam.mrs",
-      "path": "./ruleset/steam_ip.mrs"
+      "path": "./ruleset/steam_ip.mrs",
+      "path-in-bundle": "geo/geoip/steam.mrs"
     },
     "steam": {
       "type": "http",
@@ -1304,7 +1335,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/steam.mrs",
-      "path": "./ruleset/steam.mrs"
+      "path": "./ruleset/steam.mrs",
+      "path-in-bundle": "geo/geosite/steam.mrs"
     },
     "stripe": {
       "type": "http",
@@ -1312,7 +1344,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/stripe.mrs",
-      "path": "./ruleset/stripe.mrs"
+      "path": "./ruleset/stripe.mrs",
+      "path-in-bundle": "geo/geosite/stripe.mrs"
     },
     "telegram_domain": {
       "type": "http",
@@ -1320,7 +1353,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.mrs",
-      "path": "./rules/telegram_domain.mrs"
+      "path": "./rules/telegram_domain.mrs",
+      "path-in-bundle": "geo/geosite/telegram.mrs"
     },
     "telegramcidr": {
       "type": "http",
@@ -1328,7 +1362,8 @@ const TEMPLATE = {
       "behavior": "ipcidr",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/reddishJade/private_proxy/main/Mihomo/Provider/telegram%40ip.mrs",
-      "path": "./ruleset/telegramcidr.mrs"
+      "path": "./ruleset/telegramcidr.mrs",
+      "path-in-bundle": "geo/geoip/telegram.mrs"
     },
     "twitter-x-aggregate": {
       "type": "http",
@@ -1344,7 +1379,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/twitter.mrs",
-      "path": "./ruleset/twitter/x-domain.mrs"
+      "path": "./ruleset/twitter/x-domain.mrs",
+      "path-in-bundle": "geo/geosite/twitter.mrs"
     },
     "twitter-x-ip": {
       "type": "http",
@@ -1352,7 +1388,8 @@ const TEMPLATE = {
       "behavior": "ipcidr",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/twitter.mrs",
-      "path": "./ruleset/twitter/x-ip.mrs"
+      "path": "./ruleset/twitter/x-ip.mrs",
+      "path-in-bundle": "geo/geoip/twitter.mrs"
     },
     "visa": {
       "type": "http",
@@ -1360,7 +1397,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/visa.mrs",
-      "path": "./ruleset/visa.mrs"
+      "path": "./ruleset/visa.mrs",
+      "path-in-bundle": "geo/geosite/visa.mrs"
     },
     "wise": {
       "type": "http",
@@ -1368,7 +1406,8 @@ const TEMPLATE = {
       "behavior": "domain",
       "format": "mrs",
       "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/wise.mrs",
-      "path": "./ruleset/wise.mrs"
+      "path": "./ruleset/wise.mrs",
+      "path-in-bundle": "geo/geosite/wise.mrs"
     }
   },
   "sub-rules": {
