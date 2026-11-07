@@ -1202,13 +1202,6 @@ const TEMPLATE = {
       "path": "./ruleset/googlefcm.mrs",
       "path-in-bundle": "geo/geosite/googlefcm.mrs"
     },
-    "lancidr": {
-      "type": "http",
-      "interval": 86400,
-      "behavior": "ipcidr",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/lancidr.txt",
-      "path": "./ruleset/lancidr.yaml"
-    },
     "line": {
       "type": "http",
       "interval": 86400,
@@ -1492,7 +1485,6 @@ const TEMPLATE = {
     "PROCESS-NAME,svchost.exe,DIRECT",
     "DOMAIN-SUFFIX,ts.net,Tailscale",
     "RULE-SET,private,DIRECT,no-resolve",
-    "RULE-SET,lancidr,DIRECT,no-resolve",
     "DOMAIN-WILDCARD,*.deepseek.com,DIRECT",
     "DOMAIN-WILDCARD,*.portal101.cn,DIRECT",
     "DOMAIN-SUFFIX,edgekey.net,DIRECT",

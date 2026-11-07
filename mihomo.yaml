@@ -638,7 +638,6 @@ rule-providers:
   google: { <<: *domain_yaml, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/google.txt', path: ./ruleset/google.yaml }
   google-cn: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/google-cn.mrs', path: ./ruleset/google-cn.mrs, path-in-bundle: 'geo/geosite/google@cn.mrs' }
   googlefcm: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/googlefcm.mrs', path: ./ruleset/googlefcm.mrs, path-in-bundle: 'geo/geosite/googlefcm.mrs' }
-  lancidr: { <<: *ipcidr_yaml, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/lancidr.txt', path: ./ruleset/lancidr.yaml }
   line: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/line.mrs', path: ./ruleset/line.mrs, path-in-bundle: 'geo/geosite/line.mrs' }
   mastercard: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/mastercard.mrs', path: ./ruleset/mastercard.mrs, path-in-bundle: 'geo/geosite/mastercard.mrs' }
   meta: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/meta.mrs', path: ./ruleset/meta.mrs, path-in-bundle: 'geo/geosite/meta.mrs' }
@@ -778,7 +777,6 @@ rules:
   - PROCESS-NAME,svchost.exe,DIRECT
   - DOMAIN-SUFFIX,ts.net,Tailscale
   - RULE-SET,private,DIRECT,no-resolve    
-  - RULE-SET,lancidr,DIRECT,no-resolve
   - DOMAIN-WILDCARD,*.deepseek.com,DIRECT
   - DOMAIN-WILDCARD,*.portal101.cn,DIRECT
   - DOMAIN-SUFFIX,edgekey.net,DIRECT
