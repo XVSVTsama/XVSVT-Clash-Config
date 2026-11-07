@@ -342,14 +342,14 @@ venn-beta
 
 ```mermaid
 venn-beta
-  set D["twitter-x-domain（MetaCubeX）"]
-  set I["twitter-x-ip（MetaCubeX）"]
+  set D["twitter-x-domain（bett-rules）"]
+  set I["twitter-x-ip（bett-rules）"]
   set B["twitter-x-aggregate（magicrule 聚合）"]
   union D,B
   union I,B
 ```
 
-`twitter-x-aggregate` 为 classical 类型，可同时容纳域名与 IP 条目，与 MetaCubeX 的两套各自重合。该集本身是有内容的规则集；其来源为 `magicrule.pages.dev` 的构建产物，若该地址当前无法直出 YAML（网络原因或站点行为），客户端会拉到空集，此时 Twitter 分流由 `twitter-x-domain`、`twitter-x-ip` 两套承担。
+`twitter-x-aggregate` 为 classical 类型，可同时容纳域名与 IP 条目，与 bett-rules 的两套各自重合。该集本身是有内容的规则集；其来源为 `magicrule.pages.dev` 的构建产物，若该地址当前无法直出 YAML（网络原因或站点行为），客户端会拉到空集，此时 Twitter 分流由 `twitter-x-domain`、`twitter-x-ip` 两套承担。
 
 > 以上重合关系按各规则集的覆盖范围与来源判断（依据取自 `mihomo.yaml` 的 `rules:` 引用与注释）。
 

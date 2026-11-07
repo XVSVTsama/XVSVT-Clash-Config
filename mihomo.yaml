@@ -618,7 +618,7 @@ rule-providers:
   apple: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/apple.mrs', path: ./ruleset/apple.mrs, path-in-bundle: 'geo/geosite/apple.mrs' }
   apple_ip: { <<: *ipcidr_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geoip/apple.mrs', path: ./ruleset/apple_ip.mrs, path-in-bundle: 'geo/geoip/apple.mrs' }
   category-cryptocurrency: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/category-cryptocurrency.mrs', path: ./ruleset/category-cryptocurrency.mrs, path-in-bundle: 'geo/geosite/category-cryptocurrency.mrs' }
-  discord: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/discord.mrs', path: ./ruleset/discord.mrs, path-in-bundle: 'geo/geosite/discord.mrs' }
+  discord: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/discord.mrs', path: ./ruleset/discord.mrs, path-in-bundle: 'geo/geosite/discord.mrs' }
   douyin: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/douyin.mrs', path: ./ruleset/douyin.mrs, path-in-bundle: 'geo/geosite/douyin.mrs' }
   geolocation-cn: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/geolocation-cn.mrs', path: ./ruleset/geolocation-cn.mrs, path-in-bundle: 'geo/geosite/geolocation-cn.mrs' }
   cn-additional: { <<: *domain_mrs, url: 'https://static-file-global.353355.xyz/rules/cn-additional-list.mrs', path: ./ruleset/cn-additional.mrs, path-in-bundle: 'geo/geosite/cn.mrs' }
@@ -626,29 +626,29 @@ rule-providers:
   microsoft-cn: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/microsoft-cn.mrs', path: ./ruleset/microsoft-cn.mrs, path-in-bundle: 'geo/geosite/microsoft@cn.mrs' }
   games-cn: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/games-cn.mrs', path: ./ruleset/games-cn.mrs, path-in-bundle: 'geo/geosite/category-games-cn.mrs' }
   echs_direct_ip: { <<: *ipcidr_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/echs-top/proxy/main/mrs/ip/direct.mrs', path: ./ruleset/echs_direct_ip.mrs, path-in-bundle: 'geo/geoip/cn.mrs' }
-  ehentai: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/ehentai.mrs', path: ./ruleset/ehentai.mrs, path-in-bundle: 'geo/geosite/ehentai.mrs' }
+  ehentai: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/ehentai.mrs', path: ./ruleset/ehentai.mrs, path-in-bundle: 'geo/geosite/ehentai.mrs' }
   fakeip-filter_domain: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/fakeip-filter.mrs', path: ./ruleset/fakeip-filter_domain.mrs, path-in-bundle: 'geo/geosite/fakeip-filter.mrs' }
   connectcheck: { <<: *domain_mrs, url: 'https://cdn.jsdmirror.com/gh/appshubcc/bett-rules@meta/geo/geosite/connectivity-check.mrs', path: ./ruleset/connectcheck.mrs, path-in-bundle: 'geo/geosite/connectivity-check.mrs' }
   games: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/games.mrs', path: ./ruleset/games.mrs, path-in-bundle: 'geo/geosite/category-games-!cn.mrs' }
   # gfw: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/gfw.mrs', path: ./ruleset/gfw.mrs }
   google: { <<: *domain_yaml, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/google.txt', path: ./ruleset/google.yaml }
   google-cn: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/google-cn.mrs', path: ./ruleset/google-cn.mrs, path-in-bundle: 'geo/geosite/google@cn.mrs' }
-  googlefcm: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/googlefcm.mrs', path: ./ruleset/googlefcm.mrs, path-in-bundle: 'geo/geosite/googlefcm.mrs' }
-  line: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/line.mrs', path: ./ruleset/line.mrs, path-in-bundle: 'geo/geosite/line.mrs' }
+  googlefcm: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/googlefcm.mrs', path: ./ruleset/googlefcm.mrs, path-in-bundle: 'geo/geosite/googlefcm.mrs' }
+  line: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/line.mrs', path: ./ruleset/line.mrs, path-in-bundle: 'geo/geosite/line.mrs' }
   mastercard: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/mastercard.mrs', path: ./ruleset/mastercard.mrs, path-in-bundle: 'geo/geosite/mastercard.mrs' }
-  meta: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/meta.mrs', path: ./ruleset/meta.mrs, path-in-bundle: 'geo/geosite/meta.mrs' }
+  meta: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/meta.mrs', path: ./ruleset/meta.mrs, path-in-bundle: 'geo/geosite/meta.mrs' }
   netflix: { <<: *classical_yaml, format: text, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/DustinWin/domain-list-custom/domains/netflix.list', path: ./ruleset/netflix.list }
   microsoft_ip: { <<: *ipcidr_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geoip/microsoft.mrs', path: ./ruleset/microsoft_ip.mrs, path-in-bundle: 'geo/geoip/microsoft.mrs' }
   microsoft: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/microsoft.mrs', path: ./ruleset/microsoft.mrs, path-in-bundle: 'geo/geosite/microsoft.mrs' }
   paypal: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/paypal.mrs', path: ./ruleset/paypal.mrs, path-in-bundle: 'geo/geosite/paypal.mrs' }
-  patreon: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/patreon.mrs', path: ./ruleset/patreon.mrs, path-in-bundle: 'geo/geosite/patreon.mrs' }
-  pikpak: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/pikpak.mrs', path: ./ruleset/pikpak.mrs, path-in-bundle: 'geo/geosite/pikpak.mrs' }
-  pixiv: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/pixiv.mrs', path: ./ruleset/pixiv.mrs, path-in-bundle: 'geo/geosite/pixiv.mrs' }
+  patreon: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/patreon.mrs', path: ./ruleset/patreon.mrs, path-in-bundle: 'geo/geosite/patreon.mrs' }
+  pikpak: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/pikpak.mrs', path: ./ruleset/pikpak.mrs, path-in-bundle: 'geo/geosite/pikpak.mrs' }
+  pixiv: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/pixiv.mrs', path: ./ruleset/pixiv.mrs, path-in-bundle: 'geo/geosite/pixiv.mrs' }
   private: { <<: *domain_yaml, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/private.txt', path: ./ruleset/private.yaml }
   # proxy: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/proxy.mrs', path: ./ruleset/proxy.mrs }
   proxy@direct: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/echs-top/proxy/main/mrs/domain/proxy@direct.mrs', path: ./rules/proxy@direct.mrs }
-  reddit: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/reddit.mrs', path: ./ruleset/reddit.mrs, path-in-bundle: 'geo/geosite/reddit.mrs' }
-  spotify: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/spotify.mrs', path: ./ruleset/spotify.mrs, path-in-bundle: 'geo/geosite/spotify.mrs' }
+  reddit: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/reddit.mrs', path: ./ruleset/reddit.mrs, path-in-bundle: 'geo/geosite/reddit.mrs' }
+  spotify: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/spotify.mrs', path: ./ruleset/spotify.mrs, path-in-bundle: 'geo/geosite/spotify.mrs' }
   steam_ip: { <<: *ipcidr_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geoip/steam.mrs', path: ./ruleset/steam_ip.mrs, path-in-bundle: 'geo/geoip/steam.mrs' }
   steam: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/steam.mrs', path: ./ruleset/steam.mrs, path-in-bundle: 'geo/geosite/steam.mrs' }
   # Telegram DC 地区 CIDR 规则集：启用地区分流时取消注释本段。
@@ -684,11 +684,11 @@ rule-providers:
   #     - IP-CIDR6,2001:b28:f23c::/48,no-resolve
   #     - IP-CIDR6,2001:b28:f23f::/48,no-resolve
   stripe: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/stripe.mrs', path: ./ruleset/stripe.mrs, path-in-bundle: 'geo/geosite/stripe.mrs' }
-  telegram_domain: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.mrs', path: ./rules/telegram_domain.mrs, path-in-bundle: 'geo/geosite/telegram.mrs' }
+  telegram_domain: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/telegram.mrs', path: ./rules/telegram_domain.mrs, path-in-bundle: 'geo/geosite/telegram.mrs' }
   telegramcidr: { <<: *ipcidr_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/reddishJade/private_proxy/main/Mihomo/Provider/telegram%40ip.mrs', path: ./ruleset/telegramcidr.mrs, path-in-bundle: 'geo/geoip/telegram.mrs' }
   twitter-x-aggregate: { <<: *classical_yaml, format: yaml, url: 'https://magicrule.pages.dev/data/_shared/artifacts/Twitter_classical_d405159ccf6c8682.yaml', path: ./ruleset/twitter-x-aggregate.yaml }
-  twitter-x-domain: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/twitter.mrs', path: ./ruleset/twitter/x-domain.mrs, path-in-bundle: 'geo/geosite/twitter.mrs' }
-  twitter-x-ip: { <<: *ipcidr_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/twitter.mrs', path: ./ruleset/twitter/x-ip.mrs, path-in-bundle: 'geo/geoip/twitter.mrs' }
+  twitter-x-domain: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/twitter.mrs', path: ./ruleset/twitter/x-domain.mrs, path-in-bundle: 'geo/geosite/twitter.mrs' }
+  twitter-x-ip: { <<: *ipcidr_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geoip/twitter.mrs', path: ./ruleset/twitter/x-ip.mrs, path-in-bundle: 'geo/geoip/twitter.mrs' }
   visa: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/visa.mrs', path: ./ruleset/visa.mrs, path-in-bundle: 'geo/geosite/visa.mrs' }
   wise: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/wise.mrs', path: ./ruleset/wise.mrs, path-in-bundle: 'geo/geosite/wise.mrs' }
 sub-rules:

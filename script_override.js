@@ -1056,7 +1056,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/discord.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/discord.mrs",
       "path": "./ruleset/discord.mrs",
       "path-in-bundle": "geo/geosite/discord.mrs"
     },
@@ -1128,7 +1128,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/ehentai.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/ehentai.mrs",
       "path": "./ruleset/ehentai.mrs",
       "path-in-bundle": "geo/geosite/ehentai.mrs"
     },
@@ -1180,7 +1180,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/googlefcm.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/googlefcm.mrs",
       "path": "./ruleset/googlefcm.mrs",
       "path-in-bundle": "geo/geosite/googlefcm.mrs"
     },
@@ -1189,7 +1189,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/line.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/line.mrs",
       "path": "./ruleset/line.mrs",
       "path-in-bundle": "geo/geosite/line.mrs"
     },
@@ -1207,7 +1207,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/meta.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/meta.mrs",
       "path": "./ruleset/meta.mrs",
       "path-in-bundle": "geo/geosite/meta.mrs"
     },
@@ -1251,7 +1251,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/patreon.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/patreon.mrs",
       "path": "./ruleset/patreon.mrs",
       "path-in-bundle": "geo/geosite/patreon.mrs"
     },
@@ -1260,7 +1260,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/pikpak.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/pikpak.mrs",
       "path": "./ruleset/pikpak.mrs",
       "path-in-bundle": "geo/geosite/pikpak.mrs"
     },
@@ -1269,7 +1269,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/pixiv.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/pixiv.mrs",
       "path": "./ruleset/pixiv.mrs",
       "path-in-bundle": "geo/geosite/pixiv.mrs"
     },
@@ -1293,7 +1293,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/reddit.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/reddit.mrs",
       "path": "./ruleset/reddit.mrs",
       "path-in-bundle": "geo/geosite/reddit.mrs"
     },
@@ -1302,7 +1302,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/spotify.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/spotify.mrs",
       "path": "./ruleset/spotify.mrs",
       "path-in-bundle": "geo/geosite/spotify.mrs"
     },
@@ -1338,7 +1338,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/telegram.mrs",
       "path": "./rules/telegram_domain.mrs",
       "path-in-bundle": "geo/geosite/telegram.mrs"
     },
@@ -1364,7 +1364,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "domain",
       "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/twitter.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/twitter.mrs",
       "path": "./ruleset/twitter/x-domain.mrs",
       "path-in-bundle": "geo/geosite/twitter.mrs"
     },
@@ -1373,7 +1373,7 @@ const TEMPLATE = {
       "interval": 86400,
       "behavior": "ipcidr",
       "format": "mrs",
-      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/twitter.mrs",
+      "url": "https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geoip/twitter.mrs",
       "path": "./ruleset/twitter/x-ip.mrs",
       "path-in-bundle": "geo/geoip/twitter.mrs"
     },
