@@ -383,7 +383,7 @@ hosts                             :
   'services.googleapis.cn'    : [ 'services.googleapis.com' ]
   '+.mcdn.bilivideo.com'      : [ '0.0.0.0'            ]
   '+.mcdn.bilivideo.cn'       : [ '0.0.0.0'            ]
-  'mtalk.google.com'          : [ '142.250.107.188'    , '142.251.2.188'      , '142.250.141.188'    , '74.125.137.188'     ]
+  'mtalk.google.com'          : [ '142.250.107.188'    , '142.251.2.188'      , '142.250.141.188'    , '74.125.137.188'     , '142.251.169.188'    ]
   'dns.msftncsi.com'          : [ '131.107.255.255'    , 'fd3e:4f5a:5b81::1'  ]
   #'dns.alidns.com'            : [ '223.5.5.5'          , '223.6.6.6'          ] # 🇨🇳 阿里 DNS
   #'pdns.dnspod.cn'            : [ '119.29.29.29'       , '119.28.28.28'       ] # 🇨🇳 腾讯 DNS
