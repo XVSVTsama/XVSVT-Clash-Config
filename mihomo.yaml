@@ -149,7 +149,7 @@ sniffer:
     - 'rule-set:apple_ip'
     - 'rule-set:telegramcidr'
     - 'rule-set:twitter-x-ip'
-    - 'rule-set:twitter-x-aggregate'
+    - 'rule-set:twitter-x-ipcidr'
     - 'rule-set:steam_ip'
     # AI 大模型（Anthropic）
     - 160.79.104.0/21
@@ -352,7 +352,6 @@ dns:
     "rule-set:mastercard": ["https://cloudflare-dns.com/dns-query#💳 金融支付", "https://dns.google/dns-query#💳 金融支付", "https://unfiltered.adguard-dns.com/dns-query#💳 金融支付"]
     "rule-set:wise": ["https://cloudflare-dns.com/dns-query#💳 金融支付", "https://dns.google/dns-query#💳 金融支付", "https://unfiltered.adguard-dns.com/dns-query#💳 金融支付"]
     "rule-set:twitter-x-domain": ["https://cloudflare-dns.com/dns-query#✖️ Twitter", "https://dns.google/dns-query#✖️ Twitter", "https://unfiltered.adguard-dns.com/dns-query#✖️ Twitter"]
-    "rule-set:twitter-x-aggregate": ["https://cloudflare-dns.com/dns-query#✖️ Twitter", "https://dns.google/dns-query#✖️ Twitter", "https://unfiltered.adguard-dns.com/dns-query#✖️ Twitter"]
     "rule-set:steam": ["https://cloudflare-dns.com/dns-query#🎮 Steam平台（非下载/CDN）", "https://dns.google/dns-query#🎮 Steam平台（非下载/CDN）", "https://unfiltered.adguard-dns.com/dns-query#🎮 Steam平台（非下载/CDN）"]
     "rule-set:games": ["https://cloudflare-dns.com/dns-query#🎮 Games-Global", "https://dns.google/dns-query#🎮 Games-Global", "https://unfiltered.adguard-dns.com/dns-query#🎮 Games-Global"]
     "rule-set:TikTok": ["https://cloudflare-dns.com/dns-query#🎵 TikTok", "https://dns.google/dns-query#🎵 TikTok", "https://unfiltered.adguard-dns.com/dns-query#🎵 TikTok"]
@@ -686,7 +685,7 @@ rule-providers:
   stripe: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/stripe.mrs', path: ./ruleset/stripe.mrs, path-in-bundle: 'geo/geosite/stripe.mrs' }
   telegram_domain: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/telegram.mrs', path: ./rules/telegram_domain.mrs, path-in-bundle: 'geo/geosite/telegram.mrs' }
   telegramcidr: { <<: *ipcidr_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/reddishJade/private_proxy/main/Mihomo/Provider/telegram%40ip.mrs', path: ./ruleset/telegramcidr.mrs, path-in-bundle: 'geo/geoip/telegram.mrs' }
-  twitter-x-aggregate: { <<: *classical_yaml, format: yaml, url: 'https://magicrule.pages.dev/data/_shared/artifacts/Twitter_classical_d405159ccf6c8682.yaml', path: ./ruleset/twitter-x-aggregate.yaml }
+  twitter-x-ipcidr: { <<: *ipcidr_yaml, url: 'https://magicrule.pages.dev/data/_shared/artifacts/Twitter_ipcidr_5cfa0ebce47f47ac.yaml', path: ./ruleset/twitter/x-ipcidr.yaml }
   twitter-x-domain: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/twitter.mrs', path: ./ruleset/twitter/x-domain.mrs, path-in-bundle: 'geo/geosite/twitter.mrs' }
   twitter-x-ip: { <<: *ipcidr_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geoip/twitter.mrs', path: ./ruleset/twitter/x-ip.mrs, path-in-bundle: 'geo/geoip/twitter.mrs' }
   visa: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/visa.mrs', path: ./ruleset/visa.mrs, path-in-bundle: 'geo/geosite/visa.mrs' }
@@ -907,7 +906,7 @@ rules:
   - PROCESS-NAME-REGEX,.*twitter.*,✖️ Twitter
   - RULE-SET,twitter-x-ip,✖️ Twitter,no-resolve
   - RULE-SET,twitter-x-domain,✖️ Twitter
-  - RULE-SET,twitter-x-aggregate,✖️ Twitter
+  - RULE-SET,twitter-x-ipcidr,✖️ Twitter,no-resolve
   - RULE-SET,steam_ip,🎮 Steam平台（非下载/CDN）,no-resolve
   - RULE-SET,steam,🎮 Steam平台（非下载/CDN）
   - PROCESS-NAME,bf6.exe,🎮 Games-Global

@@ -404,7 +404,7 @@ const TEMPLATE = {
       "rule-set:apple_ip",
       "rule-set:telegramcidr",
       "rule-set:twitter-x-ip",
-      "rule-set:twitter-x-aggregate",
+      "rule-set:twitter-x-ipcidr",
       "rule-set:steam_ip",
       "160.79.104.0/21",
       "2607:6bc0::/48",
@@ -603,7 +603,6 @@ const TEMPLATE = {
       "rule-set:mastercard": ["https://cloudflare-dns.com/dns-query#💳 金融支付", "https://dns.google/dns-query#💳 金融支付", "https://unfiltered.adguard-dns.com/dns-query#💳 金融支付"],
       "rule-set:wise": ["https://cloudflare-dns.com/dns-query#💳 金融支付", "https://dns.google/dns-query#💳 金融支付", "https://unfiltered.adguard-dns.com/dns-query#💳 金融支付"],
       "rule-set:twitter-x-domain": ["https://cloudflare-dns.com/dns-query#✖️ Twitter", "https://dns.google/dns-query#✖️ Twitter", "https://unfiltered.adguard-dns.com/dns-query#✖️ Twitter"],
-      "rule-set:twitter-x-aggregate": ["https://cloudflare-dns.com/dns-query#✖️ Twitter", "https://dns.google/dns-query#✖️ Twitter", "https://unfiltered.adguard-dns.com/dns-query#✖️ Twitter"],
       "rule-set:steam": ["https://cloudflare-dns.com/dns-query#🎮 Steam平台（非下载/CDN）", "https://dns.google/dns-query#🎮 Steam平台（非下载/CDN）", "https://unfiltered.adguard-dns.com/dns-query#🎮 Steam平台（非下载/CDN）"],
       "rule-set:games": ["https://cloudflare-dns.com/dns-query#🎮 Games-Global", "https://dns.google/dns-query#🎮 Games-Global", "https://unfiltered.adguard-dns.com/dns-query#🎮 Games-Global"],
       "rule-set:TikTok": ["https://cloudflare-dns.com/dns-query#🎵 TikTok", "https://dns.google/dns-query#🎵 TikTok", "https://unfiltered.adguard-dns.com/dns-query#🎵 TikTok"],
@@ -1358,13 +1357,13 @@ const TEMPLATE = {
       "path": "./ruleset/telegramcidr.mrs",
       "path-in-bundle": "geo/geoip/telegram.mrs"
     },
-    "twitter-x-aggregate": {
+    "twitter-x-ipcidr": {
       "type": "http",
       "interval": 86400,
-      "behavior": "classical",
+      "behavior": "ipcidr",
       "format": "yaml",
-      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Twitter_classical_d405159ccf6c8682.yaml",
-      "path": "./ruleset/twitter-x-aggregate.yaml"
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Twitter_ipcidr_5cfa0ebce47f47ac.yaml",
+      "path": "./ruleset/twitter/x-ipcidr.yaml"
     },
     "twitter-x-domain": {
       "type": "http",
@@ -1608,7 +1607,7 @@ const TEMPLATE = {
     "PROCESS-NAME-REGEX,.*twitter.*,✖️ Twitter",
     "RULE-SET,twitter-x-ip,✖️ Twitter,no-resolve",
     "RULE-SET,twitter-x-domain,✖️ Twitter",
-    "RULE-SET,twitter-x-aggregate,✖️ Twitter",
+    "RULE-SET,twitter-x-ipcidr,✖️ Twitter,no-resolve",
     "RULE-SET,steam_ip,🎮 Steam平台（非下载/CDN）,no-resolve",
     "RULE-SET,steam,🎮 Steam平台（非下载/CDN）",
     "PROCESS-NAME,bf6.exe,🎮 Games-Global",

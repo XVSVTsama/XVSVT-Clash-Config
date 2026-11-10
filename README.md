@@ -98,7 +98,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><td><strong>♾️ Meta</strong></td><td>Meta 与 Meta AI 共用出口</td><td>引用规则集合：<code>meta</code><br>使用域名后缀匹配：muse.ai、metaaivm.com<br>使用域名精确匹配：hatch-api.meta.ai、api.meta.ai、agent.meta.ai、auth.meta.com、meta.graph.meta.com、edge-metaclaw-http.c10r.facebook.com、shortwave.facebook.com、node.hatch.one<br>使用进程名称匹配：com.facebook.aura</td></tr>
 <tr><td><strong>🤖 AI大模型</strong></td><td>AI 服务单独选出口</td><td>引用规则集合：<code>ai</code><br>使用域名后缀匹配：anthropic.com、claude.ai、claude.com、claudeusercontent.com、clau.de、frame.claudeusercontent.com、modelcontextprotocol.io、sentry.io、statsigapi.net、hark.com、wabi.ai、tabbyml.com<br>使用域名精确匹配：共 24 个域名（api.anthropic.com、downloads.claude.ai、cdn.growthbook.io、registry.npmjs.org、storage.googleapis.com 等）<br>使用域名关键词匹配：datadog、sift<br>使用进程名称正则表达式匹配：claude、anthropic、manus<br>使用进程名称匹配：com.hark.android、ai.wabi.android.app<br>使用 IP 段匹配：160.79.104.0/21、17.253.4.0/23、2607:6bc0::/48</td></tr>
 <tr><td><strong>📲 Telegram</strong></td><td>Telegram 单独选出口</td><td>引用规则集合：<code>telegram_domain</code>、<code>telegramcidr</code><br>使用进程名称正则表达式匹配：telegram、nagram</td></tr>
-<tr><td><strong>✖️ Twitter</strong></td><td>Twitter / X 单独选出口</td><td>引用规则集合：<code>twitter-x-domain</code>、<code>twitter-x-ip</code>、<code>twitter-x-aggregate</code><br>使用进程名称正则表达式匹配：twitter</td></tr>
+<tr><td><strong>✖️ Twitter</strong></td><td>Twitter / X 单独选出口</td><td>引用规则集合：<code>twitter-x-domain</code>、<code>twitter-x-ip</code>、<code>twitter-x-ipcidr</code><br>使用进程名称正则表达式匹配：twitter</td></tr>
 <tr><td><strong>💬 Discord</strong></td><td>Discord 单独选出口</td><td>引用规则集合：<code>discord</code></td></tr>
 <tr><td><strong>👽 Reddit</strong></td><td>Reddit 单独选出口</td><td>引用规则集合：<code>reddit</code></td></tr>
 <tr><td><strong>💬 LINE</strong></td><td>LINE 单独选出口</td><td>引用规则集合：<code>line</code></td></tr>
@@ -345,12 +345,11 @@ venn-beta
 venn-beta
   set D["twitter-x-domain（bett-rules）"]
   set I["twitter-x-ip（bett-rules）"]
-  set B["twitter-x-aggregate（magicrule 聚合）"]
-  union D,B
+  set B["twitter-x-ipcidr（magicrule IP）"]
   union I,B
 ```
 
-`twitter-x-aggregate` 为 classical 类型，可同时容纳域名与 IP 条目，与 bett-rules 的两套各自重合。该集本身是有内容的规则集；其来源为 `magicrule.pages.dev` 的构建产物，若该地址当前无法直出 YAML（网络原因或站点行为），客户端会拉到空集，此时 Twitter 分流由 `twitter-x-domain`、`twitter-x-ip` 两套承担。
+`twitter-x-ipcidr` 为 ipcidr 类型，仅含 IP 条目。其前身是 classical 类型的聚合集：域名条目与 `twitter-x-domain` 重合，实际生效的是其中 8 条 IP 段，现改用 `magicrule.pages.dev` 同源的 ipcidr 拆分产物并更名。该 8 条与 `twitter-x-ip` 部分重合，且包含其未收录的网段（如 `69.195.160.0/19` 及更宽的前缀）。若该地址当前无法直出 YAML（网络原因或站点行为），客户端会拉到空集，此时 Twitter 分流由 `twitter-x-domain`、`twitter-x-ip` 两套承担。
 
 > 以上重合关系按各规则集的覆盖范围与来源判断（依据取自 `mihomo.yaml` 的 `rules:` 引用与注释）。
 
