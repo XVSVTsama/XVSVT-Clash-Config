@@ -32,12 +32,12 @@ jobs:
             target: linux-arm64
             prefix: mihomo-linux-arm64-
             archive: gz
-            qemu: qemu-aarch64-static
+            qemu: qemu-aarch64
           - runner: ubuntu-latest
             target: linux-armv7
             prefix: mihomo-linux-armv7-
             archive: gz
-            qemu: qemu-arm-static
+            qemu: qemu-arm
           - runner: windows-latest
             target: windows-amd64
             prefix: mihomo-windows-amd64-
