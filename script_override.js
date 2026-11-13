@@ -265,6 +265,80 @@ const REMOVE_ROUTING_RULES_FOR_DISABLED_GROUPS = new Set([
   '💬 LINE',
 ]);
 
+const QUIC_REMOVED_NAMESERVER_POLICY_KEYS = new Set([
+  'rule-set:microsoft',
+  'rule-set:apple',
+  'rule-set:telegram_domain',
+  'rule-set:google',
+  'rule-set:google-cn',
+  'rule-set:Gemini_Domain',
+  'rule-set:meta',
+  '+.muse.ai',
+  'hatch-api.meta.ai',
+  'api.meta.ai',
+  'agent.meta.ai',
+  '+.metaaivm.com',
+  'auth.meta.com',
+  'meta.graph.meta.com',
+  'edge-metaclaw-http.c10r.facebook.com',
+  'shortwave.facebook.com',
+  'node.hatch.one',
+  '+.hark.com',
+  '+.wabi.ai',
+  '+.tabbyml.com',
+  'api.anthropic.com',
+  'console.anthropic.com',
+  'statsig.anthropic.com',
+  'status.anthropic.com',
+  'sentry.anthropic.com',
+  'support.anthropic.com',
+  'mcp-proxy.anthropic.com',
+  'platform.claude.com',
+  'code.claude.com',
+  'downloads.claude.ai',
+  'bridge.claudeusercontent.com',
+  'cdn.growthbook.io',
+  'cdn.usefathom.com',
+  'registry.npmjs.org',
+  'storage.googleapis.com',
+  'formulae.brew.sh',
+  'http-intake.logs.us5.datadoghq.com',
+  'browser-intake-us5-datadoghq.com',
+  'servd-anthropic-website.b-cdn.net',
+  'claudemcpclient.com',
+  'claudemcpcontent.com',
+  '+.anthropic.com',
+  '+.claude.ai',
+  '+.claude.com',
+  '+.claudeusercontent.com',
+  '+.clau.de',
+  '+.modelcontextprotocol.io',
+  'anthropic.com.cdn.cloudflare.net',
+  'anthropic-com.ghost.io',
+  '+.sentry.io',
+  '+.statsigapi.net',
+  'rule-set:ai',
+  'rule-set:spotify',
+  'rule-set:discord',
+  'rule-set:reddit',
+  'rule-set:netflix',
+  'rule-set:patreon',
+  'rule-set:ehentai',
+  'rule-set:pikpak',
+  'rule-set:line',
+  'd3r7nsslvs6aaf.cloudfront.net',
+  'rule-set:category-cryptocurrency',
+  'rule-set:paypal',
+  'rule-set:stripe',
+  'rule-set:visa',
+  'rule-set:mastercard',
+  'rule-set:wise',
+  'rule-set:twitter-x-domain',
+  'rule-set:steam',
+  'rule-set:games',
+  'rule-set:TikTok',
+]);
+
 // ============================================================================
 // 标准模板配置（mihomo.yaml 的 JSON 表示），及其派生的开关辅助常量
 // ============================================================================
@@ -3603,6 +3677,13 @@ function removeDisabledDnsNameserverPolicies(dns, disabledGroupNames) {
     }
   });
 }
+function removeQuicNameserverPolicies(dns) {
+  const policy = dns && dns['nameserver-policy'];
+  if (!policy || typeof policy !== 'object' || Array.isArray(policy)) return;
+  QUIC_REMOVED_NAMESERVER_POLICY_KEYS.forEach((key) => {
+    delete policy[key];
+  });
+}
 function collectRuleProviderReferences(value, references = new Set()) {
   if (typeof value === 'string') {
     for (const match of value.matchAll(/\bRULE-SET\s*,\s*([^,\s)]+)/gi)) {
@@ -3800,6 +3881,13 @@ function main(config, profileName) {
       result.rules = result.rules.map((rule) =>
         isWebRtcBlockingRule(rule) ? rule.replace(WEBRTC_DST_PORT, `${WEBRTC_DST_PORT}/443`) : rule
       );
+    }
+  }
+
+  if (ruleOptionsEnable['QUIC阻断'] === true) {
+    removeQuicNameserverPolicies(result.dns);
+    if (result.dns) {
+      result.dns['prefer-h3'] = false;
     }
   }
 
