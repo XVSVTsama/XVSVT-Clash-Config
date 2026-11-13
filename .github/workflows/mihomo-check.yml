@@ -61,7 +61,7 @@ jobs:
         if: matrix.qemu != ''
         run: |
           sudo apt-get update
-          sudo apt-get install -y qemu-user-static binfmt-support
+          sudo apt-get install -y qemu-user-binfmt binfmt-support
       - name: Prepare config
         run: python .github/scripts/patch_config.py mihomo.yaml patched-mihomo.yaml
       - name: Test config with mihomo
