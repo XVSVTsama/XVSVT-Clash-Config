@@ -3744,6 +3744,14 @@ function main(config, profileName) {
   // ---- 2. 以模板为主体，深拷贝一份出来当作最终结果 ----
   const result = deepClone(TEMPLATE);
 
+  if (ruleOptionsEnable['IPv6优先'] !== true) {
+    result.ipv6 = false;
+    if (result.dns) {
+      result.dns.ipv6 = false;
+      delete result.dns['fake-ip-range6'];
+    }
+  }
+
   // ---- 2.5 TGDC 实验分流（默认关闭；由 UI 开关控制） ----
   applyTelegramDcExperiment(result, originalProxies);
 
