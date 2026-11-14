@@ -251,7 +251,7 @@
       <p class="scenario-intro">订阅未使用 hosts 映射；节点原始 <code>server</code> 是真实域名。</p>
       <ol class="steps" aria-label="只有私有 DoH 时的处理步骤">
         <li class="step"><span class="step-number" aria-hidden="true">1</span><div class="step-copy"><h3>选择节点解析来源</h3><p>按以下顺序取值，优先级从高到低：</p><ol class="priority-list"><li><code>proxy-server-nameserver-policy</code></li><li><code>proxy-server-nameserver</code>（仅私有）</li><li><code>nameserver-policy</code></li><li><code>nameserver</code>（仅私有）</li></ol></div></li>
-        <li class="step"><span class="step-number" aria-hidden="true">2</span><div class="step-copy"><h3>写入最终节点 policy</h3><p>脚本把选出的私有解析来源整理到 <code>dns.proxy-server-nameserver-policy</code>。</p></div></li>
+        <li class="step"><span class="step-number" aria-hidden="true">2</span><div class="step-copy"><h3>写入最终节点 policy</h3><p>脚本把选出的私有解析来源整理到 <code>dns.proxy-server-nameserver-policy</code>；取值完全相同的多个精确域名合并成一条逗号键（如 <code>a.example.com,b.example.com</code>），通配键与 <code>rule-set</code> 键不参与合并。</p></div></li>
         <li class="step"><span class="step-number" aria-hidden="true">3</span><div class="step-copy"><h3>解析节点域名</h3><p>需要私有解析的节点域名由对应的私有 DoH 解析。</p></div></li>
         <li class="step"><span class="step-number" aria-hidden="true">4</span><div class="step-copy"><h3>保留全局兜底</h3><p>没有命中 policy 的域名仍由模板全局 <code>proxy-server-nameserver</code> 解析。</p></div></li>
       </ol>
