@@ -1908,6 +1908,94 @@ function sameNameserverSet(a, b) {
   return sa.size === sb.size && Array.from(sa).every((value) => sb.has(value));
 }
 
+function compressExactDnsPolicyKeys(policy) {
+  if (!policy || typeof policy !== "object" || Array.isArray(policy)) {
+    return policy;
+  }
+  const rules = Object.keys(policy);
+  const isExactDomainRule = (rule) =>
+    typeof rule === "string" &&
+    rule.trim() === rule &&
+    !rule.includes(",") &&
+    !rule.includes(":") &&
+    !rule.includes("*") &&
+    !rule.startsWith("+") &&
+    !rule.startsWith(".");
+  const groups = new Map();
+  rules.forEach((rule, index) => {
+    if (!isExactDomainRule(rule)) {
+      return;
+    }
+    const signature = JSON.stringify(asNameserverList(policy[rule]));
+    if (!groups.has(signature)) {
+      groups.set(signature, []);
+    }
+    groups.get(signature).push(index);
+  });
+  const mergedKeyByFirstIndex = new Map();
+  const mergedMemberIndexes = new Set();
+  for (const indexes of groups.values()) {
+    if (indexes.length < 2) {
+      continue;
+    }
+    const members = new Set(indexes);
+    let blocked = false;
+    for (let i = indexes[0] + 1; i < indexes[indexes.length - 1] && !blocked; i++) {
+      if (members.has(i)) {
+        continue;
+      }
+      const intervening = rules[i];
+      if (intervening.includes(":")) {
+        blocked = true;
+      } else if (
+        intervening
+          .split(",")
+          .some((part) =>
+            indexes.some((memberIndex) =>
+              matchWildcardDomain(part, rules[memberIndex])
+            )
+          )
+      ) {
+        blocked = true;
+      }
+    }
+    if (blocked) {
+      continue;
+    }
+    const mergedKey = indexes.map((index) => rules[index]).join(",");
+    if (Object.prototype.hasOwnProperty.call(policy, mergedKey)) {
+      continue;
+    }
+    const firstRule = rules[indexes[0]];
+    const nameservers = asNameserverList(policy[firstRule]);
+    mergedKeyByFirstIndex.set(indexes[0], {
+      key: mergedKey,
+      value: Array.isArray(policy[firstRule])
+        ? nameservers.slice()
+        : nameservers.length === 1
+          ? nameservers[0]
+          : nameservers.slice()
+    });
+    indexes.slice(1).forEach((index) => mergedMemberIndexes.add(index));
+  }
+  if (mergedKeyByFirstIndex.size === 0) {
+    return policy;
+  }
+  const compressed = {};
+  rules.forEach((rule, index) => {
+    if (mergedMemberIndexes.has(index)) {
+      return;
+    }
+    if (mergedKeyByFirstIndex.has(index)) {
+      const merged = mergedKeyByFirstIndex.get(index);
+      compressed[merged.key] = merged.value;
+    } else {
+      compressed[rule] = policy[rule];
+    }
+  });
+  return compressed;
+}
+
 // 公共 DNS 识别表：用于区分“公共可直连 DNS”和“机场/用户的私有 DNS”。
 // 数据参考 MyClash 9ae100c4 的公共 DNS 列表；这里只借用端点，不照搬其处理逻辑。
 const publicDnsList = [
@@ -2462,7 +2550,7 @@ function smartMergeDnsNode(config, result) {
     }
   }
 
-  result.dns["proxy-server-nameserver-policy"] = newPolicy;
+  result.dns["proxy-server-nameserver-policy"] = compressExactDnsPolicyKeys(newPolicy);
 
   if (Object.keys(newHosts).length) {
     result.hosts = newHosts;
