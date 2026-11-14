@@ -1565,6 +1565,7 @@ const TEMPLATE = {
     "PROCESS-NAME,com.attempt.afusekt,🎬 Emby",
     "PROCESS-NAME,com.hush.yamby,🎬 Emby",
     "PROCESS-NAME,com.railux.mobile,🎬 Emby",
+    "PROCESS-NAME,com.yumilo.player,🎬 Emby",
     // Emby 进程规则需先于 CloudFront 通用直连规则，避免其流量被优先直连。
     "RULE-SET,googlefcm,FCM",
     // 通用直连规则优先，剩余 Apple / Microsoft 域名和 IP 再进入海外组。
