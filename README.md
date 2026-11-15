@@ -46,7 +46,9 @@
 
 <br>
 
-FlClash 自 **v0.9.4-rs.1** 起的 `-rs` 系列已换用 [Concord](https://github.com/chen08209/concord) 内核，其不支持 `path-in-bundle`，本仓库 JS 亦不打算适配独立内核，请用户自行安排。
+<!-- 新增警告在本节末尾照第一条的格式追加，一条一句话：对象 + 起始版本 + 变更 + 影响 + 本仓库态度 + 请用户自行安排。第一条即模板示例，不留空位。 -->
+
+- FlClash 自 **v0.9.4-rs.1** 起的 `-rs` 系列已换用 [Concord](https://github.com/chen08209/concord) 内核，其不支持 `path-in-bundle`，本仓库 JS 亦不打算适配独立内核，请用户自行安排。
 
 ---
 
