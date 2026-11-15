@@ -1557,7 +1557,7 @@ const TEMPLATE = {
     "DOMAIN,gfwsb.yiku.xyz,DIRECT",
     "DOMAIN,bsub.douyincdns.com,DIRECT",
     "DOMAIN,sub.rinkitotokiku.online,DIRECT",
-    // 已核实支持 Emby 的 Android 播放器进程，统一分流至 🎬 Emby。
+    // 已核实支持 Emby 的播放器进程（Android 包名与 Windows 进程名），统一分流至 🎬 Emby。
     "PROCESS-NAME,com.mountains.hills,🎬 Emby",
     "PROCESS-NAME,com.hamhub.app,🎬 Emby",
     "PROCESS-NAME,com.oumi.utility.media.hub,🎬 Emby",
@@ -1566,6 +1566,8 @@ const TEMPLATE = {
     "PROCESS-NAME,com.hush.yamby,🎬 Emby",
     "PROCESS-NAME,com.railux.mobile,🎬 Emby",
     "PROCESS-NAME,com.yumilo.player,🎬 Emby",
+    "PROCESS-NAME,HillsLite.exe,🎬 Emby",
+    "PROCESS-NAME,HillsPlayer.exe,🎬 Emby",
     // Emby 进程规则需先于 CloudFront 通用直连规则，避免其流量被优先直连。
     "RULE-SET,googlefcm,FCM",
     // 通用直连规则优先，剩余 Apple / Microsoft 域名和 IP 再进入海外组。

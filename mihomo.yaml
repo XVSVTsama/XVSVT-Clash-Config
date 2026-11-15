@@ -781,7 +781,7 @@ rules:
   - DOMAIN,gfwsb.yiku.xyz,DIRECT
   - DOMAIN,bsub.douyincdns.com,DIRECT
   - DOMAIN,sub.rinkitotokiku.online,DIRECT
-  # 支持 Emby 的 Android 应用包名。
+  # Emby 播放器进程分流：Android 应用包名与 Windows 进程名。
   - PROCESS-NAME,com.mountains.hills,🎬 Emby
   - PROCESS-NAME,com.hamhub.app,🎬 Emby
   - PROCESS-NAME,com.oumi.utility.media.hub,🎬 Emby
@@ -790,6 +790,8 @@ rules:
   - PROCESS-NAME,com.hush.yamby,🎬 Emby
   - PROCESS-NAME,com.railux.mobile,🎬 Emby
   - PROCESS-NAME,com.yumilo.player,🎬 Emby
+  - PROCESS-NAME,HillsLite.exe,🎬 Emby
+  - PROCESS-NAME,HillsPlayer.exe,🎬 Emby
   - RULE-SET,googlefcm,FCM
   - RULE-SET,microsoft_ip,💠 海外微软,no-resolve
   - RULE-SET,microsoft,💠 海外微软
