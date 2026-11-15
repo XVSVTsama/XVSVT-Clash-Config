@@ -46,11 +46,7 @@
 
 <br>
 
-**FlClash 的 Concord 内核版本与本仓库不兼容，请勿使用。**
-
-- FlClash 自 **v0.9.4-rs.1**（2026-11-15 发布，预发布）起推出换用 [Concord](https://github.com/chen08209/concord) 内核的 `-rs` 系列（截至 2026-11-16，最新为 v0.9.4-rs.1+3）：该系列基于 `rs` 分支，移除了原 Go 版 mihomo 内核，改以 Concord 为内核。作为对照，正式版 v0.9.3 及 v0.9.4-pre 系列仍使用 mihomo 内核。
-- Concord 不支持 mihomo 的 `path-in-bundle` 字段，而本仓库的 `script_override.js` 与 `mihomo.yaml` 大量使用该字段（JS 40 处、YAML 39 处），相关规则集在 Concord 上无法按预期加载。
-- 本仓库 JS 不打算适配 Concord 等独立内核。使用上述 `-rs` 版本的用户请自行安排：改用仍搭载 mihomo 内核的客户端或版本，或自行处理兼容问题，本仓库不提供适配与支持。
+FlClash 自 **v0.9.4-rs.1** 起的 `-rs` 系列已换用 [Concord](https://github.com/chen08209/concord) 内核，其不支持 `path-in-bundle`，本仓库 JS 亦不打算适配独立内核，请用户自行安排。
 
 ---
 
