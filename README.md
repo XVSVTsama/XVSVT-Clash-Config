@@ -25,7 +25,6 @@
 </p>
 
 <p align="center">
-  <a href="#warning">警告</a> ·
   <a href="#remote-override">远程覆写地址</a> ·
   <a href="#yaml-config">YAML 说明</a> ·
   <a href="#script-override">JavaScript 说明</a> ·
@@ -33,22 +32,9 @@
   <a href="#ruleset-overlap">规则集重合</a> ·
   <a href="#acknowledgments">致谢</a> ·
   <a href="#star-history">Star History</a> ·
+  <a href="#warning">警告</a> ·
   <a href="#disclaimer">免责声明</a>
 </p>
-
----
-
-<a id="warning"></a>
-
-<br>
-
-<h2 align="center">⚠️ 警告</h2>
-
-<br>
-
-<!-- 新增警告在本节末尾照第一条的格式追加，一条一句话：对象 + 起始版本 + 变更 + 影响 + 本仓库态度 + 请用户自行安排。第一条即模板示例，不留空位。 -->
-
-- FlClash 自 **v0.9.4-rs.1** 起的 `-rs` 系列已换用 [Concord](https://github.com/chen08209/concord) 内核，其不支持 `path-in-bundle`，本仓库 JS 亦不打算适配独立内核，请用户自行安排。
 
 ---
 
@@ -428,6 +414,18 @@ venn-beta
 <br>
 
 [![Star History Chart](https://api.star-history.com/svg?repos=XVSVTsama/XVSVT-Clash-Config&type=Date)](https://star-history.com/#XVSVTsama/XVSVT-Clash-Config&Date)
+
+<a id="warning"></a>
+
+<br>
+
+<h2 align="center">⚠️ 警告</h2>
+
+<br>
+
+<!-- 新增警告在本节末尾照第一条的格式追加，一条一句话：对象 + 起始版本 + 变更 + 影响 + 本仓库态度 + 请用户自行安排。第一条即模板示例，不留空位。 -->
+
+- FlClash 自 **v0.9.4-rs.1** 起的 `-rs` 系列已换用 [Concord](https://github.com/chen08209/concord) 内核，其不支持 `path-in-bundle`，本仓库 JS 亦不打算适配独立内核，请用户自行安排。
 
 <a id="disclaimer"></a>
 
