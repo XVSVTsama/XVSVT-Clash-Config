@@ -3376,6 +3376,9 @@ function buildCountryRegionProxyGroups(originalProxies) {
           Object.assign(child, urlTestSettings);
         } else if (childDefinition.type === 'fallback' || childDefinition.type === 'load-balance') {
           Object.assign(child, healthCheckSettings);
+          if (childDefinition.type === 'fallback') {
+            child.lazy = false;
+          }
           if (childDefinition.type === 'load-balance') {
             child.strategy = 'consistent-hashing';
           }
