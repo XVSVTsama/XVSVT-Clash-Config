@@ -419,7 +419,7 @@ venn-beta
 
 <br>
 
-<h2 align="center">⚠️ 警告</h2>
+<h2 align="center">🚨 警告</h2>
 
 <br>
 
