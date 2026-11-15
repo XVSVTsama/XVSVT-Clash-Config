@@ -1,0 +1,102 @@
+name: 🐛 配置 / 脚本错误
+description: 配置无法加载、内核校验失败、JS 覆写报错、开关失效等本仓库内容导致的错误
+title: "[Bug] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        本仓库为自用配置，只处理本仓库 `mihomo.yaml` / `script_override.js` 本身的问题。
+        节点、机场订阅、客户端本体的问题不在处理范围内。
+        信息不全或未脱敏的 Issue 会被要求补充或直接关闭。
+  - type: checkboxes
+    id: prechecks
+    attributes:
+      label: 前置确认
+      options:
+        - label: 已阅读 README，并确认问题不是使用前必改项未设置导致的
+          required: true
+        - label: 已更新到最新 main，问题仍可复现
+          required: true
+        - label: 已搜索现有 Issue，确认没有重复
+          required: true
+        - label: 已脱敏：正文、日志与截图中不含订阅链接、token、节点地址/密码、真实 IP、账号等敏感信息
+          required: true
+  - type: dropdown
+    id: usage
+    attributes:
+      label: 使用方式
+      options:
+        - 直用 mihomo.yaml
+        - JS 覆写脚本（BettBox）
+        - JS 覆写脚本（其他客户端）
+        - 其他
+    validations:
+      required: true
+  - type: input
+    id: client
+    attributes:
+      label: 客户端名称与版本
+      description: 例如 BettBox 1.20.0；直用 YAML 时填所用内核/客户端
+      placeholder: BettBox x.y.z
+    validations:
+      required: true
+  - type: input
+    id: core
+    attributes:
+      label: Mihomo 内核版本
+      description: 客户端内显示的内核版本，或 mihomo -v 的输出
+      placeholder: v1.19.x
+    validations:
+      required: true
+  - type: input
+    id: repo-version
+    attributes:
+      label: 仓库版本 / Commit
+      description: 出问题时所用的提交短哈希；用远程覆写地址时填拉取日期也可
+      placeholder: aa37cab
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: 系统 / 设备
+      placeholder: Android 15 / REDMI K80
+    validations:
+      required: true
+  - type: textarea
+    id: symptom
+    attributes:
+      label: 问题现象
+      description: 发生了什么，尽量具体到哪一步、哪个功能
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: 复现步骤
+      description: 按步骤写明如何稳定复现；无法复现请注明出现频率与当时操作
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 报错信息 / 日志
+      description: 贴内核校验报错、JS 报错或相关日志片段（务必先脱敏）
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望结果
+    validations:
+      required: false
+  - type: textarea
+    id: extra
+    attributes:
+      label: 补充信息
+      description: 生成后配置的相关片段（脱敏）、截图说明等
+    validations:
+      required: false

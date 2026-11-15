@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 使用求助 / 一般讨论
+    url: https://github.com/XVSVTsama/XVSVT-Clash-Config/discussions
+    about: 使用方法、配置理解类问题请到 Discussions 提问，不要提 Issue。
+  - name: 🧩 Mihomo 内核问题
+    url: https://github.com/MetaCubeX/mihomo/issues
+    about: 内核本身的 bug（与本仓库配置无关时）请到上游 mihomo 仓库反馈。

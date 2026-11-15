@@ -1,0 +1,106 @@
+name: 🔀 分流不符预期
+description: 某域名、App 或进程走了错误的策略组，或本应命中却未命中
+title: "[分流] "
+labels:
+  - routing
+body:
+  - type: markdown
+    attributes:
+      value: |
+        只处理本仓库规则导致的走错组。节点本身不可用、速度问题不是分流问题。
+        没有连接日志等证据、无法判断命中情况的 Issue 会被要求补充。
+  - type: checkboxes
+    id: prechecks
+    attributes:
+      label: 前置确认
+      options:
+        - label: 已阅读 README 中对应代理组的分流说明
+          required: true
+        - label: 已更新到最新 main，问题仍存在
+          required: true
+        - label: 已搜索现有 Issue，确认没有重复
+          required: true
+        - label: 已脱敏：正文、日志与截图中不含订阅链接、token、节点地址/密码、真实 IP、账号等敏感信息
+          required: true
+  - type: dropdown
+    id: usage
+    attributes:
+      label: 使用方式
+      options:
+        - 直用 mihomo.yaml
+        - JS 覆写脚本（BettBox）
+        - JS 覆写脚本（其他客户端）
+        - 其他
+    validations:
+      required: true
+  - type: input
+    id: client
+    attributes:
+      label: 客户端名称与版本
+      placeholder: BettBox x.y.z
+    validations:
+      required: true
+  - type: input
+    id: core
+    attributes:
+      label: Mihomo 内核版本
+      placeholder: v1.19.x
+    validations:
+      required: true
+  - type: input
+    id: repo-version
+    attributes:
+      label: 仓库版本 / Commit
+      placeholder: aa37cab
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: 系统 / 设备
+      description: 进程分流仅在部分平台可用，请如实填写
+      placeholder: Android 15 / REDMI K80
+    validations:
+      required: true
+  - type: input
+    id: target
+    attributes:
+      label: 目标域名 / App / 进程名
+      description: 一次只报一个目标；多个目标请分别提供各自的日志
+      placeholder: example.com / com.example.app
+    validations:
+      required: true
+  - type: input
+    id: expected-group
+    attributes:
+      label: 期望走的策略组
+      placeholder: 🤖 AI大模型
+    validations:
+      required: true
+  - type: input
+    id: actual-group
+    attributes:
+      label: 实际走的策略组 / 结果
+      placeholder: 🌍 PROXY / DIRECT
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 连接日志 / 命中证据
+      description: 贴客户端连接记录中该目标的条目：命中规则、最终策略组、入站信息（务必先脱敏）
+    validations:
+      required: true
+  - type: textarea
+    id: switches
+    attributes:
+      label: 相关开关与选择状态
+      description: 对应策略组开关是否开启、组内当前选中的是哪一项、是否改过模板规则
+    validations:
+      required: false
+  - type: textarea
+    id: extra
+    attributes:
+      label: 补充信息
+    validations:
+      required: false

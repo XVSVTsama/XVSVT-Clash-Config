@@ -1,0 +1,104 @@
+name: 🌐 DNS / hosts 问题
+description: 域名解析结果不符预期、节点域名解析失败、hosts 未生效等
+title: "[DNS] "
+labels:
+  - dns
+body:
+  - type: markdown
+    attributes:
+      value: |
+        提之前先看 README 的 hosts / DNS 处理流程说明，确认不是预期行为。
+        只写「解析不对」而没有期望与实际结果对照的 Issue 会被要求补充。
+  - type: checkboxes
+    id: prechecks
+    attributes:
+      label: 前置确认
+      options:
+        - label: 已阅读 README 的 hosts / DNS 说明
+          required: true
+        - label: 已更新到最新 main，问题仍存在
+          required: true
+        - label: 已搜索现有 Issue，确认没有重复
+          required: true
+        - label: 已脱敏：正文、日志与截图中不含订阅链接、token、节点地址/密码、真实 IP、账号等敏感信息
+          required: true
+  - type: dropdown
+    id: usage
+    attributes:
+      label: 使用方式
+      options:
+        - 直用 mihomo.yaml
+        - JS 覆写脚本（BettBox）
+        - JS 覆写脚本（其他客户端）
+        - 其他
+    validations:
+      required: true
+  - type: input
+    id: client
+    attributes:
+      label: 客户端名称与版本
+      placeholder: BettBox x.y.z
+    validations:
+      required: true
+  - type: input
+    id: core
+    attributes:
+      label: Mihomo 内核版本
+      placeholder: v1.19.x
+    validations:
+      required: true
+  - type: input
+    id: repo-version
+    attributes:
+      label: 仓库版本 / Commit
+      placeholder: aa37cab
+    validations:
+      required: true
+  - type: dropdown
+    id: dns-type
+    attributes:
+      label: 问题类型
+      options:
+        - 节点域名解析失败
+        - 国内域名解析不符预期
+        - 海外域名解析不符预期
+        - hosts 未生效
+        - DNS 泄漏
+        - 其他
+    validations:
+      required: true
+  - type: input
+    id: domain
+    attributes:
+      label: 问题域名
+      placeholder: example.com
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望的解析结果
+      description: 期望走哪个 DNS、得到什么结果，依据是什么
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际的解析结果
+      description: 实际走的 DNS 与返回结果；有查询日志请贴片段（务必先脱敏）
+    validations:
+      required: true
+  - type: textarea
+    id: switches
+    attributes:
+      label: 相关开关状态
+      description: 国内入口解析、QUIC 阻断、IPv6 优先等与 DNS 相关的开关当前状态，以及是否改过模板 DNS 设置
+    validations:
+      required: false
+  - type: textarea
+    id: extra
+    attributes:
+      label: 补充信息
+      description: 生成后配置中 dns / hosts 的相关片段（脱敏）等
+    validations:
+      required: false
