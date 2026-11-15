@@ -2691,18 +2691,18 @@ function selectTelegramDcFallbackNodes(eligibleCandidates) {
 
 const TGDC_PROXY_GROUP_DEFINITIONS = [
   {
-    name: '📲 Telegram-DC1-DC3-Miami',
+    name: '📲 DC1-MIA',
     regionKeys: ['us'],
     icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-United_States.svg',
   },
   {
-    name: '📲 Telegram-DC2-DC4-Amsterdam',
+    name: '📲 DC24-AMS',
     regionKeys: ['nl'],
     // 阿姆斯特丹组使用荷兰地区 SVG 旗帜图标。
     icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Netherlands.svg',
   },
   {
-    name: '📲 Telegram-DC5-SG',
+    name: '📲 DC5-SIN',
     // 根据实际互联情况，DC5 组同时纳入香港与新加坡节点。
     regionKeys: ['sg', 'hk'],
     icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Singapore.svg',
@@ -2729,9 +2729,9 @@ function buildTelegramDcProxyGroups(originalProxies) {
 }
 
 const TGDC_RULES = [
-  'RULE-SET,telegram_dc1_dc3_miami,📲 Telegram-DC1-DC3-Miami,no-resolve',
-  'RULE-SET,telegram_dc2_dc4_amsterdam,📲 Telegram-DC2-DC4-Amsterdam,no-resolve',
-  'RULE-SET,telegram_dc5_sg,📲 Telegram-DC5-SG,no-resolve',
+  'RULE-SET,telegram_dc1_dc3_miami,📲 DC1-MIA,no-resolve',
+  'RULE-SET,telegram_dc2_dc4_amsterdam,📲 DC24-AMS,no-resolve',
+  'RULE-SET,telegram_dc5_sg,📲 DC5-SIN,no-resolve',
   'PROCESS-NAME-REGEX,.*nagram.*,📲 Telegram(兜底)',
   'PROCESS-NAME-REGEX,.*telegram.*,📲 Telegram(兜底)',
   'RULE-SET,telegramcidr,📲 Telegram(兜底),no-resolve',
