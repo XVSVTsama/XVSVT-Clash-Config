@@ -72,7 +72,7 @@ const Compatible_With_Bettbox = {
  *
  *  节点处理与 proxy-providers（重要）：
  *    节点级处理分三类：
- *      1) 筛选：剔除≥2x、剔除≤0.5x、剔除免费、剔除指定类型、国家/地区分组、TGDC 候选；
+ *      1) 筛选：剔除≥2x、剔除≤0.5x、剔除免费、实验剔除指定类型、国家/地区分组、TGDC 候选；
  *      2) 注入：入口解析（注入入口节点，并用 exclude-filter 排除同名节点）；
  *      3) 修正字段：强制证书验证、Reality 增强、试开启节点UDP、
  *         IPv6优先、hosts 改写节点 server。
@@ -227,7 +227,7 @@ const ruleOptionsEnable = {
   '剔除≤0.5x': false,
   // 开启后删除名称中带免费类过滤词的顶层节点；过滤词独立维护（见 FREE_NODE_FILTER_REGEX），与倍率剔除互不影响。
   '剔除免费': false,
-  '剔除指定类型': false,
+  '实验剔除指定类型': false,
   // 开启后，维护区所有分类的入口节点统一加入“国内入口解析”组，不进入其他代理组。
   '入口解析': false,
   // --- 网络与规则 ---
@@ -1737,7 +1737,7 @@ const FEATURE_SWITCH_ICONS = {
   '剔除≥2x': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-high.svg',
   '剔除≤0.5x': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-low.svg',
   '剔除免费': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-free.svg',
-  '剔除指定类型': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-type.svg',
+  '实验剔除指定类型': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-type.svg',
   '代理节点 DNS 使用 TCP': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-TCP.png',
   '关闭WebRTC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-webrtc-block.svg',
   'QUIC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Quic.svg',
@@ -1814,8 +1814,8 @@ const serviceConfigs = TEMPLATE['proxy-groups']
       icon: FEATURE_SWITCH_ICONS['剔除免费']
     },
     {
-      name: '剔除指定类型',
-      icon: FEATURE_SWITCH_ICONS['剔除指定类型']
+      name: '实验剔除指定类型',
+      icon: FEATURE_SWITCH_ICONS['实验剔除指定类型']
     },
     {
       name: '入口解析',
@@ -3326,7 +3326,7 @@ function applyFreeNodeFilter(result, protectedNames) {
 }
 
 // 节点类型剔除名单（亚开关，独立维护，与倍率阈值、免费过滤词互不影响）。
-// 操作说明（本表按 type 从属嵌套、逐 type 修改；Bettbox 主开关「剔除指定类型」打开后才生效）：
+// 操作说明（本表按 type 从属嵌套、逐 type 修改；Bettbox 主开关「实验剔除指定类型」打开后才生效）：
 // 二级 mode 是每个 type 的办法开关：false 不剔；true 剔整类；'selection' 用下属具体表；'combination' 用下属结构抉择表。
 // mode 为 true/false 时不看三级及以下设置；为 'selection'/'combination' 时只有对应表生效，另一张不看。
 // 三级具体表 selection：条目是互斥的具体类型，键为维度取值以 + 连接（如 'xhttp+reality'），节点须全中才算命中。
@@ -3748,7 +3748,7 @@ function matchesProxyTypeFilter(proxy) {
 
 function applyProxyTypeFilter(result, protectedNames) {
   const removedProxyNames = new Set();
-  if (ruleOptionsEnable['剔除指定类型'] !== true) return removedProxyNames;
+  if (ruleOptionsEnable['实验剔除指定类型'] !== true) return removedProxyNames;
   if (!Array.isArray(result.proxies)) return removedProxyNames;
 
   result.proxies = result.proxies.filter((proxy) => {
