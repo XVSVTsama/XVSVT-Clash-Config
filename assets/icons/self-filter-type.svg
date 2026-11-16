@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 100 100">
+  <title>Proxy type filter icon</title>
+  <path fill="#7C3AED" d="M10 12h80L61 45v28L40 88V45L10 12Z"/>
+  <circle cx="36" cy="29" r="5" fill="#FFFFFF"/>
+  <path fill="#FFFFFF" d="M50 23l6 12H44l6-12Z"/>
+  <rect x="59" y="24" width="10" height="10" fill="#FFFFFF"/>
+</svg>

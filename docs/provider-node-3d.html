@@ -24,7 +24,7 @@
 </head>
 <body>
 <h1>节点处理三维视图</h1>
-<p class="hint">拖拽旋转、双指捏合或滚轮缩放、双击重置视角；也可用图上方工具栏。点击坐标点，详情显示在下方。轴刻度使用编号：X 节点来源（X1–X3）、Y 节点处理办法（Y1–Y3）、Z 功能名称（Z1–Z11），对照见下方。坐标含义：x+y+z 表示 Z 功能中按 Y 处理办法处理的节点，来源为 X；x+y、x+z 没有实际意义。</p>
+<p class="hint">拖拽旋转、双指捏合或滚轮缩放、双击重置视角；也可用图上方工具栏。点击坐标点，详情显示在下方。轴刻度使用编号：X 节点来源（X1–X3）、Y 节点处理办法（Y1–Y3）、Z 功能名称（Z1–Z12），对照见下方。坐标含义：x+y+z 表示 Z 功能中按 Y 处理办法处理的节点，来源为 X；x+y、x+z 没有实际意义。</p>
 <div class="toolbar"><button id="fs" type="button">全屏查看</button></div>
 <div id="plot"></div>
 <div id="detail"><span class="muted">点击坐标点，详情显示在下方。</span></div>
@@ -53,7 +53,8 @@ const FUNCS = [
   { id: 'Z8', name: 'IPv6优先' },
   { id: 'Z9', name: '关闭 Reality 增强' },
   { id: 'Z10', name: 'hosts 改写节点 server' },
-  { id: 'Z11', name: '剔除免费' }
+  { id: 'Z11', name: '剔除免费' },
+  { id: 'Z12', name: '剔除指定类型' }
 ];
 const POINTS = [
   { f: 'Z1', s: 'X1', m: 'Y1', desc: '删除名称含显式 >=2x 的顶层节点' },
@@ -71,7 +72,8 @@ const POINTS = [
   { f: 'Z8', s: 'X2', m: 'Y3', desc: '统一写 override.ip-version=ipv6-prefer' },
   { f: 'Z9', s: 'X1', m: 'Y3', desc: '写 reality-opts.support-x25519mlkem768=true' },
   { f: 'Z10', s: 'X1', m: 'Y3', desc: '把节点 server 换成 hosts 映射' },
-  { f: 'Z11', s: 'X1', m: 'Y1', desc: '删除名称含免费/体验/试用/公益/白嫖/0元或独立词 Free 的顶层节点' }
+  { f: 'Z11', s: 'X1', m: 'Y1', desc: '删除名称含免费/体验/试用/公益/白嫖/0元或独立词 Free 的顶层节点' },
+  { f: 'Z12', s: 'X1', m: 'Y1', desc: '按内置名单各 type 的 mode（整类/具体表/结构抉择表）删除命中的顶层节点' }
 ];
 </script>
 <script>

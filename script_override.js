@@ -72,7 +72,7 @@ const Compatible_With_Bettbox = {
  *
  *  节点处理与 proxy-providers（重要）：
  *    节点级处理分三类：
- *      1) 筛选：剔除≥2x、剔除≤0.5x、剔除免费、国家/地区分组、TGDC 候选；
+ *      1) 筛选：剔除≥2x、剔除≤0.5x、剔除免费、剔除指定类型、国家/地区分组、TGDC 候选；
  *      2) 注入：入口解析（注入入口节点，并用 exclude-filter 排除同名节点）；
  *      3) 修正字段：强制证书验证、Reality 增强、试开启节点UDP、
  *         IPv6优先、hosts 改写节点 server。
@@ -227,6 +227,7 @@ const ruleOptionsEnable = {
   '剔除≤0.5x': false,
   // 开启后删除名称中带免费类过滤词的顶层节点；过滤词独立维护（见 FREE_NODE_FILTER_REGEX），与倍率剔除互不影响。
   '剔除免费': false,
+  '剔除指定类型': false,
   // 开启后，维护区所有分类的入口节点统一加入“国内入口解析”组，不进入其他代理组。
   '入口解析': false,
   // --- 网络与规则 ---
@@ -1736,6 +1737,7 @@ const FEATURE_SWITCH_ICONS = {
   '剔除≥2x': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-high.svg',
   '剔除≤0.5x': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-low.svg',
   '剔除免费': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-free.svg',
+  '剔除指定类型': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-type.svg',
   '代理节点 DNS 使用 TCP': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-TCP.png',
   '关闭WebRTC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-webrtc-block.svg',
   'QUIC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Quic.svg',
@@ -1810,6 +1812,10 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     {
       name: '剔除免费',
       icon: FEATURE_SWITCH_ICONS['剔除免费']
+    },
+    {
+      name: '剔除指定类型',
+      icon: FEATURE_SWITCH_ICONS['剔除指定类型']
     },
     {
       name: '入口解析',
@@ -3222,7 +3228,20 @@ function getExplicitProxyMultipliers(name) {
 // 让地区组只用幸存节点生成，避免某地区节点全被筛除后留下空子组（内核报 `use` or `proxies` missing）。
 // 返回被剔除的节点名集合，供地区分组判定候选。
 // provider 节点不受影响：它们由内核按 include-all 展开，仍会出现在相关组里。
-function applyProxyMultiplierFilters(result) {
+function collectDialerProxyProtectedNames(proxies) {
+  const protectedNames = new Set();
+  if (!Array.isArray(proxies)) return protectedNames;
+  proxies.forEach((proxy) => {
+    if (!proxy || typeof proxy !== 'object') return;
+    const target = typeof proxy['dialer-proxy'] === 'string' ? proxy['dialer-proxy'].trim() : '';
+    if (!target) return;
+    protectedNames.add(target);
+    if (typeof proxy.name === 'string' && proxy.name) protectedNames.add(proxy.name);
+  });
+  return protectedNames;
+}
+
+function applyProxyMultiplierFilters(result, protectedNames) {
   const removedProxyNames = new Set();
   const filterHigh = ruleOptionsEnable['剔除≥2x'] === true;
   const filterLow = ruleOptionsEnable['剔除≤0.5x'] === true;
@@ -3231,6 +3250,7 @@ function applyProxyMultiplierFilters(result) {
 
   result.proxies = result.proxies.filter((proxy) => {
     if (!proxy || typeof proxy !== 'object' || typeof proxy.name !== 'string') return true;
+    if (protectedNames && protectedNames.has(proxy.name)) return true;
     const multipliers = getExplicitProxyMultipliers(proxy.name);
     const shouldRemove = multipliers.some(
       (multiplier) => (filterHigh && multiplier >= 2) || (filterLow && multiplier <= 0.5)
@@ -3269,14 +3289,448 @@ const FREE_NODE_FILTER_REGEX = /免费|体验|试用|公益|白嫖|0元|\bfree\b
 
 // 与倍率筛选同构：过滤订阅顶层节点并清理静态引用，必须在地区分组之前调用，
 // 返回被剔除的节点名集合，供地区分组判定候选。provider 节点不受影响。
-function applyFreeNodeFilter(result) {
+function applyFreeNodeFilter(result, protectedNames) {
   const removedProxyNames = new Set();
   if (ruleOptionsEnable['剔除免费'] !== true) return removedProxyNames;
   if (!Array.isArray(result.proxies)) return removedProxyNames;
 
   result.proxies = result.proxies.filter((proxy) => {
     if (!proxy || typeof proxy !== 'object' || typeof proxy.name !== 'string') return true;
+    if (protectedNames && protectedNames.has(proxy.name)) return true;
     const shouldRemove = FREE_NODE_FILTER_REGEX.test(normalizeNameForJsMatching(proxy.name));
+    if (shouldRemove) removedProxyNames.add(proxy.name);
+    return !shouldRemove;
+  });
+
+  if (removedProxyNames.size === 0) return removedProxyNames;
+  const firstRemainingProxyName = result.proxies
+    .map((proxy) => proxy && proxy.name)
+    .find((name) => typeof name === 'string' && name.length > 0);
+  if (!Array.isArray(result['proxy-groups'])) return removedProxyNames;
+
+  result['proxy-groups'].forEach((group) => {
+    if (!group || typeof group !== 'object') return;
+    if (Array.isArray(group.proxies)) {
+      group.proxies = group.proxies.filter((name) => !removedProxyNames.has(name));
+    }
+    if (removedProxyNames.has(group['default-selected'])) {
+      if (firstRemainingProxyName) {
+        group['default-selected'] = firstRemainingProxyName;
+      } else {
+        delete group['default-selected'];
+      }
+    }
+  });
+
+  return removedProxyNames;
+}
+
+// 节点类型剔除名单（亚开关，独立维护，与倍率阈值、免费过滤词互不影响）：
+// 按 type 从属嵌套。每个 type 的 mode 决定排除办法，取值与下级开关无关：
+// true 剔整类、false 不剔、'selection' 用具体表、'combination' 用结构抉择表。
+// 具体表：条目为互斥的具体类型（维度完整组合，条目间不重合），各自开关、可多选并集排除；
+// 复合维度只枚举经典组合，其余情况用结构抉择表。
+// 结构抉择表（只设于多维度协议 ssr/vmess/vless/trojan/tuic/snell/hysteria2，简单协议只用具体表）：各维度 AND；
+// 维度值为数组（多选）/true/false（是否）/null 或空数组（不限），全不限时不剔。
+// 无结构变体的协议（wireguard/ssh/masque/shadowquic/sudoku/trusttunnel/openvpn/easytier/tailscale/zerotier）只有 mode 一项。
+// 特征与维度取自节点字段：network（缺省 tcp、mieru 看 transport）、flow、encryption、
+// plugin、obfs/obfs-opts.mode、protocol、congestion-controller、udp-relay-mode、ss-opts、
+// version（snell 的 version 字段、缺省 1；tuic 按 token 是否存在判 v4/v5）、
+// ports（hysteria2 的 ports 跳跃端口）、up/down（bandwidth 是否），
+// 及 reality/jls/shadow-tls/restls/tlsmirror 的 *-opts（opts 维度）。
+const PROXY_TYPE_FILTER_OPTIONS = {
+  'ss': {
+    'mode': false,
+    'selection': {
+      'obfs': false,
+      'v2ray-plugin': false,
+      'gost-plugin': false,
+      'shadow-tls': false,
+      'restls': false,
+      'kcptun': false,
+      'jls': false,
+      'none': false,
+    },
+  },
+  'ssr': {
+    'mode': false,
+    'selection': {
+      'plain+origin': false,
+      'http_simple+auth_sha1_v4': false,
+      'http_simple+auth_aes128_md5': false,
+      'http_simple+auth_aes128_sha1': false,
+      'tls1.2_ticket_auth+auth_aes128_md5': false,
+      'tls1.2_ticket_auth+auth_aes128_sha1': false,
+      'plain+auth_chain_a': false,
+    },
+    'combination': {
+      'obfs': [],
+      'protocol': [],
+    },
+  },
+  'vmess': {
+    'mode': false,
+    'selection': {
+      'tcp+plain': false,
+      'tcp+tls': false,
+      'ws+plain': false,
+      'ws+tls': false,
+      'grpc+tls': false,
+      'h2+tls': false,
+      'mkcp+plain': false,
+      'xhttp+tls': false,
+      'xhttp+reality': false,
+    },
+    'combination': {
+      'network': [],
+      'opts': [],
+    },
+  },
+  'vless': {
+    'mode': false,
+    'selection': {
+      'tcp+plain': false,
+      'tcp+tls': false,
+      'tcp+reality': false,
+      'tcp+jls': false,
+      'tcp+shadow-tls': false,
+      'tcp+restls': false,
+      'tcp+tlsmirror': false,
+      'tcp+ech': false,
+      'ws+plain': false,
+      'ws+tls': false,
+      'grpc+tls': false,
+      'h2+tls': false,
+      'xhttp+plain': false,
+      'xhttp+tls': false,
+      'xhttp+reality': false,
+    },
+    'combination': {
+      'network': [],
+      'flow': null,
+      'encryption': null,
+      'opts': [],
+    },
+  },
+  'trojan': {
+    'mode': false,
+    'selection': {
+      'tcp+plain': false,
+      'tcp+reality': false,
+      'tcp+jls': false,
+      'tcp+shadow-tls': false,
+      'tcp+restls': false,
+      'tcp+tlsmirror': false,
+      'tcp+ech': false,
+      'tcp+ss-opts': false,
+      'ws+plain': false,
+      'grpc+plain': false,
+    },
+    'combination': {
+      'network': [],
+      'opts': [],
+      'ss-opts': null,
+    },
+  },
+  'hysteria': {
+    'mode': false,
+    'selection': {
+      'obfs': false,
+      'udp': false,
+      'wechat-video': false,
+      'faketcp': false,
+    },
+  },
+  'hysteria2': {
+    'mode': false,
+    'selection': {
+      'none+single': false,
+      'none+hop': false,
+      'salamander+single': false,
+      'salamander+hop': false,
+      'gecko+single': false,
+      'gecko+hop': false,
+    },
+    'combination': {
+      'obfs': [],
+      'ports': null,
+      'bandwidth': null,
+    },
+  },
+  'tuic': {
+    'mode': false,
+    'selection': {
+      'v5+bbr+native': false,
+      'v5+cubic+native': false,
+      'v5+bbr+quic': false,
+      'v4+bbr+native': false,
+      'v4+cubic+native': false,
+    },
+    'combination': {
+      'congestion-controller': [],
+      'udp-relay-mode': [],
+      'version': [],
+    },
+  },
+  'wireguard': {
+    'mode': false,
+  },
+  'anytls': {
+    'mode': false,
+    'selection': {
+      'plain': false,
+      'jls': false,
+      'shadow-tls': false,
+      'restls': false,
+      'tlsmirror': false,
+      'ech': false,
+    },
+  },
+  'snell': {
+    'mode': false,
+    'selection': {
+      'v3+none': false,
+      'v4+none': false,
+      'v4+http': false,
+      'v4+tls': false,
+      'v4+shadow-tls': false,
+      'v5+none': false,
+      'v5+http': false,
+      'v5+tls': false,
+      'v5+shadow-tls': false,
+    },
+    'combination': {
+      'version': [],
+      'obfs': [],
+    },
+  },
+  'socks5': {
+    'mode': false,
+    'selection': {
+      'plain': false,
+      'tls': false,
+    },
+  },
+  'http': {
+    'mode': false,
+    'selection': {
+      'plain': false,
+      'tls': false,
+    },
+  },
+  'ssh': {
+    'mode': false,
+  },
+  'mieru': {
+    'mode': false,
+    'selection': {
+      'tcp': false,
+      'udp': false,
+    },
+  },
+  'masque': {
+    'mode': false,
+  },
+  'shadowquic': {
+    'mode': false,
+  },
+  'sudoku': {
+    'mode': false,
+  },
+  'trusttunnel': {
+    'mode': false,
+  },
+  'openvpn': {
+    'mode': false,
+  },
+  'easytier': {
+    'mode': false,
+  },
+  'tailscale': {
+    'mode': false,
+  },
+  'zerotier': {
+    'mode': false,
+  },
+  'gost-relay': {
+    'mode': false,
+  },
+};
+
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
+function hasHopPorts(proxy) {
+  const ports = proxy?.ports;
+  if (typeof ports === 'string') return ports.trim() !== '';
+  if (Array.isArray(ports)) return ports.length > 0;
+  return false;
+}
+
+function hasTuicV4Token(proxy) {
+  const token = proxy?.token;
+  if (typeof token === 'string') return token.trim() !== '';
+  if (Array.isArray(token)) return token.some((item) => typeof item === 'string' && item.trim() !== '');
+  return false;
+}
+
+function getProxyVariantTokens(proxy) {
+  const tokens = new Set();
+  const type = typeof proxy?.type === 'string' ? proxy.type.trim().toLowerCase() : '';
+  const lower = (value) => (typeof value === 'string' && value.trim() ? value.trim().toLowerCase() : '');
+  let network = lower(proxy?.network) || 'tcp';
+  if (type === 'mieru') network = lower(proxy?.transport) === 'udp' ? 'udp' : 'tcp';
+  tokens.add(network);
+  let security = 'plain';
+  if (isPlainObject(proxy?.['reality-opts'])) security = 'reality';
+  else if (isPlainObject(proxy?.['jls-opts'])) security = 'jls';
+  else if (isPlainObject(proxy?.['shadow-tls-opts'])) security = 'shadow-tls';
+  else if (isPlainObject(proxy?.['restls-opts'])) security = 'restls';
+  else if (isPlainObject(proxy?.['tlsmirror-opts'])) security = 'tlsmirror';
+  else if (isPlainObject(proxy?.['ss-opts']) && proxy['ss-opts'].enabled === true) security = 'ss-opts';
+  else if (isPlainObject(proxy?.['ech-opts']) && proxy['ech-opts'].enable === true) security = 'ech';
+  else if (proxy?.tls === true) security = 'tls';
+  tokens.add(security);
+  const flow = lower(proxy?.flow);
+  if (flow) {
+    tokens.add(flow);
+    if (flow.includes('vision')) tokens.add('vision');
+  }
+  if (type === 'ss') tokens.add(lower(proxy?.plugin) || 'none');
+  if (type === 'ssr') {
+    tokens.add(lower(proxy?.obfs) || 'plain');
+    tokens.add(lower(proxy?.protocol) || 'origin');
+  }
+  if (type === 'snell') {
+    const mode = isPlainObject(proxy?.['obfs-opts']) ? lower(proxy['obfs-opts'].mode) : '';
+    tokens.add(mode || 'none');
+    const version = Number(proxy?.version);
+    tokens.add('v' + (Number.isInteger(version) && version >= 1 ? version : 1));
+  }
+  if (type === 'hysteria') tokens.add(lower(proxy?.obfs) ? 'obfs' : (lower(proxy?.protocol) || 'udp'));
+  if (type === 'hysteria2') {
+    tokens.add(lower(proxy?.obfs) || 'none');
+    tokens.add(hasHopPorts(proxy) ? 'hop' : 'single');
+  }
+  if (type === 'tuic') {
+    tokens.add(lower(proxy?.['congestion-controller']) || 'cubic');
+    tokens.add(lower(proxy?.['udp-relay-mode']) || 'native');
+    tokens.add(hasTuicV4Token(proxy) ? 'v4' : 'v5');
+  }
+  return tokens;
+}
+
+function hasBandwidth(proxy) {
+  const hasValue = (value) => (typeof value === 'string' && value.trim() !== '') || (typeof value === 'number' && value > 0);
+  return hasValue(proxy?.up) || hasValue(proxy?.down);
+}
+
+function getProxyDimensionState(proxy) {
+  const type = typeof proxy?.type === 'string' ? proxy.type.trim().toLowerCase() : '';
+  const networkField = typeof proxy?.network === 'string' ? proxy.network.trim().toLowerCase() : '';
+  let network = networkField || 'tcp';
+  if (type === 'mieru') {
+    const transport = typeof proxy?.transport === 'string' ? proxy.transport.trim().toLowerCase() : '';
+    network = transport === 'udp' ? 'udp' : 'tcp';
+  }
+  const flow = typeof proxy?.flow === 'string' ? proxy.flow.trim().toLowerCase() : '';
+  const flowTokens = new Set(flow ? [flow] : []);
+  if (flow.includes('vision')) flowTokens.add('vision');
+  const encryption = typeof proxy?.encryption === 'string' ? proxy.encryption.trim().toLowerCase() : '';
+  const hasEncryption = encryption !== '' && encryption !== 'none';
+  let optsName = 'none';
+  if (isPlainObject(proxy?.['reality-opts'])) optsName = 'reality';
+  else if (isPlainObject(proxy?.['jls-opts'])) optsName = 'jls';
+  else if (isPlainObject(proxy?.['shadow-tls-opts'])) optsName = 'shadow-tls';
+  else if (isPlainObject(proxy?.['restls-opts'])) optsName = 'restls';
+  else if (isPlainObject(proxy?.['tlsmirror-opts'])) optsName = 'tlsmirror';
+  const plugin = typeof proxy?.plugin === 'string' ? proxy.plugin.trim().toLowerCase() : '';
+  const obfsField = typeof proxy?.obfs === 'string' ? proxy.obfs.trim().toLowerCase() : '';
+  const obfsMode = isPlainObject(proxy?.['obfs-opts']) && typeof proxy['obfs-opts'].mode === 'string'
+    ? proxy['obfs-opts'].mode.trim().toLowerCase() : '';
+  const obfsValue = obfsField || obfsMode;
+  const protocol = typeof proxy?.protocol === 'string' ? proxy.protocol.trim().toLowerCase() : '';
+  const congestion = typeof proxy?.['congestion-controller'] === 'string' ? proxy['congestion-controller'].trim().toLowerCase() : '';
+  const relayMode = typeof proxy?.['udp-relay-mode'] === 'string' ? proxy['udp-relay-mode'].trim().toLowerCase() : '';
+  let versionToken = 'none';
+  if (type === 'tuic') versionToken = hasTuicV4Token(proxy) ? 'v4' : 'v5';
+  if (type === 'snell') {
+    const version = Number(proxy?.version);
+    versionToken = 'v' + (Number.isInteger(version) && version >= 1 ? version : 1);
+  }
+  return {
+    'network': { tokens: new Set([network]), has: true },
+    'flow': { tokens: flowTokens, has: flow !== '' },
+    'encryption': { tokens: new Set([hasEncryption ? encryption : 'none']), has: hasEncryption },
+    'opts': { tokens: new Set([optsName]), has: optsName !== 'none' },
+    'plugin': { tokens: new Set([plugin || 'none']), has: plugin !== '' },
+    'obfs': { tokens: new Set([obfsValue || 'none']), has: obfsValue !== '' },
+    'protocol': { tokens: new Set([protocol || 'none']), has: protocol !== '' },
+    'ss-opts': { tokens: new Set(), has: isPlainObject(proxy?.['ss-opts']) && proxy['ss-opts'].enabled === true },
+    'congestion-controller': { tokens: new Set([congestion || 'none']), has: congestion !== '' },
+    'udp-relay-mode': { tokens: new Set([relayMode || 'none']), has: relayMode !== '' },
+    'version': { tokens: new Set([versionToken]), has: versionToken !== 'none' },
+    'ports': { tokens: new Set([hasHopPorts(proxy) ? 'hop' : 'single']), has: hasHopPorts(proxy) },
+    'bandwidth': { tokens: new Set(), has: hasBandwidth(proxy) },
+  };
+}
+
+function matchesProxyCombination(proxy, combination) {
+  if (!isPlainObject(combination)) return false;
+  let specified = false;
+  let state = null;
+  for (const [dimension, rule] of Object.entries(combination)) {
+    if (rule === null || rule === undefined) continue;
+    if (Array.isArray(rule) && rule.length === 0) continue;
+    specified = true;
+    if (!state) state = getProxyDimensionState(proxy);
+    const info = state[dimension];
+    if (!info) return false;
+    if (typeof rule === 'boolean') {
+      if (info.has !== rule) return false;
+    } else if (Array.isArray(rule)) {
+      const wanted = rule.map((value) => String(value).trim().toLowerCase());
+      if (![...info.tokens].some((token) => wanted.includes(token))) return false;
+    } else {
+      return false;
+    }
+  }
+  return specified;
+}
+
+function matchesProxyTypeFilter(proxy) {
+  if (!isPlainObject(proxy)) return false;
+  const type = typeof proxy.type === 'string' ? proxy.type.trim().toLowerCase() : '';
+  if (!type) return false;
+  const entry = PROXY_TYPE_FILTER_OPTIONS[type];
+  if (!isPlainObject(entry)) return false;
+  if (entry.mode === true) return true;
+  if (entry.mode === 'selection') {
+    if (!isPlainObject(entry.selection)) return false;
+    let tokens = null;
+    for (const [key, enabled] of Object.entries(entry.selection)) {
+      if (enabled !== true) continue;
+      const parts = key.split('+').map((part) => part.trim().toLowerCase()).filter(Boolean);
+      if (!parts.length) continue;
+      if (!tokens) tokens = getProxyVariantTokens(proxy);
+      if (parts.every((token) => tokens.has(token))) return true;
+    }
+    return false;
+  }
+  if (entry.mode === 'combination') return matchesProxyCombination(proxy, entry.combination);
+  return false;
+}
+
+function applyProxyTypeFilter(result, protectedNames) {
+  const removedProxyNames = new Set();
+  if (ruleOptionsEnable['剔除指定类型'] !== true) return removedProxyNames;
+  if (!Array.isArray(result.proxies)) return removedProxyNames;
+
+  result.proxies = result.proxies.filter((proxy) => {
+    if (!proxy || typeof proxy !== 'object' || typeof proxy.name !== 'string') return true;
+    if (protectedNames && protectedNames.has(proxy.name)) return true;
+    const shouldRemove = matchesProxyTypeFilter(proxy);
     if (shouldRemove) removedProxyNames.add(proxy.name);
     return !shouldRemove;
   });
@@ -4062,10 +4516,15 @@ function main(config, profileName) {
   );
 
   // ---- 8. 倍率筛选：先剔除订阅顶层节点，仅处理顶层 proxies ----
-  const removedProxyNames = applyProxyMultiplierFilters(result);
+  // 四种剔除前预扫 dialer-proxy：被指向的节点与自带 dialer-proxy 的节点不参与剔除。
+  const dialerProtectedProxyNames = collectDialerProxyProtectedNames(result.proxies);
+  const removedProxyNames = applyProxyMultiplierFilters(result, dialerProtectedProxyNames);
 
   // ---- 8.1 免费节点剔除：紧随倍率筛选，剔除名单合并供地区分组排除 ----
-  applyFreeNodeFilter(result).forEach((name) => removedProxyNames.add(name));
+  applyFreeNodeFilter(result, dialerProtectedProxyNames).forEach((name) => removedProxyNames.add(name));
+
+  // ---- 8.2 指定类型剔除：紧随免费剔除，剔除名单合并供地区分组排除 ----
+  applyProxyTypeFilter(result, dialerProtectedProxyNames).forEach((name) => removedProxyNames.add(name));
 
   // ---- 8.5 国家/地区策略组：只用倍率筛选后的候选节点生成，整组被筛除的地区不建组 ----
   applyCountryRegionGrouping(
