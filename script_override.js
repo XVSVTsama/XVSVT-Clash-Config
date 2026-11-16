@@ -72,7 +72,7 @@ const Compatible_With_Bettbox = {
  *
  *  节点处理与 proxy-providers（重要）：
  *    节点级处理分三类：
- *      1) 筛选：剔除≥2x、剔除≤0.5x、国家/地区分组、TGDC 候选；
+ *      1) 筛选：剔除≥2x、剔除≤0.5x、剔除免费、国家/地区分组、TGDC 候选；
  *      2) 注入：入口解析（注入入口节点，并用 exclude-filter 排除同名节点）；
  *      3) 修正字段：强制证书验证、Reality 增强、试开启节点UDP、
  *         IPv6优先、hosts 改写节点 server。
@@ -225,6 +225,8 @@ const ruleOptionsEnable = {
   // 某地区节点全部被筛除时不建该地区组。不处理 proxy-providers。
   '剔除≥2x': false,
   '剔除≤0.5x': false,
+  // 开启后删除名称中带免费类过滤词的顶层节点；过滤词独立维护（见 FREE_NODE_FILTER_REGEX），与倍率剔除互不影响。
+  '剔除免费': false,
   // 开启后，维护区所有分类的入口节点统一加入“国内入口解析”组，不进入其他代理组。
   '入口解析': false,
   // --- 网络与规则 ---
@@ -1733,6 +1735,7 @@ const FEATURE_SWITCH_ICONS = {
   'IPv6优先': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-ipv6-prefer.svg',
   '剔除≥2x': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-high.svg',
   '剔除≤0.5x': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-low.svg',
+  '剔除免费': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-free.svg',
   '代理节点 DNS 使用 TCP': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-TCP.png',
   '关闭WebRTC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-webrtc-block.svg',
   'QUIC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Quic.svg',
@@ -1803,6 +1806,10 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     {
       name: '剔除≤0.5x',
       icon: FEATURE_SWITCH_ICONS['剔除≤0.5x']
+    },
+    {
+      name: '剔除免费',
+      icon: FEATURE_SWITCH_ICONS['剔除免费']
     },
     {
       name: '入口解析',
@@ -3251,6 +3258,48 @@ function applyProxyMultiplierFilters(result) {
   return removedProxyNames;
 }
 
+// 免费节点过滤词（独立维护，与倍率阈值、信息节点排除正则互不影响）：
+// 中文词按子串匹配，Free 按独立词匹配，避免误伤 Freedom 等含 free 的单词。
+// 匹配前先做 JS 名称规范化，与 TGDC / 地区分组的候选筛选一致。
+const FREE_NODE_FILTER_REGEX = /免费|体验|试用|公益|白嫖|0元|\bfree\b/iu;
+
+// 与倍率筛选同构：过滤订阅顶层节点并清理静态引用，必须在地区分组之前调用，
+// 返回被剔除的节点名集合，供地区分组判定候选。provider 节点不受影响。
+function applyFreeNodeFilter(result) {
+  const removedProxyNames = new Set();
+  if (ruleOptionsEnable['剔除免费'] !== true) return removedProxyNames;
+  if (!Array.isArray(result.proxies)) return removedProxyNames;
+
+  result.proxies = result.proxies.filter((proxy) => {
+    if (!proxy || typeof proxy !== 'object' || typeof proxy.name !== 'string') return true;
+    const shouldRemove = FREE_NODE_FILTER_REGEX.test(normalizeNameForJsMatching(proxy.name));
+    if (shouldRemove) removedProxyNames.add(proxy.name);
+    return !shouldRemove;
+  });
+
+  if (removedProxyNames.size === 0) return removedProxyNames;
+  const firstRemainingProxyName = result.proxies
+    .map((proxy) => proxy && proxy.name)
+    .find((name) => typeof name === 'string' && name.length > 0);
+  if (!Array.isArray(result['proxy-groups'])) return removedProxyNames;
+
+  result['proxy-groups'].forEach((group) => {
+    if (!group || typeof group !== 'object') return;
+    if (Array.isArray(group.proxies)) {
+      group.proxies = group.proxies.filter((name) => !removedProxyNames.has(name));
+    }
+    if (removedProxyNames.has(group['default-selected'])) {
+      if (firstRemainingProxyName) {
+        group['default-selected'] = firstRemainingProxyName;
+      } else {
+        delete group['default-selected'];
+      }
+    }
+  });
+
+  return removedProxyNames;
+}
+
 const COUNTRY_REGION_PRIORITY_NAMES = new Set([
   '🇨🇳🇭🇰 香港',
   '🇨🇳🇹🇼 台湾',
@@ -4010,6 +4059,9 @@ function main(config, profileName) {
 
   // ---- 8. 倍率筛选：先剔除订阅顶层节点，仅处理顶层 proxies ----
   const removedProxyNames = applyProxyMultiplierFilters(result);
+
+  // ---- 8.1 免费节点剔除：紧随倍率筛选，剔除名单合并供地区分组排除 ----
+  applyFreeNodeFilter(result).forEach((name) => removedProxyNames.add(name));
 
   // ---- 8.5 国家/地区策略组：只用倍率筛选后的候选节点生成，整组被筛除的地区不建组 ----
   applyCountryRegionGrouping(
