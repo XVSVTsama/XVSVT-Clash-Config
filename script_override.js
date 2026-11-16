@@ -3325,20 +3325,21 @@ function applyFreeNodeFilter(result, protectedNames) {
   return removedProxyNames;
 }
 
-// 节点类型剔除名单（亚开关，独立维护，与倍率阈值、免费过滤词互不影响）：
-// 按 type 从属嵌套。每个 type 的 mode 决定排除办法，取值与下级开关无关：
-// true 剔整类、false 不剔、'selection' 用具体表、'combination' 用结构抉择表。
-// 具体表：条目为互斥的具体类型（维度完整组合，条目间不重合），各自开关、可多选并集排除；
-// 复合维度只枚举经典组合，其余情况用结构抉择表。
-// 结构抉择表（只设于多维度协议 ssr/vmess/vless/trojan/tuic/snell/hysteria2，简单协议只用具体表）：各维度 AND；
-// 维度值为数组（多选）/true/false（是否）/null 或空数组（不限），全不限时不剔。
-// 无结构变体的协议（wireguard/ssh/masque/shadowquic/sudoku/trusttunnel/openvpn/easytier/tailscale/zerotier）只有 mode 一项。
-// 特征与维度取自节点字段：network（缺省 tcp、mieru 看 transport）、flow、encryption、
-// plugin、obfs/obfs-opts.mode、protocol、congestion-controller、udp-relay-mode、ss-opts、
-// version（snell 的 version 字段、缺省 1；tuic 按 token 是否存在判 v4/v5）、
-// ports（hysteria2 的 ports 跳跃端口）、up/down（bandwidth 是否），
-// 及 reality/jls/shadow-tls/restls/tlsmirror 的 *-opts（opts 维度）。
+// 节点类型剔除名单（亚开关，独立维护，与倍率阈值、免费过滤词互不影响）。
+// 操作说明（本表按 type 从属嵌套、逐 type 修改；Bettbox 主开关「剔除指定类型」打开后才生效）：
+// 二级 mode 是每个 type 的办法开关：false 不剔；true 剔整类；'selection' 用下属具体表；'combination' 用下属结构抉择表。
+// mode 为 true/false 时不看三级及以下设置；为 'selection'/'combination' 时只有对应表生效，另一张不看。
+// 三级具体表 selection：条目是互斥的具体类型，键为维度取值以 + 连接（如 'xhttp+reality'），节点须全中才算命中。
+// 要剔哪条就把哪条改成 true，可多选（并集）；复合维度只列了经典组合，没列到的组合改用结构抉择表，不要自加模糊条目。
+// 三级结构抉择表 combination：维度之间为 AND；数组维度填取值数组（命中任一即可），布尔维度填 true（必须具备）
+// 或 false（必须不具备），null 或空数组为不限；全部维度不限时不剔任何节点。
+// 四级即表内的条目与维度值。无结构变体的协议只有 mode 一项，mode 误设为其他值时不剔任何节点。
+// 取值归类口径：network 缺省 tcp（mieru 看 transport）；安全层按 reality、jls、shadow-tls、restls、tlsmirror、
+// ss-opts（须 enabled）、ech（须 enable）、tls、plain 的顺序取最高一种；flow 取原值（含 vision 别名）；
+// snell 的 version 取 version 字段（缺省 1），tuic 按 token 是否存在判 v4/v5、拥塞缺省 cubic、中继缺省 native；
+// hysteria2 的 ports 看 ports 字段（跳跃端口），bandwidth 看 up/down 是否有值。
 const PROXY_TYPE_FILTER_OPTIONS = {
+  // ss：条目为 plugin 取值（none 为无插件），已全枚举，只有具体表。
   'ss': {
     'mode': false,
     'selection': {
@@ -3352,6 +3353,7 @@ const PROXY_TYPE_FILTER_OPTIONS = {
       'none': false,
     },
   },
+  // ssr：条目为 obfs+protocol 经典组合对；结构抉择表可按 obfs、protocol 两维度任意组合。
   'ssr': {
     'mode': false,
     'selection': {
@@ -3368,6 +3370,7 @@ const PROXY_TYPE_FILTER_OPTIONS = {
       'protocol': [],
     },
   },
+  // vmess：条目为 network+安全层组合；结构抉择表可按 network、opts（安全层）两维度组合。
   'vmess': {
     'mode': false,
     'selection': {
@@ -3386,6 +3389,7 @@ const PROXY_TYPE_FILTER_OPTIONS = {
       'opts': [],
     },
   },
+  // vless：条目为 network+安全层组合；结构抉择表可按 network、flow、encryption、opts 四维度组合。
   'vless': {
     'mode': false,
     'selection': {
@@ -3412,6 +3416,7 @@ const PROXY_TYPE_FILTER_OPTIONS = {
       'opts': [],
     },
   },
+  // trojan：条目为 network+安全层组合（ss-opts 为 ss 回退）；结构抉择表另有 ss-opts 是否维度。
   'trojan': {
     'mode': false,
     'selection': {
@@ -3432,6 +3437,7 @@ const PROXY_TYPE_FILTER_OPTIONS = {
       'ss-opts': null,
     },
   },
+  // hysteria：条目为分类值（有 obfs 字段记 obfs，否则按 protocol、缺省 udp），已全枚举，只有具体表。
   'hysteria': {
     'mode': false,
     'selection': {
@@ -3441,6 +3447,7 @@ const PROXY_TYPE_FILTER_OPTIONS = {
       'faketcp': false,
     },
   },
+  // hysteria2：条目为 obfs 与端口全交叉（single 单端口、hop 跳跃端口）；结构抉择表可按 obfs、ports、bandwidth 组合。
   'hysteria2': {
     'mode': false,
     'selection': {
@@ -3457,6 +3464,7 @@ const PROXY_TYPE_FILTER_OPTIONS = {
       'bandwidth': null,
     },
   },
+  // tuic：条目为版本+拥塞控制+中继模式的经典三元组；结构抉择表可按三维度任意组合。
   'tuic': {
     'mode': false,
     'selection': {
@@ -3472,9 +3480,11 @@ const PROXY_TYPE_FILTER_OPTIONS = {
       'version': [],
     },
   },
+  // wireguard：无结构变体，只有 mode。
   'wireguard': {
     'mode': false,
   },
+  // anytls：条目为安全层取值，已全枚举，只有具体表。
   'anytls': {
     'mode': false,
     'selection': {
@@ -3486,6 +3496,7 @@ const PROXY_TYPE_FILTER_OPTIONS = {
       'ech': false,
     },
   },
+  // snell：条目为版本+obfs 经典组合对；结构抉择表可按 version、obfs 两维度任意组合。
   'snell': {
     'mode': false,
     'selection': {
@@ -3504,6 +3515,7 @@ const PROXY_TYPE_FILTER_OPTIONS = {
       'obfs': [],
     },
   },
+  // socks5：条目为是否 TLS（plain/tls），已全枚举，只有具体表。
   'socks5': {
     'mode': false,
     'selection': {
@@ -3511,6 +3523,7 @@ const PROXY_TYPE_FILTER_OPTIONS = {
       'tls': false,
     },
   },
+  // http：条目为是否 TLS（plain/tls），已全枚举，只有具体表。
   'http': {
     'mode': false,
     'selection': {
@@ -3518,9 +3531,11 @@ const PROXY_TYPE_FILTER_OPTIONS = {
       'tls': false,
     },
   },
+  // ssh：无结构变体，只有 mode。
   'ssh': {
     'mode': false,
   },
+  // mieru：条目为 transport 取值（tcp/udp），已全枚举，只有具体表。
   'mieru': {
     'mode': false,
     'selection': {
@@ -3528,30 +3543,39 @@ const PROXY_TYPE_FILTER_OPTIONS = {
       'udp': false,
     },
   },
+  // masque：无结构变体，只有 mode。
   'masque': {
     'mode': false,
   },
+  // shadowquic：无结构变体，只有 mode。
   'shadowquic': {
     'mode': false,
   },
+  // sudoku：无结构变体，只有 mode。
   'sudoku': {
     'mode': false,
   },
+  // trusttunnel：无结构变体，只有 mode。
   'trusttunnel': {
     'mode': false,
   },
+  // openvpn：无结构变体，只有 mode。
   'openvpn': {
     'mode': false,
   },
+  // easytier：无结构变体，只有 mode。
   'easytier': {
     'mode': false,
   },
+  // tailscale：无结构变体，只有 mode。
   'tailscale': {
     'mode': false,
   },
+  // zerotier：无结构变体，只有 mode。
   'zerotier': {
     'mode': false,
   },
+  // gost-relay：无结构变体，只有 mode。
   'gost-relay': {
     'mode': false,
   },

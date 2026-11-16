@@ -161,7 +161,13 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 - **国家/地区分组**：`国家/地区分组` 开启后，只从订阅顶层 `proxies` 生成香港、台湾、澳门、日本、新加坡、韩国、马来西亚、美国、加拿大、英国、法国、荷兰、德国、澳大利亚及“其他国家/地区”策略组；不枚举 `proxy-providers`。倍率筛选先于地区分组执行，地区组只用幸存节点生成；某地区节点全部被筛除时不生成该地区的父组与三个隐藏子组。
 - **倍率筛选**：`剔除≥2x` 删除名称中明确标记为 `2x` 或更高的订阅顶层节点；`剔除≤0.5x` 删除明确标记为 `0.5x` 或更低的节点。只识别显式数值倍率（例如 `5x`、`x0.01`），不猜测模糊标签；过滤同步清理代理组 `proxies` 中的节点名称引用，不处理 `proxy-providers`；执行顺序在地区分组与国内入口解析之前。
 - **免费节点剔除**：`剔除免费` 删除名称中含 `免费`、`体验`、`试用`、`公益`、`白嫖`、`0元` 或独立词 `Free` 的订阅顶层节点。过滤词独立维护，与倍率筛选互不影响；过滤同步清理代理组 `proxies` 中的节点名称引用，不处理 `proxy-providers`；执行顺序紧跟倍率筛选，在地区分组与国内入口解析之前。
-- **指定类型剔除**：`剔除指定类型` 按 JS 内置名单 `PROXY_TYPE_FILTER_OPTIONS` 删除订阅顶层节点：名单按 `type` 从属嵌套，每个 `type` 的 `mode` 决定排除办法且与下级开关无关——`true` 剔除整类、`false` 不剔除、`selection` 用具体表（条目为互斥的具体类型，即维度完整组合，如 vless 的 `xhttp+reality`、`tcp+jls`，条目间不重合，各自开关、可多选并集排除；复合维度只枚举经典组合）、`combination` 用结构抉择表（仅 `ssr`、`vmess`、`vless`、`trojan`、`tuic`、`snell`、`hysteria2` 七个多维度协议设有，按各自结构维度组合判定，如 vless 的 `network`、`flow`、`encryption`、`opts`，各维度 AND，维度值为数组多选或是否，全不限时不剔除；简单协议不设此表，只用具体表罗列）。特征取自节点字段（`network`、`tls`、`flow`、`reality-opts`、`jls-opts`、`shadow-tls-opts`、`restls-opts`、`tlsmirror-opts`、`ech-opts`、`ss-opts`、`plugin`、`obfs`、`protocol` 等）。过滤同步清理代理组 `proxies` 中的节点名称引用，不处理 `proxy-providers`；执行顺序紧跟免费节点剔除，在地区分组与国内入口解析之前。四种剔除（`剔除≥2x`、`剔除≤0.5x`、`剔除免费`、`剔除指定类型`）执行前会预扫 `dialer-proxy`：被任一节点以 `dialer-proxy` 指向的节点与自带 `dialer-proxy` 的节点一律不剔除。
+- **指定类型剔除**：`剔除指定类型` 按 JS 内置协议表删除订阅顶层节点，不处理 `proxy-providers`；同步清理代理组 `proxies` 中的节点名称引用；执行顺序紧跟免费节点剔除，在地区分组与国内入口解析之前。
+  - 名单按 `type` 从属嵌套，每个 `type` 的 `mode` 决定排除办法，与下级开关无关：
+    - `true` 剔除整类，`false` 不剔除
+    - `selection` 用具体表：条目为互斥的具体类型（维度完整组合，如 vless 的 `xhttp+reality`、`tcp+jls`），各自开关、可多选并集排除；复合维度只枚举经典组合
+    - `combination` 用结构抉择表：仅七个多维度协议设有（`ssr`、`vmess`、`vless`、`trojan`、`tuic`、`snell`、`hysteria2`），按结构维度组合判定（维度间 AND，维度值为数组多选或是否，全不限时不剔除）；简单协议不设此表，只用具体表
+  - 特征取自节点字段（`network`、`flow`、各类 `*-opts`、`plugin`、`obfs`、`protocol` 等）
+  - 四种剔除（`剔除≥2x`、`剔除≤0.5x`、`剔除免费`、`剔除指定类型`）执行前预扫 `dialer-proxy`：被指向的节点与自带 `dialer-proxy` 的节点一律不剔除
 - **DNS**：动态合并出 `dns.proxy-server-nameserver-policy`（模板不预置该键，以脚本计算结果为准），细节见下方流程图。
 - **开关声明**：脚本首行的 `Compatible_With_Bettbox` 兼容声明必须置顶——Bettbox 只在脚本开头识别该声明，删除或下移会导致"自定义规则开关"入口不显示；声明中的 `policyGroupOptions` 列出归入图形化开关分类的 23 个策略组，`ruleOptionsEnable` 则是实际生效的开关表，键名需与声明保持一致。`🌍 PROXY` 始终保留为基础/兜底组，不提供关闭开关。
 
@@ -253,7 +259,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><td><code>剔除≥2x</code></td><td>关闭</td><td>在地区分组之前删除名称中显式标记倍率 <code>&gt;=2x</code> 的订阅顶层节点，并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
 <tr><td><code>剔除≤0.5x</code></td><td>关闭</td><td>在地区分组之前删除名称中显式标记倍率 <code>&lt;=0.5x</code> 的订阅顶层节点，并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
 <tr><td><code>剔除免费</code></td><td>关闭</td><td>在倍率筛选之后、地区分组之前删除名称中含 <code>免费</code>、<code>体验</code>、<code>试用</code>、<code>公益</code>、<code>白嫖</code>、<code>0元</code> 或独立词 <code>Free</code> 的订阅顶层节点，并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
-<tr><td><code>剔除指定类型</code></td><td>关闭</td><td>在免费节点剔除之后、地区分组之前，按 JS 内置名单 <code>PROXY_TYPE_FILTER_OPTIONS</code> 删除订阅顶层节点：名单按 <code>type</code> 嵌套，每个 <code>type</code> 的 <code>mode</code> 取 <code>true</code>（剔除整类）/ <code>false</code>（不剔除）/ <code>selection</code>（具体表，互斥的具体类型条目多选）/ <code>combination</code>（结构抉择表，按协议结构维度组合判定）；并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
+<tr><td><code>剔除指定类型</code></td><td>关闭</td><td>在免费节点剔除之后、地区分组之前，按 JS 内置协议表删除订阅顶层节点（每个 <code>type</code> 的 <code>mode</code> 决定整类、具体表或结构抉择表三种排除办法），并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
 <tr><td><code>代理节点 DNS 使用 TCP</code></td><td>关闭</td><td>为代理节点解析 DNS 中未标协议的地址启用 TCP；显式协议不变</td></tr>
 <tr><td><code>关闭WebRTC阻断</code></td><td>关闭</td><td>默认关闭时保持模板规则不变；打开后移除所有同时包含 <code>NETWORK,UDP</code> 与 <code>DST-PORT,3478-3479/5349-5350/19302-19309</code> 的规则</td></tr>
 <tr><td><code>QUIC阻断</code></td><td>关闭</td><td>关闭时不做任何处理；开启时阻断非国内、非游戏的 UDP 443（QUIC），并移除全部海外业务 <code>nameserver-policy</code>（72 条，被移除的域名改走默认 <code>nameserver</code>）：若 <code>关闭WebRTC阻断</code> 未开启，直接在 WebRTC 阻断规则的 <code>DST-PORT</code> 中追加 <code>443</code>；若已开启，则按 WebRTC 阻断规则的同一组 <code>NOT</code> 条件另建一条 <code>AND,((NETWORK,UDP),(DST-PORT,443),…),REJECT</code> 并置顶</td></tr>
