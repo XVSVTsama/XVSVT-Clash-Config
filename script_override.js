@@ -3207,11 +3207,15 @@ function applyAisoulerDirectRules(result) {
   }
 }
 
-// 只识别节点名称中明确标记的数值倍率（如 0.5x、2x、5×），不推断“高倍”等模糊标签。
+// 只识别节点名称中明确标记的数值倍率（如 0.5x、2x、5×、x0.01、×0.5），不推断“高倍”等模糊标签；前缀式整数部分限两位数，避免 x264 一类编号被误读为倍率。
 function getExplicitProxyMultipliers(name) {
   if (typeof name !== 'string') return [];
-  const matches = name.matchAll(/(?:^|[^A-Za-z0-9_.])(\d+(?:\.\d+)?)\s*[x×](?![A-Za-z0-9_])/giu);
-  return Array.from(matches, (match) => Number(match[1]));
+  const multipliers = [];
+  const suffixMatches = name.matchAll(/(?:^|[^A-Za-z0-9_.])(\d+(?:\.\d+)?)\s*[x×](?![A-Za-z0-9_])/giu);
+  for (const match of suffixMatches) multipliers.push(Number(match[1]));
+  const prefixMatches = name.matchAll(/(?:^|[^A-Za-z0-9_.])[x×]\s*(\d{1,2}(?:\.\d+)?|\d+\.\d+)(?!\d)(?!\.\d)(?![A-Za-z_])/giu);
+  for (const match of prefixMatches) multipliers.push(Number(match[1]));
+  return multipliers;
 }
 
 // 过滤订阅顶层节点，并清理静态引用；必须在地区分组之前调用，
