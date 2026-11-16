@@ -34,8 +34,8 @@
 | `self-Microsoft.svg` | 海外微软组；本仓库绘制的四色窗口图形 | 原生 SVG；本仓库原创表达部分遵循根 GPL-3.0，Microsoft 品牌图形、商标及其他第三方权利不因此获得授权。品牌使用应核对 [Microsoft 商标规范](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks)。 |
 | `self-EHentai.svg` | E-Hentai 组；本仓库绘制的通用图库图形，不是 E-Hentai 标志 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不授予 E-Hentai 名称或其他第三方权利。 |
 | `self-TCP.png` | 代理节点 DNS 使用 TCP 开关；本仓库制作的 TCP 盾形图标 | 保留现有 PNG；没有可复用的对应矢量原稿，不自动描摹。原创表达部分遵循根 GPL-3.0，不对可能涉及的第三方图形权利作额外授权。 |
-| `self-filter-high.svg` | 高倍率筛选开关；本仓库原创的漏斗与向上箭头图形 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不包含第三方品牌图形。 |
-| `self-filter-low.svg` | 低倍率筛选开关；本仓库原创的漏斗与向下箭头图形 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不包含第三方品牌图形。 |
+| `self-filter-high.svg` | 剔除≥2x开关；本仓库原创的漏斗与向上箭头图形 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不包含第三方品牌图形。 |
+| `self-filter-low.svg` | 剔除≤0.5x开关；本仓库原创的漏斗与向下箭头图形 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不包含第三方品牌图形。 |
 | `self-udp.svg` | 试开启节点 UDP 开关；本仓库原创的数据包流图形 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不包含第三方品牌图形。 |
 | `self-webrtc-block.svg` | WebRTC 阻断开关；本仓库原创的屏蔽网络盾牌图形 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不包含第三方品牌图形。 |
 | `self-adblock.svg` | SKK 广告拦截开关与广告拦截策略组；本仓库原创的禁止标志盾牌图形 | 原生 SVG；原创表达部分遵循根 GPL-3.0，不包含第三方品牌图形。 |

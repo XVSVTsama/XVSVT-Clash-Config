@@ -72,7 +72,7 @@ const Compatible_With_Bettbox = {
  *
  *  节点处理与 proxy-providers（重要）：
  *    节点级处理分三类：
- *      1) 筛选：高/低倍率筛选、国家/地区分组、TGDC 候选；
+ *      1) 筛选：剔除≥2x、剔除≤0.5x、国家/地区分组、TGDC 候选；
  *      2) 注入：入口解析（注入入口节点，并用 exclude-filter 排除同名节点）；
  *      3) 修正字段：强制证书验证、Reality 增强、试开启节点UDP、
  *         IPv6优先、hosts 改写节点 server。
@@ -223,8 +223,8 @@ const ruleOptionsEnable = {
   '国家/地区分组': false,
   // 先按节点名称中的显式数值倍率筛选顶层节点，再据此生成国家/地区组；
   // 某地区节点全部被筛除时不建该地区组。不处理 proxy-providers。
-  '高倍率筛选': false,
-  '低倍率筛选': false,
+  '剔除≥2x': false,
+  '剔除≤0.5x': false,
   // 开启后，维护区所有分类的入口节点统一加入“国内入口解析”组，不进入其他代理组。
   '入口解析': false,
   // --- 网络与规则 ---
@@ -1731,8 +1731,8 @@ const FEATURE_SWITCH_ICONS = {
   '关闭 Reality 增强': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Spark.svg',
   '试开启节点UDP': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-udp.svg',
   'IPv6优先': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-ipv6-prefer.svg',
-  '高倍率筛选': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-high.svg',
-  '低倍率筛选': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-low.svg',
+  '剔除≥2x': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-high.svg',
+  '剔除≤0.5x': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-low.svg',
   '代理节点 DNS 使用 TCP': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-TCP.png',
   '关闭WebRTC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-webrtc-block.svg',
   'QUIC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Quic.svg',
@@ -1797,12 +1797,12 @@ const serviceConfigs = TEMPLATE['proxy-groups']
       icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Global.svg'
     },
     {
-      name: '高倍率筛选',
-      icon: FEATURE_SWITCH_ICONS['高倍率筛选']
+      name: '剔除≥2x',
+      icon: FEATURE_SWITCH_ICONS['剔除≥2x']
     },
     {
-      name: '低倍率筛选',
-      icon: FEATURE_SWITCH_ICONS['低倍率筛选']
+      name: '剔除≤0.5x',
+      icon: FEATURE_SWITCH_ICONS['剔除≤0.5x']
     },
     {
       name: '入口解析',
@@ -3213,8 +3213,8 @@ function getExplicitProxyMultipliers(name) {
 // provider 节点不受影响：它们由内核按 include-all 展开，仍会出现在相关组里。
 function applyProxyMultiplierFilters(result) {
   const removedProxyNames = new Set();
-  const filterHigh = ruleOptionsEnable['高倍率筛选'] === true;
-  const filterLow = ruleOptionsEnable['低倍率筛选'] === true;
+  const filterHigh = ruleOptionsEnable['剔除≥2x'] === true;
+  const filterLow = ruleOptionsEnable['剔除≤0.5x'] === true;
   if (!filterHigh && !filterLow) return removedProxyNames;
   if (!Array.isArray(result.proxies)) return removedProxyNames;
 

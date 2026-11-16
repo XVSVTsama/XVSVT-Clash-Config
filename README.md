@@ -159,7 +159,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 - **节点与代理组**：订阅里的真实节点填入顶层 `proxies`；常规动态节点组通过 Mihomo 原生 `include-all` 引入顶层节点与 provider 节点。固定策略项保留在各组的 `proxies` 列表中。
 - **订阅自带 `proxy-providers`**：定义原样保留，脚本不展开、不筛选、不逐节点改写其中的节点；节点级开关能作用到 provider 的只有 `override` 通道。
 - **国家/地区分组**：`国家/地区分组` 开启后，只从订阅顶层 `proxies` 生成香港、台湾、澳门、日本、新加坡、韩国、马来西亚、美国、加拿大、英国、法国、荷兰、德国、澳大利亚及“其他国家/地区”策略组；不枚举 `proxy-providers`。倍率筛选先于地区分组执行，地区组只用幸存节点生成；某地区节点全部被筛除时不生成该地区的父组与三个隐藏子组。
-- **倍率筛选**：`高倍率筛选` 删除名称中明确标记为 `2x` 或更高的订阅顶层节点；`低倍率筛选` 删除明确标记为 `0.5x` 或更低的节点。只识别显式数值倍率（例如 `5x`），不猜测模糊标签；过滤同步清理代理组 `proxies` 中的节点名称引用，不处理 `proxy-providers`；执行顺序在地区分组与国内入口解析之前。
+- **倍率筛选**：`剔除≥2x` 删除名称中明确标记为 `2x` 或更高的订阅顶层节点；`剔除≤0.5x` 删除明确标记为 `0.5x` 或更低的节点。只识别显式数值倍率（例如 `5x`），不猜测模糊标签；过滤同步清理代理组 `proxies` 中的节点名称引用，不处理 `proxy-providers`；执行顺序在地区分组与国内入口解析之前。
 - **DNS**：动态合并出 `dns.proxy-server-nameserver-policy`（模板不预置该键，以脚本计算结果为准），细节见下方流程图。
 - **开关声明**：脚本首行的 `Compatible_With_Bettbox` 兼容声明必须置顶——Bettbox 只在脚本开头识别该声明，删除或下移会导致"自定义规则开关"入口不显示；声明中的 `policyGroupOptions` 列出归入图形化开关分类的 23 个策略组，`ruleOptionsEnable` 则是实际生效的开关表，键名需与声明保持一致。`🌍 PROXY` 始终保留为基础/兜底组，不提供关闭开关。
 
@@ -248,8 +248,8 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><td><code>关闭 Reality 增强</code></td><td>关闭</td><td>默认关闭时为带非空 <code>public-key</code> / <code>short-id</code> 的订阅顶层 Reality 节点启用 X25519MLKEM768 后量子密钥协商；打开本开关后不再写入该字段、保留订阅原有值；provider 的 <code>override</code> 只能改固定字段、无法改写嵌套 <code>reality-opts</code>，因此不涉及 provider 节点</td></tr>
 <tr><td><code>试开启节点UDP</code></td><td>关闭</td><td>开启时为订阅顶层节点设置 <code>udp: true</code>，provider 节点经 <code>override.udp</code> 同步生效；关闭时不改动原有设置</td></tr>
 <tr><td><code>IPv6优先</code></td><td>关闭</td><td>关闭时将顶层 <code>ipv6</code> 与 <code>dns.ipv6</code> 置为 <code>false</code>，并删除 <code>dns.fake-ip-range6</code>；开启时改写订阅顶层节点 <code>ip-version</code>：<code>ipv6</code> 保持不变，<code>ipv6-prefer</code> 改为 <code>ipv6</code>，其余设为 <code>ipv6-prefer</code>；provider 节点经 <code>override.ip-version</code> 统一设为 <code>ipv6-prefer</code>，无法按节点区分原值</td></tr>
-<tr><td><code>高倍率筛选</code></td><td>关闭</td><td>在地区分组之前删除名称中显式标记倍率 <code>&gt;=2x</code> 的订阅顶层节点，并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
-<tr><td><code>低倍率筛选</code></td><td>关闭</td><td>在地区分组之前删除名称中显式标记倍率 <code>&lt;=0.5x</code> 的订阅顶层节点，并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
+<tr><td><code>剔除≥2x</code></td><td>关闭</td><td>在地区分组之前删除名称中显式标记倍率 <code>&gt;=2x</code> 的订阅顶层节点，并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
+<tr><td><code>剔除≤0.5x</code></td><td>关闭</td><td>在地区分组之前删除名称中显式标记倍率 <code>&lt;=0.5x</code> 的订阅顶层节点，并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
 <tr><td><code>代理节点 DNS 使用 TCP</code></td><td>关闭</td><td>为代理节点解析 DNS 中未标协议的地址启用 TCP；显式协议不变</td></tr>
 <tr><td><code>关闭WebRTC阻断</code></td><td>关闭</td><td>默认关闭时保持模板规则不变；打开后移除所有同时包含 <code>NETWORK,UDP</code> 与 <code>DST-PORT,3478-3479/5349-5350/19302-19309</code> 的规则</td></tr>
 <tr><td><code>QUIC阻断</code></td><td>关闭</td><td>关闭时不做任何处理；开启时阻断非国内、非游戏的 UDP 443（QUIC），并移除全部海外业务 <code>nameserver-policy</code>（72 条，被移除的域名改走默认 <code>nameserver</code>）：若 <code>关闭WebRTC阻断</code> 未开启，直接在 WebRTC 阻断规则的 <code>DST-PORT</code> 中追加 <code>443</code>；若已开启，则按 WebRTC 阻断规则的同一组 <code>NOT</code> 条件另建一条 <code>AND,((NETWORK,UDP),(DST-PORT,443),…),REJECT</code> 并置顶</td></tr>
