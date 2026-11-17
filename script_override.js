@@ -242,6 +242,7 @@ const ruleOptionsEnable = {
   // 默认关闭：直接从输出中删除整个 sniffer 字段（而非改 enable: false），嗅探交由内核或客户端默认值决定；
   // 打开后保留模板 sniffer。
   '开启Sniffer': false,
+  '代理组interval改为5': false,
 };
 
 // 关闭这些业务组时删除指向它们的路由规则，而不是把规则改写到全局兜底。
@@ -1742,6 +1743,7 @@ const FEATURE_SWITCH_ICONS = {
   '关闭WebRTC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-webrtc-block.svg',
   'QUIC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Quic.svg',
   '开启Sniffer': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Tracking.svg',
+  '代理组interval改为5': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-auto.png',
   '使用AIsouler直连规则': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-AIsouler-MyClash-China.svg',
 };
 
@@ -1836,6 +1838,10 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     {
       name: '开启Sniffer',
       icon: FEATURE_SWITCH_ICONS['开启Sniffer']
+    },
+    {
+      name: '代理组interval改为5',
+      icon: FEATURE_SWITCH_ICONS['代理组interval改为5']
     }
   ]);
 
@@ -3826,6 +3832,9 @@ function buildCountryRegionProxyGroups(originalProxies) {
       urlTestSettings[key] = templateAutoGroup[key];
     }
   });
+  if (ruleOptionsEnable['代理组interval改为5'] === true) {
+    urlTestSettings.interval = 5;
+  }
   // fallback / load-balance 没有 tolerance，只继承文档列出的健康检查通用字段。
   const healthCheckSettings = {
     url: urlTestSettings.url || 'https://g.cn/generate_204',
@@ -4372,6 +4381,14 @@ function main(config, profileName) {
 
   // ---- 2. 以模板为主体，深拷贝一份出来当作最终结果 ----
   const result = deepClone(TEMPLATE);
+
+  if (ruleOptionsEnable['代理组interval改为5'] === true) {
+    (result['proxy-groups'] || []).forEach((group) => {
+      if (group && Object.prototype.hasOwnProperty.call(group, 'interval')) {
+        group.interval = 5;
+      }
+    });
+  }
 
   if (ruleOptionsEnable['IPv6优先'] !== true) {
     result.ipv6 = false;

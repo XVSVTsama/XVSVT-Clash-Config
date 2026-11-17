@@ -245,7 +245,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 </tbody>
 </table>
 
-**同样不在 `policyGroupOptions`、也不对应任何策略组的开关（10 个）**
+**同样不在 `policyGroupOptions`、也不对应任何策略组的开关（14 个）**
 
 <table width="100%">
 <thead>
@@ -264,6 +264,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><td><code>关闭WebRTC阻断</code></td><td>关闭</td><td>默认关闭时保持模板规则不变；打开后移除所有同时包含 <code>NETWORK,UDP</code> 与 <code>DST-PORT,3478-3479/5349-5350/19302-19309</code> 的规则</td></tr>
 <tr><td><code>QUIC阻断</code></td><td>关闭</td><td>关闭时不做任何处理；开启时阻断非国内、非游戏的 UDP 443（QUIC），并移除全部海外业务 <code>nameserver-policy</code>（72 条，被移除的域名改走默认 <code>nameserver</code>）：若 <code>关闭WebRTC阻断</code> 未开启，直接在 WebRTC 阻断规则的 <code>DST-PORT</code> 中追加 <code>443</code>；若已开启，则按 WebRTC 阻断规则的同一组 <code>NOT</code> 条件另建一条 <code>AND,((NETWORK,UDP),(DST-PORT,443),…),REJECT</code> 并置顶</td></tr>
 <tr><td><code>开启Sniffer</code></td><td>关闭</td><td>关闭时直接从输出配置中删除整个 <code>sniffer</code> 字段（不是改为 <code>enable: false</code>），嗅探行为交由内核或客户端默认值决定；开启时保留模板中的 <code>sniffer</code> 配置</td></tr>
+<tr><td><code>代理组interval改为5</code></td><td>关闭</td><td>关闭时不做任何处理，代理组 <code>interval</code> 保持 300；开启时将模板代理组（自动选择与 3 个负载均衡组）及国家/地区生成子组（自动选择、自动回退、负载均衡）的 <code>interval</code> 改为 5；不改其他 <code>interval</code></td></tr>
 <tr><td><code>使用AIsouler直连规则</code></td><td>关闭</td><td>关闭时不做任何处理；开启时参照 <a href="https://github.com/AIsouler/MyClash">AIsouler/MyClash</a> 改写国内直连（规则集均取自 bett-rules）：直连段最前为 <code>private</code>（bett <code>geosite/private</code>），国内域名改用 <code>geolocation-cn</code>、<code>games_cn</code>、<code>synology</code>、<code>nvidia_cn</code>、<code>apple_cn</code>、<code>microsoft_cn</code> 及 3 条 MyClash 字面直连；<code>cn_ip</code>、<code>private_ip</code> 不加 <code>no-resolve</code>，放在 <code>MATCH</code> 之前兜底；删除 echs、cn-additional、DustinWin 国内集及部分字面直连；DNS 服务器不变，<code>fake-ip-filter</code>、<code>skip-domain</code> 与 <code>nameserver-policy</code> 的国内部分改为 <code>cn</code>（<code>geosite/cn</code>）；UDP 阻断规则（含 <code>QUIC阻断</code>）的国内排除改为 <code>NOT(OR(cn, cn_ip))</code>，保留 <code>NOT games</code></td></tr>
 </tbody>
 </table>
@@ -279,11 +280,11 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><td><strong>A2</strong> 模板内无开关的组（🌍 PROXY）</td><td>0</td><td>1</td><td>有，JS 内模板的 🌍 PROXY 组自带</td><td>❌</td><td>否</td></tr>
 <tr><td><strong>B1</strong> 注入整组、开关图标＝组图标（SKK、国家/地区、入口解析）</td><td>3</td><td>6</td><td>有，写在各注入组的定义处（SKK 段、国家/地区段、入口解析处）</td><td>有，开关项里内联同一张图</td><td>是，三对</td></tr>
 <tr><td><strong>B2</strong> 注入整组、开关图标≠组图标（TGDC）</td><td>1</td><td>4</td><td>有，写在 TGDC 组的定义处（三个 DC 组各一张国旗，兜底沿用 Telegram 组图标）</td><td>有，开关项里用 Telegram 标</td><td>否</td></tr>
-<tr><td><strong>C</strong> 纯功能开关（只在开关面板）</td><td>11</td><td>11</td><td>❌</td><td>有，集中在功能开关图标表，开关项引用</td><td>否</td></tr>
+<tr><td><strong>C</strong> 纯功能开关（只在开关面板）</td><td>14</td><td>14</td><td>❌</td><td>有，集中在功能开关图标表，开关项引用</td><td>是，一对</td></tr>
 </tbody>
 </table>
 
-> 代码内图标处数 47 ｜ 图标数 44 ｜ 重复对数 3
+> 代码内图标处数 50 ｜ 图标数 46 ｜ 重复对数 4
 
 > **关于客户端**：这套图形化开关由 Bettbox 原生支持——脚本开头的 `Compatible_With_Bettbox` 声明就是给 Bettbox 识别用的。换到其他客户端分两种情况：
 >

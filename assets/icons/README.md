@@ -123,7 +123,7 @@ Simple Icons **项目**采用 [CC0 1.0](https://github.com/simple-icons/simple-i
 | --- | --- | --- |
 | `upstream-DustinWin-ruleset_geodata-proxy.png` | `proxy.png` | PROXY |
 | `upstream-DustinWin-ruleset_geodata-select.png` | `select.png` | 手动选择 |
-| `upstream-DustinWin-ruleset_geodata-auto.png` | `auto.png` | 自动选择 |
+| `upstream-DustinWin-ruleset_geodata-auto.png` | `auto.png` | 自动选择、代理组interval改为5开关 |
 | `upstream-DustinWin-ruleset_geodata-telegram.png` | `telegram.png` | Telegram |
 | `upstream-DustinWin-ruleset_geodata-games-cn.png` | `games-cn.png` | Games-Global |
 | `upstream-DustinWin-ruleset_geodata-ai.png` | `ai.png` | AI 大模型 |
