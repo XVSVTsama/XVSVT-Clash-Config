@@ -767,7 +767,7 @@ const TEMPLATE = {
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-auto.png",
       "type": "url-test",
       "url": "https://g.cn/generate_204",
-      "interval": 5,
+      "interval": 300,
       "tolerance": 10,
       "lazy": true,
       "max-failed-times": 1,
@@ -788,7 +788,7 @@ const TEMPLATE = {
       "type": "load-balance",
       "include-all": true,
       "url": "https://g.cn/generate_204",
-      "interval": 5,
+      "interval": 300,
       "lazy": true,
       "max-failed-times": 1,
       "strategy": "consistent-hashing",
@@ -799,7 +799,7 @@ const TEMPLATE = {
       "type": "load-balance",
       "include-all": true,
       "url": "https://g.cn/generate_204",
-      "interval": 5,
+      "interval": 300,
       "lazy": true,
       "max-failed-times": 1,
       "strategy": "sticky-sessions",
@@ -810,7 +810,7 @@ const TEMPLATE = {
       "type": "load-balance",
       "include-all": true,
       "url": "https://g.cn/generate_204",
-      "interval": 5,
+      "interval": 300,
       "lazy": true,
       "max-failed-times": 1,
       "strategy": "round-robin",
@@ -3829,7 +3829,7 @@ function buildCountryRegionProxyGroups(originalProxies) {
   // fallback / load-balance 没有 tolerance，只继承文档列出的健康检查通用字段。
   const healthCheckSettings = {
     url: urlTestSettings.url || 'https://g.cn/generate_204',
-    interval: urlTestSettings.interval || 5,
+    interval: urlTestSettings.interval || 300,
     lazy: urlTestSettings.lazy === undefined ? true : urlTestSettings.lazy,
   };
   if (urlTestSettings['max-failed-times'] !== undefined) {

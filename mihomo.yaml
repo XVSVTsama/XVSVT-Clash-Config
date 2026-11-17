@@ -14,7 +14,7 @@
     - ♻️ 自动选择
     - 🔄 负载均衡
     - DIRECT
-  healthcheck: &proxy_healthcheck { url: https://g.cn/generate_204, interval: 5, lazy: true, max-failed-times: 1 }
+  healthcheck: &proxy_healthcheck { url: https://g.cn/generate_204, interval: 300, lazy: true, max-failed-times: 1 }
   # dns 共享片段
   direct_dns: &direct_dns_servers
     - https://dns.alidns.com/dns-query
