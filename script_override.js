@@ -45,7 +45,7 @@ const Compatible_With_Bettbox = {
  *    https://github.com/XVSVTsama/XVSVT-Clash-Config
  *    作者：
  *    https://github.com/XVSVTsama
- *    版本：上一提交 765c2c64e249497b8c23ed0656b24afa2761d2c9，本提交时间 2026-11-18 16:19:53 +0800
+ *    版本：上一提交 d16686984e5aed4a127f5f9199b94827bd80f3ef，本提交时间 2026-11-18 18:30:31 +0800
  *    用法：本脚本可直接作为 Bettbox / FlClash 系客户端的远程覆写脚本加载
  *         （文件首行为 Bettbox 兼容声明，请勿删除）。
  *
@@ -4050,60 +4050,6 @@ const DOMESTIC_ENTRY_PROXIES = {
   // 中国移动
   mobile: [],
 
-  // 中国大陆云厂
-  cloud: [{
-    type: 'http',
-    server: '39.104.59.56',
-    port: 9098
-  }, {
-    type: 'http',
-    server: '39.102.214.208',
-    port: 9080
-  }, {
-    type: 'http',
-    server: '120.79.217.196',
-    port: 9000
-  }, {
-    type: 'http',
-    server: '47.104.27.249',
-    port: 8080
-  }, {
-    type: 'http',
-    server: '39.102.214.199',
-    port: 10002
-  }, {
-    type: 'http',
-    server: '139.224.195.153',
-    port: 8118
-  }, {
-    type: 'http',
-    server: '47.121.129.129',
-    port: 6379
-  }, {
-    type: 'http',
-    server: '47.104.28.135',
-    port: 8080
-  }, {
-    type: 'http',
-    server: '47.104.27.165',
-    port: 9080
-  }, {
-    type: 'http',
-    server: '47.106.75.125',
-    port: 3128
-  }, {
-    type: 'http',
-    server: '39.104.69.76',
-    port: 8081
-  }, {
-    type: 'http',
-    server: '39.102.211.64',
-    port: 8443
-  }, {
-    type: 'http',
-    server: '106.14.91.83',
-    port: 8181
-  }]
 };
 
 // 分类与强制命名前缀的固定映射，不应修改；节点顺序不代表自动优先级。
@@ -4111,7 +4057,6 @@ const ENTRY_RESOLUTION_OPTIONS = [
   { category: 'telecom', prefix: '电信节点' },
   { category: 'unicom', prefix: '联通节点' },
   { category: 'mobile', prefix: '移动节点' },
-  { category: 'cloud', prefix: '云厂节点' }
 ];
 
 function selectedEntryResolutionOptions() {
