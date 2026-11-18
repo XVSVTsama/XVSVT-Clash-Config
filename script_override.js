@@ -45,6 +45,7 @@ const Compatible_With_Bettbox = {
  *    https://github.com/XVSVTsama/XVSVT-Clash-Config
  *    作者：
  *    https://github.com/XVSVTsama
+ *    版本：上一提交 1da5fc3e54e4c2dc67f34c5088e20d57599c7636，本提交时间 2026-11-18 16:06:50 +0800
  *    用法：本脚本可直接作为 Bettbox / FlClash 系客户端的远程覆写脚本加载
  *         （文件首行为 Bettbox 兼容声明，请勿删除）。
  *
