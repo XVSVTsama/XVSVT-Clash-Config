@@ -2675,10 +2675,12 @@ const TGDC_RULE_PROVIDERS = {
       'IP-CIDR,91.108.58.0/23,no-resolve',
       'IP-CIDR,91.108.4.0/22,no-resolve',
       'IP-CIDR,91.108.8.0/22,no-resolve',
+      'IP-CIDR,91.108.20.0/22,no-resolve',
       'IP-CIDR,149.154.160.0/21,no-resolve',
       'IP-CIDR,95.161.64.0/20,no-resolve',
       'IP-CIDR,91.105.192.0/23,no-resolve',
       'IP-CIDR,185.76.151.0/24,no-resolve',
+      'IP-CIDR,194.221.250.50/32,no-resolve',
       // Akiker / entire6548 / RClogs 的 EU 补充候选。
       'IP-CIDR,5.28.192.0/18,no-resolve',
       'IP-CIDR,109.239.140.0/24,no-resolve',
@@ -2692,7 +2694,6 @@ const TGDC_RULE_PROVIDERS = {
     payload: [
       // DC5 Flora — Singapore
       'IP-CIDR,91.108.16.0/22,no-resolve',
-      'IP-CIDR,91.108.20.0/22,no-resolve',
       'IP-CIDR,91.108.56.0/23,no-resolve',
       'IP-CIDR,149.154.168.0/22,no-resolve',
       'IP-CIDR6,2001:b28:f23c::/48,no-resolve',
