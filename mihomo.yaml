@@ -652,14 +652,14 @@ rule-providers:
   steam_ip: { <<: *ipcidr_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geoip/steam.mrs', path: ./ruleset/steam_ip.mrs, path-in-bundle: 'geo/geoip/steam.mrs' }
   steam: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/steam.mrs', path: ./ruleset/steam.mrs, path-in-bundle: 'geo/geosite/steam.mrs' }
   # Telegram DC 地区 CIDR 规则集：启用地区分流时取消注释本段。
-  # telegram_dc1_dc3_miami:
+  # dc1_mia:
   #   type: inline
   #   behavior: classical
   #   payload:
   #     - IP-CIDR,91.108.12.0/22,no-resolve
   #     - IP-CIDR,149.154.172.0/22,no-resolve
   #     - IP-CIDR6,2001:b28:f23d::/48,no-resolve
-  # telegram_dc2_dc4_amsterdam:
+  # dc24_ams:
   #   type: inline
   #   behavior: classical
   #   payload:
@@ -676,7 +676,7 @@ rule-providers:
   #     - IP-CIDR,109.239.140.0/24,no-resolve
   #     - IP-CIDR6,2001:67c:4e8::/48,no-resolve
   #     - IP-CIDR6,2a0a:f280:203::/48,no-resolve
-  # telegram_dc5_sg:
+  # dc5_sin:
   #   type: inline
   #   behavior: classical
   #   payload:
@@ -801,9 +801,9 @@ rules:
   - RULE-SET,apple,🍎 海外苹果
   - RULE-SET,proxy@direct,🌍 PROXY
   # Telegram DC 地区规则：启用地区分流时取消注释，并同时启用对应策略组与 rule-providers。
-  # - RULE-SET,telegram_dc1_dc3_miami,📲 DC1-MIA,no-resolve
-  # - RULE-SET,telegram_dc2_dc4_amsterdam,📲 DC24-AMS,no-resolve
-  # - RULE-SET,telegram_dc5_sg,📲 DC5-SIN,no-resolve
+  # - RULE-SET,dc1_mia,📲 DC1-MIA,no-resolve
+  # - RULE-SET,dc24_ams,📲 DC24-AMS,no-resolve
+  # - RULE-SET,dc5_sin,📲 DC5-SIN,no-resolve
   - PROCESS-NAME-REGEX,.*nagram.*,📲 Telegram
   - "PROCESS-NAME-REGEX,.*telegram.*,📲 Telegram"
   - RULE-SET,telegramcidr,📲 Telegram,no-resolve

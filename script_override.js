@@ -2657,7 +2657,7 @@ function matchCountryRegionDefinitionsForJs(rawProxyName) {
 // 静态 CIDR 无法可靠拆分同城 DC，因此策略组使用 DC 对命名。
 // ============================================================================
 const TGDC_RULE_PROVIDERS = {
-  telegram_dc1_dc3_miami: {
+  dc1_mia: {
     type: 'inline',
     behavior: 'classical',
     payload: [
@@ -2667,7 +2667,7 @@ const TGDC_RULE_PROVIDERS = {
       'IP-CIDR6,2001:b28:f23d::/48,no-resolve',
     ],
   },
-  telegram_dc2_dc4_amsterdam: {
+  dc24_ams: {
     type: 'inline',
     behavior: 'classical',
     payload: [
@@ -2688,7 +2688,7 @@ const TGDC_RULE_PROVIDERS = {
       'IP-CIDR6,2a0a:f280:203::/48,no-resolve',
     ],
   },
-  telegram_dc5_sg: {
+  dc5_sin: {
     type: 'inline',
     behavior: 'classical',
     payload: [
@@ -2752,9 +2752,9 @@ function buildTelegramDcProxyGroups(originalProxies) {
 }
 
 const TGDC_RULES = [
-  'RULE-SET,telegram_dc1_dc3_miami,📲 DC1-MIA,no-resolve',
-  'RULE-SET,telegram_dc2_dc4_amsterdam,📲 DC24-AMS,no-resolve',
-  'RULE-SET,telegram_dc5_sg,📲 DC5-SIN,no-resolve',
+  'RULE-SET,dc1_mia,📲 DC1-MIA,no-resolve',
+  'RULE-SET,dc24_ams,📲 DC24-AMS,no-resolve',
+  'RULE-SET,dc5_sin,📲 DC5-SIN,no-resolve',
   'PROCESS-NAME-REGEX,.*nagram.*,📲 Telegram(兜底)',
   'PROCESS-NAME-REGEX,.*telegram.*,📲 Telegram(兜底)',
   'RULE-SET,telegramcidr,📲 Telegram(兜底),no-resolve',
