@@ -82,7 +82,7 @@
 | --- | --- | --- |
 | `upstream-AIsouler-MyClash-Apple.svg` | [`Apple.svg`](https://github.com/AIsouler/MyClash/blob/main/Icons/svg/Apple.svg) | 海外苹果 |
 | `upstream-AIsouler-MyClash-Steam.svg` | [`Steam.svg`](https://github.com/AIsouler/MyClash/blob/main/Icons/svg/Steam.svg) | Steam 平台 |
-| `upstream-AIsouler-MyClash-China.svg` | [`China.svg`](https://github.com/AIsouler/MyClash/blob/main/Icons/svg/China.svg) | 使用 AIsouler 直连规则开关 |
+| `upstream-AIsouler-MyClash-China.svg` | [`China.svg`](https://github.com/AIsouler/MyClash/blob/main/Icons/svg/China.svg) | 使用 AIsouler 直连规则开关、代理节点 DNS 使用国内开关 |
 
 ## Clash Verge 官方文档
 

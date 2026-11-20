@@ -45,7 +45,7 @@ const Compatible_With_Bettbox = {
  *    https://github.com/XVSVTsama/XVSVT-Clash-Config
  *    作者：
  *    https://github.com/XVSVTsama
- *    版本：上一提交 d16686984e5aed4a127f5f9199b94827bd80f3ef，本提交时间 2026-11-18 18:30:31 +0800
+ *    版本：上一提交 7e2e5c3bcfcf3fd648f09afe85afe6d43bcc60db，本提交时间 2026-11-20 11:49:45 +0800
  *    用法：本脚本可直接作为 Bettbox / FlClash 系客户端的远程覆写脚本加载
  *         （文件首行为 Bettbox 兼容声明，请勿删除）。
  *
@@ -234,6 +234,7 @@ const ruleOptionsEnable = {
   // --- 网络与规则 ---
   // 最后为节点解析 DNS 的无协议地址补 tcp://；不改变显式协议、出口后缀或 DNS 优先级。
   '代理节点 DNS 使用 TCP': false,
+  '代理节点 DNS 使用国内': false,
   // 默认关闭：保留 WebRTC 阻断规则；打开后删除所有同时包含指定 UDP 网络和端口特征的规则。
   '关闭WebRTC阻断': false,
   // 默认关闭：不改动规则；打开后阻断非国内、非游戏的 UDP 443（QUIC）。
@@ -1741,6 +1742,7 @@ const FEATURE_SWITCH_ICONS = {
   '剔除免费': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-free.svg',
   '实验剔除指定类型': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-type.svg',
   '代理节点 DNS 使用 TCP': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-TCP.png',
+  '代理节点 DNS 使用国内': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-AIsouler-MyClash-China.svg',
   '关闭WebRTC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-webrtc-block.svg',
   'QUIC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Quic.svg',
   '开启Sniffer': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Tracking.svg',
@@ -1827,6 +1829,10 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     {
       name: '代理节点 DNS 使用 TCP',
       icon: FEATURE_SWITCH_ICONS['代理节点 DNS 使用 TCP']
+    },
+    {
+      name: '代理节点 DNS 使用国内',
+      icon: FEATURE_SWITCH_ICONS['代理节点 DNS 使用国内']
     },
     {
       name: '关闭WebRTC阻断',
@@ -4321,6 +4327,14 @@ function main(config, profileName) {
 
   // ---- 2. 以模板为主体，深拷贝一份出来当作最终结果 ----
   const result = deepClone(TEMPLATE);
+
+  if (ruleOptionsEnable['代理节点 DNS 使用国内'] === true && result.dns) {
+    result.dns['proxy-server-nameserver'] = [
+      '114.114.114.114',
+      'tls://223.5.5.5',
+      'https://1.12.12.12/dns-query'
+    ];
+  }
 
   if (ruleOptionsEnable['代理组interval改为5'] === true) {
     (result['proxy-groups'] || []).forEach((group) => {
