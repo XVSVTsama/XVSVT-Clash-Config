@@ -6,7 +6,7 @@
 #   https://github.com/XVSVTsama/XVSVT-Clash-Config
 #   作者：
 #   https://github.com/XVSVTsama
-#   版本：上一提交 1da5fc3e54e4c2dc67f34c5088e20d57599c7636，本提交时间 2026-11-18 16:06:50 +0800
+#   版本：上一提交 bcddb43bb3a57b770b1ca44944dfe3cba6b3edde，本提交时间 2026-11-20 22:17:48 +0800
 
 .templates:
   # proxy-groups 共享片段
@@ -272,9 +272,9 @@ dns:
   # - https://doh.dns.sb/dns-query              # DNS.SB 公共 DNS   # 185.222.222.222     45.11.45.11
   # - https://dns.twnic.tw/dns-query            # Quad101 公共 DNS  # 101.101.101.10      101.102.103.10
   nameserver-policy:
-    # 本节按 rules 中对应规则的先后顺序排列；Tailscale、douyin 等特例条目保留原位。
-    '+.ts.net':
-    - 100.100.100.100
+    # 本节按 rules 中对应规则的先后顺序排列；douyin 等特例条目保留原位。
+    # '+.ts.net':
+    # - 100.100.100.100
     'rule-set:douyin':
     - system
     - 180.184.1.1
@@ -597,14 +597,6 @@ proxy-groups:
     proxies:
       - 👉 手动选择
       - DIRECT
-  # Tailscale：MagicDNS 域名（ts.net）分流目标，由 关闭Tailscale直连 开关控制本组的 proxies。
-  # 默认关闭时使用 DIRECT，开启后使用 👉 手动选择；开关图标取自本组的 icon 字段。
-  - name: Tailscale
-    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-tailscale.svg"
-    type: select
-    proxies:
-      - 👉 手动选择
-      - DIRECT
 
 rule-providers:
   # SKK 广告拦截规则集为可选配置；启用时，需同时取消注释上方 proxy-groups 与下方 rules 对应段落。
@@ -774,7 +766,6 @@ rules:
   - DOMAIN,clash.razord.top,DIRECT
   - DOMAIN,yacd.haishan.me,DIRECT
   - PROCESS-NAME,svchost.exe,DIRECT
-  - DOMAIN-SUFFIX,ts.net,Tailscale
   - RULE-SET,private,DIRECT,no-resolve    
   - DOMAIN-WILDCARD,*.deepseek.com,DIRECT
   - DOMAIN-WILDCARD,*.portal101.cn,DIRECT

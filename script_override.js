@@ -45,7 +45,7 @@ const Compatible_With_Bettbox = {
  *    https://github.com/XVSVTsama/XVSVT-Clash-Config
  *    作者：
  *    https://github.com/XVSVTsama
- *    版本：上一提交 59ac900cbbac1fdf0eec4d589352868e0c1ed44a，本提交时间 2026-11-20 11:52:15 +0800
+ *    版本：上一提交 bcddb43bb3a57b770b1ca44944dfe3cba6b3edde，本提交时间 2026-11-20 22:17:48 +0800
  *    用法：本脚本可直接作为 Bettbox / FlClash 系客户端的远程覆写脚本加载
  *         （文件首行为 Bettbox 兼容声明，请勿删除）。
  *
@@ -134,7 +134,7 @@ const ruleOptionsEnable = {
  * 为模板里的每个代理组（策略组）单独定义开关：
  * true  = 启用该策略组
  * false = 禁用该策略组（会从 proxy-groups 中移除并清理引用；业务组还会删除对应路由规则）
- * 另有只调整组内节点的功能开关（FCM 与 Tailscale 的直连开关）：不涉及策略组启停。
+ * 另有只调整组内节点的功能开关（FCM 的直连开关）：不涉及策略组启停。
  */
 
   // 手动选择策略组
@@ -207,8 +207,6 @@ const ruleOptionsEnable = {
   // --- 组与实验 ---
   // 默认关闭：隐藏组 FCM 仅含 DIRECT；打开后优先使用 👉 手动选择，若该组已关闭则回退到 🌍 PROXY，再回退到 DIRECT（不移除 FCM 组）。开关图标取自 FCM 代理组的 icon 字段。
   '关闭FCM直连': false,
-  // 默认关闭：Tailscale 分组仅含 DIRECT；打开后优先使用 👉 手动选择，若该组已关闭则回退到 🌍 PROXY，再回退到 DIRECT（不移除该组）。开关图标取自 Tailscale 代理组的 icon 字段。
-  '关闭Tailscale直连': false,
   // 开启 Telegram DC/地区实验分流；关闭时不改变原 Telegram 规则、策略组和规则集。
   'TGDC实验分流': false,
   // 开启后注入 SukkaW/Surge 的 reject 规则集与广告拦截策略组；关闭时不注入其策略组、规则集和规则。
@@ -592,10 +590,7 @@ const TEMPLATE = {
       "https://unfiltered.adguard-dns.com/dns-query#🌍 PROXY"
     ],
     "nameserver-policy": {
-      // 本节按 rules 中对应规则的先后顺序排列；Tailscale、douyin 等特例条目保留原位。
-      "+.ts.net": [
-        "100.100.100.100"
-      ],
+      // 本节按 rules 中对应规则的先后顺序排列；douyin 等特例条目保留原位。
       "rule-set:douyin": [
         "system",
         "180.184.1.1",
@@ -1062,16 +1057,6 @@ const TEMPLATE = {
       "hidden": true,
       "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-FCM.svg",
       "name": "FCM",
-      "proxies": [
-        "👉 手动选择",
-        "DIRECT"
-      ],
-      "type": "select"
-    },
-    {
-      "hidden": true,
-      "icon": "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-tailscale.svg",
-      "name": "Tailscale",
       "proxies": [
         "👉 手动选择",
         "DIRECT"
@@ -1553,7 +1538,6 @@ const TEMPLATE = {
     "DOMAIN,clash.razord.top,DIRECT",
     "DOMAIN,yacd.haishan.me,DIRECT",
     "PROCESS-NAME,svchost.exe,DIRECT",
-    "DOMAIN-SUFFIX,ts.net,Tailscale",
     "RULE-SET,private,DIRECT,no-resolve",
     "DOMAIN-WILDCARD,*.deepseek.com,DIRECT",
     "DOMAIN-WILDCARD,*.portal101.cn,DIRECT",
@@ -1769,10 +1753,6 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     {
       name: '关闭FCM直连',
       icon: (TEMPLATE['proxy-groups'].find((group) => group && group.name === 'FCM') || {}).icon
-    },
-    {
-      name: '关闭Tailscale直连',
-      icon: (TEMPLATE['proxy-groups'].find((group) => group && group.name === 'Tailscale') || {}).icon
     },
     {
       name: '强制证书验证',
@@ -4015,7 +3995,7 @@ function applyCountryRegionGrouping(result, originalProxies) {
   const fcmIndex = proxyGroups.findIndex((group) => group && group.name === 'FCM');
   if (fcmIndex >= 0) {
     proxyGroups.splice(fcmIndex, 0, ...parentGroups);
-    // 隐藏组（FCM、Tailscale）需保持相邻：地区子组插到 FCM 之后连续的隐藏组之后。
+    // 地区子组插到 FCM 之后连续的隐藏组之后。
     let insertAt = proxyGroups.findIndex((group) => group && group.name === 'FCM') + 1;
     while (insertAt < proxyGroups.length && proxyGroups[insertAt] && proxyGroups[insertAt].hidden === true) {
       insertAt += 1;
@@ -4242,7 +4222,7 @@ function replaceRuleProxyGroup(rule, groupName, replacement) {
 function removeDisabledDnsNameserverPolicies(dns, disabledGroupNames) {
   const policy = dns && dns['nameserver-policy'];
   if (!policy || typeof policy !== 'object' || Array.isArray(policy)) return;
-  // 仅清理关闭时删除业务路由的常规代理组，不处理顶层选择组、FCM 或 Tailscale。
+  // 仅清理关闭时删除业务路由的常规代理组，不处理顶层选择组或 FCM。
   const managedDisabledGroups = new Set(
     Array.from(disabledGroupNames).filter((name) =>
       REMOVE_ROUTING_RULES_FOR_DISABLED_GROUPS.has(name)
@@ -4422,11 +4402,10 @@ function main(config, profileName) {
     }
   });
 
-  // ---- 5. FCM / Tailscale 直连开关：默认关闭时对应隐藏组仅含 DIRECT；
-  //      打开后仅保留 👉 手动选择（这两个开关不移除对应组，仅改写组内节点） ----
+  // ---- 5. FCM 直连开关：默认关闭时隐藏组 FCM 仅含 DIRECT；
+  //      打开后仅保留 👉 手动选择（该开关不移除对应组，仅改写组内节点） ----
   const directSwitchGroups = [
-    ['关闭FCM直连', 'FCM'],
-    ['关闭Tailscale直连', 'Tailscale']
+    ['关闭FCM直连', 'FCM']
   ];
   directSwitchGroups.forEach(([optionName, groupName]) => {
     const directDisabled = ruleOptionsEnable[optionName] === true;

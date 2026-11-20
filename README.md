@@ -116,12 +116,11 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><td><strong>📚 EHentai</strong></td><td>EHentai 单独选出口</td><td>引用规则集合：<code>ehentai</code></td></tr>
 <tr><td><strong>☁️ PikPak</strong></td><td>PikPak 单独选出口</td><td>引用规则集合：<code>pikpak</code></td></tr>
 <tr><td><strong>FCM</strong></td><td>Google FCM 推送单独选出口</td><td>引用规则集合：<code>googlefcm</code></td></tr>
-<tr><td><strong>Tailscale</strong></td><td>Tailscale MagicDNS 单独选出口</td><td>使用域名后缀匹配：ts.net</td></tr>
 </tbody>
 </table>
 #### 特别组说明
 
-以下四组同时属于基础代理组（见上表），嵌套结构不同于常规业务组，单独列出。
+以下三组同时属于基础代理组（见上表），嵌套结构不同于常规业务组，单独列出。
 
 <table width="100%">
 <thead>
@@ -131,7 +130,6 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><td><strong>🎮 Games-Global</strong></td><td><code>🎮 Steam平台（非下载/CDN）</code>（默认选中）<br>所有可用节点（<code>include-all</code>）</td></tr>
 <tr><td><strong>🎮 Steam平台（非下载/CDN）</strong></td><td><code>DIRECT</code>（默认选中）<br><code>👉 手动选择</code><br><code>♻️ 自动选择</code><br><code>🔄 负载均衡</code><br>所有可用节点（<code>include-all</code>）</td></tr>
 <tr><td><strong>FCM</strong></td><td><code>👉 手动选择</code><br><code>DIRECT</code></td></tr>
-<tr><td><strong>Tailscale</strong></td><td><code>👉 手动选择</code><br><code>DIRECT</code></td></tr>
 </tbody>
 </table>
 
@@ -224,7 +222,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 </tbody>
 </table>
 
-表格即当前默认值，可按需改动：默认只有 `👉 手动选择` 开启，因此生成的配置只含 `👉 手动选择`、`🌍 PROXY`、`FCM`、`Tailscale` 四个组。关闭业务组会移除该组并删除其路由规则；`🌍 PROXY` 始终保留为兜底。
+表格即当前默认值，可按需改动：默认只有 `👉 手动选择` 开启，因此生成的配置只含 `👉 手动选择`、`🌍 PROXY`、`FCM` 三个组。关闭业务组会移除该组并删除其路由规则；`🌍 PROXY` 始终保留为兜底。
 
 **未列入 `policyGroupOptions` 的组**
 
@@ -234,14 +232,13 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 </thead>
 <tbody>
 <tr><td><strong>FCM</strong></td><td><code>关闭FCM直连</code></td><td>关闭</td><td>开关不移除本组，只改写组内节点：默认关闭时组内=<code>DIRECT</code>；打开后改用 <code>👉 手动选择</code>，若 <code>👉 手动选择</code> 已禁用则回退到全局兜底。脚本内嵌模板把本组标记为隐藏组（<code>hidden</code>）</td></tr>
-<tr><td><strong>Tailscale</strong></td><td><code>关闭Tailscale直连</code></td><td>关闭</td><td>开关不移除本组，只改写组内节点：默认关闭时组内=<code>DIRECT</code>；打开后改用 <code>👉 手动选择</code>，若 <code>👉 手动选择</code> 已禁用则回退到全局兜底。脚本内嵌模板把本组标记为隐藏组（<code>hidden</code>）</td></tr>
 <tr><td><em><strong>📲 Telegram(兜底)</strong></em></td><td><em><strong><code>TGDC实验分流</code></strong></em></td><td><em><strong>关闭</strong></em></td><td><em><strong>该开关开启时由 <code>📲 Telegram</code> 更名而来，承接 Telegram 进程、域名与 CIDR 规则</strong></em></td></tr>
 <tr><td><strong>📲 DC1-MIA</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>开关开启时按 Telegram DC IP 规则优先命中美国/迈阿密节点；地区无候选时列出全部合格节点供手动选择</td></tr>
 <tr><td><strong>📲 DC24-AMS</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>同上，对应荷兰/阿姆斯特丹节点</td></tr>
 <tr><td><strong>📲 DC5-SIN</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>同上，DC5 同时匹配新加坡与香港节点</td></tr>
 <tr><td><em><strong>🛑 广告拦截</strong></em></td><td><em><strong><code>使用SKK广告拦截</code></strong></em></td><td><em><strong>关闭</strong></em></td><td><em><strong>开关关闭时本组、其 4 个规则集与 4 条规则都不生成；开启时组内可选 <code>REJECT</code> / <code>REJECT-DROP</code> / <code>PASS</code>，承接 SukkaW/Surge 的 reject 域名集与 non_ip 规则集，规则置于置顶拦截守卫之后；reject-drop 与 reject_ip 两条规则不经本组，分别直达 <code>REJECT-DROP</code> 与 <code>REJECT</code></strong></em></td></tr>
 <tr><td><strong>国内入口解析</strong></td><td><code>入口解析</code></td><td>关闭</td><td>开启后将维护区节点加入本组供手动选择；名称按类别编号，顺序不代表优先级</td></tr>
-<tr><td><strong>国家/地区父组及隐藏子组</strong></td><td><code>国家/地区分组</code></td><td>关闭</td><td>根据地区候选节点创建分组；将父组追加到 15 个指定流量目标中，跳过已禁用或不存在的目标；地区节点被倍率筛选全部剔除时不生成该地区的父组与三个隐藏子组；地区父组列表插在隐藏组 FCM 之前、子组插在 Tailscale 之后，使 FCM 与 Tailscale 始终保持相邻</td></tr>
+<tr><td><strong>国家/地区父组及隐藏子组</strong></td><td><code>国家/地区分组</code></td><td>关闭</td><td>根据地区候选节点创建分组；将父组追加到 15 个指定流量目标中，跳过已禁用或不存在的目标；地区节点被倍率筛选全部剔除时不生成该地区的父组与三个隐藏子组；地区父组列表插在隐藏组 FCM 之前、子组插在 FCM 之后</td></tr>
 </tbody>
 </table>
 
@@ -277,7 +274,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 <tr><th width="22%">类别<img src="assets/table-spacer.png" width="352" height="1" alt=""></th><th width="7%">开关数<img src="assets/table-spacer.png" width="112" height="1" alt=""></th><th width="9%">代码内图标处数<img src="assets/table-spacer.png" width="144" height="1" alt=""></th><th width="24%">代理组显示<img src="assets/table-spacer.png" width="384" height="1" alt=""></th><th width="26%">开关面板显示（Bettbox 或其他兼容软件）<img src="assets/table-spacer.png" width="416" height="1" alt=""></th><th width="12%">重复<img src="assets/table-spacer.png" width="192" height="1" alt=""></th></tr>
 </thead>
 <tbody>
-<tr><td><strong>A1</strong> 模板内代理组开关（含 FCM 与 Tailscale 的直连开关）</td><td>25</td><td>25</td><td>有，JS 内模板各代理组自带</td><td>有，自动沿用对应代理组的图标，不重复写地址</td><td>否</td></tr>
+<tr><td><strong>A1</strong> 模板内代理组开关（含 FCM 的直连开关）</td><td>24</td><td>24</td><td>有，JS 内模板各代理组自带</td><td>有，自动沿用对应代理组的图标，不重复写地址</td><td>否</td></tr>
 <tr><td><strong>A2</strong> 模板内无开关的组（🌍 PROXY）</td><td>0</td><td>1</td><td>有，JS 内模板的 🌍 PROXY 组自带</td><td>❌</td><td>否</td></tr>
 <tr><td><strong>B1</strong> 注入整组、开关图标＝组图标（SKK、国家/地区、入口解析）</td><td>3</td><td>6</td><td>有，写在各注入组的定义处（SKK 段、国家/地区段、入口解析处）</td><td>有，开关项里内联同一张图</td><td>是，三对</td></tr>
 <tr><td><strong>B2</strong> 注入整组、开关图标≠组图标（TGDC）</td><td>1</td><td>4</td><td>有，写在 TGDC 组的定义处（三个 DC 组各一张国旗，兜底沿用 Telegram 组图标）</td><td>有，开关项里用 Telegram 标</td><td>否</td></tr>
@@ -285,7 +282,7 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 </tbody>
 </table>
 
-> 代码内图标处数 51 ｜ 图标数 46 ｜ 重复对数 5
+> 代码内图标处数 50 ｜ 图标数 45 ｜ 重复对数 5
 
 > **关于客户端**：这套图形化开关由 Bettbox 原生支持——脚本开头的 `Compatible_With_Bettbox` 声明就是给 Bettbox 识别用的。换到其他客户端分两种情况：
 >
