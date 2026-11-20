@@ -45,7 +45,7 @@ const Compatible_With_Bettbox = {
  *    https://github.com/XVSVTsama/XVSVT-Clash-Config
  *    作者：
  *    https://github.com/XVSVTsama
- *    版本：上一提交 7e2e5c3bcfcf3fd648f09afe85afe6d43bcc60db，本提交时间 2026-11-20 11:49:45 +0800
+ *    版本：上一提交 59ac900cbbac1fdf0eec4d589352868e0c1ed44a，本提交时间 2026-11-20 11:52:15 +0800
  *    用法：本脚本可直接作为 Bettbox / FlClash 系客户端的远程覆写脚本加载
  *         （文件首行为 Bettbox 兼容声明，请勿删除）。
  *
@@ -4051,6 +4051,10 @@ const DOMESTIC_ENTRY_PROXIES = {
     type: 'http',
     server: '101.251.204.174',
     port: 8080
+  }, {
+    type: 'http',
+    server: '111.199.234.107',
+    port: 9000
   }],
 
   // 中国移动
