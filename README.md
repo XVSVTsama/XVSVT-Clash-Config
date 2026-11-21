@@ -42,13 +42,7 @@
 
 ## 🔗 远程覆写脚本地址
 
-<p align="center">
-  <a href="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js"><img src="https://img.shields.io/badge/Default-GitHub%20Raw-informational?style=flat-square" alt="默认地址"></a>
-  <a href="https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js"><img src="https://img.shields.io/badge/CDN-gh--proxy-blue?style=flat-square" alt="gh-proxy"></a>
-  <a href="https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.js"><img src="https://img.shields.io/badge/CDN-jsdmirror-blue?style=flat-square" alt="jsdmirror"></a>
-</p>
-
-默认地址：
+<a href="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js"><img src="https://img.shields.io/badge/Default-GitHub%20Raw-informational?style=flat-square" alt="默认地址"></a> 默认地址：
 
 ```text
 https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
@@ -56,8 +50,8 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 CDN 链接：
 
-- [gh-proxy](https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js)：全球 Anycast，更新即时，无缓存
-- [jsdmirror](https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.js)：腾讯云 EdgeOne，自动同步源站
+- <a href="https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js"><img src="https://img.shields.io/badge/CDN-gh--proxy-blue?style=flat-square" alt="gh-proxy"></a>：全球 Anycast，更新即时，无缓存
+- <a href="https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.js"><img src="https://img.shields.io/badge/CDN-jsdmirror-blue?style=flat-square" alt="jsdmirror"></a>：腾讯云 EdgeOne，自动同步源站
 
 <a id="yaml-config"></a>
 
