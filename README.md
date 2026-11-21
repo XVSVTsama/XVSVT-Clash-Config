@@ -50,8 +50,8 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 CDN 链接：
 
-- <a href="https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js"><img src="https://img.shields.io/badge/CDN-gh--proxy-blue?style=flat-square" alt="gh-proxy"></a> [gh-proxy](https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js)：全球 Anycast，更新即时，无缓存
-- <a href="https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.js"><img src="https://img.shields.io/badge/CDN-jsdmirror-blue?style=flat-square" alt="jsdmirror"></a> [jsdmirror](https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.js)：腾讯云 EdgeOne，自动同步源站
+- [gh-proxy](https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js)：全球 Anycast，更新即时，无缓存
+- [jsdmirror](https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.js)：腾讯云 EdgeOne，自动同步源站
 
 <a id="yaml-config"></a>
 
