@@ -48,7 +48,7 @@
 https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
 ```
 
-CDN 链接（使用公共免费 CDN 资源）：
+CDN 链接：
 
 gh-proxy：全球 Anycast，更新即时，无缓存
 
