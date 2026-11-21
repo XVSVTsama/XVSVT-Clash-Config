@@ -79,7 +79,7 @@ dns:
     - https://private-dns.example/dns-query
   # 普通业务走公共解析，不承担私有 DoH
   nameserver:
-    - https://doh.pub/dns-query
+    - &lt;公共 DNS（概念示意）&gt;
 
 # 本主题 hosts 不承载真假映射（空表）
 hosts: {}
@@ -100,14 +100,14 @@ dns:
   listen: 127.0.0.1:53
   # 未命中 policy 的节点走公共解析，不使用本机回环作为节点解析入口
   proxy-server-nameserver:
-    - https://doh.pub/dns-query
+    - &lt;公共 DNS（概念示意）&gt;
   # 仅对指定节点域名启用私有 DoH
   proxy-server-nameserver-policy:
     "*.private-doh.example":
       - https://private-dns.example/dns-query
   # 普通业务也走公共解析
   nameserver:
-    - https://doh.pub/dns-query
+    - &lt;公共 DNS（概念示意）&gt;
 
 # 本主题 hosts 不承载真假映射（空表）
 hosts: {}
@@ -195,15 +195,14 @@ dns:
   proxy-server-nameserver:
     - udp://127.0.0.1:7846
 
-  # 节点或普通域名可能使用的私有 DoH
-  # 真实项目中应由配置作者确认其用途和优先级
+  # 普通解析入口：公共 DNS 示意；私有 DoH 由下方 nameserver-policy 指定
   nameserver:
-    - https://private-dns.example/dns-query
+    - &lt;公共 DNS（概念示意）&gt;
 
   # 普通业务域名的更具体规则
   nameserver-policy:
     "+.example.net":
-      - https://dns.example.net/dns-query
+      - https://private-dns.example/dns-query
 
   # 这是附加兼容项，不是 hosts 生效条件
   enhanced-mode: fake-ip
