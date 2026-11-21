@@ -48,7 +48,7 @@
 https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
 ```
 
-CDN 链接（使用公共免费 CDN 资源）：
+CDN 链接：
 
 - [gh-proxy](https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js)：全球 Anycast，更新即时，无缓存
 - [jsdmirror](https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.js)：腾讯云 EdgeOne，自动同步源站
