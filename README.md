@@ -42,21 +42,16 @@
 
 ## 🔗 远程覆写脚本地址
 
-   默认地址：
+默认地址：
 
 ```text
 https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
 ```
 
-<table width="100%">
-<thead>
-<tr><th width="100%" align="center">GitHub 覆写脚本 CDN 链接(使用公共免费CDN资源)<img src="assets/table-spacer.png" width="1280" height="1" alt=""></th></tr>
-</thead>
-<tbody>
-<tr><td align="center"><div align="center"><a href="https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js">gh-proxy</a>：全球 Anycast，更新即时，无缓存</div></td></tr>
-<tr><td align="center"><div align="center"><a href="https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.js">jsdmirror</a>：腾讯云 EdgeOne，自动同步源站</div></td></tr>
-</tbody>
-</table>
+CDN 链接（使用公共免费 CDN 资源）：
+
+- [gh-proxy](https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js)：全球 Anycast，更新即时，无缓存
+- [jsdmirror](https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.js)：腾讯云 EdgeOne，自动同步源站
 
 <a id="yaml-config"></a>
 
