@@ -79,7 +79,7 @@ dns:
     - https://private-dns.example/dns-query
   # 普通业务走公共解析，不承担私有 DoH
   nameserver:
-    - &lt;公共 DNS（概念示意）&gt;
+    - https://public-dns.example.net/dns-query
 
 # 本主题 hosts 不承载真假映射（空表）
 hosts: {}
@@ -100,14 +100,14 @@ dns:
   listen: 127.0.0.1:53
   # 未命中 policy 的节点走公共解析，不使用本机回环作为节点解析入口
   proxy-server-nameserver:
-    - &lt;公共 DNS（概念示意）&gt;
+    - https://public-dns.example.net/dns-query
   # 仅对指定节点域名启用私有 DoH
   proxy-server-nameserver-policy:
     "*.private-doh.example":
       - https://private-dns.example/dns-query
   # 普通业务也走公共解析
   nameserver:
-    - &lt;公共 DNS（概念示意）&gt;
+    - https://public-dns.example.net/dns-query
 
 # 本主题 hosts 不承载真假映射（空表）
 hosts: {}
@@ -197,7 +197,7 @@ dns:
 
   # 普通解析入口：公共 DNS 示意；私有 DoH 由下方 nameserver-policy 指定
   nameserver:
-    - &lt;公共 DNS（概念示意）&gt;
+    - https://public-dns.example.net/dns-query
 
   # 普通业务域名的更具体规则
   nameserver-policy:
