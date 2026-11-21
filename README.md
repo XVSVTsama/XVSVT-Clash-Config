@@ -52,10 +52,6 @@
   gh-proxy：全球 Anycast，更新即时，无缓存 · jsdmirror：腾讯云 EdgeOne，自动同步源站
 </p>
 
-```text
-https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
-```
-
 <a id="yaml-config"></a>
 
 <br>
