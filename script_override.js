@@ -45,7 +45,7 @@ const Compatible_With_Bettbox = {
  *    https://github.com/XVSVTsama/XVSVT-Clash-Config
  *    作者：
  *    https://github.com/XVSVTsama
- *    版本：上一提交 e5cbc0ae0a56aaf89312b30cdbeb9970fabe1cb6，本提交时间 2026-11-21 19:55:10 +0800
+ *    版本：上一提交 e4530a88dfb1bab7760a40a4e41e07093fc10602，本提交时间 2026-11-22 19:33:22 +0800
  *    用法：本脚本可直接作为 Bettbox / FlClash 系客户端的远程覆写脚本加载
  *         （文件首行为 Bettbox 兼容声明，请勿删除）。
  *
@@ -243,6 +243,8 @@ const ruleOptionsEnable = {
   // 打开后保留模板 sniffer。
   '开启Sniffer': false,
   '代理组interval改为5': false,
+  'TUN MTU改为9000': false,
+  '开启端点独立NAT': false,
 };
 
 // 关闭这些业务组时删除指向它们的路由规则，而不是把规则改写到全局兜底。
@@ -354,12 +356,34 @@ const TEMPLATE = {
   "mixed-port": 7254,
   "port": 7249,
   "socks-port": 7346,
+  "allow-lan": true,
+  "bind-address": "*",
+  "lan-allowed-ips": [
+    "0.0.0.0/0",
+    "::/0"
+  ],
+  "authentication": [
+    "xvsvt:132e6671f6c386a7"
+  ],
+  "skip-auth-prefixes": [
+    "127.0.0.1/8",
+    "::1/128"
+  ],
   "etag-support": true,
   "global-ua": "clash.meta",
   "ipv6": true,
   "log-level": "info",
-  "external-controller": "127.0.0.1:9090",
+  "external-controller": "0.0.0.0:9090",
+  "external-controller-cors": {
+    "allow-origins": [
+      "*"
+    ],
+    "allow-private-network": true
+  },
+  "secret": "318a2fbc9f4836b114c0ada7e6d5f36e",
   "external-ui": "dashboard",
+  "external-ui-name": "metacubexd",
+  "external-ui-url": "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip",
   "unified-delay": true,
   "tcp-concurrent": true,
   "keep-alive-idle": 600,
@@ -371,6 +395,11 @@ const TEMPLATE = {
   "tun": {
     "enable": true,
     "device": "XVSVT",
+    "mtu": 1500,
+    "endpoint-independent-nat": false,
+    "inet6-address": [
+      "fdfe:dcba:9876::1/126"
+    ],
     "auto-detect-interface": true,
     "auto-route": true,
     "auto-redirect": true,
@@ -429,7 +458,9 @@ const TEMPLATE = {
       "194.0.0.0/7",
       "196.0.0.0/6",
       "200.0.0.0/5",
-      "208.0.0.0/4"
+      "208.0.0.0/4",
+      "::/1",
+      "8000::/1"
     ]
   },
   "ntp": {
@@ -1731,6 +1762,8 @@ const FEATURE_SWITCH_ICONS = {
   'QUIC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Quic.svg',
   '开启Sniffer': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Tracking.svg',
   '代理组interval改为5': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-auto.png',
+  'TUN MTU改为9000': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-mtu.svg',
+  '开启端点独立NAT': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-einat.svg',
   '使用AIsouler直连规则': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-AIsouler-MyClash-China.svg',
 };
 
@@ -1829,6 +1862,14 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     {
       name: '代理组interval改为5',
       icon: FEATURE_SWITCH_ICONS['代理组interval改为5']
+    },
+    {
+      name: 'TUN MTU改为9000',
+      icon: FEATURE_SWITCH_ICONS['TUN MTU改为9000']
+    },
+    {
+      name: '开启端点独立NAT',
+      icon: FEATURE_SWITCH_ICONS['开启端点独立NAT']
     }
   ]);
 
@@ -4330,6 +4371,22 @@ function main(config, profileName) {
       result.dns.ipv6 = false;
       delete result.dns['fake-ip-range6'];
     }
+    if (result.tun) {
+      delete result.tun['inet6-address'];
+      if (Array.isArray(result.tun['route-address'])) {
+        result.tun['route-address'] = result.tun['route-address'].filter(
+          (address) => address !== '::/1' && address !== '8000::/1'
+        );
+      }
+    }
+  }
+
+  if (ruleOptionsEnable['TUN MTU改为9000'] === true && result.tun) {
+    result.tun.mtu = 9000;
+  }
+
+  if (ruleOptionsEnable['开启端点独立NAT'] === true && result.tun) {
+    result.tun['endpoint-independent-nat'] = true;
   }
 
   // ---- 2.5 TGDC 实验分流（默认关闭；由 UI 开关控制） ----

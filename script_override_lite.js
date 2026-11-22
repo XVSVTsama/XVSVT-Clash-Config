@@ -101,6 +101,10 @@ const ruleOptionsEnable = {
 
   'QUIC阻断': false,
 
+  'TUN MTU改为9000': false,
+
+  '开启端点独立NAT': false,
+
 };
 
 const REMOVE_ROUTING_RULES_FOR_DISABLED_GROUPS = new Set([
@@ -207,12 +211,34 @@ const TEMPLATE = {
   "mixed-port": 7254,
   "port": 7249,
   "socks-port": 7346,
+  "allow-lan": true,
+  "bind-address": "*",
+  "lan-allowed-ips": [
+    "0.0.0.0/0",
+    "::/0"
+  ],
+  "authentication": [
+    "xvsvt:132e6671f6c386a7"
+  ],
+  "skip-auth-prefixes": [
+    "127.0.0.1/8",
+    "::1/128"
+  ],
   "etag-support": true,
   "global-ua": "clash.meta",
   "ipv6": true,
   "log-level": "info",
-  "external-controller": "127.0.0.1:9090",
+  "external-controller": "0.0.0.0:9090",
+  "external-controller-cors": {
+    "allow-origins": [
+      "*"
+    ],
+    "allow-private-network": true
+  },
+  "secret": "318a2fbc9f4836b114c0ada7e6d5f36e",
   "external-ui": "dashboard",
+  "external-ui-name": "metacubexd",
+  "external-ui-url": "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip",
   "unified-delay": true,
   "tcp-concurrent": true,
   "keep-alive-idle": 600,
@@ -224,6 +250,11 @@ const TEMPLATE = {
   "tun": {
     "enable": true,
     "device": "XVSVT",
+    "mtu": 1500,
+    "endpoint-independent-nat": false,
+    "inet6-address": [
+      "fdfe:dcba:9876::1/126"
+    ],
     "auto-detect-interface": true,
     "auto-route": true,
     "auto-redirect": true,
@@ -282,7 +313,9 @@ const TEMPLATE = {
       "194.0.0.0/7",
       "196.0.0.0/6",
       "200.0.0.0/5",
-      "208.0.0.0/4"
+      "208.0.0.0/4",
+      "::/1",
+      "8000::/1"
     ]
   },
   "ntp": {
@@ -1378,6 +1411,8 @@ const FEATURE_SWITCH_ICONS = {
   '剔除免费': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-free.svg',
   '关闭WebRTC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-webrtc-block.svg',
   'QUIC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Quic.svg',
+  'TUN MTU改为9000': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-mtu.svg',
+  '开启端点独立NAT': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-einat.svg',
 };
 
 const serviceConfigs = TEMPLATE['proxy-groups']
@@ -1447,6 +1482,14 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     {
       name: 'QUIC阻断',
       icon: FEATURE_SWITCH_ICONS['QUIC阻断']
+    },
+    {
+      name: 'TUN MTU改为9000',
+      icon: FEATURE_SWITCH_ICONS['TUN MTU改为9000']
+    },
+    {
+      name: '开启端点独立NAT',
+      icon: FEATURE_SWITCH_ICONS['开启端点独立NAT']
     },
   ]);
 
@@ -3116,6 +3159,22 @@ function main(config, profileName) {
       result.dns.ipv6 = false;
       delete result.dns['fake-ip-range6'];
     }
+    if (result.tun) {
+      delete result.tun['inet6-address'];
+      if (Array.isArray(result.tun['route-address'])) {
+        result.tun['route-address'] = result.tun['route-address'].filter(
+          (address) => address !== '::/1' && address !== '8000::/1'
+        );
+      }
+    }
+  }
+
+  if (ruleOptionsEnable['TUN MTU改为9000'] === true && result.tun) {
+    result.tun.mtu = 9000;
+  }
+
+  if (ruleOptionsEnable['开启端点独立NAT'] === true && result.tun) {
+    result.tun['endpoint-independent-nat'] = true;
   }
 
   applyTelegramDcExperiment(result, originalProxies);
