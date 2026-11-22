@@ -42,7 +42,7 @@
 
 ## 🔗 远程覆写脚本地址
 
-<a href="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js"><img src="https://img.shields.io/badge/Default-GitHub%20Raw-informational?style=flat-square" alt="默认地址"></a> 默认地址：
+默认地址：
 
 ```text
 https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
