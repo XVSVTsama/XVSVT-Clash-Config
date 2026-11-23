@@ -45,7 +45,7 @@ const Compatible_With_Bettbox = {
  *    https://github.com/XVSVTsama/XVSVT-Clash-Config
  *    作者：
  *    https://github.com/XVSVTsama
- *    版本：上一提交 e4530a88dfb1bab7760a40a4e41e07093fc10602，本提交时间 2026-11-22 19:33:22 +0800
+ *    版本：上一提交 37fd341e33895b1b874d538c3ee2d173d0cf85c4，本提交时间 2026-11-23 11:51:56 +0800
  *    用法：本脚本可直接作为 Bettbox / FlClash 系客户端的远程覆写脚本加载
  *         （文件首行为 Bettbox 兼容声明，请勿删除）。
  *
@@ -4061,11 +4061,7 @@ const ENTRY_RESOLUTION_EXCLUDE_FILTER = '^(?:电信|联通|移动|云厂)节点-
 // 名称按分类前缀和数组顺序独立编号，从 01 开始，超过 99 不截断。
 const DOMESTIC_ENTRY_PROXIES = {
   // 中国电信
-  telecom: [{
-    type: 'http',
-    server: '61.130.176.21',
-    port: 20945
-  }],
+  telecom: [],
 
   // 中国联通
   unicom: [{
