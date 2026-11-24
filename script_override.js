@@ -49,6 +49,16 @@ const Compatible_With_Bettbox = {
  *    用法：本脚本可直接作为 Bettbox / FlClash 系客户端的远程覆写脚本加载
  *         （文件首行为 Bettbox 兼容声明，请勿删除）。
  *
+ *  eBPF 入站（本分支特有）：
+ *    "listeners" 里 ebpf 入站的字段（mode / network / udp-timeout / local / shared 等）
+ *    以 https://github.com/liuran001/mihomo 的 docs/ebpf-inbound.md 为准；
+ *    实际适配的内核同样取自该仓库的 -ebpf 构建（alpha-…-ebpf）。
+ *    实现上游是 https://github.com/TanakaLun/mihomo
+ *    （ebpf-inbound 分支，CI 分支 automation/ebpf-* 下的 listener/sing_ebpf），
+ *    数据面库为 CHIZI-0618/sing-ebpf。
+ *    本脚本只写角色参数：enable 与 exclude-uid 由客户端（如 BoxProxy 的 boxctl）注入，
+ *    同时写会触发 "mode cannot be combined with local.enable or shared.enable"。
+ *
  *  用途：
  *    把当前订阅（原始配置）与本仓库维护的"标准模板"（mihomo.yaml）合并成最终生效配置。
  *
@@ -350,9 +360,9 @@ const QUIC_REMOVED_NAMESERVER_POLICY_KEYS = new Set([
 // 标准模板配置（mihomo.yaml 的 JSON 表示），及其派生的开关辅助常量
 // ============================================================================
 
-// eBPF 共享接管：下联接口由 BoxProxy 的 iface-auto.sh 在每次启动前自动写入，
-// 支持 "wlan0"、"wlan0,ap_br_wlan0" 这类逗号分隔写法；占位符 %EBPF_SHARED_IFACE% 表示
-// 当前没有检测到下联接口，此时脚本只接管本机流量（shared 整体关闭）。
+// eBPF 共享接管：下联接口由客户端的生命周期脚本在每次启动前自动写入，
+// 支持 "wlan0"、"wlan0,ap_br_wlan0" 这类逗号分隔写法；没有下联时用空转 dummy 网卡占位。
+// 字段语义见 https://github.com/liuran001/mihomo 的 docs/ebpf-inbound.md 的 shared.interface。
 const EBPF_SHARED_IFACE_SPEC = "boxebpf0";
 
 const TEMPLATE = {
@@ -400,6 +410,9 @@ const TEMPLATE = {
   "tun": {
     "enable": false
   },
+  // eBPF 透明入站：字段 schema 与实际适配内核来自 liuran001/mihomo（docs/ebpf-inbound.md），
+  // 上游实现见 TanakaLun/mihomo（ebpf-inbound 分支 / automation/ebpf-*），数据面为 sing-ebpf。
+  // 这里只给角色参数；enable、exclude-uid 由客户端按实际应用名单注入。
   "listeners": [
     {
       "name": "ebpf-in",
