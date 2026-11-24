@@ -4337,8 +4337,7 @@ function main(config, profileName) {
   }
 
   // ---- 2.1 IPv6 开关（默认关闭）----
-  // 模板已写好 v6 白名单（2000::/3 + fdfe:dcba:9876::/64）；tun 未启用时只切核心侧开关。
-  const tunEnabled = !!(result.tun && result.tun.enable === true);
+  // 模板已写好 v6 白名单（2000::/3 + fdfe:dcba:9876::/64），开关只负责加/撤。
   if (ruleOptionsEnable['IPv6优先'] === true) {
     result.ipv6 = true;
     if (result.dns) {
@@ -4350,12 +4349,10 @@ function main(config, profileName) {
       result.dns.ipv6 = false;
       delete result.dns['fake-ip-range6'];
     }
-    if (tunEnabled) {
-      delete result.tun['inet6-address'];
-      result.tun['route-address'] = (result.tun['route-address'] || []).filter(
-        (address) => address.indexOf(':') < 0
-      );
-    }
+    delete result.tun['inet6-address'];
+    result.tun['route-address'] = (result.tun['route-address'] || []).filter(
+      (address) => address.indexOf(':') < 0
+    );
   }
 
   if (ruleOptionsEnable['TUN MTU改为9000'] === true && result.tun) {
