@@ -395,6 +395,7 @@ const TEMPLATE = {
   "tun": {
     "enable": true,
     "device": "XVSVT",
+    // exclude-uid / interface-name 属于客户端侧数据：按实际应用名单与出口网卡注入，不写死
     "mtu": 1500,
     "endpoint-independent-nat": false,
     "inet6-address": [
