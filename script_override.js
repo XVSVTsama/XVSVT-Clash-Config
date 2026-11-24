@@ -4337,10 +4337,8 @@ function main(config, profileName) {
   }
 
   // ---- 2.1 IPv6 开关（默认关闭）----
-  // 模板里已经写好 v6 白名单（2000::/3 + fdfe:dcba:9876::/64，见 tun.route-address），
-  // 这里只负责开关：关掉时撤掉 v6 能力与 tun 的 v6 字段，打开时恢复核心侧解析。
-  // tun 未启用（tproxy / eBPF 脚本里的 tun.enable: false）时只动核心侧开关。
-  const tunEnabled = !!(result.tun && typeof result.tun === 'object' && result.tun.enable === true);
+  // 模板已写好 v6 白名单（2000::/3 + fdfe:dcba:9876::/64）；tun 未启用时只切核心侧开关。
+  const tunEnabled = !!(result.tun && result.tun.enable === true);
   if (ruleOptionsEnable['IPv6优先'] === true) {
     result.ipv6 = true;
     if (result.dns) {
@@ -4354,11 +4352,9 @@ function main(config, profileName) {
     }
     if (tunEnabled) {
       delete result.tun['inet6-address'];
-      if (Array.isArray(result.tun['route-address'])) {
-        result.tun['route-address'] = result.tun['route-address'].filter(
-          (address) => typeof address !== 'string' || address.indexOf(':') < 0
-        );
-      }
+      result.tun['route-address'] = (result.tun['route-address'] || []).filter(
+        (address) => address.indexOf(':') < 0
+      );
     }
   }
 
