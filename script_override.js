@@ -4295,82 +4295,18 @@ function removeUnusedRuleProviders(result) {
 // 入口函数：Bettbox / FlClash 系客户端会调用 main(config) 并使用其返回值
 // ============================================================================
 
-// IPv6 前缀规范化：把 "fdfe:dcba:9876::1/64" 这类带主机位的写法收敛成网络地址，
-// 供 tun 的 v6 路由白名单使用；解析失败返回 null（调用方保留模板原值）。
-function normalizeIpv6Prefix(value) {
+// fake-ip6 网段：只做格式校验后原样使用，前缀归零交给系统路由实现
+// （Linux 内核实测会把 fdfe:dcba:9876::1/64 安装成 fdfe:dcba:9876::/64；
+//  nftables 侧 netipx.RangeOfPrefix 也会先 Masked()）。
+function fakeIp6Route(value) {
   if (typeof value !== 'string') {
     return null;
   }
   const text = value.trim();
-  const slash = text.indexOf('/');
-  const address = slash >= 0 ? text.slice(0, slash) : text;
-  const bits = slash >= 0 ? Number.parseInt(text.slice(slash + 1), 10) : 128;
-  if (!Number.isInteger(bits) || bits < 0 || bits > 128) {
+  if (!/^[0-9a-fA-F:]+\/\d{1,3}$/.test(text)) {
     return null;
   }
-  if (!/^[0-9a-fA-F:.]+$/.test(address)) {
-    return null;
-  }
-  const splitGroups = (part) => (part ? part.split(':') : []);
-  let groups = [];
-  if (address.indexOf('::') >= 0) {
-    const halves = address.split('::');
-    if (halves.length !== 2) {
-      return null;
-    }
-    const left = splitGroups(halves[0]);
-    const right = splitGroups(halves[1]);
-    const fill = 8 - left.length - right.length;
-    if (fill < 1) {
-      return null;
-    }
-    groups = left.concat(new Array(fill).fill('0')).concat(right);
-  } else {
-    groups = splitGroups(address);
-  }
-  if (groups.length !== 8) {
-    return null;
-  }
-  const words = [];
-  for (const group of groups) {
-    if (!/^[0-9a-fA-F]{1,4}$/.test(group)) {
-      return null;
-    }
-    words.push(Number.parseInt(group, 16));
-  }
-  for (let i = 0; i < 8; i++) {
-    const keep = Math.min(Math.max(bits - i * 16, 0), 16);
-    const mask = keep === 0 ? 0 : (0xffff << (16 - keep)) & 0xffff;
-    words[i] &= mask;
-  }
-  let bestStart = -1;
-  let bestLength = 0;
-  let runStart = -1;
-  let runLength = 0;
-  for (let i = 0; i < 8; i++) {
-    if (words[i] === 0) {
-      if (runStart < 0) {
-        runStart = i;
-        runLength = 0;
-      }
-      runLength += 1;
-      if (runLength > bestLength) {
-        bestStart = runStart;
-        bestLength = runLength;
-      }
-    } else {
-      runStart = -1;
-      runLength = 0;
-    }
-  }
-  const hex = words.map((word) => word.toString(16));
-  let body;
-  if (bestLength >= 2) {
-    body = hex.slice(0, bestStart).join(':') + '::' + hex.slice(bestStart + bestLength).join(':');
-  } else {
-    body = hex.join(':');
-  }
-  return body + '/' + bits;
+  return Number.parseInt(text.slice(text.lastIndexOf('/') + 1), 10) <= 128 ? text : null;
 }
 
 function main(config, profileName) {
@@ -4431,7 +4367,7 @@ function main(config, profileName) {
         result.tun['inet6-address'] = ['fdfe:dcba:9876::1/126'];
       }
       const v6Routes = ['2000::/3'];
-      const fakeIp6 = normalizeIpv6Prefix(result.dns && result.dns['fake-ip-range6']);
+      const fakeIp6 = fakeIp6Route(result.dns && result.dns['fake-ip-range6']);
       if (fakeIp6 && v6Routes.indexOf(fakeIp6) < 0) {
         v6Routes.push(fakeIp6);
       }
