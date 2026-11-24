@@ -4295,20 +4295,6 @@ function removeUnusedRuleProviders(result) {
 // 入口函数：Bettbox / FlClash 系客户端会调用 main(config) 并使用其返回值
 // ============================================================================
 
-// fake-ip6 网段：只做格式校验后原样使用，前缀归零交给系统路由实现
-// （Linux 内核实测会把 fdfe:dcba:9876::1/64 安装成 fdfe:dcba:9876::/64；
-//  nftables 侧 netipx.RangeOfPrefix 也会先 Masked()）。
-function fakeIp6Route(value) {
-  if (typeof value !== 'string') {
-    return null;
-  }
-  const text = value.trim();
-  if (!/^[0-9a-fA-F:]+\/\d{1,3}$/.test(text)) {
-    return null;
-  }
-  return Number.parseInt(text.slice(text.lastIndexOf('/') + 1), 10) <= 128 ? text : null;
-}
-
 function main(config, profileName) {
   config = config || {};
 
@@ -4351,34 +4337,14 @@ function main(config, profileName) {
   }
 
   // ---- 2.1 IPv6 开关（默认关闭）----
-  // 关闭：核心侧不再具备 v6 能力（ipv6 / dns.ipv6 置 false，删 fake-ip-range6）。
-  // 打开：核心恢复 v6；tun 启用时把 v6 路由收敛为「公网 2000::/3 + fake-ip6 所在网段」，
-  //       避免把链路本地、组播和 ULA 内网一并路由进 tun。
-  // tun 未启用（tproxy / eBPF 脚本里的 tun.enable: false）时只处理核心侧开关，
-  // 不碰 tun 的 inet6-address / route-address。
+  // 模板里已经写好 v6 白名单（2000::/3 + fdfe:dcba:9876::/64，见 tun.route-address），
+  // 这里只负责开关：关掉时撤掉 v6 能力与 tun 的 v6 字段，打开时恢复核心侧解析。
+  // tun 未启用（tproxy / eBPF 脚本里的 tun.enable: false）时只动核心侧开关。
   const tunEnabled = !!(result.tun && typeof result.tun === 'object' && result.tun.enable === true);
   if (ruleOptionsEnable['IPv6优先'] === true) {
     result.ipv6 = true;
     if (result.dns) {
       result.dns.ipv6 = true;
-    }
-    if (tunEnabled) {
-      if (!Array.isArray(result.tun['inet6-address']) || result.tun['inet6-address'].length === 0) {
-        result.tun['inet6-address'] = ['fdfe:dcba:9876::1/126'];
-      }
-      const v6Routes = ['2000::/3'];
-      const fakeIp6 = fakeIp6Route(result.dns && result.dns['fake-ip-range6']);
-      if (fakeIp6 && v6Routes.indexOf(fakeIp6) < 0) {
-        v6Routes.push(fakeIp6);
-      }
-      const routes = (Array.isArray(result.tun['route-address']) ? result.tun['route-address'] : [])
-        .filter((address) => typeof address === 'string' && address.indexOf(':') < 0);
-      v6Routes.forEach((address) => {
-        if (routes.indexOf(address) < 0) {
-          routes.push(address);
-        }
-      });
-      result.tun['route-address'] = routes;
     }
   } else {
     result.ipv6 = false;
