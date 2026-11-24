@@ -414,8 +414,8 @@ const TEMPLATE = {
     "route-address": [
       "0.0.0.0/1",
       "128.0.0.0/1",
-      "::/1",
-      "8000::/1"
+      "2000::/3",
+      "fdfe:dcba:9876::/64"
     ],
     // 私网、保留、组播与 CGNAT 段不进 tun；fake-ip 段（198.18.0.0/15）必须保持被接管
     "route-exclude-address": [
@@ -4295,6 +4295,84 @@ function removeUnusedRuleProviders(result) {
 // 入口函数：Bettbox / FlClash 系客户端会调用 main(config) 并使用其返回值
 // ============================================================================
 
+// IPv6 前缀规范化：把 "fdfe:dcba:9876::1/64" 这类带主机位的写法收敛成网络地址，
+// 供 tun 的 v6 路由白名单使用；解析失败返回 null（调用方保留模板原值）。
+function normalizeIpv6Prefix(value) {
+  if (typeof value !== 'string') {
+    return null;
+  }
+  const text = value.trim();
+  const slash = text.indexOf('/');
+  const address = slash >= 0 ? text.slice(0, slash) : text;
+  const bits = slash >= 0 ? Number.parseInt(text.slice(slash + 1), 10) : 128;
+  if (!Number.isInteger(bits) || bits < 0 || bits > 128) {
+    return null;
+  }
+  if (!/^[0-9a-fA-F:.]+$/.test(address)) {
+    return null;
+  }
+  const splitGroups = (part) => (part ? part.split(':') : []);
+  let groups = [];
+  if (address.indexOf('::') >= 0) {
+    const halves = address.split('::');
+    if (halves.length !== 2) {
+      return null;
+    }
+    const left = splitGroups(halves[0]);
+    const right = splitGroups(halves[1]);
+    const fill = 8 - left.length - right.length;
+    if (fill < 1) {
+      return null;
+    }
+    groups = left.concat(new Array(fill).fill('0')).concat(right);
+  } else {
+    groups = splitGroups(address);
+  }
+  if (groups.length !== 8) {
+    return null;
+  }
+  const words = [];
+  for (const group of groups) {
+    if (!/^[0-9a-fA-F]{1,4}$/.test(group)) {
+      return null;
+    }
+    words.push(Number.parseInt(group, 16));
+  }
+  for (let i = 0; i < 8; i++) {
+    const keep = Math.min(Math.max(bits - i * 16, 0), 16);
+    const mask = keep === 0 ? 0 : (0xffff << (16 - keep)) & 0xffff;
+    words[i] &= mask;
+  }
+  let bestStart = -1;
+  let bestLength = 0;
+  let runStart = -1;
+  let runLength = 0;
+  for (let i = 0; i < 8; i++) {
+    if (words[i] === 0) {
+      if (runStart < 0) {
+        runStart = i;
+        runLength = 0;
+      }
+      runLength += 1;
+      if (runLength > bestLength) {
+        bestStart = runStart;
+        bestLength = runLength;
+      }
+    } else {
+      runStart = -1;
+      runLength = 0;
+    }
+  }
+  const hex = words.map((word) => word.toString(16));
+  let body;
+  if (bestLength >= 2) {
+    body = hex.slice(0, bestStart).join(':') + '::' + hex.slice(bestStart + bestLength).join(':');
+  } else {
+    body = hex.join(':');
+  }
+  return body + '/' + bits;
+}
+
 function main(config, profileName) {
   config = config || {};
 
@@ -4336,17 +4414,47 @@ function main(config, profileName) {
     });
   }
 
-  if (ruleOptionsEnable['IPv6优先'] !== true) {
+  // ---- 2.1 IPv6 开关（默认关闭）----
+  // 关闭：核心侧不再具备 v6 能力（ipv6 / dns.ipv6 置 false，删 fake-ip-range6）。
+  // 打开：核心恢复 v6；tun 启用时把 v6 路由收敛为「公网 2000::/3 + fake-ip6 所在网段」，
+  //       避免把链路本地、组播和 ULA 内网一并路由进 tun。
+  // tun 未启用（tproxy / eBPF 脚本里的 tun.enable: false）时只处理核心侧开关，
+  // 不碰 tun 的 inet6-address / route-address。
+  const tunEnabled = !!(result.tun && typeof result.tun === 'object' && result.tun.enable === true);
+  if (ruleOptionsEnable['IPv6优先'] === true) {
+    result.ipv6 = true;
+    if (result.dns) {
+      result.dns.ipv6 = true;
+    }
+    if (tunEnabled) {
+      if (!Array.isArray(result.tun['inet6-address']) || result.tun['inet6-address'].length === 0) {
+        result.tun['inet6-address'] = ['fdfe:dcba:9876::1/126'];
+      }
+      const v6Routes = ['2000::/3'];
+      const fakeIp6 = normalizeIpv6Prefix(result.dns && result.dns['fake-ip-range6']);
+      if (fakeIp6 && v6Routes.indexOf(fakeIp6) < 0) {
+        v6Routes.push(fakeIp6);
+      }
+      const routes = (Array.isArray(result.tun['route-address']) ? result.tun['route-address'] : [])
+        .filter((address) => typeof address === 'string' && address.indexOf(':') < 0);
+      v6Routes.forEach((address) => {
+        if (routes.indexOf(address) < 0) {
+          routes.push(address);
+        }
+      });
+      result.tun['route-address'] = routes;
+    }
+  } else {
     result.ipv6 = false;
     if (result.dns) {
       result.dns.ipv6 = false;
       delete result.dns['fake-ip-range6'];
     }
-    if (result.tun) {
+    if (tunEnabled) {
       delete result.tun['inet6-address'];
       if (Array.isArray(result.tun['route-address'])) {
         result.tun['route-address'] = result.tun['route-address'].filter(
-          (address) => address !== '::/1' && address !== '8000::/1'
+          (address) => typeof address !== 'string' || address.indexOf(':') < 0
         );
       }
     }
