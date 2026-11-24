@@ -4023,9 +4023,13 @@ const ENTRY_RESOLUTION_EXCLUDE_FILTER = '^(?:电信|联通|移动|云厂)节点-
 const DOMESTIC_ENTRY_PROXIES = {
   // 中国电信
   telecom: [{
-    type: 'http',
-    server: '61.130.176.21',
-    port: 20945
+    type: 'socks5',
+    server: '49.87.220.73',
+    port: 8989
+  }, {
+    type: 'socks5',
+    server: '218.77.50.79',
+    port: 6666
   }],
 
   // 中国联通
