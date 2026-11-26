@@ -1,12 +1,13 @@
 #   JS 脚本：
-#   https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
+#   https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/02-tproxy/script_override.js
 #   YAML 模板：
-#   https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/mihomo.yaml
+#   https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/02-tproxy/mihomo.yaml
 #   仓库：
 #   https://github.com/XVSVTsama/XVSVT-Clash-Config
 #   作者：
 #   https://github.com/XVSVTsama
 #   版本：上一提交 e4530a88dfb1bab7760a40a4e41e07093fc10602，本提交时间 2026-11-22 19:33:22 +0800
+#   本分支：02-tproxy（派生自 main，只保留本分支的差异）
 
 .templates:
   # proxy-groups 共享片段
@@ -64,6 +65,8 @@ keep-alive-interval: 15
 profile:
   store-selected: true
   store-fake-ip: true
+# TPROXY 透明入站（本分支特有）：tun 停用，入站端口由 tproxy-port 提供；
+# 把流量送到该端口的 TPROXY / REDIRECT 规则由客户端或系统侧建立。
 tproxy-port: 9898
 tun:
   enable: false

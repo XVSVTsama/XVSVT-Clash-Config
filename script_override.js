@@ -38,9 +38,9 @@ const Compatible_With_Bettbox = {
  *
  *  来源：
  *    JS 脚本：
- *    https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
+ *    https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/02-tproxy/script_override.js
  *    YAML 模板：
- *    https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/mihomo.yaml
+ *    https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/02-tproxy/mihomo.yaml
  *    仓库：
  *    https://github.com/XVSVTsama/XVSVT-Clash-Config
  *    作者：
@@ -48,6 +48,15 @@ const Compatible_With_Bettbox = {
  *    版本：上一提交 e4530a88dfb1bab7760a40a4e41e07093fc10602，本提交时间 2026-11-22 19:33:22 +0800
  *    用法：本脚本可直接作为 Bettbox / FlClash 系客户端的远程覆写脚本加载
  *         （文件首行为 Bettbox 兼容声明，请勿删除）。
+ *
+ *    本分支：02-tproxy（派生自 main，只保留 TPROXY 透明入站的差异，其余内容与 main 相同）
+ *
+ *  TPROXY 入站（本分支特有）：
+ *    tun 收敛为 { enable: false }，其余 TUN 字段全部删除；入站由顶层 tproxy-port: 9898 提供，
+ *    把流量送到该端口的 TPROXY / REDIRECT 规则由客户端或系统侧建立，脚本不生成这些规则。
+ *    IPv6优先 只切核心侧（ipv6、dns.ipv6、fake-ip-range6），没有 tun 侧字段可改。
+ *    TUN MTU改为9000、开启端点独立NAT 两个开关仍然保留，但只写 tun 字段，而 tun 不启用，
+ *    开启不产生作用。
  *
  *  用途：
  *    把当前订阅（原始配置）与本仓库维护的"标准模板"（mihomo.yaml）合并成最终生效配置。
