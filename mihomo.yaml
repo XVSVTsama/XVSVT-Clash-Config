@@ -48,12 +48,13 @@ etag-support: true
 global-ua: clash.meta
 ipv6: true
 log-level: info
-external-controller: 0.0.0.0:9090
+external-controller: 127.0.0.1:9090
 external-controller-cors:
   allow-origins:
     - '*'
   allow-private-network: true
-secret: "318a2fbc9f4836b114c0ada7e6d5f36e"
+# 必须自行替换为随机密钥，不要使用示例值或将其暴露到公网
+secret: ""
 external-ui: dashboard
 external-ui-name: metacubexd
 external-ui-url: "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip"
