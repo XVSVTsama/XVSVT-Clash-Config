@@ -58,6 +58,12 @@ const Compatible_With_Bettbox = {
  *    数据面库为 CHIZI-0618/sing-ebpf。
  *    本脚本只写角色参数：enable 与 exclude-uid 由客户端（如 BoxProxy 的 boxctl）注入，
  *    同时写会触发 "mode cannot be combined with local.enable or shared.enable"。
+ *    预留段与国内 IP 交给 listeners 的 bypass-rule-set：规则集内容由内核填进 LPM 表，
+ *    命中的目标在内核直接放行、不进用户态，规则段因此不再写
+ *    RULE-SET,echs_direct_ip,DIRECT,no-resolve；这两个规则集只被 listener 引用，
+ *    所以 removeUnusedRuleProviders 也认 bypass-rule-set。
+ *    fakeip-icmp: reply 让发往 fake-ip 的 ICMP Echo 在内核应答；
+ *    dns-mode 取 respect_policy，DNS 劫持跟随 local／shared 各自的 UID／来源策略。
  *
  *  用途：
  *    把当前订阅（原始配置）与本仓库维护的"标准模板"（mihomo.yaml）合并成最终生效配置。
@@ -413,6 +419,8 @@ const TEMPLATE = {
   // eBPF 透明入站：字段 schema 与实际适配内核来自 liuran001/mihomo（docs/ebpf-inbound.md），
   // 上游实现见 TanakaLun/mihomo（ebpf-inbound 分支 / automation/ebpf-*），数据面为 sing-ebpf。
   // 这里只给角色参数；enable、exclude-uid 由客户端按实际应用名单注入。
+  // bypass-rule-set 里的规则集由内核填充 LPM 表：命中的目标在内核直接放行，不进用户态，
+  // 规则段因此不需要再写一条同源的直连规则；fakeip-icmp 让 fake-ip 的 ICMP Echo 也在内核里应答。
   "listeners": [
     {
       "name": "ebpf-in",
@@ -422,15 +430,20 @@ const TEMPLATE = {
         "udp"
       ],
       "udp-timeout": 300,
+      "bypass-rule-set": [
+        "ebpf_bypass_ip",
+        "echs_direct_ip"
+      ],
+      "fakeip-icmp": "reply",
       "local": {
         "data-plane": "cgroup",
-        "dns-mode": "hijack",
+        "dns-mode": "respect_policy",
         "ipv6": true,
         "bypass-private-address": true
       },
       "shared": {
         "data-plane": "packet_rewrite",
-        "dns-mode": "hijack",
+        "dns-mode": "respect_policy",
         "interface": [],
         "ipv6": true,
         "bypass-private-address": true
@@ -483,7 +496,6 @@ const TEMPLATE = {
       "gh-proxy.com"
     ],
     "skip-dst-address": [
-      "rule-set:echs_direct_ip",
       "rule-set:microsoft_ip",
       "rule-set:apple_ip",
       "rule-set:telegramcidr",
@@ -1192,6 +1204,17 @@ const TEMPLATE = {
       "path": "./ruleset/games-cn.mrs",
       "path-in-bundle": "geo/geosite/category-games-cn.mrs"
     },
+    // 预留、组播与保留段：只喂 listeners 的 bypass-rule-set，不参与规则匹配。
+    "ebpf_bypass_ip": {
+      "type": "inline",
+      "behavior": "ipcidr",
+      "payload": [
+        "0.0.0.0/8",
+        "224.0.0.0/4",
+        "240.0.0.0/4",
+        "ff00::/8"
+      ]
+    },
     "echs_direct_ip": {
       "type": "http",
       "interval": 86400,
@@ -1532,7 +1555,6 @@ const TEMPLATE = {
     "DOMAIN,gh-proxy.com,DIRECT",
     "DOMAIN-SUFFIX,alipayeshop.com,DIRECT",
     // 国内 Apple、Microsoft、Games 分类直连统一交给下面五个规则集。
-    "RULE-SET,echs_direct_ip,DIRECT,no-resolve",
     "RULE-SET,geolocation-cn,DIRECT",
     "RULE-SET,cn-additional,DIRECT",
     "RULE-SET,apple-cn,DIRECT",
@@ -4281,10 +4303,21 @@ function collectRuleProviderReferences(value, references = new Set()) {
     value.forEach((item) => collectRuleProviderReferences(item, references));
   } else if (value && typeof value === 'object') {
     Object.entries(value).forEach(([key, item]) => {
-      if (key !== 'rule-providers') {
-        collectRuleProviderReferences(key, references);
-        collectRuleProviderReferences(item, references);
+      if (key === 'rule-providers') {
+        return;
       }
+      // listeners 的 bypass-rule-set 直接写规则集名，这些规则集只喂内核放行表、不出现在 rules 里；
+      // 少了这一步，removeUnusedRuleProviders 会把它们当成没人引用而删掉。
+      if (key === 'bypass-rule-set' && Array.isArray(item)) {
+        item.forEach((name) => {
+          if (typeof name === 'string' && name) {
+            references.add(name);
+          }
+        });
+        return;
+      }
+      collectRuleProviderReferences(key, references);
+      collectRuleProviderReferences(item, references);
     });
   }
   return references;
@@ -4329,13 +4362,13 @@ function applyEbpfListener(result) {
     const previous = listener.shared || {};
     listener.local = Object.assign({}, listener.local, {
       'data-plane': listener.local && listener.local['data-plane'] === 'tc' ? 'tc' : 'cgroup',
-      'dns-mode': (listener.local && listener.local['dns-mode']) || 'hijack',
+      'dns-mode': (listener.local && listener.local['dns-mode']) || 'respect_policy',
       ipv6: !(listener.local && listener.local.ipv6 === false),
       'bypass-private-address': !(listener.local && listener.local['bypass-private-address'] === false)
     });
     listener.shared = {
       'data-plane': previous['data-plane'] === 'socket_assign' ? 'socket_assign' : 'packet_rewrite',
-      'dns-mode': previous['dns-mode'] || 'hijack',
+      'dns-mode': previous['dns-mode'] || 'respect_policy',
       interface: ifaces,
       ipv6: previous.ipv6 !== false,
       'bypass-private-address': previous['bypass-private-address'] !== false
