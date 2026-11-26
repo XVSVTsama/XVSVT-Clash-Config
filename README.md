@@ -19,7 +19,7 @@
 ## 用法
 
 ```text
-https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/tproxy/script_override.js
+https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/02-tproxy/script_override.js
 ```
 
 把该地址作为订阅的覆写脚本加载，网络模式选 tproxy。文件首行的 `Compatible_With_Bettbox` 声明不要删除。
