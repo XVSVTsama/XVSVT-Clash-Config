@@ -49,12 +49,18 @@
 - `shared.enable: true` 时 `shared.interface` 必须非空且不含 `lo`；`shared` 关闭时不能保留 `dns-mode`、`ipv6`、`bypass-private-address`、`interface`。
 - `bypass-rule-set` 只认 `behavior: ipcidr` 的规则集：顶层列表对所有角色生效，`local.` / `shared.` 下的同名列表只对该角色追加。shared 的放行列表在空与非空之间变化、或两个角色从共用一套规则集改为各用一套，都需要重建 inbound 才生效。
 - 放行规则集的内容更新不用重载：listener 每次重编译按名字重新读取规则集。
-- `fakeip-icmp: reply` 至少需要一个 TC 承载：`local.data-plane: tc`，或启用 shared（任一数据面）。`local.data-plane: cgroup` 且不启用 shared 时会被拒绝。
+- `fakeip-icmp: reply` 至少需要一个 TC 承载：`local.data-plane: tc`，或启用 shared（任一数据面）。`local.data-plane: cgroup` 且不启用 shared 时会被拒绝。即使启用，也只有 TC 那一侧看得到 ICMP：手机本机的流量走 cgroup，看不到，本机 ping fake-ip 仍然超时；热点下联（shared 的真实网卡）才享受这条应答。
 - `shared.data-plane: socket_assign` 需要内核支持 `bpf_sk_assign`（Linux 5.7+ 或厂商回移），否则用默认的 `packet_rewrite`。
 - `enable` 与 `exclude-uid` 由客户端注入；直接在纯 mihomo 环境加载本脚本时，这两个字段要自己补，否则监听不会启用。
 - 换回主线内核时，`listeners` 里的 eBPF 项必须一起去掉，否则核心起不来。
-- `IPv6优先` 对两个角色 `ipv6` 的设置在 BoxProxy 里会被客户端覆盖：boxctl 按 `runtime_profile.ipv6_mode` 写这两个字段，实际以 App 里的 IPv6 设置为准；脚本里的值只在没有客户端接管时生效。
-- 本分支的放行改动只用 `core-ebpf -t` 做过配置校验，没有真机运行时验证：内核放行是否按预期命中、`respect_policy` 与 `fakeip-icmp: reply` 的实际行为都还没实测。
+- `IPv6优先` 对两个角色 `ipv6` 的设置在 BoxProxy 里会被客户端覆盖：boxctl 按 `runtime_profile.ipv6_mode` 写这两个字段，实际以 App 里的 IPv6 设置为准；脚本里的值只在没有客户端接管时生效。实测：脚本算出 `false`，生成的 `startup-config` 里两个角色仍是 `true`。
+
+### 实测记录（Android / BoxProxy / kernel 6.1）
+
+- 内核放行生效：本机连 `223.5.5.5:443` 成功且不产生核心连接日志，连 `1.1.1.1:443` 正常进核心并按规则走 `🌍 PROXY`。
+- `respect_policy` 下 DNS 仍被劫持：`www.example.com` 返回 fake-ip `198.18.3.55`，域名流量照常被核心处理。
+- `fakeip-icmp: reply` 在本机无效：`ping 198.18.3.55` 100% 丢包，原因见上一条约束（本机走 cgroup）。
+- 未验证：热点共享（shared 下联为真实网卡）场景下的放行与 ICMP 应答；`bypass-rule-set` 的规则集内容更新是否按名字即时生效。
 
 ### 内核放行带来的取舍
 
