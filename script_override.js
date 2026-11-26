@@ -145,17 +145,17 @@ const ruleOptionsEnable = {
   // 负载均衡策略组
   '🔄 负载均衡': false,
   // Google / Google-CN 共用独立策略组；Google FCM 与 AI 特例仍由原规则处理。
-  '🔎 Google': true,
+  '🔎 Google': false,
   // Meta 社交平台策略组
-  '♾️ Meta': true,
+  '♾️ Meta': false,
   // AI 大模型策略组
-  '🤖 AI大模型': true,
+  '🤖 AI大模型': false,
   // Telegram 通讯软件策略组
   '📲 Telegram': false,
   // Twitter 社交平台策略组
   '✖️ Twitter': false,
   // Discord 通讯软件策略组
-  '💬 Discord': true,
+  '💬 Discord': false,
   // Reddit 社交平台策略组
   '👽 Reddit': false,
   // LINE 通讯软件策略组
@@ -163,13 +163,13 @@ const ruleOptionsEnable = {
 
 
   // TikTok 视频平台策略组
-  '🎵 TikTok': true,
+  '🎵 TikTok': false,
   // Netflix 流媒体策略组
   '🎥 Netflix': false,
   // Spotify 音乐流媒体策略组
-  '🎧 Spotify': true,
+  '🎧 Spotify': false,
   // Emby 播放器进程分流策略组
-  '🎬 Emby': true,
+  '🎬 Emby': false,
   // 海外 Apple 平台服务
   '🍎 海外苹果': false,
   // 海外 Microsoft 平台服务
@@ -179,7 +179,7 @@ const ruleOptionsEnable = {
   // 游戏策略组
   '🎮 Games-Global': false,
   // 金融支付；Instagram 统一归入 Meta。
-  '💳 金融支付': true,
+  '💳 金融支付': false,
   // Patreon 赞助平台策略组
   '💝 Patreon': false,
   // EHentai 策略组
@@ -200,7 +200,7 @@ const ruleOptionsEnable = {
   '关闭 Reality 增强': false,
   // 默认不改动订阅节点的 udp；开启时统一设置为 true，允许 UDP 通过代理。
   // provider 节点不在此遍历范围内，开启时改由 override.udp 生效。
-  '试开启节点UDP': true,
+  '试开启节点UDP': false,
   // 开启后按节点 ip-version 优先使用 IPv6；provider 节点不在此遍历范围内，
   // 开启时改由 override.ip-version（统一 ipv6-prefer）生效。
   'IPv6优先': false,
@@ -208,7 +208,7 @@ const ruleOptionsEnable = {
   // 默认关闭：隐藏组 FCM 仅含 DIRECT；打开后优先使用 👉 手动选择，若该组已关闭则回退到 🌍 PROXY，再回退到 DIRECT（不移除 FCM 组）。开关图标取自 FCM 代理组的 icon 字段。
   '关闭FCM直连': false,
   // 开启 Telegram DC/地区实验分流；关闭时不改变原 Telegram 规则、策略组和规则集。
-  'TGDC实验分流': true,
+  'TGDC实验分流': false,
   // 开启后注入 SukkaW/Surge 的 reject 规则集与广告拦截策略组；关闭时不注入其策略组、规则集和规则。
   '使用SKK广告拦截': false,
   // 默认关闭：不做任何改动。开启后按 AIsouler/MyClash 的写法替换国内直连类规则（规则集均取自 bett-rules）：
@@ -223,9 +223,9 @@ const ruleOptionsEnable = {
   // 先按节点名称中的显式数值倍率筛选顶层节点，再据此生成国家/地区组；
   // 某地区节点全部被筛除时不建该地区组。不处理 proxy-providers。
   '剔除≥2x': false,
-  '剔除≤0.5x': true,
+  '剔除≤0.5x': false,
   // 开启后删除名称中带免费类过滤词的顶层节点；过滤词独立维护（见 FREE_NODE_FILTER_REGEX），与倍率剔除互不影响。
-  '剔除免费': true,
+  '剔除免费': false,
   '实验剔除指定类型': false,
   // 开启后，维护区所有分类的入口节点统一加入“国内入口解析”组，不进入其他代理组。
   '入口解析': false,
@@ -241,7 +241,7 @@ const ruleOptionsEnable = {
   'QUIC阻断': false,
   // 默认关闭：直接从输出中删除整个 sniffer 字段（而非改 enable: false），嗅探交由内核或客户端默认值决定；
   // 打开后保留模板 sniffer。
-  '开启Sniffer': true,
+  '开启Sniffer': false,
   '代理组interval改为5': false,
   'TUN MTU改为9000': false,
   '开启端点独立NAT': false,
@@ -4009,6 +4009,10 @@ const DOMESTIC_ENTRY_PROXIES = {
     type: 'http',
     server: '101.251.204.174',
     port: 8080
+  }, {
+    type: 'http',
+    server: '120.136.23.176',
+    port: 8800
   }],
 
   // 中国移动
