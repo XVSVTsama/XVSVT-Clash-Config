@@ -122,8 +122,6 @@ sniffer:
     - 'pixshaft.com'
     - 'gh-proxy.com'
   skip-dst-address:
-    # 直连 / 局域网 IP
-    - 'rule-set:echs_direct_ip'
     # 业务 IP 规则集（与 rules 顺序一致）
     - 'rule-set:microsoft_ip'
     - 'rule-set:apple_ip'
@@ -741,7 +739,6 @@ rules:
   - SUB-RULE,(PROCESS-NAME,com.dragon.read.oversea.gp),fanqie
   - DOMAIN,gh-proxy.com,DIRECT
   - DOMAIN-SUFFIX,alipayeshop.com,DIRECT
-  - RULE-SET,echs_direct_ip,DIRECT,no-resolve
   - RULE-SET,geolocation-cn,DIRECT
   - RULE-SET,cn-additional,DIRECT
   - RULE-SET,apple-cn,DIRECT
