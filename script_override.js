@@ -55,8 +55,6 @@ const Compatible_With_Bettbox = {
  *    tun 收敛为 { enable: false }，其余 TUN 字段全部删除；入站由顶层 tproxy-port: 9898 提供，
  *    把流量送到该端口的 TPROXY / REDIRECT 规则由客户端或系统侧建立，脚本不生成这些规则。
  *    IPv6优先 只切核心侧（ipv6、dns.ipv6、fake-ip-range6），没有 tun 侧字段可改。
- *    TUN MTU改为9000、开启端点独立NAT 两个开关仍然保留，但只写 tun 字段，而 tun 不启用，
- *    开启不产生作用。
  *
  *  用途：
  *    把当前订阅（原始配置）与本仓库维护的"标准模板"（mihomo.yaml）合并成最终生效配置。
@@ -256,8 +254,6 @@ const ruleOptionsEnable = {
   // 打开后保留模板 sniffer。
   '开启Sniffer': false,
   '代理组interval改为5': false,
-  'TUN MTU改为9000': false,
-  '开启端点独立NAT': false,
 };
 
 // 关闭这些业务组时删除指向它们的路由规则，而不是把规则改写到全局兜底。
@@ -1712,8 +1708,6 @@ const FEATURE_SWITCH_ICONS = {
   'UDP节点平铺': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-udp.svg',
   '开启Sniffer': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Tracking.svg',
   '代理组interval改为5': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-auto.png',
-  'TUN MTU改为9000': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-mtu.svg',
-  '开启端点独立NAT': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-einat.svg',
   '使用AIsouler直连规则': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-AIsouler-MyClash-China.svg',
 };
 
@@ -1817,14 +1811,6 @@ const serviceConfigs = TEMPLATE['proxy-groups']
       name: '代理组interval改为5',
       icon: FEATURE_SWITCH_ICONS['代理组interval改为5']
     },
-    {
-      name: 'TUN MTU改为9000',
-      icon: FEATURE_SWITCH_ICONS['TUN MTU改为9000']
-    },
-    {
-      name: '开启端点独立NAT',
-      icon: FEATURE_SWITCH_ICONS['开启端点独立NAT']
-    }
   ]);
 
 // ============================================================================
@@ -4340,14 +4326,6 @@ function main(config, profileName) {
       result.dns.ipv6 = false;
       delete result.dns['fake-ip-range6'];
     }
-  }
-
-  if (ruleOptionsEnable['TUN MTU改为9000'] === true && result.tun) {
-    result.tun.mtu = 9000;
-  }
-
-  if (ruleOptionsEnable['开启端点独立NAT'] === true && result.tun) {
-    result.tun['endpoint-independent-nat'] = true;
   }
 
   // ---- 2.5 TGDC 实验分流（默认关闭；由 UI 开关控制） ----
