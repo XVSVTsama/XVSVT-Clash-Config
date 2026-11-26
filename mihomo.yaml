@@ -6,7 +6,7 @@
 #   https://github.com/XVSVTsama/XVSVT-Clash-Config
 #   作者：
 #   https://github.com/XVSVTsama
-#   版本：上一提交 e4530a88dfb1bab7760a40a4e41e07093fc10602，本提交时间 2026-11-22 19:33:22 +0800
+#   版本：上一提交 0473133905599027757dc2cd95ca31b94cc71ed9，本提交时间 2026-11-26 23:01:19 +0800
 
 .templates:
   # proxy-groups 共享片段
@@ -907,3 +907,6 @@ rules:
   # - RULE-SET,proxy,🌍 PROXY
   # - RULE-SET,gfw,🌍 PROXY
   - MATCH,🌍 PROXY
+  # 如请求为 udp，而代理节点没有 udp 支持 (例如ss节点没写udp: true),则会继续向下匹配
+  # 为防止泄露故reject
+  - NETWORK,UDP,REJECT

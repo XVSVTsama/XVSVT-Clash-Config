@@ -261,7 +261,7 @@ CDN 链接：
 </tbody>
 </table>
 
-**同样不在 `policyGroupOptions`、也不对应任何策略组的开关（17 个）**
+**同样不在 `policyGroupOptions`、也不对应任何策略组的开关（18 个）**
 
 <table width="100%">
 <thead>
@@ -280,6 +280,7 @@ CDN 链接：
 <tr><td><code>代理节点 DNS 使用国内</code></td><td>关闭</td><td>关闭时不做任何处理；开启时将 <code>proxy-server-nameserver</code> 由默认的 Cloudflare Gateway DoH 替换为 <code>114.114.114.114</code>、<code>tls://223.5.5.5</code>、<code>https://1.12.12.12/dns-query</code>；后续的兜底比对、入口解析后缀与「代理节点 DNS 使用 TCP」处理同样作用于替换后的值</td></tr>
 <tr><td><code>关闭WebRTC阻断</code></td><td>关闭</td><td>默认关闭时保持模板规则不变；打开后移除所有同时包含 <code>NETWORK,UDP</code> 与 <code>DST-PORT,3478-3479/5349-5350/19302-19309</code> 的规则</td></tr>
 <tr><td><code>QUIC阻断</code></td><td>关闭</td><td>关闭时不做任何处理；开启时阻断非国内、非游戏的 UDP 443（QUIC），并移除全部海外业务 <code>nameserver-policy</code>（72 条，被移除的域名改走默认 <code>nameserver</code>）：若 <code>关闭WebRTC阻断</code> 未开启，直接在 WebRTC 阻断规则的 <code>DST-PORT</code> 中追加 <code>443</code>；若已开启，则按 WebRTC 阻断规则的同一组 <code>NOT</code> 条件另建一条 <code>AND,((NETWORK,UDP),(DST-PORT,443),…),REJECT</code> 并置顶</td></tr>
+<tr><td><code>UDP节点平铺</code></td><td>关闭</td><td>关闭时不做任何处理；开启时在 <code>MATCH,🌍 PROXY</code> 之后平铺订阅顶层节点中明确写了 <code>udp: true</code> 的节点，各生成一条 <code>MATCH,&lt;节点名&gt;</code>，供 UDP 请求在 🌍 PROXY 当前节点不支持 UDP 时继续向下命中；仍无可用节点时由其后的 <code>NETWORK,UDP,REJECT</code> 拒绝</td></tr>
 <tr><td><code>开启Sniffer</code></td><td>关闭</td><td>关闭时直接从输出配置中删除整个 <code>sniffer</code> 字段（不是改为 <code>enable: false</code>），嗅探行为交由内核或客户端默认值决定；开启时保留模板中的 <code>sniffer</code> 配置</td></tr>
 <tr><td><code>代理组interval改为5</code></td><td>关闭</td><td>关闭时不做任何处理，代理组 <code>interval</code> 保持 300；开启时将模板代理组（自动选择与 3 个负载均衡组）及国家/地区生成子组（自动选择、自动回退、负载均衡）的 <code>interval</code> 改为 5；不改其他 <code>interval</code></td></tr>
 <tr><td><code>TUN MTU改为9000</code></td><td>关闭</td><td>关闭时不做任何处理，<code>tun.mtu</code> 保持模板的 1500；开启时将 <code>tun.mtu</code> 改为 9000</td></tr>
@@ -299,11 +300,11 @@ CDN 链接：
 <tr><td><strong>A2</strong> 模板内无开关的组（🌍 PROXY）</td><td>0</td><td>1</td><td>有，JS 内模板的 🌍 PROXY 组自带</td><td>❌</td><td>否</td></tr>
 <tr><td><strong>B1</strong> 注入整组、开关图标＝组图标（SKK、国家/地区、入口解析）</td><td>3</td><td>6</td><td>有，写在各注入组的定义处（SKK 段、国家/地区段、入口解析处）</td><td>有，开关项里内联同一张图</td><td>是，三对</td></tr>
 <tr><td><strong>B2</strong> 注入整组、开关图标≠组图标（TGDC）</td><td>1</td><td>4</td><td>有，写在 TGDC 组的定义处（三个 DC 组各一张国旗，兜底沿用 Telegram 组图标）</td><td>有，开关项里用 Telegram 标</td><td>否</td></tr>
-<tr><td><strong>C</strong> 纯功能开关（只在开关面板）</td><td>17</td><td>17</td><td>❌</td><td>有，集中在功能开关图标表，开关项引用</td><td>是，两对</td></tr>
+<tr><td><strong>C</strong> 纯功能开关（只在开关面板）</td><td>18</td><td>18</td><td>❌</td><td>有，集中在功能开关图标表，开关项引用</td><td>是，三对</td></tr>
 </tbody>
 </table>
 
-> 代码内图标处数 52 ｜ 图标数 47 ｜ 重复对数 5
+> 代码内图标处数 53 ｜ 图标数 47 ｜ 重复对数 6
 
 > **关于客户端**：这套图形化开关由 Bettbox 原生支持——脚本开头的 `Compatible_With_Bettbox` 声明就是给 Bettbox 识别用的。换到其他客户端分两种情况：
 >
