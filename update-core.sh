@@ -18,6 +18,10 @@
 #   --dry-run             只打印将要执行的步骤
 #   -h, --help            帮助
 #
+# 也可以不写参数：把同目录的 update-core.conf.example 复制成 update-core.conf，
+# 填好 CORE / URL（可选 SHA256 / TAG），然后在 BoxProxy 的「工具 → 脚本」里直接运行
+# 本脚本即可；命令行参数优先于配置文件。
+#
 # 流程：备份 → 下载 → 校验 → 配置检查 → 换入 → 重启 → 失败自动回滚
 # 退出码：0 成功；1 失败（已回滚）；2 参数或环境错误（未改动任何文件）
 #
@@ -43,6 +47,16 @@ log() {
 die() {
     printf '错误: %s\n' "$*" >&2
     exit 2
+}
+
+# 没有命令行参数时的默认值来源：同目录的 update-core.conf
+load_conf() {
+    conf_dir=$(cd "$(dirname "$0")" 2>/dev/null && pwd) || return 0
+    CONF=${UPDATE_CORE_CONF:-$conf_dir/update-core.conf}
+    [ -f "$CONF" ] || return 0
+    # shellcheck disable=SC1090
+    . "$CONF"
+    log "读取配置：$CONF"
 }
 
 usage() {
@@ -293,6 +307,7 @@ cleanup() {
 # ---------------------------------------------------------------------------
 
 main() {
+    load_conf
     parse_args "$@"
     init_paths
     check_env

@@ -1,0 +1,19 @@
+# update-core.sh 的配置文件模板
+#
+# 用法：把本文件复制成同目录下的 update-core.conf，按需填写，然后在
+# BoxProxy 的「工具 → 脚本」里直接运行 update-core.sh（不用带参数）。
+# 命令行参数优先于这里的值。
+#
+# 注意：本文件会被脚本以 root 身份 source，只放变量赋值，不要放其它命令。
+
+# 要替换哪个内核：ebpf → bin/core-ebpf，vanilla → bin/core-vanilla
+CORE=ebpf
+
+# 新内核的下载地址：填你所用核心分支的发布地址（http(s):// 或 file://）
+URL=''
+
+# 可选：下载产物的 SHA-256，给了就校验
+SHA256=''
+
+# 可选：新内核执行 -v 后，输出里必须包含的关键字（例如版本哈希）
+TAG=''

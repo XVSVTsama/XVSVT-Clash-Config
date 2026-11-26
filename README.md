@@ -78,11 +78,19 @@ boxctl 会自带 `BOX_HOME`、`BOX_RUN_DIR`、`BOX_SCRIPTS_DIR`、`BOX_MODE` 等
 
 本分支另带一个**模板**脚本，负责「备份 → 下载 → 校验 → 替换 → 重启 → 失败回滚」，**不内置任何下载地址、版本号或校验值**：用什么核心分支、哪个版本、校验值多少，全部由你自己补完。
 
+两种用法，任选：
+
+**命令行带参数**（适合终端里临时跑）
+
 ```sh
 sh update-core.sh --core ebpf    --url <下载地址> [--sha256 <64 位十六进制>] [--tag <版本关键字>]
 sh update-core.sh --core vanilla --url <下载地址>
 sh update-core.sh --core ebpf    --url <地址> --dry-run     # 只看步骤，不下载不替换
 ```
+
+**不带参数**（适合在 BoxProxy 的「工具 → 脚本」里点运行）
+
+把 `update-core.conf.example` 复制成同目录的 `update-core.conf`，填好 `CORE` / `URL`（可选 `SHA256` / `TAG`），再运行 `update-core.sh` 即可；命令行参数优先于配置文件。
 
 | 参数 | 说明 |
 |---|---|
