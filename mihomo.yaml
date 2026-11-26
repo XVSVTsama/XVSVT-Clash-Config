@@ -1,12 +1,13 @@
 #   JS 脚本：
-#   https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
+#   https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/03-no-tun/script_override.js
 #   YAML 模板：
-#   https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/mihomo.yaml
+#   https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/03-no-tun/mihomo.yaml
 #   仓库：
 #   https://github.com/XVSVTsama/XVSVT-Clash-Config
 #   作者：
 #   https://github.com/XVSVTsama
 #   版本：上一提交 e4530a88dfb1bab7760a40a4e41e07093fc10602，本提交时间 2026-11-22 19:33:22 +0800
+#   本分支：03-no-tun（派生自 main，只保留本分支的差异）
 
 .templates:
   # proxy-groups 共享片段
@@ -64,6 +65,8 @@ keep-alive-interval: 15
 profile:
   store-selected: true
   store-fake-ip: true
+# 本分支不定义 tun：最终配置不带 tun 字段，订阅自带的 tun 也不会保留；
+# TUN MTU改为9000、开启端点独立NAT 两个开关同样已移除。
 ntp:
   enable: true              
   write-to-system: false      
