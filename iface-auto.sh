@@ -186,11 +186,22 @@ detect_mode() {
 
 select_core() {
     local want cur target
+
+    if [ "$MODE" = ebpf ] && [ ! -f "$CORE_EBPF" ] && [ -f "$CORE_VANILLA" ]; then
+        log "warn: 缺少 $(basename "$CORE_EBPF")，本次退回 $(basename "$CORE_VANILLA")；eBPF 配置将无法加载"
+    fi
+
     if [ "$MODE" = ebpf ] && [ -f "$CORE_EBPF" ]; then
         want=$CORE_EBPF
     elif [ -f "$CORE_VANILLA" ]; then
         want=$CORE_VANILLA
     else
+        log "warn: $(basename "$CORE_EBPF") 与 $(basename "$CORE_VANILLA") 都不存在，保持 $(basename "$CORE_LINK") 现状"
+        return 0
+    fi
+
+    if [ ! -x "$want" ]; then
+        log "warn: $(basename "$want") 不可执行，跳过切换"
         return 0
     fi
 
@@ -490,7 +501,10 @@ stop_port_conflicts() {
             if [ "$uid" -lt 10000 ]; then
                 # uid < 10000 一律不碰，只有本应用自己的旧内核例外
                 if is_box_core_pid "$pid"; then
-                    if [ "$CONFLICT_STOP" = log ]; then
+                    if [ "$pid" = "$(cat "$RUN_DIR/box.pid" 2>/dev/null)" ]; then
+                        # 服务自己正在跑，端口占用是正常的，交给 boxctl 处理
+                        log "端口 $port 由正在运行的核心持有（pid $pid），跳过"
+                    elif [ "$CONFLICT_STOP" = log ]; then
                         log "warn: 端口 $port 被旧内核占用（pid $pid），按设置不结束"
                     else
                         log "端口 $port 被旧内核占用（pid $pid），结束它"
