@@ -1,0 +1,872 @@
+#   JS 脚本：
+#   https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
+#   YAML 模板：
+#   https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/mihomo.yaml
+#   仓库：
+#   https://github.com/XVSVTsama/XVSVT-Clash-Config
+#   作者：
+#   https://github.com/XVSVTsama
+#   版本：上一提交 e4530a88dfb1bab7760a40a4e41e07093fc10602，本提交时间 2026-11-22 19:33:22 +0800
+
+.templates:
+  # proxy-groups 共享片段
+  default_choices: &proxy_default_choices
+    - 👉 手动选择
+    - ♻️ 自动选择
+    - 🔄 负载均衡
+    - DIRECT
+  healthcheck: &proxy_healthcheck { url: https://g.cn/generate_204, interval: 300, lazy: true, max-failed-times: 1 }
+  # dns 共享片段
+  direct_dns: &direct_dns_servers
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+    - https://doh.360.cn/dns-query
+  # rule-providers 共享片段
+  provider_base: &provider_base { type: http, interval: 86400 }
+  domain_mrs: &domain_mrs { <<: *provider_base, behavior: domain, format: mrs }
+  ipcidr_mrs: &ipcidr_mrs { <<: *provider_base, behavior: ipcidr, format: mrs }
+  domain_yaml: &domain_yaml { <<: *provider_base, behavior: domain }
+  ipcidr_yaml: &ipcidr_yaml { <<: *provider_base, behavior: ipcidr }
+  classical_yaml: &classical_yaml { <<: *provider_base, behavior: classical }
+
+mode: rule
+find-process-mode: strict
+mixed-port: 7254
+port: 7249
+socks-port: 7346
+allow-lan: true
+bind-address: "*"
+lan-allowed-ips:
+  - 0.0.0.0/0
+  - ::/0
+authentication:
+  - "xvsvt:132e6671f6c386a7"
+skip-auth-prefixes:
+  - 127.0.0.1/8
+  - ::1/128
+etag-support: true
+global-ua: clash.meta
+ipv6: true
+log-level: info
+external-controller: 0.0.0.0:9090
+external-controller-cors:
+  allow-origins:
+    - '*'
+  allow-private-network: true
+secret: "318a2fbc9f4836b114c0ada7e6d5f36e"
+external-ui: dashboard
+external-ui-name: metacubexd
+external-ui-url: "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip"
+unified-delay: true
+tcp-concurrent: true
+keep-alive-idle: 600
+keep-alive-interval: 15
+profile:
+  store-selected: true
+  store-fake-ip: true
+ntp:
+  enable: true              
+  write-to-system: false      
+  server: 'time.apple.com'   
+  # server: 'pool.ntp.org'
+  # server: 'ntp.aliyun.com'
+  # server: 'time1.cloud.tencent.com'
+  port: 123
+  interval: 30
+  # dialer-proxy: DIRECT
+
+sniffer:
+  enable: true
+  override-destination: false
+  sniff:
+    HTTP: {ports: [80, 8080-8880]}
+    TLS: {ports: [443, 8443]}
+    QUIC: {ports: [443, 8443]}
+  skip-domain:
+    - 'rule-set:fakeip-filter_domain'
+    - 'rule-set:connectcheck'
+    - 'rule-set:private'
+    - 'rule-set:geolocation-cn'
+    - 'rule-set:cn-additional'
+    - 'rule-set:apple-cn'
+    - 'rule-set:microsoft-cn'
+    - 'rule-set:games-cn'
+    - 'rule-set:googlefcm'
+    - 'yacd.haishan.me'
+    - '+.alipayeshop.com'
+    - 'rule-set:pixiv'
+    - 'pixshaft.com'
+    - 'gh-proxy.com'
+  skip-dst-address:
+    # 直连 / 局域网 IP
+    - 'rule-set:echs_direct_ip'
+    # 业务 IP 规则集（与 rules 顺序一致）
+    - 'rule-set:microsoft_ip'
+    - 'rule-set:apple_ip'
+    - 'rule-set:telegramcidr'
+    - 'rule-set:twitter-x-ip'
+    - 'rule-set:twitter-x-ipcidr'
+    - 'rule-set:steam_ip'
+    # AI 大模型（Anthropic）
+    - 160.79.104.0/21
+    - 2607:6bc0::/48
+    # 公共 DNS · 国内（IPv6，未被 echs_direct_ip 覆盖）
+    - 2400:8800:1::6/128
+    - 2400:8800:2::6/128
+    - 240c::6666/128
+    - 240c::6644/128
+    # 公共 DNS · Cloudflare
+    - 1.1.1.1/32
+    - 1.0.0.1/32
+    - 1.1.1.2/32
+    - 1.0.0.2/32
+    - 1.1.1.3/32
+    - 1.0.0.3/32
+    - 2606:4700:4700::1111/128
+    - 2606:4700:4700::1001/128
+    - 2606:4700:4700::1112/128
+    - 2606:4700:4700::1002/128
+    - 2606:4700:4700::1113/128
+    - 2606:4700:4700::1003/128
+    # 公共 DNS · Google
+    - 8.8.8.8/32
+    - 8.8.4.4/32
+    - 2001:4860:4860::8888/128
+    - 2001:4860:4860::8844/128
+    # 公共 DNS · Quad9
+    - 9.9.9.9/32
+    - 149.112.112.112/32
+    - 9.9.9.10/32
+    - 149.112.112.10/32
+    - 9.9.9.11/32
+    - 149.112.112.11/32
+    - 2620:fe::fe/128
+    - 2620:fe::9/128
+    # 公共 DNS · OpenDNS
+    - 208.67.222.222/32
+    - 208.67.220.220/32
+    - 208.67.222.123/32
+    - 208.67.220.123/32
+    - 2620:119:35::35/128
+    - 2620:119:53::53/128
+    - 2620:119:35::123/128
+    - 2620:119:53::123/128
+    # 公共 DNS · AdGuard
+    - 94.140.14.14/32
+    - 94.140.15.15/32
+    - 94.140.14.15/32
+    - 94.140.15.16/32
+    - 2a10:50c0::ad1:ff/128
+    - 2a10:50c0::ad2:ff/128
+    - 2a10:50c0::bad1:ff/128
+    - 2a10:50c0::bad2:ff/128
+    # 公共 DNS · CleanBrowsing
+    - 185.228.168.9/32
+    - 185.228.169.9/32
+    - 185.228.168.10/32
+    - 185.228.169.11/32
+    - 185.228.168.168/32
+    - 185.228.169.168/32
+    - 2a0d:2a00:1::2/128
+    - 2a0d:2a00:2::2/128
+    # 公共 DNS · Control D
+    - 76.76.2.0/32
+    - 76.76.10.0/32
+    # 公共 DNS · Alternate DNS
+    - 76.76.19.19/32
+    - 76.223.122.150/32
+    # 公共 DNS · UltraDNS（Vercara）
+    - 156.154.70.1/32
+    - 156.154.71.1/32
+    - 156.154.70.2/32
+    - 156.154.71.2/32
+    - 2610:a1:1018::1/128
+    - 2610:a1:1019::1/128
+    # 公共 DNS · Verisign
+    - 64.6.64.6/32
+    - 64.6.65.6/32
+    # 公共 DNS · Yandex
+    - 77.88.8.8/32
+    - 77.88.8.1/32
+    - 2a02:6b8::feed:ff/128
+    - 2a02:6b8:0:1::feed:ff/128
+    # 公共 DNS · DNS.SB
+    - 185.222.222.222/32
+    - 45.11.45.11/32
+    # 公共 DNS · Mullvad
+    - 194.242.2.2/32
+    - 2a07:e340::2/128
+    # 公共 DNS · Hurricane Electric
+    - 74.82.42.42/32
+    - 2001:470:20::2/128
+
+dns:
+  enable: true                                             
+  cache-algorithm: arc
+ #prefer-h3: true                                             
+  ipv6: true                                       
+  listen: '0.0.0.0:1053'  
+ #listen: '0.0.0.0:53'                               
+  use-hosts: true                                            
+  use-system-hosts: false                                            
+  default-nameserver:     
+    - tls://223.5.5.5
+    - 114.114.114.114
+    - https://1.12.12.12/dns-query
+  # Cloudflare Gateway DoH 端点（自有账户 DNS location: hrbgyitz34），未设置过滤策略；
+  proxy-server-nameserver: 
+    - https://hrbgyitz34.cloudflare-gateway.com/dns-query
+  direct-nameserver: *direct_dns_servers
+  direct-nameserver-follow-policy: true
+  nameserver:
+    - https://cloudflare-dns.com/dns-query#🌍 PROXY
+    - https://dns.google/dns-query#🌍 PROXY
+    - https://unfiltered.adguard-dns.com/dns-query#🌍 PROXY
+  # - https://dns.quad9.net/dns-query           # IBM Quad9 公共 DNS # 9.9.9.11            149.112.112.11
+  # - https://doh.opendns.com/dns-query         # OpenDNS 公共 DNS  # 208.67.220.220      208.67.222.222
+  # - https://doh.dns.sb/dns-query              # DNS.SB 公共 DNS   # 185.222.222.222     45.11.45.11
+  # - https://dns.twnic.tw/dns-query            # Quad101 公共 DNS  # 101.101.101.10      101.102.103.10
+  nameserver-policy:
+    # 本节按 rules 中对应规则的先后顺序排列；douyin 等特例条目保留原位。
+    # '+.ts.net':
+    # - 100.100.100.100
+    'rule-set:douyin':
+    - system
+    - 180.184.1.1
+    - 180.184.2.2
+    'rule-set:private':
+    - system
+    'rule-set:geolocation-cn,cn-additional,apple-cn,microsoft-cn,games-cn': *direct_dns_servers
+    # 业务域名解析尽可能跟随路由组；仅覆盖 DOMAIN、DOMAIN-SUFFIX 与 domain/classical 规则集。
+    # nameserver-policy 按文件顺序匹配、先命中者优先；与上方条目重叠的域名以在前条目为准，本段映射仅对未被前面命中的域名生效。
+    "rule-set:microsoft": ["https://cloudflare-dns.com/dns-query#💠 海外微软", "https://dns.google/dns-query#💠 海外微软", "https://unfiltered.adguard-dns.com/dns-query#💠 海外微软"]
+    "rule-set:apple": ["https://cloudflare-dns.com/dns-query#🍎 海外苹果", "https://dns.google/dns-query#🍎 海外苹果", "https://unfiltered.adguard-dns.com/dns-query#🍎 海外苹果"]
+    'rule-set:proxy@direct': *direct_dns_servers
+    "rule-set:telegram_domain": ["https://cloudflare-dns.com/dns-query#📲 Telegram", "https://dns.google/dns-query#📲 Telegram", "https://unfiltered.adguard-dns.com/dns-query#📲 Telegram"]
+    "rule-set:google": ["https://cloudflare-dns.com/dns-query#🔎 Google", "https://dns.google/dns-query#🔎 Google", "https://unfiltered.adguard-dns.com/dns-query#🔎 Google"]
+    "rule-set:google-cn": ["https://cloudflare-dns.com/dns-query#🔎 Google", "https://dns.google/dns-query#🔎 Google", "https://unfiltered.adguard-dns.com/dns-query#🔎 Google"]
+    "rule-set:Gemini_Domain": ["https://cloudflare-dns.com/dns-query#🔎 Google", "https://dns.google/dns-query#🔎 Google", "https://unfiltered.adguard-dns.com/dns-query#🔎 Google"]
+    "rule-set:meta": ["https://cloudflare-dns.com/dns-query#♾️ Meta", "https://dns.google/dns-query#♾️ Meta", "https://unfiltered.adguard-dns.com/dns-query#♾️ Meta"]
+    "+.muse.ai": ["https://cloudflare-dns.com/dns-query#♾️ Meta", "https://dns.google/dns-query#♾️ Meta", "https://unfiltered.adguard-dns.com/dns-query#♾️ Meta"]
+    "hatch-api.meta.ai": ["https://cloudflare-dns.com/dns-query#♾️ Meta", "https://dns.google/dns-query#♾️ Meta", "https://unfiltered.adguard-dns.com/dns-query#♾️ Meta"]
+    "api.meta.ai": ["https://cloudflare-dns.com/dns-query#♾️ Meta", "https://dns.google/dns-query#♾️ Meta", "https://unfiltered.adguard-dns.com/dns-query#♾️ Meta"]
+    "agent.meta.ai": ["https://cloudflare-dns.com/dns-query#♾️ Meta", "https://dns.google/dns-query#♾️ Meta", "https://unfiltered.adguard-dns.com/dns-query#♾️ Meta"]
+    "+.metaaivm.com": ["https://cloudflare-dns.com/dns-query#♾️ Meta", "https://dns.google/dns-query#♾️ Meta", "https://unfiltered.adguard-dns.com/dns-query#♾️ Meta"]
+    "auth.meta.com": ["https://cloudflare-dns.com/dns-query#♾️ Meta", "https://dns.google/dns-query#♾️ Meta", "https://unfiltered.adguard-dns.com/dns-query#♾️ Meta"]
+    "meta.graph.meta.com": ["https://cloudflare-dns.com/dns-query#♾️ Meta", "https://dns.google/dns-query#♾️ Meta", "https://unfiltered.adguard-dns.com/dns-query#♾️ Meta"]
+    "edge-metaclaw-http.c10r.facebook.com": ["https://cloudflare-dns.com/dns-query#♾️ Meta", "https://dns.google/dns-query#♾️ Meta", "https://unfiltered.adguard-dns.com/dns-query#♾️ Meta"]
+    "shortwave.facebook.com": ["https://cloudflare-dns.com/dns-query#♾️ Meta", "https://dns.google/dns-query#♾️ Meta", "https://unfiltered.adguard-dns.com/dns-query#♾️ Meta"]
+    "node.hatch.one": ["https://cloudflare-dns.com/dns-query#♾️ Meta", "https://dns.google/dns-query#♾️ Meta", "https://unfiltered.adguard-dns.com/dns-query#♾️ Meta"]
+    "+.hark.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "+.wabi.ai": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "+.tabbyml.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "+.pickle.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "api.anthropic.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "console.anthropic.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "statsig.anthropic.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "status.anthropic.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "sentry.anthropic.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "support.anthropic.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "mcp-proxy.anthropic.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "platform.claude.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "code.claude.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "downloads.claude.ai": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "bridge.claudeusercontent.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "cdn.growthbook.io": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "cdn.usefathom.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "registry.npmjs.org": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "storage.googleapis.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "formulae.brew.sh": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "http-intake.logs.us5.datadoghq.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "browser-intake-us5-datadoghq.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "servd-anthropic-website.b-cdn.net": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "claudemcpclient.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "claudemcpcontent.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "+.anthropic.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "+.claude.ai": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "+.claude.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "+.claudeusercontent.com": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "+.clau.de": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "+.modelcontextprotocol.io": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "anthropic.com.cdn.cloudflare.net": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "anthropic-com.ghost.io": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "+.sentry.io": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "+.statsigapi.net": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "rule-set:ai": ["https://cloudflare-dns.com/dns-query#🤖 AI大模型", "https://dns.google/dns-query#🤖 AI大模型", "https://unfiltered.adguard-dns.com/dns-query#🤖 AI大模型"]
+    "rule-set:spotify": ["https://cloudflare-dns.com/dns-query#🎧 Spotify", "https://dns.google/dns-query#🎧 Spotify", "https://unfiltered.adguard-dns.com/dns-query#🎧 Spotify"]
+    "rule-set:discord": ["https://cloudflare-dns.com/dns-query#💬 Discord", "https://dns.google/dns-query#💬 Discord", "https://unfiltered.adguard-dns.com/dns-query#💬 Discord"]
+    "rule-set:reddit": ["https://cloudflare-dns.com/dns-query#👽 Reddit", "https://dns.google/dns-query#👽 Reddit", "https://unfiltered.adguard-dns.com/dns-query#👽 Reddit"]
+    "rule-set:netflix": ["https://cloudflare-dns.com/dns-query#🎥 Netflix", "https://dns.google/dns-query#🎥 Netflix", "https://unfiltered.adguard-dns.com/dns-query#🎥 Netflix"]
+    "rule-set:patreon": ["https://cloudflare-dns.com/dns-query#💝 Patreon", "https://dns.google/dns-query#💝 Patreon", "https://unfiltered.adguard-dns.com/dns-query#💝 Patreon"]
+    "rule-set:ehentai": ["https://cloudflare-dns.com/dns-query#📚 EHentai", "https://dns.google/dns-query#📚 EHentai", "https://unfiltered.adguard-dns.com/dns-query#📚 EHentai"]
+    "rule-set:pikpak": ["https://cloudflare-dns.com/dns-query#☁️ PikPak", "https://dns.google/dns-query#☁️ PikPak", "https://unfiltered.adguard-dns.com/dns-query#☁️ PikPak"]
+    "rule-set:line": ["https://cloudflare-dns.com/dns-query#💬 LINE", "https://dns.google/dns-query#💬 LINE", "https://unfiltered.adguard-dns.com/dns-query#💬 LINE"]
+    "d3r7nsslvs6aaf.cloudfront.net": ["https://cloudflare-dns.com/dns-query#💳 金融支付", "https://dns.google/dns-query#💳 金融支付", "https://unfiltered.adguard-dns.com/dns-query#💳 金融支付"]
+    "rule-set:category-cryptocurrency": ["https://cloudflare-dns.com/dns-query#💳 金融支付", "https://dns.google/dns-query#💳 金融支付", "https://unfiltered.adguard-dns.com/dns-query#💳 金融支付"]
+    "rule-set:paypal": ["https://cloudflare-dns.com/dns-query#💳 金融支付", "https://dns.google/dns-query#💳 金融支付", "https://unfiltered.adguard-dns.com/dns-query#💳 金融支付"]
+    "rule-set:stripe": ["https://cloudflare-dns.com/dns-query#💳 金融支付", "https://dns.google/dns-query#💳 金融支付", "https://unfiltered.adguard-dns.com/dns-query#💳 金融支付"]
+    "rule-set:visa": ["https://cloudflare-dns.com/dns-query#💳 金融支付", "https://dns.google/dns-query#💳 金融支付", "https://unfiltered.adguard-dns.com/dns-query#💳 金融支付"]
+    "rule-set:mastercard": ["https://cloudflare-dns.com/dns-query#💳 金融支付", "https://dns.google/dns-query#💳 金融支付", "https://unfiltered.adguard-dns.com/dns-query#💳 金融支付"]
+    "rule-set:wise": ["https://cloudflare-dns.com/dns-query#💳 金融支付", "https://dns.google/dns-query#💳 金融支付", "https://unfiltered.adguard-dns.com/dns-query#💳 金融支付"]
+    "rule-set:twitter-x-domain": ["https://cloudflare-dns.com/dns-query#✖️ Twitter", "https://dns.google/dns-query#✖️ Twitter", "https://unfiltered.adguard-dns.com/dns-query#✖️ Twitter"]
+    "rule-set:steam": ["https://cloudflare-dns.com/dns-query#🎮 Steam平台（非下载/CDN）", "https://dns.google/dns-query#🎮 Steam平台（非下载/CDN）", "https://unfiltered.adguard-dns.com/dns-query#🎮 Steam平台（非下载/CDN）"]
+    "rule-set:games": ["https://cloudflare-dns.com/dns-query#🎮 Games-Global", "https://dns.google/dns-query#🎮 Games-Global", "https://unfiltered.adguard-dns.com/dns-query#🎮 Games-Global"]
+    "rule-set:TikTok": ["https://cloudflare-dns.com/dns-query#🎵 TikTok", "https://dns.google/dns-query#🎵 TikTok", "https://unfiltered.adguard-dns.com/dns-query#🎵 TikTok"]
+  prefer-h3: true
+  respect-rules: false                                            
+  enhanced-mode: fake-ip                  
+  fake-ip-range: '198.18.0.1/16'
+  fake-ip-range6: fdfe:dcba:9876::1/64
+  fake-ip-filter-mode: blacklist                    
+  fake-ip-filter: 
+    - rule-set:fakeip-filter_domain
+    - rule-set:connectcheck
+    - rule-set:private
+    - rule-set:geolocation-cn
+    - rule-set:cn-additional
+    - rule-set:apple-cn
+    - rule-set:microsoft-cn
+    - rule-set:games-cn
+    - rule-set:googlefcm
+    - yacd.haishan.me
+    - +.alipayeshop.com
+    - rule-set:pixiv
+    - pixshaft.com
+    - gh-proxy.com
+
+hosts                             :                                            
+  '+.clash.dev'               : [ '127.0.0.1'          ]                
+  'services.googleapis.cn'    : [ 'services.googleapis.com' ]
+  '+.mcdn.bilivideo.com'      : [ '0.0.0.0'            ]
+  '+.mcdn.bilivideo.cn'       : [ '0.0.0.0'            ]
+  'mtalk.google.com'          : [ '142.250.107.188'    , '142.251.2.188'      , '142.250.141.188'    , '74.125.137.188'     , '142.251.169.188'    , '172.253.135.188'    ]
+  'dns.msftncsi.com'          : [ '131.107.255.255'    , 'fd3e:4f5a:5b81::1'  ]
+  #'dns.alidns.com'            : [ '223.5.5.5'          , '223.6.6.6'          ] # 🇨🇳 阿里 DNS
+  #'pdns.dnspod.cn'            : [ '119.29.29.29'       , '119.28.28.28'       ] # 🇨🇳 腾讯 DNS
+  #'dns.pub'                   : [ '119.29.29.29'       ]           # 🇨🇳 腾讯 DNS  
+  #'doh.pub'                   : [ '1.12.12.12'         , '120.53.53.53'       ] # 🇨🇳 腾讯 DNS
+  #'dot.pub'                   : [ '1.12.12.12'         , '120.53.53.53'       ] # 🇨🇳 腾讯 DNS
+  #'one.one.one.one'           : [ '1.0.0.1'            , '1.1.1.1'            ] # 🇺🇸 Cloudflare 公共 DNS
+  '*.pangolin-sdk-toutiao': 0.0.0.0
+  '*.pangolin-sdk-toutiao.*': 0.0.0.0
+  '*.pstatp.com': 0.0.0.0
+  '*.pstatp.com.*': 0.0.0.0
+  '*.pglstatp-toutiao.com': 0.0.0.0
+  '*.pglstatp-toutiao.com.*': 0.0.0.0
+  'gurd.snssdk.com': 0.0.0.0
+  'gurd.snssdk.com.*': 0.0.0.0
+
+
+
+
+proxy-providers:
+  subscription:
+    type: http
+    url: "https://example.invalid/REPLACE_WITH_YOUR_SUBSCRIPTION_URL"
+    path: ./proxy-providers/subscription.yaml
+    interval: 3600
+    proxy: DIRECT
+    health-check:
+      enable: true
+      url: https://g.cn/generate_204
+      interval: 300
+      lazy: true
+
+proxies: []
+proxy-groups:
+  - name: 🌍 PROXY
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-proxy.png"
+    type: select
+    proxies: *proxy_default_choices
+  - name: 👉 手动选择
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-select.png"
+    type: select
+    include-all: true
+  - name: ♻️ 自动选择
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-auto.png"
+    <<: *proxy_healthcheck
+    type: url-test
+    tolerance: 10
+    include-all: true
+  # SKK 广告拦截组为可选配置；启用时，需同时取消注释下方 rule-providers 与 rules 对应段落。
+  # - name: 🛑 广告拦截
+  #   icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-adblock.svg"
+  #   type: select
+  #   proxies:
+  #     - REJECT
+  #     - REJECT-DROP
+  #     - PASS
+  - name: 🔄 负载均衡
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-clash-verge-rev-balance.svg"
+    type: select
+    proxies:
+      - consistent-hashing
+      - sticky-sessions
+      - round-robin
+  - name: consistent-hashing
+    <<: *proxy_healthcheck
+    type: load-balance
+    include-all: true
+    strategy: consistent-hashing
+    hidden: true
+  - name: sticky-sessions
+    <<: *proxy_healthcheck
+    type: load-balance
+    include-all: true
+    strategy: sticky-sessions
+    hidden: true
+  - name: round-robin
+    <<: *proxy_healthcheck
+    type: load-balance
+    include-all: true
+    strategy: round-robin
+    hidden: true
+  - name: 🔎 Google
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-google.svg"
+    type: select
+    proxies: *proxy_default_choices
+    include-all: true
+  - name: ♾️ Meta
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-meta.svg"
+    type: select
+    proxies: *proxy_default_choices
+    include-all: true
+  - name: 🤖 AI大模型
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-ai.png"
+    type: select
+    proxies: *proxy_default_choices
+    include-all: true
+  - name: 📲 Telegram
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-telegram.png"
+    type: select
+    proxies: *proxy_default_choices
+    include-all: true
+  - name: ✖️ Twitter
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-clash-verge-rev-twitter.svg"
+    type: select
+    proxies: *proxy_default_choices
+    include-all: true
+  - name: 💬 Discord
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-discord.svg"
+    type: select
+    proxies: *proxy_default_choices
+    include-all: true
+  - name: 👽 Reddit
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-reddit.svg"
+    type: select
+    proxies: *proxy_default_choices
+    include-all: true
+  - name: 💬 LINE
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-line.svg"
+    type: select
+    proxies: *proxy_default_choices
+    include-all: true
+  - name: 🎵 TikTok
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-tiktok.png"
+    type: select
+    proxies: *proxy_default_choices
+    include-all: true
+  - name: 🎥 Netflix
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-netflix.svg"
+    type: select
+    proxies: *proxy_default_choices
+    include-all: true
+  - name: 🎧 Spotify
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-spotify.svg"
+    type: select
+    proxies: *proxy_default_choices
+    include-all: true
+  - name: 🎬 Emby
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-emby.svg"
+    type: select
+    proxies: *proxy_default_choices
+    include-all: true
+  - name: 🍎 海外苹果
+    icon: https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-AIsouler-MyClash-Apple.svg
+    type: select
+    proxies: *proxy_default_choices
+    include-all: true
+  - name: 💠 海外微软
+    icon: https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-Microsoft.svg
+    type: select
+    proxies: *proxy_default_choices
+    include-all: true
+  - name: 🎮 Steam平台（非下载/CDN）
+    icon: https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-AIsouler-MyClash-Steam.svg
+    type: select
+    default-selected: DIRECT
+    proxies: *proxy_default_choices
+    include-all: true
+  # Telegram DC 地区组为可选配置；启用时，需同时取消注释下方 rule-providers 与 rules 对应段落。
+  # - name: 📲 DC1-MIA
+  #   icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-United_States.svg"
+  #   type: select
+  #   filter: '(?i)🇺🇸|美国|迈阿密|miami|\bMIA\b|\bUSA\b|united\s*states'
+  #   include-all: true
+  #   empty-fallback: COMPATIBLE
+  # - name: 📲 DC24-AMS
+  #   icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Netherlands.svg"
+  #   type: select
+  #   filter: '(?i)🇳🇱|荷兰|阿姆斯特丹|amsterdam|\bAMS\b|\bNL\b|netherlands'
+  #   include-all: true
+  #   empty-fallback: COMPATIBLE
+  # - name: 📲 DC5-SIN
+  #   icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Singapore.svg"
+  #   type: select
+  #   filter: '(?i)🇸🇬|🇭🇰|新加坡|狮城|香港|singapore|hong\s*kong|\bSG\b|\bSGP\b|\bHK\b|\bHKG\b'
+  #   include-all: true
+  #   empty-fallback: COMPATIBLE
+  - name: 🎮 Games-Global
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-games-cn.png"
+    type: select
+    default-selected: 🎮 Steam平台（非下载/CDN）
+    proxies:
+      - 🎮 Steam平台（非下载/CDN）
+    include-all: true
+
+  - name: 💳 金融支付
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-bitcoin.svg"
+    type: select
+    proxies: *proxy_default_choices
+    include-all: true
+  - name: 💝 Patreon
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-simple-icons-patreon.svg"
+    type: select
+    proxies: *proxy_default_choices
+    include-all: true
+  - name: 📚 EHentai
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-EHentai.svg"
+    type: select
+    proxies: *proxy_default_choices
+    include-all: true
+  - name: ☁️ PikPak
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-PikPak.svg"
+    type: select
+    proxies: *proxy_default_choices
+    include-all: true
+  # FCM：Google FCM 域名分流目标，由 关闭FCM直连 开关控制本组的 proxies。
+  # 默认关闭时使用 DIRECT，开启后使用 👉 手动选择；开关图标取自本组的 icon 字段。
+  - name: FCM
+    icon: "https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-FCM.svg"
+    type: select
+    proxies:
+      - 👉 手动选择
+      - DIRECT
+
+rule-providers:
+  # SKK 广告拦截规则集为可选配置；启用时，需同时取消注释上方 proxy-groups 与下方 rules 对应段落。
+  # skk_reject: { <<: *domain_yaml, format: text, interval: 43200, url: 'https://ruleset.skk.moe/Clash/domainset/reject.txt', path: ./ruleset/skk_reject.txt }
+  # skk_reject_non_ip: { <<: *classical_yaml, format: text, interval: 43200, url: 'https://ruleset.skk.moe/Clash/non_ip/reject.txt', path: ./ruleset/skk_reject_non_ip.txt }
+  # skk_reject_drop: { <<: *classical_yaml, format: text, interval: 43200, url: 'https://ruleset.skk.moe/Clash/non_ip/reject-drop.txt', path: ./ruleset/skk_reject_drop.txt }
+  # skk_reject_ip: { <<: *classical_yaml, format: text, interval: 43200, url: 'https://ruleset.skk.moe/Clash/ip/reject.txt', path: ./ruleset/skk_reject_ip.txt }
+  Gemini_Domain: { <<: *domain_yaml, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/Accademia/Additional_Rule_For_Clash/master/Gemini/Gemini_Domain.yaml', path: ./ruleset/Gemini_Domain.yaml }
+  HijackingPlus: { <<: *classical_yaml, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/Accademia/Additional_Rule_For_Clash/refs/heads/main/HijackingPlus/HijackingPlus_No_Resolve.yaml', path: ./ruleset/HijackingPlus.yaml }
+  TikTok: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/tiktok.mrs', path: ./ruleset/tiktok.mrs, path-in-bundle: 'geo/geosite/tiktok.mrs' }
+  ai: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/category-ai-!cn.mrs', path: ./ruleset/ai.mrs, path-in-bundle: 'geo/geosite/category-ai-!cn.mrs' }
+  apple: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/apple.mrs', path: ./ruleset/apple.mrs, path-in-bundle: 'geo/geosite/apple.mrs' }
+  apple_ip: { <<: *ipcidr_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geoip/apple.mrs', path: ./ruleset/apple_ip.mrs, path-in-bundle: 'geo/geoip/apple.mrs' }
+  category-cryptocurrency: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/category-cryptocurrency.mrs', path: ./ruleset/category-cryptocurrency.mrs, path-in-bundle: 'geo/geosite/category-cryptocurrency.mrs' }
+  discord: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/discord.mrs', path: ./ruleset/discord.mrs, path-in-bundle: 'geo/geosite/discord.mrs' }
+  douyin: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/douyin.mrs', path: ./ruleset/douyin.mrs, path-in-bundle: 'geo/geosite/douyin.mrs' }
+  geolocation-cn: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/geolocation-cn.mrs', path: ./ruleset/geolocation-cn.mrs, path-in-bundle: 'geo/geosite/geolocation-cn.mrs' }
+  cn-additional: { <<: *domain_mrs, url: 'https://static-file-global.353355.xyz/rules/cn-additional-list.mrs', path: ./ruleset/cn-additional.mrs, path-in-bundle: 'geo/geosite/cn.mrs' }
+  apple-cn: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/apple-cn.mrs', path: ./ruleset/apple-cn.mrs, path-in-bundle: 'geo/geosite/apple@cn.mrs' }
+  microsoft-cn: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/microsoft-cn.mrs', path: ./ruleset/microsoft-cn.mrs, path-in-bundle: 'geo/geosite/microsoft@cn.mrs' }
+  games-cn: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/games-cn.mrs', path: ./ruleset/games-cn.mrs, path-in-bundle: 'geo/geosite/category-games-cn.mrs' }
+  echs_direct_ip: { <<: *ipcidr_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/echs-top/proxy/main/mrs/ip/direct.mrs', path: ./ruleset/echs_direct_ip.mrs, path-in-bundle: 'geo/geoip/cn.mrs' }
+  ehentai: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/ehentai.mrs', path: ./ruleset/ehentai.mrs, path-in-bundle: 'geo/geosite/ehentai.mrs' }
+  fakeip-filter_domain: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/fakeip-filter.mrs', path: ./ruleset/fakeip-filter_domain.mrs, path-in-bundle: 'geo/geosite/fakeip-filter.mrs' }
+  connectcheck: { <<: *domain_mrs, url: 'https://cdn.jsdmirror.com/gh/appshubcc/bett-rules@meta/geo/geosite/connectivity-check.mrs', path: ./ruleset/connectcheck.mrs, path-in-bundle: 'geo/geosite/connectivity-check.mrs' }
+  games: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/games.mrs', path: ./ruleset/games.mrs, path-in-bundle: 'geo/geosite/category-games-!cn.mrs' }
+  # gfw: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/gfw.mrs', path: ./ruleset/gfw.mrs }
+  google: { <<: *domain_yaml, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/google.txt', path: ./ruleset/google.yaml }
+  google-cn: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/google-cn.mrs', path: ./ruleset/google-cn.mrs, path-in-bundle: 'geo/geosite/google@cn.mrs' }
+  googlefcm: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/googlefcm.mrs', path: ./ruleset/googlefcm.mrs, path-in-bundle: 'geo/geosite/googlefcm.mrs' }
+  line: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/line.mrs', path: ./ruleset/line.mrs, path-in-bundle: 'geo/geosite/line.mrs' }
+  mastercard: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/mastercard.mrs', path: ./ruleset/mastercard.mrs, path-in-bundle: 'geo/geosite/mastercard.mrs' }
+  meta: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/meta.mrs', path: ./ruleset/meta.mrs, path-in-bundle: 'geo/geosite/meta.mrs' }
+  netflix: { <<: *classical_yaml, format: text, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/DustinWin/domain-list-custom/domains/netflix.list', path: ./ruleset/netflix.list }
+  microsoft_ip: { <<: *ipcidr_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geoip/microsoft.mrs', path: ./ruleset/microsoft_ip.mrs, path-in-bundle: 'geo/geoip/microsoft.mrs' }
+  microsoft: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/microsoft.mrs', path: ./ruleset/microsoft.mrs, path-in-bundle: 'geo/geosite/microsoft.mrs' }
+  paypal: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/paypal.mrs', path: ./ruleset/paypal.mrs, path-in-bundle: 'geo/geosite/paypal.mrs' }
+  patreon: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/patreon.mrs', path: ./ruleset/patreon.mrs, path-in-bundle: 'geo/geosite/patreon.mrs' }
+  pikpak: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/pikpak.mrs', path: ./ruleset/pikpak.mrs, path-in-bundle: 'geo/geosite/pikpak.mrs' }
+  pixiv: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/pixiv.mrs', path: ./ruleset/pixiv.mrs, path-in-bundle: 'geo/geosite/pixiv.mrs' }
+  private: { <<: *domain_yaml, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/private.txt', path: ./ruleset/private.yaml }
+  # proxy: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/proxy.mrs', path: ./ruleset/proxy.mrs }
+  proxy@direct: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/echs-top/proxy/main/mrs/domain/proxy@direct.mrs', path: ./rules/proxy@direct.mrs }
+  reddit: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/reddit.mrs', path: ./ruleset/reddit.mrs, path-in-bundle: 'geo/geosite/reddit.mrs' }
+  spotify: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/spotify.mrs', path: ./ruleset/spotify.mrs, path-in-bundle: 'geo/geosite/spotify.mrs' }
+  steam_ip: { <<: *ipcidr_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geoip/steam.mrs', path: ./ruleset/steam_ip.mrs, path-in-bundle: 'geo/geoip/steam.mrs' }
+  steam: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/steam.mrs', path: ./ruleset/steam.mrs, path-in-bundle: 'geo/geosite/steam.mrs' }
+  # Telegram DC 地区 CIDR 规则集：启用地区分流时取消注释本段。
+  # dc1_mia:
+  #   type: inline
+  #   behavior: classical
+  #   payload:
+  #     - IP-CIDR,91.108.12.0/22,no-resolve
+  #     - IP-CIDR,149.154.172.0/22,no-resolve
+  #     - IP-CIDR6,2001:b28:f23d::/48,no-resolve
+  # dc24_ams:
+  #   type: inline
+  #   behavior: classical
+  #   payload:
+  #     - IP-CIDR,91.108.58.0/23,no-resolve
+  #     - IP-CIDR,91.108.4.0/22,no-resolve
+  #     - IP-CIDR,91.108.8.0/22,no-resolve
+  #     - IP-CIDR,91.108.20.0/22,no-resolve
+  #     - IP-CIDR,149.154.160.0/21,no-resolve
+  #     - IP-CIDR,95.161.64.0/20,no-resolve
+  #     - IP-CIDR,91.105.192.0/23,no-resolve
+  #     - IP-CIDR,185.76.151.0/24,no-resolve
+  #     - IP-CIDR,194.221.250.50/32,no-resolve
+  #     - IP-CIDR,5.28.192.0/18,no-resolve
+  #     - IP-CIDR,109.239.140.0/24,no-resolve
+  #     - IP-CIDR6,2001:67c:4e8::/48,no-resolve
+  #     - IP-CIDR6,2a0a:f280:203::/48,no-resolve
+  # dc5_sin:
+  #   type: inline
+  #   behavior: classical
+  #   payload:
+  #     - IP-CIDR,91.108.16.0/22,no-resolve
+  #     - IP-CIDR,91.108.56.0/23,no-resolve
+  #     - IP-CIDR,149.154.168.0/22,no-resolve
+  #     - IP-CIDR6,2001:b28:f23c::/48,no-resolve
+  #     - IP-CIDR6,2001:b28:f23f::/48,no-resolve
+  stripe: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/stripe.mrs', path: ./ruleset/stripe.mrs, path-in-bundle: 'geo/geosite/stripe.mrs' }
+  telegram_domain: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/telegram.mrs', path: ./rules/telegram_domain.mrs, path-in-bundle: 'geo/geosite/telegram.mrs' }
+  telegramcidr: { <<: *ipcidr_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/reddishJade/private_proxy/main/Mihomo/Provider/telegram%40ip.mrs', path: ./ruleset/telegramcidr.mrs, path-in-bundle: 'geo/geoip/telegram.mrs' }
+  twitter-x-ipcidr: { <<: *ipcidr_yaml, url: 'https://magicrule.pages.dev/data/_shared/artifacts/Twitter_ipcidr_5cfa0ebce47f47ac.yaml', path: ./ruleset/twitter/x-ipcidr.yaml }
+  twitter-x-domain: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/twitter.mrs', path: ./ruleset/twitter/x-domain.mrs, path-in-bundle: 'geo/geosite/twitter.mrs' }
+  twitter-x-ip: { <<: *ipcidr_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geoip/twitter.mrs', path: ./ruleset/twitter/x-ip.mrs, path-in-bundle: 'geo/geoip/twitter.mrs' }
+  visa: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/visa.mrs', path: ./ruleset/visa.mrs, path-in-bundle: 'geo/geosite/visa.mrs' }
+  wise: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/wise.mrs', path: ./ruleset/wise.mrs, path-in-bundle: 'geo/geosite/wise.mrs' }
+sub-rules:
+  fanqie:
+    - DOMAIN,p6-ad-sign.byteimg.com,REJECT
+    - DOMAIN,p9-ad-sign.byteimg.com,REJECT
+    - DOMAIN,i.snssdk.com,REJECT
+    - DOMAIN,i-lq.snssdk.com,REJECT
+    - DOMAIN,dig.bdurl.net,REJECT
+    - DOMAIN-KEYWORD,zijieapi,REJECT
+    - DOMAIN,activity-ag.awemeughun.com,REJECT
+
+    - DOMAIN,mcs.snssdk.com,REJECT
+    - DOMAIN,tnc3-alisc1.snssdk.com,REJECT
+    - DOMAIN,security-lq.snssdk.com,REJECT
+    - DOMAIN,tnc3-aliec2.snssdk.com,REJECT
+    - DOMAIN,is.snssdk.com,REJECT
+
+    - DOMAIN,v6-novelapp.ixigua.com,REJECT
+    - DOMAIN-WILDCARD,*novelapp.ixigua.com,REJECT
+    - DOMAIN,msync-im1-vip6-std.easemob.com,REJECT
+    - DOMAIN,apd-pcdnwxlogin.teg.tencent-cloud.net,REJECT
+    - DOMAIN,api.iegadp.qq.com,REJECT
+    - DOMAIN,sf3-ttcdn-tos.pstatp.com,REJECT
+    - DOMAIN-SUFFIX,pglstatp-toutiao.com,REJECT
+
+    - DOMAIN-SUFFIX,byteorge.com,REJECT
+    - DOMAIN-SUFFIX,bytegoofy.com,REJECT
+    - DOMAIN-SUFFIX,bytedance.com,REJECT
+
+    - IP-CIDR,49.71.37.101/32,REJECT,no-resolve
+    - IP-CIDR,117.71.105.23/32,REJECT,no-resolve
+    - IP-CIDR,218.94.207.205/32,REJECT,no-resolve
+    - IP-CIDR,117.92.229.188/32,REJECT,no-resolve
+    - IP-CIDR,101.36.166.16/32,REJECT,no-resolve
+    - IP-CIDR,180.96.2.114/32,REJECT,no-resolve
+
+    - DOMAIN-WILDCARD,*.pangolin-sdk-toutiao.com,REJECT
+    - DOMAIN-WILDCARD,*.pglstatp-toutiao.com,REJECT
+    - DOMAIN-WILDCARD,*.pstatp.com,REJECT
+    - DOMAIN,gurd.snssdk.com,REJECT
+    - DOMAIN-WILDCARD,*.byteimg.com,REJECT
+    - DOMAIN-WILDCARD,*.snssdk.com,REJECT
+
+    - DOMAIN-WILDCARD,*.pangolin-sdk-toutiao,REJECT
+    - DOMAIN-WILDCARD,*.pangolin-sdk-toutiao.*,REJECT
+    - DOMAIN-WILDCARD,*.pstatp.com.*,REJECT
+    - DOMAIN-WILDCARD,*.pglstatp-toutiao.com.*,REJECT
+    - DOMAIN-WILDCARD,gurd.snssdk.com.*,REJECT
+
+    - MATCH,DIRECT                                           
+rules:
+  - >-
+    AND,((NETWORK,UDP),
+    (DST-PORT,3478-3479/5349-5350/19302-19309),
+    (NOT,((RULE-SET,geolocation-cn))),
+    (NOT,((RULE-SET,cn-additional))),
+    (NOT,((RULE-SET,apple-cn))),
+    (NOT,((RULE-SET,microsoft-cn))),
+    (NOT,((RULE-SET,games-cn))),
+    (NOT,((RULE-SET,games)))),REJECT
+  - RULE-SET,HijackingPlus,REJECT
+  # SKK 广告拦截规则：启用时取消注释，并同时启用上方 proxy-groups 与 rule-providers 对应段落。
+  # - RULE-SET,skk_reject_drop,REJECT-DROP
+  # - RULE-SET,skk_reject,🛑 广告拦截
+  # - RULE-SET,skk_reject_non_ip,🛑 广告拦截
+  # - RULE-SET,skk_reject_ip,REJECT,no-resolve
+  - SUB-RULE,(PROCESS-NAME,com.dragon.read.oversea.gp),fanqie
+  - DOMAIN,gh-proxy.com,DIRECT
+  - DOMAIN-SUFFIX,alipayeshop.com,DIRECT
+  - RULE-SET,echs_direct_ip,DIRECT,no-resolve
+  - RULE-SET,geolocation-cn,DIRECT
+  - RULE-SET,cn-additional,DIRECT
+  - RULE-SET,apple-cn,DIRECT
+  - RULE-SET,microsoft-cn,DIRECT
+  - RULE-SET,games-cn,DIRECT
+  # 教育与科研补充直连：.ac.cn（中科院各所）与常用教育类商业域。
+  - DOMAIN-SUFFIX,ac.cn,DIRECT
+  - DOMAIN-SUFFIX,xdf.cn,DIRECT
+  - DOMAIN,clash.razord.top,DIRECT
+  - DOMAIN,yacd.haishan.me,DIRECT
+  - PROCESS-NAME,svchost.exe,DIRECT
+  - RULE-SET,private,DIRECT,no-resolve    
+  - DOMAIN-WILDCARD,*.deepseek.com,DIRECT
+  - DOMAIN-WILDCARD,*.portal101.cn,DIRECT
+  - DOMAIN-SUFFIX,edgekey.net,DIRECT
+  - DOMAIN-KEYWORD,ikuuu,🌍 PROXY
+  - DOMAIN,lumina.lumina00001.com,DIRECT
+  - DOMAIN,gfwsb.yiku.xyz,DIRECT
+  - DOMAIN,bsub.douyincdns.com,DIRECT
+  - DOMAIN,sub.rinkitotokiku.online,DIRECT
+  # Emby 播放器进程分流：Android 应用包名与 Windows 进程名。
+  - PROCESS-NAME,com.mountains.hills,🎬 Emby
+  - PROCESS-NAME,com.hamhub.app,🎬 Emby
+  - PROCESS-NAME,com.oumi.utility.media.hub,🎬 Emby
+  - PROCESS-NAME,com.feifeiduck.capyplayer,🎬 Emby
+  - PROCESS-NAME,com.attempt.afusekt,🎬 Emby
+  - PROCESS-NAME,com.hush.yamby,🎬 Emby
+  - PROCESS-NAME,com.railux.mobile,🎬 Emby
+  - PROCESS-NAME,com.yumilo.player,🎬 Emby
+  - PROCESS-NAME,HillsLite.exe,🎬 Emby
+  - PROCESS-NAME,HillsPlayer.exe,🎬 Emby
+  - RULE-SET,googlefcm,FCM
+  - RULE-SET,microsoft_ip,💠 海外微软,no-resolve
+  - RULE-SET,microsoft,💠 海外微软
+  - RULE-SET,apple_ip,🍎 海外苹果,no-resolve
+  - RULE-SET,apple,🍎 海外苹果
+  - RULE-SET,proxy@direct,🌍 PROXY
+  # Telegram DC 地区规则：启用地区分流时取消注释，并同时启用对应策略组与 rule-providers。
+  # - RULE-SET,dc1_mia,📲 DC1-MIA,no-resolve
+  # - RULE-SET,dc24_ams,📲 DC24-AMS,no-resolve
+  # - RULE-SET,dc5_sin,📲 DC5-SIN,no-resolve
+  - PROCESS-NAME-REGEX,.*nagram.*,📲 Telegram
+  - "PROCESS-NAME-REGEX,.*telegram.*,📲 Telegram"
+  - RULE-SET,telegramcidr,📲 Telegram,no-resolve
+  - RULE-SET,telegram_domain,📲 Telegram
+  # 🔎 Google 域名与 Gemini 规则集由本组接管。
+  - RULE-SET,google,🔎 Google
+  - RULE-SET,google-cn,🔎 Google
+  - RULE-SET,Gemini_Domain,🔎 Google
+  # ♾️ Meta 域名与 Meta AI 规则统一由本组接管。
+  - RULE-SET,meta,♾️ Meta
+  - DOMAIN-SUFFIX,muse.ai,♾️ Meta
+  - DOMAIN,hatch-api.meta.ai,♾️ Meta
+  - DOMAIN,api.meta.ai,♾️ Meta
+  - DOMAIN,agent.meta.ai,♾️ Meta
+  - DOMAIN-SUFFIX,metaaivm.com,♾️ Meta
+  - DOMAIN,auth.meta.com,♾️ Meta
+  - DOMAIN,meta.graph.meta.com,♾️ Meta
+  - DOMAIN,edge-metaclaw-http.c10r.facebook.com,♾️ Meta
+  - DOMAIN,shortwave.facebook.com,♾️ Meta
+  - DOMAIN,node.hatch.one,♾️ Meta
+  - PROCESS-NAME,com.facebook.aura,♾️ Meta
+  - DOMAIN-SUFFIX,hark.com,🤖 AI大模型
+  - DOMAIN-SUFFIX,wabi.ai,🤖 AI大模型
+  - DOMAIN-SUFFIX,tabbyml.com,🤖 AI大模型
+  - DOMAIN-SUFFIX,pickle.com,🤖 AI大模型
+  - DOMAIN,api.anthropic.com,🤖 AI大模型
+  - DOMAIN,console.anthropic.com,🤖 AI大模型
+  - DOMAIN,statsig.anthropic.com,🤖 AI大模型
+  - DOMAIN,status.anthropic.com,🤖 AI大模型
+  - DOMAIN,sentry.anthropic.com,🤖 AI大模型
+  - DOMAIN,support.anthropic.com,🤖 AI大模型
+  - DOMAIN,mcp-proxy.anthropic.com,🤖 AI大模型
+  - DOMAIN,platform.claude.com,🤖 AI大模型
+  - DOMAIN,code.claude.com,🤖 AI大模型
+  - DOMAIN,downloads.claude.ai,🤖 AI大模型
+  - DOMAIN,bridge.claudeusercontent.com,🤖 AI大模型
+  - DOMAIN,cdn.growthbook.io,🤖 AI大模型
+  - DOMAIN,cdn.usefathom.com,🤖 AI大模型
+  - DOMAIN,registry.npmjs.org,🤖 AI大模型
+  - DOMAIN,storage.googleapis.com,🤖 AI大模型
+  - DOMAIN,formulae.brew.sh,🤖 AI大模型
+  - DOMAIN,http-intake.logs.us5.datadoghq.com,🤖 AI大模型
+  - DOMAIN,browser-intake-us5-datadoghq.com,🤖 AI大模型
+  - DOMAIN,servd-anthropic-website.b-cdn.net,🤖 AI大模型
+  - DOMAIN,claudemcpclient.com,🤖 AI大模型
+  - DOMAIN,claudemcpcontent.com,🤖 AI大模型
+  - DOMAIN-SUFFIX,anthropic.com,🤖 AI大模型
+  - DOMAIN-SUFFIX,claude.ai,🤖 AI大模型
+  - DOMAIN-SUFFIX,claude.com,🤖 AI大模型
+  - DOMAIN-SUFFIX,claudeusercontent.com,🤖 AI大模型
+  - DOMAIN-SUFFIX,clau.de,🤖 AI大模型
+  - DOMAIN-SUFFIX,modelcontextprotocol.io,🤖 AI大模型
+  - IP-CIDR,160.79.104.0/21,🤖 AI大模型,no-resolve
+  - IP-CIDR6,2607:6bc0::/48,🤖 AI大模型,no-resolve
+  - IP-CIDR,17.253.4.0/23,🤖 AI大模型,no-resolve
+  - DOMAIN,anthropic.com.cdn.cloudflare.net,🤖 AI大模型
+  - DOMAIN,anthropic-com.ghost.io,🤖 AI大模型
+  - DOMAIN-SUFFIX,sentry.io,🤖 AI大模型
+  - DOMAIN-SUFFIX,statsigapi.net,🤖 AI大模型
+  - DOMAIN-KEYWORD,datadog,🤖 AI大模型
+  - DOMAIN-KEYWORD,sift,🤖 AI大模型
+  - RULE-SET,ai,🤖 AI大模型
+  - PROCESS-NAME,com.hark.android,🤖 AI大模型
+  - PROCESS-NAME,ai.wabi.android.app,🤖 AI大模型
+  - PROCESS-NAME,com.pickle.client,🤖 AI大模型
+  - PROCESS-NAME-REGEX,(?i).*(manus|tech\.butterfly\.app).*,🤖 AI大模型
+  - PROCESS-NAME-REGEX,(?i).*claude.*,🤖 AI大模型
+  - PROCESS-NAME-REGEX,(?i).*anthropic.*,🤖 AI大模型
+  - RULE-SET,spotify,🎧 Spotify
+  - RULE-SET,discord,💬 Discord
+  - RULE-SET,reddit,👽 Reddit
+  - RULE-SET,netflix,🎥 Netflix
+  - RULE-SET,patreon,💝 Patreon
+  - RULE-SET,ehentai,📚 EHentai
+  - RULE-SET,pikpak,☁️ PikPak
+  - RULE-SET,line,💬 LINE
+  - DOMAIN,d3r7nsslvs6aaf.cloudfront.net,💳 金融支付
+  - RULE-SET,category-cryptocurrency,💳 金融支付
+  - RULE-SET,paypal,💳 金融支付
+  - RULE-SET,stripe,💳 金融支付
+  - RULE-SET,visa,💳 金融支付
+  - RULE-SET,mastercard,💳 金融支付
+  - RULE-SET,wise,💳 金融支付
+  - PROCESS-NAME,com.bitget.exchange,💳 金融支付
+  - PROCESS-NAME,pro.huobi,💳 金融支付
+  - PROCESS-NAME,com.bitkeep.wallet,💳 金融支付
+  - PROCESS-NAME,com.bybit.app,💳 金融支付
+  - PROCESS-NAME,com.ton_keeper,💳 金融支付
+  - PROCESS-NAME,io.gramwallet.app,💳 金融支付
+  - PROCESS-NAME,com.coinbase.android,💳 金融支付
+  - PROCESS-NAME,com.okinc.okex.gp,💳 金融支付
+  - PROCESS-NAME,com.kraken.invest.app,💳 金融支付
+  - PROCESS-NAME,co.mona.android,💳 金融支付
+  - PROCESS-NAME,app.phantom,💳 金融支付
+  - PROCESS-NAME,com.paypal.android.p2pmobile,💳 金融支付
+  - PROCESS-NAME,com.binance.dev,💳 金融支付
+  - PROCESS-NAME,com.binance.us,💳 金融支付
+  - PROCESS-NAME,com.gateio.gateio,💳 金融支付
+  - PROCESS-NAME,com.kubi.kucoin,💳 金融支付
+  - PROCESS-NAME,com.mexcpro.client,💳 金融支付
+  - PROCESS-NAME,com.wallet.crypto.trustapp,💳 金融支付
+  - PROCESS-NAME,io.metamask,💳 金融支付
+  - PROCESS-NAME,im.token.app,💳 金融支付
+  - PROCESS-NAME,vip.mytokenpocket,💳 金融支付
+  - PROCESS-NAME,io.safepal.wallet,💳 金融支付
+  - PROCESS-NAME,exodusmovement.exodus,💳 金融支付
+  - PROCESS-NAME,org.toshi,💳 金融支付
+  - PROCESS-NAME-REGEX,.*twitter.*,✖️ Twitter
+  - RULE-SET,twitter-x-ip,✖️ Twitter,no-resolve
+  - RULE-SET,twitter-x-domain,✖️ Twitter
+  - RULE-SET,twitter-x-ipcidr,✖️ Twitter,no-resolve
+  - RULE-SET,steam_ip,🎮 Steam平台（非下载/CDN）,no-resolve
+  - RULE-SET,steam,🎮 Steam平台（非下载/CDN）
+  - PROCESS-NAME,bf6.exe,🎮 Games-Global
+  - RULE-SET,games,🎮 Games-Global
+  - RULE-SET,TikTok,🎵 TikTok
+  # - RULE-SET,proxy,🌍 PROXY
+  # - RULE-SET,gfw,🌍 PROXY
+  - MATCH,🌍 PROXY
