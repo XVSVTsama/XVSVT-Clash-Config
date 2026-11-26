@@ -62,6 +62,8 @@ const Compatible_With_Bettbox = {
  *    命中的目标在内核直接放行、不进用户态，规则段因此不再写
  *    RULE-SET,echs_direct_ip,DIRECT,no-resolve；这两个规则集只被 listener 引用，
  *    所以 removeUnusedRuleProviders 也认 bypass-rule-set。
+ *    使用AIsouler直连规则 打开时，规则段换成 AIsouler 的国内直连规则集，
+ *    内核放行集同步换成 cn_ip，避免两层各用一套国内 IP 表。
  *    fakeip-icmp: reply 让发往 fake-ip 的 ICMP Echo 在内核应答；
  *    dns-mode 取 respect_policy，DNS 劫持跟随 local／shared 各自的 UID／来源策略。
  *
@@ -3195,6 +3197,21 @@ function applyAisoulerDirectRules(result) {
     }
   });
   result['rule-providers'] = providers;
+
+  // eBPF：内核放行表跟着这次替换走。本分支的国内 IP 直连原本由 listeners 的
+  // bypass-rule-set 在内核完成，规则段没有对应条目；这里不接管的话，换了一套
+  // 国内 IP 表之后内核仍按 echs_direct_ip 放行，等于开关只生效了一半。
+  if (Array.isArray(result.listeners)) {
+    result.listeners.forEach((listener) => {
+      if (!listener || listener.type !== 'ebpf' || !Array.isArray(listener['bypass-rule-set'])) {
+        return;
+      }
+      const next = listener['bypass-rule-set']
+        .map((name) => (name === 'echs_direct_ip' ? 'cn_ip' : name))
+        .filter((name, index, list) => list.indexOf(name) === index);
+      listener['bypass-rule-set'] = next;
+    });
+  }
 
   // 规则：先改 UDP 阻断的国内排除，再删旧直连，最后插入新直连与兜底。
   if (Array.isArray(result.rules)) {

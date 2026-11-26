@@ -10,6 +10,7 @@
 | 入站 | TUN 设备 | 顶层 `listeners` 增加一项 `name: ebpf-in`、`type: ebpf`：`local` 走 cgroup，`shared` 走 packet_rewrite |
 | 内网与预留段 | `route-exclude-address` 列私网、CGNAT、组播、保留网段，不接管 | `bypass-private-address: true` 让私网放行；`0.0.0.0/8`、`224.0.0.0/4`、`240.0.0.0/4`、`ff00::/8` 由内核内置的强制放行处理，`ebpf_bypass_ip` 只是把这四条写进配置 |
 | 国内 IP | 规则段用 `RULE-SET,echs_direct_ip,DIRECT,no-resolve` 匹配 | `listeners.bypass-rule-set` 引用 `echs_direct_ip`：命中的目标在内核直接放行，规则段那条与 `sniffer.skip-dst-address` 里的 `rule-set:echs_direct_ip` 一并删除 |
+| `使用AIsouler直连规则` | 把国内直连规则集替换成 AIsouler 那套（`cn`、`cn_ip` 等） | 同样替换，并把内核放行集从 `echs_direct_ip` 换成 `cn_ip`，两个层面保持一致 |
 | fake-ip ICMP | 由核心处理 | `fakeip-icmp: reply`：发往 fake-ip 的 ICMP Echo 在内核应答，不到核心 |
 | DNS 劫持 | `tun.dns-hijack` 接管 `any:53` | `local` 与 `shared` 的 `dns-mode` 都是 `respect_policy`：先按各自的 UID／来源策略判断，再决定是否劫持 |
 | 共享下联 | 无 | 顶层常量 `EBPF_SHARED_IFACE_SPEC` 记录下联网卡，`main()` 里的 `applyEbpfListener()` 把它写进 `shared.interface`；没有下联时用空转 dummy 网卡占位 |
@@ -57,7 +58,8 @@
 放行发生在规则之前、用户态之前，因此命中放行表的目标不再经过任何规则：
 
 - `REJECT` 类规则对它们是无效的，包括 `RULE-SET,HijackingPlus,REJECT`、`SUB-RULE` 里的 fanqie 拦截，以及 `使用SKK广告拦截` 注入的 reject 规则集。域名走 fake-ip 的流量不受影响（目的地是 fake-ip，仍会被拦截）；受影响的只有拿到真实国内 IP 的流量，实际能否命中还取决于 `开启Sniffer`。
-- WebRTC 与 `QUIC阻断` 生成的 UDP 拦截规则里那串 `NOT` 排除对国内 IP 不再有意义：这些包在内核就被放行，根本不会进入规则匹配。
+- `使用AIsouler直连规则` 会连内核放行集一起换：规则段的国内 IP 直连换成 `cn_ip`，`listeners` 的 `bypass-rule-set` 也从 `echs_direct_ip` 换成 `cn_ip`，两个层面用同一套表；开关关闭时回到 `echs_direct_ip`。`使用SKK广告拦截` 没有对应手段：它的 reject 规则集要在内核放行之后才轮到，而 `bypass-exclude` 只接受 CIDR、读不到规则集内容。
+- WebRTC 与 `QUIC阻断` 生成的 UDP 拦截规则里那串 `NOT` 排除只对 fake-ip 流程有效：内核能把 fake-ip 还原成域名，域名集照常判断；真实的国内 IP 在内核就放行了，规则碰不到。与 `main` 的差别是：`main` 里发往国内 IP 的 STUN 会被那条规则 REJECT，这里直接放行。
 - 这些连接不进入核心的连接列表，也不计入核心的流量统计。
 - fake-ip 段始终强制拦截，即使落在放行范围里也一样：`fake-ip-range6` 的 `fdfe:dcba:9876::/64` 位于 `fc00::/7` 内，仍然会被接管，所以不必往 `bypass-exclude` 里补 fake-ip 段。
 - `dns-mode` 取 `respect_policy` 而不是 `hijack`：`hijack` 在 UID／来源策略之前就劫持所有 53 端口流量，被 `exclude-uid` 排除的应用也会被拉进核心 DNS；`respect_policy` 先判断策略，与 TUN 版「被排除的应用不进 tun、DNS 也不会被劫持」保持一致。
