@@ -1,77 +1,43 @@
 # eBPF 覆写脚本（派生自 main）
 
-`main` 分支是 TUN 版脚本，本分支是同一份脚本的 eBPF 变体：只改与 eBPF 透明入站相关的部分，其余内容取自 `main`。预留段与国内 IP 由内核放行表处理，命中的流量不进用户态。本分支只保留 `script_override.js` 与 `mihomo.yaml` 两个文件，仓库其余说明（YAML 结构、JS 能力边界、远程地址）见 `main` 分支的 README。
+`main` 是 TUN 版；本分支只改与 eBPF 透明入站相关的部分，其余内容取自 `main`。预留段与国内 IP 由内核放行表处理，命中的流量不进用户态。本分支只保留 `script_override.js` 与 `mihomo.yaml`，仓库其余说明（YAML 结构、JS 能力边界、远程地址）见 `main` 的 README。
 
 ## 与 main 的差别
 
 | 项 | `main`（TUN） | 本分支（eBPF） |
 |---|---|---|
-| `tun` | 完整 TUN 配置：`device`、`mtu`、`stack`、`route-address`、`route-exclude-address`、`dns-hijack` 等 | `enable: false`，其余 TUN 字段全部删除 |
-| 入站 | TUN 设备 | 顶层 `listeners` 增加一项 `name: ebpf-in`、`type: ebpf`：`local` 走 cgroup，`shared` 走 packet_rewrite |
-| 内网与预留段 | `route-exclude-address` 列私网、CGNAT、组播、保留网段，不接管 | `bypass-private-address: true` 让私网放行；`0.0.0.0/8`、`224.0.0.0/4`、`240.0.0.0/4`、`ff00::/8` 由内核内置的强制放行处理（`private_address.h` 的 safety bypass），配置里不再重复列出 |
-| 国内 IP | 规则段用 `RULE-SET,echs_direct_ip,DIRECT,no-resolve` 匹配 | `listeners.bypass-rule-set` 引用 `echs_direct_ip`：命中的目标在内核直接放行，规则段那条与 `sniffer.skip-dst-address` 里的 `rule-set:echs_direct_ip` 一并删除 |
-| `使用AIsouler直连规则` | 把国内直连规则集替换成 AIsouler 那套（`cn`、`cn_ip` 等） | 同样替换，并把内核放行集从 `echs_direct_ip` 换成 `cn_ip`，两个层面保持一致 |
-| fake-ip ICMP | 由核心处理 | `fakeip-icmp: reply`：发往 fake-ip 的 ICMP Echo 在内核应答，不到核心 |
-| DNS 劫持 | `tun.dns-hijack` 接管 `any:53` | `local` 与 `shared` 的 `dns-mode` 都是 `respect_policy`：先按各自的 UID／来源策略判断，再决定是否劫持 |
-| 共享下联 | 无 | 顶层常量 `EBPF_SHARED_IFACE_SPEC` 记录下联网卡，`main()` 里的 `applyEbpfListener()` 把它写进 `shared.interface`；没有下联时用空转 dummy 网卡占位 |
-| `IPv6优先` 开关 | 改核心侧字段与 `tun.inet6-address`、`tun.route-address` | 改核心侧 `ipv6`、`dns.ipv6`、`fake-ip-range6`，并把两个角色的 `ipv6` 一起切：关闭后内核不再拦截 v6 |
-| `enable` / `exclude-uid` | 由客户端注入 `tun` 的同名字段 | 同样由客户端（例如 BoxProxy 的 boxctl）注入：`applyEbpfListener()` 删掉 `mode` 与两个角色上的 `enable`，避免与客户端注入的 `local.enable` / `shared.enable` 冲突 |
-| `TUN MTU改为9000`、`开启端点独立NAT` | 两个开关 | 移除：两者只改 `tun` 字段，而本分支的 `tun` 已停用 |
-
-## 与 main 的对应关系
-
-| `main` 里的机制 | eBPF 侧 |
-|---|---|
-| `tun.enable` | `tun.enable: false` + `listeners[].type: ebpf` |
-| `device`、`mtu`、`stack`、`auto-route`、`auto-redirect`、`strict-route`、`endpoint-independent-nat` | 无对应项，不迁移：接管挂在 socket（cgroup）或网卡（TC）上，不建设备、不改路由表 |
-| `auto-detect-interface` 与客户端写入的 `interface-name` | 无对应项：出口由主机路由决定 |
-| `inet6-address` 与 `route-address` 里的 v6 段 | 角色的 `ipv6` 开关，跟随 `IPv6优先` 一起切换 |
-| `route-exclude-address` 的私网与 CGNAT 段 | `bypass-private-address: true` |
-| `route-exclude-address` 的保留与组播段 | 内核内置强制放行，无需配置 |
-| `RULE-SET,echs_direct_ip,DIRECT,no-resolve` | `bypass-rule-set: [echs_direct_ip]`，内核 LPM 表 |
-| `sniffer.skip-dst-address` 的 `rule-set:echs_direct_ip` | 删除：被放行的目标不会到达核心 |
-| `tun.dns-hijack: any:53` | 角色 `dns-mode` 的 DNS 中继 |
-| `dns`、`rules`、`rule-providers`、`proxy-groups` 与其余开关 | 原样保留 |
+| `tun` | 完整 TUN 配置 | `enable: false`，其余 TUN 字段全部删除 |
+| 入站 | TUN 设备 | 顶层 `listeners` 加一项 `name: ebpf-in`、`type: ebpf`：`local` 走 cgroup，`shared` 走 packet_rewrite |
+| 内网与预留段 | `route-exclude-address` 列私网、CGNAT、组播与保留段 | `bypass-private-address: true` 放行私网；`0.0.0.0/8`、`224.0.0.0/4`、`240.0.0.0/4`、`ff00::/8` 由内核内置的强制放行处理 |
+| 国内 IP | 规则段用 `RULE-SET,echs_direct_ip,DIRECT,no-resolve` 匹配 | `listeners.bypass-rule-set` 引用 `echs_direct_ip`，命中的目标在内核直接放行；规则段那条与 `sniffer.skip-dst-address` 里的 `rule-set:echs_direct_ip` 一并删除 |
+| `使用AIsouler直连规则` | 国内直连规则集换成 AIsouler 那套 | 同样替换，并把内核放行集换成 `cn_ip`，两层用同一套表 |
+| fake-ip ICMP | 由核心处理 | `fakeip-icmp: reply`：发往 fake-ip 的 ICMP Echo 在内核应答 |
+| DNS 劫持 | `tun.dns-hijack` 接管 `any:53` | 两个角色的 `dns-mode` 都是 `respect_policy`：先按 UID／来源策略判断，再决定是否劫持 |
+| 共享下联 | 无 | 常量 `EBPF_SHARED_IFACE_SPEC` 记录下联网卡，`applyEbpfListener()` 写进 `shared.interface`；没有下联时用空转 dummy 占位 |
+| `IPv6优先` | 改核心侧字段与 `tun.inet6-address`、`tun.route-address` | 改核心侧 `ipv6`、`dns.ipv6`、`fake-ip-range6`，并把两个角色的 `ipv6` 一起切 |
+| `enable` / `exclude-uid` | 由客户端注入 `tun` 的同名字段 | 同样由客户端注入：`applyEbpfListener()` 删掉 `mode` 与角色上的 `enable`，避免与客户端注入的 `local.enable` / `shared.enable` 冲突 |
+| `TUN MTU改为9000`、`开启端点独立NAT` | 两个开关 | 移除：两者只改 `tun` 字段，而 `tun` 已停用 |
 
 ## 字段来源
 
-`type: ebpf` 不是 mihomo 主线的能力，主线内核遇到该类型会报 `unsupport proxy type: ebpf`。字段写法与可运行的内核取自同一份实现：
+`type: ebpf` 不是 mihomo 主线的能力，主线内核遇到该类型会报 `unsupport proxy type: ebpf`：
 
 | 角色 | 仓库 |
 |---|---|
-| 字段 schema、实际适配的内核 | [liuran001/mihomo](https://github.com/liuran001/mihomo)：`docs/ebpf-inbound.md` 定义字段，构建产物为 `alpha-<sha>-ebpf` |
+| 字段 schema、实际适配的内核 | [liuran001/mihomo](https://github.com/liuran001/mihomo)：`docs/ebpf-inbound.md`，构建产物 `alpha-<sha>-ebpf` |
 | 实现上游 | [TanakaLun/mihomo](https://github.com/TanakaLun/mihomo)：`ebpf-inbound` 分支，代码在 `listener/sing_ebpf` |
 | 数据面库 | [CHIZI-0618/sing-ebpf](https://github.com/CHIZI-0618/sing-ebpf)：cgroup 与 TC 程序、map、能力探测与回滚 |
 
 ## 已知约束
 
-- `mode` 与 `local.enable` / `shared.enable` 只能二选一，同时写会被内核以 `mode cannot be combined with local.enable or shared.enable` 拒绝。
+- `mode` 与 `local.enable` / `shared.enable` 只能二选一，同时写会被内核拒绝。
 - `shared.enable: true` 时 `shared.interface` 必须非空且不含 `lo`；`shared` 关闭时不能保留 `dns-mode`、`ipv6`、`bypass-private-address`、`interface`。
-- `bypass-rule-set` 只认 `behavior: ipcidr` 的规则集：顶层列表对所有角色生效，`local.` / `shared.` 下的同名列表只对该角色追加。shared 的放行列表在空与非空之间变化、或两个角色从共用一套规则集改为各用一套，都需要重建 inbound 才生效。
-- 放行规则集的内容更新不用重载：listener 每次重编译按名字重新读取规则集。
-- `fakeip-icmp: reply` 至少需要一个 TC 承载：`local.data-plane: tc`，或启用 shared（任一数据面）。`local.data-plane: cgroup` 且不启用 shared 时会被拒绝。即使启用，也只有 TC 那一侧看得到 ICMP：手机本机的流量走 cgroup，看不到，本机 ping fake-ip 仍然超时；热点下联（shared 的真实网卡）才享受这条应答。
+- `bypass-rule-set` 只认 `behavior: ipcidr` 的规则集；顶层列表对所有角色生效，角色级列表只追加该角色。shared 的放行列表在空与非空之间变化时需要重建 inbound；规则集内容更新不用重载。
+- `fakeip-icmp: reply` 需要一个 TC 承载：`local.data-plane: tc`，或启用 shared。手机本机流量走 cgroup，看不到 ICMP，本机 ping fake-ip 仍然超时。
 - `shared.data-plane: socket_assign` 需要内核支持 `bpf_sk_assign`（Linux 5.7+ 或厂商回移），否则用默认的 `packet_rewrite`。
-- `enable` 与 `exclude-uid` 由客户端注入；直接在纯 mihomo 环境加载本脚本时，这两个字段要自己补，否则监听不会启用。
+- `enable` 与 `exclude-uid` 由客户端注入；纯 mihomo 环境要自己补，否则监听不会启用。
+- 放行发生在规则之前：命中放行表的目标不再经过任何规则，`REJECT` 类规则（`HijackingPlus`、`SKK` 的 reject 规则集等）对它们无效，这些连接也不进连接列表与流量统计；走 fake-ip 的流程不受影响，fake-ip 段本身始终强制拦截。
 - 换回主线内核时，`listeners` 里的 eBPF 项必须一起去掉，否则核心起不来。
-- `IPv6优先` 对两个角色 `ipv6` 的设置在 BoxProxy 里会被客户端覆盖：boxctl 按 `runtime_profile.ipv6_mode` 写这两个字段，实际以 App 里的 IPv6 设置为准；脚本里的值只在没有客户端接管时生效。实测：脚本算出 `false`，生成的 `startup-config` 里两个角色仍是 `true`。
-
-### 实测记录（Android / BoxProxy / kernel 6.1）
-
-- 内核放行生效：本机连 `223.5.5.5:443` 成功且不产生核心连接日志，连 `1.1.1.1:443` 正常进核心并按规则走 `🌍 PROXY`。
-- `respect_policy` 下 DNS 仍被劫持：`www.example.com` 返回 fake-ip `198.18.3.55`，域名流量照常被核心处理。
-- `fakeip-icmp: reply` 在本机无效：`ping 198.18.3.55` 100% 丢包，原因见上一条约束（本机走 cgroup）。
-- 未验证：热点共享（shared 下联为真实网卡）场景下的放行与 ICMP 应答；`bypass-rule-set` 的规则集内容更新是否按名字即时生效。
-
-### 内核放行带来的取舍
-
-放行发生在规则之前、用户态之前，因此命中放行表的目标不再经过任何规则：
-
-- `REJECT` 类规则对它们是无效的，包括 `RULE-SET,HijackingPlus,REJECT`、`SUB-RULE` 里的 fanqie 拦截，以及 `使用SKK广告拦截` 注入的 reject 规则集。域名走 fake-ip 的流量不受影响（目的地是 fake-ip，仍会被拦截）；受影响的只有拿到真实国内 IP 的流量，实际能否命中还取决于 `开启Sniffer`。
-- `使用AIsouler直连规则` 会连内核放行集一起换：规则段的国内 IP 直连换成 `cn_ip`，`listeners` 的 `bypass-rule-set` 也从 `echs_direct_ip` 换成 `cn_ip`，两个层面用同一套表；开关关闭时回到 `echs_direct_ip`。`使用SKK广告拦截` 没有对应手段：它的 reject 规则集要在内核放行之后才轮到，而 `bypass-exclude` 只接受 CIDR、读不到规则集内容。
-- WebRTC 与 `QUIC阻断` 生成的 UDP 拦截规则里那串 `NOT` 排除只对 fake-ip 流程有效：内核能把 fake-ip 还原成域名，域名集照常判断；真实的国内 IP 在内核就放行了，规则碰不到。与 `main` 的差别是：`main` 里发往国内 IP 的 STUN 会被那条规则 REJECT，这里直接放行。
-- 这些连接不进入核心的连接列表，也不计入核心的流量统计。
-- fake-ip 段始终强制拦截，即使落在放行范围里也一样：`fake-ip-range6` 的 `fdfe:dcba:9876::/64` 位于 `fc00::/7` 内，仍然会被接管，所以不必往 `bypass-exclude` 里补 fake-ip 段。
-- `dns-mode` 取 `respect_policy` 而不是 `hijack`：`hijack` 在 UID／来源策略之前就劫持所有 53 端口流量，被 `exclude-uid` 排除的应用也会被拉进核心 DNS；`respect_policy` 先判断策略，与 TUN 版「被排除的应用不进 tun、DNS 也不会被劫持」保持一致。
 
 ## 用法
 
