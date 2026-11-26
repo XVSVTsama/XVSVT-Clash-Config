@@ -26,6 +26,7 @@
 
 <p align="center">
   <a href="#remote-override">远程覆写地址</a> ·
+  <a href="#branches">分支一览</a> ·
   <a href="#yaml-config">YAML 说明</a> ·
   <a href="#script-override">JavaScript 说明</a> ·
   <a href="#dns-model">dns-host背景说明</a> ·
@@ -52,6 +53,29 @@ CDN 链接：
 
 - <img src="https://img.shields.io/badge/CDN-gh--proxy-blue?style=flat-square" alt="gh-proxy">：全球 Anycast，更新即时，无缓存
 - <img src="https://img.shields.io/badge/CDN-jsdmirror-blue?style=flat-square" alt="jsdmirror">：腾讯云 EdgeOne，自动同步源站
+
+<a id="branches"></a>
+
+<br>
+
+<h2 align="center">🌿 分支一览</h2>
+
+<br>
+
+`main` 是 TUN 版，也是本仓库唯一的完整分支（YAML、脚本、文档、图标、CI 都在这里）；其余分支都是它的派生分支，只保留各自的差异文件，说明以 `main` 为准。分支下拉按名字排序，前缀数字决定展示顺序。
+
+<table width="100%">
+<thead>
+<tr><th width="16%">分支<img src="assets/table-spacer.png" width="256" height="1" alt=""></th><th width="54%">作用<img src="assets/table-spacer.png" width="864" height="1" alt=""></th><th width="30%">覆写脚本相对地址<img src="assets/table-spacer.png" width="480" height="1" alt=""></th></tr>
+</thead>
+<tbody>
+<tr><td><strong>main</strong></td><td>TUN 版，完整仓库</td><td><code>refs/heads/main/script_override.js</code></td></tr>
+<tr><td><strong>01-ebpf</strong></td><td>eBPF 透明入站：<code>tun</code> 停用，预留段与国内 IP 在内核放行</td><td><code>refs/heads/01-ebpf/script_override.js</code></td></tr>
+<tr><td><strong>02-tproxy</strong></td><td>TPROXY 透明入站：<code>tun</code> 停用，顶层加 <code>tproxy-port</code></td><td><code>refs/heads/02-tproxy/script_override.js</code></td></tr>
+<tr><td><strong>03-no-tun</strong></td><td>删除全部 TUN 字段与两个 TUN 专属开关，入站交给其它组件</td><td><code>refs/heads/03-no-tun/script_override.js</code></td></tr>
+<tr><td><strong>04-boxproxy</strong></td><td>BoxProxy 启动前生命周期脚本 <code>iface-auto.sh</code>，不含覆写脚本</td><td>—</td></tr>
+</tbody>
+</table>
 
 <a id="yaml-config"></a>
 
