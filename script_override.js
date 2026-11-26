@@ -4425,8 +4425,10 @@ function main(config, profileName) {
   }
 
   // ---- 2.1 IPv6 开关（默认关闭）----
-  // tun 未启用，这里只切核心侧开关：AAAA 解析与 fake-ip6。
-  if (ruleOptionsEnable['IPv6优先'] === true) {
+  // tun 未启用，接管侧对应 listeners 的角色 ipv6：关掉后内核不再拦截 v6 流量，
+  // 与 TUN 版删掉 inet6-address、把 v6 段从 route-address 移除是同一个效果。
+  const keepIPv6 = ruleOptionsEnable['IPv6优先'] === true;
+  if (keepIPv6) {
     result.ipv6 = true;
     if (result.dns) {
       result.dns.ipv6 = true;
@@ -4437,6 +4439,18 @@ function main(config, profileName) {
       result.dns.ipv6 = false;
       delete result.dns['fake-ip-range6'];
     }
+  }
+  if (Array.isArray(result.listeners)) {
+    result.listeners.forEach((listener) => {
+      if (!listener || listener.type !== 'ebpf') {
+        return;
+      }
+      ['local', 'shared'].forEach((role) => {
+        if (listener[role] && typeof listener[role] === 'object') {
+          listener[role].ipv6 = keepIPv6;
+        }
+      });
+    });
   }
 
   if (ruleOptionsEnable['TUN MTU改为9000'] === true && result.tun) {
