@@ -2,6 +2,8 @@
 
 `iface-auto.sh` 是 BoxProxy 在服务启动前（`BOX_EVENT=pre-start`）以 root 执行的脚本，把「本次网络模式」翻译成内核、覆写脚本、网卡与转发规则的具体取值。本分支只保留这一个文件，不含覆写脚本本身；脚本改写的 `tun-我的.js`、`tproxy-我的.js`、`ebpf-我的.js` 属于客户端目录，与仓库其它分支的 `script_override.js` 没有直接关系。
 
+默认不会关闭任何应用：只有当启动配置里要用的端口确实被第三方应用占着时，才停掉那个应用。
+
 ## 放到哪里
 
 ```text
@@ -23,7 +25,8 @@ chmod 755 iface-auto.sh
 | 写 TUN 网卡 | `tun` 与 `unknown` 模式下把出口网卡写进覆写脚本的 `interface-name`，值不变就不写 |
 | 写 eBPF 下联 | 把所有含 `EBPF_SHARED_IFACE_SPEC` 的脚本改成下联网卡（逗号分隔）；没有下联时创建空转 dummy（默认 `boxebpf0`）写进去 |
 | 放行转发 | 为每个下联接口在 `FORWARD` 链头插入入向与出向各一条 ACCEPT |
-| 停包（可选） | `BOX_STOP_PACKAGES` 里正在运行的包先 `am force-stop`，用于避免抢端口；默认只停 `com.appshub.bettbox`，设成 `none` 表示不停止任何包 |
+| 端口冲突 | 从 `startup-config` 读出核心要用的端口（`mixed-port`、`port`、`socks-port`、`redir-port`、`tproxy-port`、`external-controller`、`dns.listen`），用 `ss` 找到占用者：系统进程、本应用、查不到包名的一律不动，只有确认是第三方包时才 `am force-stop`，停完复检端口 |
+| 额外停包（可选） | `BOX_STOP_PACKAGES` 里的包无条件 `am force-stop`，默认空 |
 
 所有写盘操作都是「值变了才写」，重复执行没有副作用；末尾固定输出一行 `pre-start done mode=… core=… upstream=… downstream=…` 到日志。
 
@@ -49,7 +52,7 @@ sh iface-auto.sh -h         # 帮助
 | 5 脚本清单 | `mode_script_name` / `rewrite_manifest` / `commit_manifest` / `select_script` | 把清单里的模式脚本换成当前模式那一份并去重 |
 | 6 网卡 | `is_tunnel_iface` / `detect_upstream` / `detect_downstream` / `add_downstream` / `tetherable_pattern` / `ensure_dummy_iface` | 识别出口与下联，无下联时补 dummy |
 | 7 写入字段 | `update_interface_name` / `update_ebpf_shared_iface` | 把网卡名写进覆写脚本的两个字段，值不变就不写 |
-| 8 转发与进程 | `allow_forward` / `stop_packages` | 为下联放行 `FORWARD`；按需停包 |
+| 8 转发与进程 | `allow_forward` / `config_ports` / `port_owner_pid` / `resolve_package` / `stop_port_conflicts` / `stop_packages` | 为下联放行 `FORWARD`；端口冲突检测与停包 |
 | 9 入口与汇总 | `describe_core` / `main` | 反查当前内核，串起流程并输出一行汇总日志 |
 
 ## 环境变量
@@ -65,7 +68,9 @@ sh iface-auto.sh -h         # 帮助
 | `BOX_CORE_EBPF` | `$BOX_BASE/bin/core-ebpf` | eBPF 内核路径 |
 | `BOX_CORE_LINK` | `$BOX_BASE/bin/mihomo` | 内核入口路径（被硬链接指向当前该用的那份） |
 | `BOX_NETWORK_IFACE` | 空 | 强制指定出口网卡；留空时按路由推断 |
-| `BOX_STOP_PACKAGES` | `com.appshub.bettbox` | 启动前要强制停止的包名，空格分隔；设成 `none` 表示不停止 |
+| `BOX_CONFLICT_STOP` | `auto` | 端口冲突处理：`auto` 停掉占用端口的第三方包，`log` 只记日志，`off` 不检测 |
+| `BOX_SELF_PACKAGE` | `com.boxproxy.box` | 本应用包名，永远不会被停 |
+| `BOX_STOP_PACKAGES` | 空 | 额外无条件停止的包名，空格分隔；设成 `none` 表示不停 |
 
 boxctl 会自带 `BOX_HOME`、`BOX_RUN_DIR`、`BOX_SCRIPTS_DIR`、`BOX_MODE` 等变量，脚本优先按这些变量取值；其中 `BOX_SCRIPTS_DIR` 指向的是生命周期脚本目录本身，不是覆写脚本目录，所以脚本用「目录里有没有 `.js`」来判断，不盲信这个变量。
 
@@ -76,6 +81,8 @@ boxctl 会自带 `BOX_HOME`、`BOX_RUN_DIR`、`BOX_SCRIPTS_DIR`、`BOX_MODE` 等
 - 内核切换依赖 `core-vanilla` / `core-ebpf` 两份文件存在；不存在时跳过，只在日志里留一行。
 - dummy 网卡只在 `ebpf` 与 `unknown` 模式下创建，其它模式没有下联也不建。
 - 环境里没有 UID、网卡名、密钥之类的具体值；`exclude-uid` 由 boxctl 按 App 内的应用选择注入。
+- 端口冲突检测依赖 `ss -lntup` 与 `pm list packages -U`：`ss` 没有输出、或占用的 uid 查不到包名时只记一条日志，不会停止任何东西。
+- 正常启动流程里 boxctl 先停核心再跑本脚本，端口一般是空的；若这时仍有本应用的内核占着端口，`auto` 模式下会先结束它（`log` / `off` 模式只记录）。
 
 ## 维护
 

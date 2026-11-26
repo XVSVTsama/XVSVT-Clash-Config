@@ -10,7 +10,8 @@
 #   4. 识别出口网卡与下联（热点/共享）网卡；TUN 模式写 interface-name，
 #      eBPF 模式写 EBPF_SHARED_IFACE_SPEC，没有下联时挂空转 dummy 网卡
 #   5. 为下联接口放行 FORWARD
-#   6. 可选：按 BOX_STOP_PACKAGES 停掉指定包（避免抢端口）
+#   6. 端口冲突：只在启动配置里的端口被第三方应用占用时停掉那个应用；
+#      另可按 BOX_STOP_PACKAGES 额外指定要停的包
 #
 # 下联判定：只认「系统声明的 tetherable 正则」且接口真实存在、带 IPv4 地址的网卡。
 # dumpsys tethering 里的 "iface=X state=TETHERED" 描述的是被共享的上游，不是下联，
@@ -33,8 +34,9 @@
 #   BOX_CORE_EBPF            eBPF 内核路径，默认 $BOX_BASE/bin/core-ebpf
 #   BOX_CORE_LINK            内核入口路径，默认 $BOX_BASE/bin/mihomo
 #   BOX_NETWORK_IFACE        强制指定出口网卡（默认按路由推断）
-#   BOX_STOP_PACKAGES        启动前强制停止的包名，空格分隔，默认 com.appshub.bettbox；
-#                            设成 none 表示不停止任何包
+#   BOX_CONFLICT_STOP        auto（默认，确认端口被第三方应用占用时停掉该应用）| log（只记日志）| off（不检测）
+#   BOX_SELF_PACKAGE         本应用包名，默认 com.boxproxy.box，永远不会被停
+#   BOX_STOP_PACKAGES        额外强制停止的包名，空格分隔，默认空
 #
 # 代码结构（按执行顺序）：
 #   0 参数 · 1 运行环境 · 2 日志与包装 · 3 模式 · 4 内核 · 5 脚本清单
@@ -88,9 +90,12 @@ init_runtime() {
     CORE_VANILLA=${BOX_CORE_VANILLA:-$BOX_BASE/bin/core-vanilla}
     CORE_EBPF=${BOX_CORE_EBPF:-$BOX_BASE/bin/core-ebpf}
     CORE_LINK=${BOX_CORE_LINK:-$BOX_BASE/bin/mihomo}
-    STOP_PACKAGES=${BOX_STOP_PACKAGES:-com.appshub.bettbox}
-    # 设成 none 表示不停止任何包（留空会退回默认值，不能用来取消）
+    CONFIG_FILE=$RUN_DIR/state/config/startup-config
+    STOP_PACKAGES=${BOX_STOP_PACKAGES:-}
     case "$STOP_PACKAGES" in none | NONE | -) STOP_PACKAGES='' ;; esac
+    CONFLICT_STOP=${BOX_CONFLICT_STOP:-auto}
+    SELF_PACKAGE=${BOX_SELF_PACKAGE:-com.boxproxy.box}
+    PM_PACKAGES=''
     JS_DIR=''
 
     MODE=''
@@ -404,6 +409,132 @@ allow_forward() {
     done
 }
 
+# 启动配置里要占用的端口：五个入站端口、external-controller、dns.listen
+config_ports() {
+    [ -f "$CONFIG_FILE" ] || return 0
+    awk '
+        BEGIN { in_dns = 0 }
+        /^[^[:space:]#]/ { in_dns = ($1 == "dns:") }
+        /^(mixed-port|port|socks-port|redir-port|tproxy-port):/ {
+            port = $2; gsub(/[^0-9]/, "", port); if (port) print port; next
+        }
+        /^external-controller:/ {
+            n = split($2, parts, ":"); port = parts[n]; gsub(/[^0-9]/, "", port)
+            if (port) print port; next
+        }
+        in_dns && /^[[:space:]]+listen:/ {
+            port = $2; sub(/.*:/, "", port); gsub(/[^0-9]/, "", port)
+            if (port) print port
+        }
+    ' "$CONFIG_FILE" | sort -un
+}
+
+# uid → 包名（系统进程通常查不到，返回空）
+resolve_package() {
+    local uid=$1
+    if [ -z "$PM_PACKAGES" ]; then
+        PM_PACKAGES=$(pm list packages -U --user 0 2>/dev/null)
+    fi
+    [ -n "$PM_PACKAGES" ] || return 0
+    printf '%s\n' "$PM_PACKAGES" | awk -v u="uid:$uid" '$2 == u { sub(/^package:/, "", $1); print $1; exit }'
+}
+
+# 是否本应用自己的内核（只认 BOX_BASE/bin 下的二进制）
+is_box_core_pid() {
+    local cmd
+    cmd=$(tr '\0' '\n' <"/proc/$1/cmdline" 2>/dev/null | head -1)
+    case "$cmd" in
+        "$BOX_BASE"/bin/*) return 0 ;;
+    esac
+    return 1
+}
+
+# 只停真正占用启动配置端口、且能确认包名的第三方应用；系统进程与自己的内核分开处理
+stop_port_conflicts() {
+    local ports ss_out port pid uid pkg seen_pids seen_pkgs
+    case "$CONFLICT_STOP" in
+        off | no | false | 0)
+            log "端口冲突检测: 已关闭"
+            return 0
+            ;;
+        log | dry | warn | report)
+            CONFLICT_STOP=log
+            log "端口冲突检测: 只记录，不停应用"
+            ;;
+        *) CONFLICT_STOP=auto ;;
+    esac
+
+    ports=$(config_ports)
+    if [ -z "$ports" ]; then
+        log "端口冲突检测: 启动配置缺失或没有端口，跳过"
+        return 0
+    fi
+
+    ss_out=$(ss -lntup 2>/dev/null)
+    if [ -z "$ss_out" ]; then
+        log "warn: ss 没有输出，跳过端口冲突检测"
+        return 0
+    fi
+
+    # 同一个进程/应用可能占多个端口，按 pid 与包名各去重一次
+    seen_pids=''
+    seen_pkgs=''
+    for port in $ports; do
+        for pid in $(printf '%s\n' "$ss_out" | grep -E ":$port[[:space:]]" \
+            | sed -n 's/.*pid=\([0-9][0-9]*\).*/\1/p' | sort -un); do
+            case " $seen_pids " in *" $pid "*) continue ;; esac
+            uid=$(awk '/^Uid:/{print $2; exit}' "/proc/$pid/status" 2>/dev/null)
+            [ -n "$uid" ] || continue
+            seen_pids="$seen_pids $pid"
+
+            if [ "$uid" -lt 10000 ]; then
+                # uid < 10000 一律不碰，只有本应用自己的旧内核例外
+                if is_box_core_pid "$pid"; then
+                    if [ "$CONFLICT_STOP" = log ]; then
+                        log "warn: 端口 $port 被旧内核占用（pid $pid），按设置不结束"
+                    else
+                        log "端口 $port 被旧内核占用（pid $pid），结束它"
+                        run kill "$pid"
+                    fi
+                else
+                    log "warn: 端口 $port 被系统进程持有（pid $pid, uid $uid），跳过"
+                fi
+                continue
+            fi
+
+            pkg=$(resolve_package "$uid")
+            if [ -z "$pkg" ]; then
+                log "warn: 端口 $port 的持有者 uid $uid 找不到包名，跳过"
+                continue
+            fi
+            if [ "$pkg" = "$SELF_PACKAGE" ]; then
+                log "端口 $port 由本应用持有，跳过"
+                continue
+            fi
+            case " $seen_pkgs " in *" $pkg "*) continue ;; esac
+            seen_pkgs="$seen_pkgs $pkg"
+
+            if [ "$CONFLICT_STOP" = log ]; then
+                log "warn: 端口 $port 被 $pkg 占用（uid $uid, pid $pid），按设置不停止"
+                continue
+            fi
+            log "端口 $port 被 $pkg（uid $uid, pid $pid）占用，停止该应用"
+            if ! run am force-stop "$pkg" 2>/dev/null; then
+                log "warn: 停止 $pkg 失败"
+                continue
+            fi
+            if [ "$DRY_RUN" -eq 1 ]; then
+                continue
+            fi
+            sleep 1
+            if [ -n "$(port_owner_pid "$port")" ]; then
+                log "warn: $pkg 停止后端口 $port 仍被占用，核心可能仍无法启动"
+            fi
+        done
+    done
+}
+
+# 显式指定的额外停包
 stop_packages() {
     local package
     [ -n "$STOP_PACKAGES" ] || return 0
@@ -451,6 +582,7 @@ main() {
     update_interface_name
     update_ebpf_shared_iface
     allow_forward
+    stop_port_conflicts
     stop_packages
 
     log "pre-start done mode=$MODE core=$(describe_core) upstream=${UPSTREAM:-none} downstream=${DOWNSTREAM:-none}"
