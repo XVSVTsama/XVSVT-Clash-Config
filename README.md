@@ -1,18 +1,445 @@
-# no-tun 覆写脚本（派生自 main）
+<p align="center">
+  <img src="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/assets/avatar.png" alt="XVSVTsama" width="120" />
+</p>
 
-`main` 分支是 TUN 版脚本，本分支只放完全不用 TUN 的那份差异。背景：不少软件会强制覆写 `tun`，模板再写一份只会互相打架，干脆不带。
+<h1 align="center">XVSVT's Mihomic Config</h1>
 
-## 与 main 的差别
+<p align="center">
+  <strong>自用</strong> · 路由配置 · 远程覆写脚本
+</p>
 
-- `tun` 整段删除：模板不定义 `tun`，脚本以模板为主体生成配置，订阅自带的 `tun` 也不会被保留，输出配置完全不带 `tun` 字段，TUN 交给强制覆写它的软件自己处理
-- 与 TUN 绑定的开关一并移除：`TUN MTU改为9000`、`开启端点独立NAT`（开关定义、图标、开关组条目与生效逻辑全清）
-- IPv6 开关只处理核心侧（`ipv6`、`dns.ipv6`、`fake-ip-range6`）：没有 tun，也就没有 `inet6-address` 和 v6 路由可改
-- 流量入站靠模板已有的 `mixed-port` / `socks-port`；其余内容（节点处理、策略组、DNS、规则、其他自定义开关）与 `main` 完全一致
+<p align="center">
+  <a href="https://github.com/XVSVTsama/XVSVT-Clash-Config/blob/main/LICENSE"><img src="https://img.shields.io/github/license/XVSVTsama/XVSVT-Clash-Config?style=flat-square&label=License&color=informational" alt="License"></a>
+  <a href="https://github.com/XVSVTsama/XVSVT-Clash-Config/commits/main"><img src="https://img.shields.io/github/last-commit/XVSVTsama/XVSVT-Clash-Config?style=flat-square&label=Last%20Commit&color=informational" alt="Last Commit"></a>
+  <a href="https://github.com/XVSVTsama/XVSVT-Clash-Config"><img src="https://img.shields.io/github/repo-size/XVSVTsama/XVSVT-Clash-Config?style=flat-square&label=Repo%20Size&color=informational" alt="Repo Size"></a>
+  <a href="https://github.com/XVSVTsama/XVSVT-Clash-Config/stargazers"><img src="https://img.shields.io/github/stars/XVSVTsama/XVSVT-Clash-Config?style=flat-square&label=Stars&color=informational" alt="Stars"></a>
+  <a href="https://github.com/XVSVTsama"><img src="https://img.shields.io/badge/XVSVTsama-Homepage-informational?style=flat-square" alt="Homepage"></a>
+</p>
 
-## 用法
+<p align="center">
+  <a href="mihomo.yaml"><img src="https://img.shields.io/badge/YAML-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6-yellow?style=flat-square&logo=yaml&logoColor=white" alt="YAML"></a>
+  <a href="https://github.com/XVSVTsama/XVSVT-Clash-Config/actions/workflows/yaml-syntax.yml"><img src="https://img.shields.io/github/actions/workflow/status/XVSVTsama/XVSVT-Clash-Config/yaml-syntax.yml?style=flat-square&label=YAML%20Syntax&color=informational" alt="YAML Syntax"></a>
+  <a href="script_override.js"><img src="https://img.shields.io/badge/JavaScript-%E8%A6%86%E5%86%99%E8%84%9A%E6%9C%AC-yellow?style=flat-square&logo=javascript&logoColor=black" alt="JavaScript"></a>
+  <a href="https://github.com/XVSVTsama/XVSVT-Clash-Config/actions/workflows/js-syntax.yml"><img src="https://img.shields.io/github/actions/workflow/status/XVSVTsama/XVSVT-Clash-Config/js-syntax.yml?style=flat-square&label=JS%20Syntax&color=informational" alt="JavaScript Syntax"></a>
+  <a href="https://github.com/XVSVTsama/XVSVT-Clash-Config/actions/workflows/mihomo-check.yml"><img src="https://img.shields.io/github/actions/workflow/status/XVSVTsama/XVSVT-Clash-Config/mihomo-check.yml?style=flat-square&label=Mihomo%20Real%20Core&color=informational" alt="Mihomo Real Core"></a>
+</p>
 
-把 `script_override.js` 作为客户端的覆写脚本加载，配合会自行接管 TUN 的软件使用；也可以直接导入 `mihomo.yaml`。
+<p align="center">
+  <a href="#remote-override">远程覆写地址</a> ·
+  <a href="#yaml-config">YAML 说明</a> ·
+  <a href="#script-override">JavaScript 说明</a> ·
+  <a href="#dns-model">dns-host背景说明</a> ·
+  <a href="#ruleset-overlap">规则集重合</a> ·
+  <a href="#acknowledgments">致谢</a> ·
+  <a href="#star-history">Star History</a> ·
+  <a href="#warning">警告</a> ·
+  <a href="#disclaimer">免责声明</a>
+</p>
 
-## 维护
+---
 
-`main` 更新后，重新取 `main` 的 `script_override.js` 与 `mihomo.yaml` 覆盖本分支文件，再按上面四条重放差异；不要直接 merge `main`。
+<a id="remote-override"></a>
+
+## 🔗 远程覆写脚本地址
+
+默认地址：
+
+```text
+https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/no-tun/script_override.js
+```
+
+CDN 链接：
+
+- <img src="https://img.shields.io/badge/CDN-gh--proxy-blue?style=flat-square" alt="gh-proxy">：全球 Anycast，更新即时，无缓存
+- <img src="https://img.shields.io/badge/CDN-jsdmirror-blue?style=flat-square" alt="jsdmirror">：腾讯云 EdgeOne，自动同步源站
+
+<a id="yaml-config"></a>
+
+<br>
+
+<h2 align="center">🧱 YAML 说明</h2>
+
+<br>
+
+`mihomo.yaml` 是本仓库的基准配置模板：一份不含任何节点的完整配置骨架，不可直接使用它。本分支的模板不定义 `tun`，覆写脚本生成的配置不带 `tun` 字段。
+
+<a id="proxy-groups"></a>
+
+### 🗂 分流组结构（按 `mihomo.yaml` 定义）
+
+本节分三层：先看核心代理组的骨架与嵌套，再看每个基础代理组的用途与路由规则，最后看四组的特别说明。
+
+#### 核心代理组
+
+<table width="100%">
+<thead>
+<tr><th width="20%">代理组<img src="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/assets/table-spacer.png" width="320" height="1" alt=""></th><th width="80%">嵌套关系<img src="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/assets/table-spacer.png" width="1280" height="1" alt=""></th></tr>
+</thead>
+<tbody>
+<tr><td><strong>🌍 PROXY</strong></td><td>唯一的顶层入口，不直接纳入节点（无 <code>include-all</code>），实际节点经被嵌套的三组进入；组内只有以下四项：<br><code>👉 手动选择</code><br><code>♻️ 自动选择</code><br><code>🔄 负载均衡</code><br><code>DIRECT</code></td></tr>
+<tr><td><strong>👉 手动选择</strong></td><td>被 <strong>🌍 PROXY</strong> 嵌套；自身以 <code>include-all</code> 纳入所有可用节点，不再嵌套其他代理组</td></tr>
+<tr><td><strong>♻️ 自动选择</strong></td><td>被 <strong>🌍 PROXY</strong> 嵌套；自身以 <code>include-all</code> 纳入所有可用节点，不再嵌套其他代理组</td></tr>
+<tr><td><strong>🔄 负载均衡</strong></td><td>被 <strong>🌍 PROXY</strong> 嵌套；下含三个隐藏策略子组，顺序为 <code>consistent-hashing</code>（默认首项）、<code>sticky-sessions</code>、<code>round-robin</code></td></tr>
+</tbody>
+</table>
+
+#### 基础代理组
+
+<table width="100%">
+<thead>
+<tr><th width="15%">代理组<img src="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/assets/table-spacer.png" width="240" height="1" alt=""></th><th width="25%">用途<img src="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/assets/table-spacer.png" width="400" height="1" alt=""></th><th width="60%">路由规则<img src="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/assets/table-spacer.png" width="960" height="1" alt=""></th></tr>
+</thead>
+<tbody>
+<tr><td><strong>🔎 Google</strong></td><td>Google 与 Gemini 共用出口</td><td>引用规则集合：<code>google</code>、<code>google-cn</code>、<code>Gemini_Domain</code></td></tr>
+<tr><td><strong>♾️ Meta</strong></td><td>Meta 与 Meta AI 共用出口</td><td>引用规则集合：<code>meta</code><br>使用域名后缀匹配：muse.ai、metaaivm.com<br>使用域名精确匹配：hatch-api.meta.ai、api.meta.ai、agent.meta.ai、auth.meta.com、meta.graph.meta.com、edge-metaclaw-http.c10r.facebook.com、shortwave.facebook.com、node.hatch.one<br>使用进程名称匹配：com.facebook.aura</td></tr>
+<tr><td><strong>🤖 AI大模型</strong></td><td>AI 服务单独选出口</td><td>引用规则集合：<code>ai</code><br>使用域名后缀匹配：anthropic.com、claude.ai、claude.com、claudeusercontent.com、clau.de、frame.claudeusercontent.com、modelcontextprotocol.io、sentry.io、statsigapi.net、hark.com、wabi.ai、tabbyml.com、pickle.com<br>使用域名精确匹配：共 24 个域名（api.anthropic.com、downloads.claude.ai、cdn.growthbook.io、registry.npmjs.org、storage.googleapis.com 等）<br>使用域名关键词匹配：datadog、sift<br>使用进程名称正则表达式匹配：claude、anthropic、manus<br>使用进程名称匹配：com.hark.android、ai.wabi.android.app、com.pickle.client<br>使用 IP 段匹配：160.79.104.0/21、17.253.4.0/23、2607:6bc0::/48</td></tr>
+<tr><td><strong>📲 Telegram</strong></td><td>Telegram 单独选出口</td><td>引用规则集合：<code>telegram_domain</code>、<code>telegramcidr</code><br>使用进程名称正则表达式匹配：telegram、nagram</td></tr>
+<tr><td><strong>✖️ Twitter</strong></td><td>Twitter / X 单独选出口</td><td>引用规则集合：<code>twitter-x-domain</code>、<code>twitter-x-ip</code>、<code>twitter-x-ipcidr</code><br>使用进程名称正则表达式匹配：twitter</td></tr>
+<tr><td><strong>💬 Discord</strong></td><td>Discord 单独选出口</td><td>引用规则集合：<code>discord</code></td></tr>
+<tr><td><strong>👽 Reddit</strong></td><td>Reddit 单独选出口</td><td>引用规则集合：<code>reddit</code></td></tr>
+<tr><td><strong>💬 LINE</strong></td><td>LINE 单独选出口</td><td>引用规则集合：<code>line</code></td></tr>
+<tr><td><strong>🎵 TikTok</strong></td><td>TikTok 单独选出口</td><td>引用规则集合：<code>TikTok</code></td></tr>
+<tr><td><strong>🎥 Netflix</strong></td><td>Netflix 单独选出口</td><td>引用规则集合：<code>netflix</code></td></tr>
+<tr><td><strong>🎧 Spotify</strong></td><td>Spotify 单独选出口</td><td>引用规则集合：<code>spotify</code></td></tr>
+<tr><td><strong>🎬 Emby</strong></td><td>Emby 类客户端单独选出口</td><td>使用进程名称匹配：com.mountains.hills、com.hamhub.app、com.oumi.utility.media.hub、com.feifeiduck.capyplayer、com.attempt.afusekt、com.hush.yamby、com.railux.mobile、com.yumilo.player、HillsLite.exe、HillsPlayer.exe</td></tr>
+<tr><td><strong>🍎 海外苹果</strong></td><td>海外 Apple 服务单独选出口</td><td>引用规则集合：<code>apple</code>、<code>apple_ip</code></td></tr>
+<tr><td><strong>💠 海外微软</strong></td><td>海外 Microsoft 服务单独选出口</td><td>引用规则集合：<code>microsoft</code>、<code>microsoft_ip</code></td></tr>
+<tr><td><strong>🎮 Steam平台（非下载/CDN）</strong></td><td>Steam 平台流量单独选出口</td><td>引用规则集合：<code>steam</code>、<code>steam_ip</code></td></tr>
+<tr><td><strong>🎮 Games-Global</strong></td><td>游戏流量单独选出口</td><td>引用规则集合：<code>games</code><br>使用进程名称匹配：bf6.exe</td></tr>
+<tr><td><strong>💳 金融支付</strong></td><td>支付与加密货币单独选出口</td><td>引用规则集合：<code>category-cryptocurrency</code>、<code>paypal</code>、<code>stripe</code>、<code>visa</code>、<code>mastercard</code>、<code>wise</code><br>使用域名精确匹配：d3r7nsslvs6aaf.cloudfront.net<br>使用进程名称匹配：共 24 个交易所 / 钱包 App 进程名（com.binance.dev、com.coinbase.android、com.okinc.okex.gp 等）</td></tr>
+<tr><td><strong>💝 Patreon</strong></td><td>Patreon 单独选出口</td><td>引用规则集合：<code>patreon</code></td></tr>
+<tr><td><strong>📚 EHentai</strong></td><td>EHentai 单独选出口</td><td>引用规则集合：<code>ehentai</code></td></tr>
+<tr><td><strong>☁️ PikPak</strong></td><td>PikPak 单独选出口</td><td>引用规则集合：<code>pikpak</code></td></tr>
+<tr><td><strong>FCM</strong></td><td>Google FCM 推送单独选出口</td><td>引用规则集合：<code>googlefcm</code></td></tr>
+</tbody>
+</table>
+#### 特别组说明
+
+以下三组同时属于基础代理组（见上表），嵌套结构不同于常规业务组，单独列出。
+
+<table width="100%">
+<thead>
+<tr><th width="25%">代理组<img src="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/assets/table-spacer.png" width="400" height="1" alt=""></th><th width="75%">嵌套结构<img src="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/assets/table-spacer.png" width="1200" height="1" alt=""></th></tr>
+</thead>
+<tbody>
+<tr><td><strong>🎮 Games-Global</strong></td><td><code>🎮 Steam平台（非下载/CDN）</code>（默认选中）<br>所有可用节点（<code>include-all</code>）</td></tr>
+<tr><td><strong>🎮 Steam平台（非下载/CDN）</strong></td><td><code>DIRECT</code>（默认选中）<br><code>👉 手动选择</code><br><code>♻️ 自动选择</code><br><code>🔄 负载均衡</code><br>所有可用节点（<code>include-all</code>）</td></tr>
+<tr><td><strong>FCM</strong></td><td><code>👉 手动选择</code><br><code>DIRECT</code></td></tr>
+</tbody>
+</table>
+
+<a id="before-use"></a>
+
+### 🛠️ 使用前必改 (抄作业必看)
+
+本配置按个人使用习惯定制，并非开箱即用的通用模板，尤其是对于直接导入 YAML 的使用形式。使用前请完成以下必要设置；如不熟悉 Mihomo、TUN、DNS 或策略组过滤规则，请先了解相关机制再使用。
+
+1. **直接使用 YAML (`mihomo.yaml`)**：将 `proxy-providers.subscription.url` 的占位地址在本地替换为自己的 Clash/Mihomo 订阅链接；`include-all` 策略组会自动纳入 provider 节点。也可删除不用的示例 provider，将 `proxies: ~` 替换为自己的节点列表。模板不会自动读取客户端中的其他订阅，请勿把真实订阅链接或凭据提交到公开仓库。
+2. **按需删减规则**：本配置的规则内容都有性能消耗，不需要的规则、规则集与策略组都可按需删减，例如不屏蔽番茄小说海外版广告的，删除 `sub-rules` 中的 `fanqie` 规则。`🛑 广告拦截`（SukkaW/Surge reject 规则集）在模板中为 `proxy-groups`、`rule-providers`、`rules` 三处注释段，不用时保持注释，需要时成套取消注释启用。
+
+<a id="script-override"></a>
+
+<br>
+
+<h2 align="center">⚙️ JavaScript 说明</h2>
+
+<br>
+
+覆写脚本把订阅配置与本仓库维护的内嵌模板合并成最终配置：模板中已写好的字段（`dns`、`rules`、`rule-providers`、`sniffer`、`proxy-groups` 分组结构等）以模板为准，节点与订阅自带 `proxy-providers` 来自订阅。脚本地址见页首 [远程覆写脚本地址](#remote-override)，在 Bettbox / FlClash 系客户端中给订阅挂上即可。
+
+合并产物：
+
+- **节点与代理组**：订阅里的真实节点填入顶层 `proxies`；常规动态节点组通过 Mihomo 原生 `include-all` 引入顶层节点与 provider 节点。固定策略项保留在各组的 `proxies` 列表中。
+- **订阅自带 `proxy-providers`**：定义原样保留，脚本不展开、不筛选、不逐节点改写其中的节点；节点级开关能作用到 provider 的只有 `override` 通道。
+- **国家/地区分组**：`国家/地区分组` 开启后，只从订阅顶层 `proxies` 生成香港、台湾、澳门、日本、新加坡、韩国、马来西亚、美国、加拿大、英国、法国、荷兰、德国、澳大利亚及“其他国家/地区”策略组；不枚举 `proxy-providers`。倍率筛选先于地区分组执行，地区组只用幸存节点生成；某地区节点全部被筛除时不生成该地区的父组与三个隐藏子组。
+- **倍率筛选**：`剔除≥2x` 删除名称中明确标记为 `2x` 或更高的订阅顶层节点；`剔除≤0.5x` 删除明确标记为 `0.5x` 或更低的节点。只识别显式数值倍率（例如 `5x`、`x0.01`），不猜测模糊标签；过滤同步清理代理组 `proxies` 中的节点名称引用，不处理 `proxy-providers`；执行顺序在地区分组与国内入口解析之前。
+- **免费节点剔除**：`剔除免费` 删除名称中含 `免费`、`体验`、`试用`、`公益`、`白嫖`、`0元` 或独立词 `Free` 的订阅顶层节点。过滤词独立维护，与倍率筛选互不影响；过滤同步清理代理组 `proxies` 中的节点名称引用，不处理 `proxy-providers`；执行顺序紧跟倍率筛选，在地区分组与国内入口解析之前。
+- **指定类型剔除**：`实验剔除指定类型` 按 JS 内置协议表删除订阅顶层节点，不处理 `proxy-providers`；同步清理代理组 `proxies` 中的节点名称引用；执行顺序紧跟免费节点剔除，在地区分组与国内入口解析之前。
+  - 名单按 `type` 从属嵌套，每个 `type` 的 `mode` 决定排除办法，与下级开关无关：
+    - `true` 剔除整类，`false` 不剔除
+    - `selection` 用具体表：条目为互斥的具体类型（维度完整组合，如 vless 的 `xhttp+reality`、`tcp+jls`），各自开关、可多选并集排除；复合维度只枚举经典组合
+    - `combination` 用结构抉择表：仅七个多维度协议设有（`ssr`、`vmess`、`vless`、`trojan`、`tuic`、`snell`、`hysteria2`），按结构维度组合判定（维度间 AND，维度值为数组多选或是否，全不限时不剔除）；简单协议不设此表，只用具体表
+  - 特征取自节点字段（`network`、`flow`、各类 `*-opts`、`plugin`、`obfs`、`protocol` 等）
+  - 四种剔除（`剔除≥2x`、`剔除≤0.5x`、`剔除免费`、`实验剔除指定类型`）执行前预扫 `dialer-proxy`：被指向的节点与自带 `dialer-proxy` 的节点一律不剔除
+- **DNS**：动态合并出 `dns.proxy-server-nameserver-policy`（模板不预置该键，以脚本计算结果为准），细节见下方流程图。
+- **开关声明**：脚本首行的 `Compatible_With_Bettbox` 兼容声明必须置顶——Bettbox 只在脚本开头识别该声明，删除或下移会导致"自定义规则开关"入口不显示；声明中的 `policyGroupOptions` 列出归入图形化开关分类的 23 个策略组，`ruleOptionsEnable` 则是实际生效的开关表，键名需与声明保持一致。`🌍 PROXY` 始终保留为基础/兜底组，不提供关闭开关。
+
+<a id="provider-scope"></a>
+
+### ⚠️ 设计局限：JS 覆写的能力边界
+
+脚本只改写传入的配置对象，不联网、不读写文件、不读运行状态。不能做：联网、下载、上传、测速、读运行状态（当前选中节点、连接、流量），也不能调用客户端 API。
+
+**会不会偷订阅**：不会，无网络。
+
+**能不能加速代理**：不会，不参与代理。
+
+**能不能读取 proxy-provider**：不能，但可以尽可能逼近，[<kbd>查看三维视图</kbd>](https://XVSVTsama.github.io/XVSVT-Clash-Config/provider-node-3d.html)
+
+### 🔀 hosts / DNS 处理流程
+
+[<kbd>在线查看：hosts / DNS 三种处理流程</kbd>](https://XVSVTsama.github.io/XVSVT-Clash-Config/hosts-dns-processing-flow.html)
+
+### 🗂 代理组与 Bettbox 开关（脚本合并后）
+
+脚本开头的 `Compatible_With_Bettbox` 声明用 `policyGroupOptions` 划定了"策略组开关"分类：只列进去的组出现在该分类下，没列进去的组不受它控制，改由脚本的 `ruleOptionsEnable` 决定存在形态（两者都在脚本顶部可查）。
+
+**列入 `policyGroupOptions` 的策略组（23 个）**
+
+<table width="100%">
+<thead>
+<tr><th width="42%">策略组名称<img src="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/assets/table-spacer.png" width="672" height="1" alt=""></th><th width="43%">Bettbox 开关<img src="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/assets/table-spacer.png" width="688" height="1" alt=""></th><th width="15%">默认<img src="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/assets/table-spacer.png" width="240" height="1" alt=""></th></tr>
+</thead>
+<tbody>
+<tr><td><strong>👉 手动选择</strong></td><td><code>👉 手动选择</code></td><td>开启</td></tr>
+<tr><td><strong>♻️ 自动选择</strong></td><td><code>♻️ 自动选择</code></td><td>关闭</td></tr>
+<tr><td><strong>🔄 负载均衡</strong></td><td><code>🔄 负载均衡</code></td><td>关闭</td></tr>
+<tr><td><strong>🔎 Google</strong></td><td><code>🔎 Google</code></td><td>关闭</td></tr>
+<tr><td><strong>♾️ Meta</strong></td><td><code>♾️ Meta</code></td><td>关闭</td></tr>
+<tr><td><strong>🤖 AI大模型</strong></td><td><code>🤖 AI大模型</code></td><td>关闭</td></tr>
+<tr><td><strong>📲 Telegram</strong></td><td><code>📲 Telegram</code></td><td>关闭</td></tr>
+<tr><td><strong>✖️ Twitter</strong></td><td><code>✖️ Twitter</code></td><td>关闭</td></tr>
+<tr><td><strong>💬 Discord</strong></td><td><code>💬 Discord</code></td><td>关闭</td></tr>
+<tr><td><strong>👽 Reddit</strong></td><td><code>👽 Reddit</code></td><td>关闭</td></tr>
+<tr><td><strong>💬 LINE</strong></td><td><code>💬 LINE</code></td><td>关闭</td></tr>
+<tr><td><strong>🎵 TikTok</strong></td><td><code>🎵 TikTok</code></td><td>关闭</td></tr>
+<tr><td><strong>🎥 Netflix</strong></td><td><code>🎥 Netflix</code></td><td>关闭</td></tr>
+<tr><td><strong>🎧 Spotify</strong></td><td><code>🎧 Spotify</code></td><td>关闭</td></tr>
+<tr><td><strong>🎬 Emby</strong></td><td><code>🎬 Emby</code></td><td>关闭</td></tr>
+<tr><td><strong>🍎 海外苹果</strong></td><td><code>🍎 海外苹果</code></td><td>关闭</td></tr>
+<tr><td><strong>💠 海外微软</strong></td><td><code>💠 海外微软</code></td><td>关闭</td></tr>
+<tr><td><strong>🎮 Steam平台（非下载/CDN）</strong></td><td><code>🎮 Steam平台（非下载/CDN）</code></td><td>关闭</td></tr>
+<tr><td><strong>🎮 Games-Global</strong></td><td><code>🎮 Games-Global</code></td><td>关闭</td></tr>
+<tr><td><strong>💳 金融支付</strong></td><td><code>💳 金融支付</code></td><td>关闭</td></tr>
+<tr><td><strong>💝 Patreon</strong></td><td><code>💝 Patreon</code></td><td>关闭</td></tr>
+<tr><td><strong>📚 EHentai</strong></td><td><code>📚 EHentai</code></td><td>关闭</td></tr>
+<tr><td><strong>☁️ PikPak</strong></td><td><code>☁️ PikPak</code></td><td>关闭</td></tr>
+</tbody>
+</table>
+
+表格即当前默认值，可按需改动：默认只有 `👉 手动选择` 开启，因此生成的配置只含 `👉 手动选择`、`🌍 PROXY`、`FCM` 三个组。关闭业务组会移除该组并删除其路由规则；`🌍 PROXY` 始终保留为兜底。
+
+**未列入 `policyGroupOptions` 的组**
+
+<table width="100%">
+<thead>
+<tr><th width="20%">策略组名称<img src="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/assets/table-spacer.png" width="320" height="1" alt=""></th><th width="14%">由哪个开关决定<img src="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/assets/table-spacer.png" width="224" height="1" alt=""></th><th width="8%">默认<img src="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/assets/table-spacer.png" width="128" height="1" alt=""></th><th width="58%">说明<img src="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/assets/table-spacer.png" width="928" height="1" alt=""></th></tr>
+</thead>
+<tbody>
+<tr><td><strong>FCM</strong></td><td><code>关闭FCM直连</code></td><td>关闭</td><td>开关不移除本组，只改写组内节点：默认关闭时组内=<code>DIRECT</code>；打开后改用 <code>👉 手动选择</code>，若 <code>👉 手动选择</code> 已禁用则回退到全局兜底。脚本内嵌模板把本组标记为隐藏组（<code>hidden</code>）</td></tr>
+<tr><td><em><strong>📲 Telegram(兜底)</strong></em></td><td><em><strong><code>TGDC实验分流</code></strong></em></td><td><em><strong>关闭</strong></em></td><td><em><strong>该开关开启时由 <code>📲 Telegram</code> 更名而来，承接 Telegram 进程、域名与 CIDR 规则</strong></em></td></tr>
+<tr><td><strong>📲 DC1-MIA</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>开关开启时按 Telegram DC IP 规则优先命中美国/迈阿密节点；地区无候选时列出全部合格节点供手动选择</td></tr>
+<tr><td><strong>📲 DC24-AMS</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>同上，对应荷兰/阿姆斯特丹节点</td></tr>
+<tr><td><strong>📲 DC5-SIN</strong></td><td><code>TGDC实验分流</code></td><td>关闭</td><td>同上，DC5 同时匹配新加坡与香港节点</td></tr>
+<tr><td><em><strong>🛑 广告拦截</strong></em></td><td><em><strong><code>使用SKK广告拦截</code></strong></em></td><td><em><strong>关闭</strong></em></td><td><em><strong>开关关闭时本组、其 4 个规则集与 4 条规则都不生成；开启时组内可选 <code>REJECT</code> / <code>REJECT-DROP</code> / <code>PASS</code>，承接 SukkaW/Surge 的 reject 域名集与 non_ip 规则集，规则置于置顶拦截守卫之后；reject-drop 与 reject_ip 两条规则不经本组，分别直达 <code>REJECT-DROP</code> 与 <code>REJECT</code></strong></em></td></tr>
+<tr><td><strong>国内入口解析</strong></td><td><code>入口解析</code></td><td>关闭</td><td>开启后将维护区节点加入本组供手动选择；名称按类别编号，顺序不代表优先级</td></tr>
+<tr><td><strong>国家/地区父组及隐藏子组</strong></td><td><code>国家/地区分组</code></td><td>关闭</td><td>根据地区候选节点创建分组；将父组追加到 15 个指定流量目标中，跳过已禁用或不存在的目标；地区节点被倍率筛选全部剔除时不生成该地区的父组与三个隐藏子组；地区父组列表插在隐藏组 FCM 之前、子组插在 FCM 之后</td></tr>
+</tbody>
+</table>
+
+**同样不在 `policyGroupOptions`、也不对应任何策略组的开关（15 个）**
+
+<table width="100%">
+<thead>
+<tr><th width="18%">开关<img src="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/assets/table-spacer.png" width="288" height="1" alt=""></th><th width="8%">默认<img src="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/assets/table-spacer.png" width="128" height="1" alt=""></th><th width="74%">作用<img src="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/assets/table-spacer.png" width="1184" height="1" alt=""></th></tr>
+</thead>
+<tbody>
+<tr><td><code>强制证书验证</code></td><td>关闭</td><td>开启时统一把订阅顶层节点的 <code>skip-cert-verify</code> 置为 <code>false</code>；provider 节点经 <code>override.skip-cert-verify</code> 同步生效；关闭时不干预订阅原有设置</td></tr>
+<tr><td><code>关闭 Reality 增强</code></td><td>关闭</td><td>默认关闭时为带非空 <code>public-key</code> / <code>short-id</code> 的订阅顶层 Reality 节点启用 X25519MLKEM768 后量子密钥协商；打开本开关后不再写入该字段、保留订阅原有值；provider 的 <code>override</code> 只能改固定字段、无法改写嵌套 <code>reality-opts</code>，因此不涉及 provider 节点</td></tr>
+<tr><td><code>试开启节点UDP</code></td><td>关闭</td><td>开启时为订阅顶层节点设置 <code>udp: true</code>，provider 节点经 <code>override.udp</code> 同步生效；关闭时不改动原有设置</td></tr>
+<tr><td><code>IPv6优先</code></td><td>关闭</td><td>关闭时将顶层 <code>ipv6</code> 与 <code>dns.ipv6</code> 置为 <code>false</code>，并删除 <code>dns.fake-ip-range6</code>；开启时改写订阅顶层节点 <code>ip-version</code>：<code>ipv6</code> 保持不变，<code>ipv6-prefer</code> 改为 <code>ipv6</code>，其余设为 <code>ipv6-prefer</code>；provider 节点经 <code>override.ip-version</code> 统一设为 <code>ipv6-prefer</code>，无法按节点区分原值</td></tr>
+<tr><td><code>剔除≥2x</code></td><td>关闭</td><td>在地区分组之前删除名称中显式标记倍率 <code>&gt;=2x</code> 的订阅顶层节点，并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
+<tr><td><code>剔除≤0.5x</code></td><td>关闭</td><td>在地区分组之前删除名称中显式标记倍率 <code>&lt;=0.5x</code> 的订阅顶层节点，并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
+<tr><td><code>剔除免费</code></td><td>关闭</td><td>在倍率筛选之后、地区分组之前删除名称中含 <code>免费</code>、<code>体验</code>、<code>试用</code>、<code>公益</code>、<code>白嫖</code>、<code>0元</code> 或独立词 <code>Free</code> 的订阅顶层节点，并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
+<tr><td><code>实验剔除指定类型</code></td><td>关闭</td><td>在免费节点剔除之后、地区分组之前，按 JS 内置协议表删除订阅顶层节点（每个 <code>type</code> 的 <code>mode</code> 决定整类、具体表或结构抉择表三种排除办法），并从静态代理组节点列表中移除其名称；不处理 provider 运行时节点</td></tr>
+<tr><td><code>代理节点 DNS 使用 TCP</code></td><td>关闭</td><td>为代理节点解析 DNS 中未标协议的地址启用 TCP；显式协议不变</td></tr>
+<tr><td><code>代理节点 DNS 使用国内</code></td><td>关闭</td><td>关闭时不做任何处理；开启时将 <code>proxy-server-nameserver</code> 由默认的 Cloudflare Gateway DoH 替换为 <code>114.114.114.114</code>、<code>tls://223.5.5.5</code>、<code>https://1.12.12.12/dns-query</code>；后续的兜底比对、入口解析后缀与「代理节点 DNS 使用 TCP」处理同样作用于替换后的值</td></tr>
+<tr><td><code>关闭WebRTC阻断</code></td><td>关闭</td><td>默认关闭时保持模板规则不变；打开后移除所有同时包含 <code>NETWORK,UDP</code> 与 <code>DST-PORT,3478-3479/5349-5350/19302-19309</code> 的规则</td></tr>
+<tr><td><code>QUIC阻断</code></td><td>关闭</td><td>关闭时不做任何处理；开启时阻断非国内、非游戏的 UDP 443（QUIC），并移除全部海外业务 <code>nameserver-policy</code>（72 条，被移除的域名改走默认 <code>nameserver</code>）：若 <code>关闭WebRTC阻断</code> 未开启，直接在 WebRTC 阻断规则的 <code>DST-PORT</code> 中追加 <code>443</code>；若已开启，则按 WebRTC 阻断规则的同一组 <code>NOT</code> 条件另建一条 <code>AND,((NETWORK,UDP),(DST-PORT,443),…),REJECT</code> 并置顶</td></tr>
+<tr><td><code>开启Sniffer</code></td><td>关闭</td><td>关闭时直接从输出配置中删除整个 <code>sniffer</code> 字段（不是改为 <code>enable: false</code>），嗅探行为交由内核或客户端默认值决定；开启时保留模板中的 <code>sniffer</code> 配置</td></tr>
+<tr><td><code>代理组interval改为5</code></td><td>关闭</td><td>关闭时不做任何处理，代理组 <code>interval</code> 保持 300；开启时将模板代理组（自动选择与 3 个负载均衡组）及国家/地区生成子组（自动选择、自动回退、负载均衡）的 <code>interval</code> 改为 5；不改其他 <code>interval</code></td></tr>
+<tr><td><code>使用AIsouler直连规则</code></td><td>关闭</td><td>关闭时不做任何处理；开启时参照 <a href="https://github.com/AIsouler/MyClash">AIsouler/MyClash</a> 改写国内直连（规则集均取自 bett-rules）：直连段最前为 <code>private</code>（bett <code>geosite/private</code>），国内域名改用 <code>geolocation-cn</code>、<code>games_cn</code>、<code>synology</code>、<code>nvidia_cn</code>、<code>apple_cn</code>、<code>microsoft_cn</code> 及 3 条 MyClash 字面直连；<code>cn_ip</code>、<code>private_ip</code> 不加 <code>no-resolve</code>，放在 <code>MATCH</code> 之前兜底；删除 echs、cn-additional、DustinWin 国内集及部分字面直连；DNS 服务器不变，<code>fake-ip-filter</code>、<code>skip-domain</code> 与 <code>nameserver-policy</code> 的国内部分改为 <code>cn</code>（<code>geosite/cn</code>）；UDP 阻断规则（含 <code>QUIC阻断</code>）的国内排除改为 <code>NOT(OR(cn, cn_ip))</code>，保留 <code>NOT games</code></td></tr>
+</tbody>
+</table>
+
+**图标来源（代理组与开关面板）**
+
+<table width="100%">
+<thead>
+<tr><th width="22%">类别<img src="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/assets/table-spacer.png" width="352" height="1" alt=""></th><th width="7%">开关数<img src="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/assets/table-spacer.png" width="112" height="1" alt=""></th><th width="9%">代码内图标处数<img src="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/assets/table-spacer.png" width="144" height="1" alt=""></th><th width="24%">代理组显示<img src="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/assets/table-spacer.png" width="384" height="1" alt=""></th><th width="26%">开关面板显示（Bettbox 或其他兼容软件）<img src="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/assets/table-spacer.png" width="416" height="1" alt=""></th><th width="12%">重复<img src="https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/assets/table-spacer.png" width="192" height="1" alt=""></th></tr>
+</thead>
+<tbody>
+<tr><td><strong>A1</strong> 模板内代理组开关（含 FCM 的直连开关）</td><td>24</td><td>24</td><td>有，JS 内模板各代理组自带</td><td>有，自动沿用对应代理组的图标，不重复写地址</td><td>否</td></tr>
+<tr><td><strong>A2</strong> 模板内无开关的组（🌍 PROXY）</td><td>0</td><td>1</td><td>有，JS 内模板的 🌍 PROXY 组自带</td><td>❌</td><td>否</td></tr>
+<tr><td><strong>B1</strong> 注入整组、开关图标＝组图标（SKK、国家/地区、入口解析）</td><td>3</td><td>6</td><td>有，写在各注入组的定义处（SKK 段、国家/地区段、入口解析处）</td><td>有，开关项里内联同一张图</td><td>是，三对</td></tr>
+<tr><td><strong>B2</strong> 注入整组、开关图标≠组图标（TGDC）</td><td>1</td><td>4</td><td>有，写在 TGDC 组的定义处（三个 DC 组各一张国旗，兜底沿用 Telegram 组图标）</td><td>有，开关项里用 Telegram 标</td><td>否</td></tr>
+<tr><td><strong>C</strong> 纯功能开关（只在开关面板）</td><td>15</td><td>15</td><td>❌</td><td>有，集中在功能开关图标表，开关项引用</td><td>是，两对</td></tr>
+</tbody>
+</table>
+
+> 代码内图标处数 50 ｜ 图标数 45 ｜ 重复对数 5
+
+> **关于客户端**：这套图形化开关由 Bettbox 原生支持——脚本开头的 `Compatible_With_Bettbox` 声明就是给 Bettbox 识别用的。换到其他客户端分两种情况：
+>
+> - 支持 JS 覆写脚本、但没有开关面板的客户端（例如 FlClash）：需要自行打开 `script_override.js`，把 `ruleOptionsEnable` 里对应开关的值改成 `true` 或 `false`，保存后重新加载订阅即可生效；
+> - 不支持 JS 覆写脚本的客户端：没有这个入口，只能改用 `mihomo.yaml` 模板自行维护策略组。
+
+<a id="dns-model"></a>
+
+<br>
+
+<h2 align="center">🔀 hosts真假域名映射-私有DoH复合DNS流程</h2>
+
+<br>
+
+[<kbd>在线阅读：节点域名、Hosts 与私有 DNS 联动模型</kbd>](https://XVSVTsama.github.io/XVSVT-Clash-Config/proxy-infrastructure-domain-protection-model.html)
+
+<a id="ruleset-overlap"></a>
+
+<br>
+
+<h2 align="center">🧮 规则集重合关系（额外说明）</h2>
+
+<br>
+
+本小节不属于 YAML 或脚本单方面的说明：本仓库引用的规则集来自多个上游，彼此存在规则集与规则集之间的覆盖重合。下面按重合的集合分组，全部用韦恩图说明。
+
+**1. 国内直连内部的来源重合**
+
+```mermaid
+venn-beta
+  set G["geolocation-cn（bett-rules）"]
+  set A["cn-additional（353355 国内补充）"]
+  set S["apple-cn / microsoft-cn / games-cn（DustinWin 平台国内集）"]
+  union G,A
+  union G,S
+```
+
+`geolocation-cn` 与 `cn-additional` 有 2564 条完全重合、与 `games-cn` 有 310 条；`cn-additional` 与 `games-cn` 有 194 条；`apple-cn`、`microsoft-cn` 与其余三个各只有 1 条交集。五者同指 `DIRECT`，重合只增加体积，不改变结果。规则段里另有两条补充直连：`DOMAIN-SUFFIX,ac.cn`（中科院各所等 `*.ac.cn`）与 `DOMAIN-SUFFIX,xdf.cn`。
+
+**2. 直连规则集与海外组规则集**
+
+```mermaid
+venn-beta
+  set E["国内直连五件套"]
+  set P["apple（bett-rules）"]
+  set M["microsoft（bett-rules）"]
+  union E,P
+  union E,M
+```
+
+`apple` \/ `microsoft` 的国内部分落在 `apple-cn` \/ `microsoft-cn` 里，`rules` 把国内直连五件套排在海外组之前，重合部分先走 `DIRECT`；`games` 与 `games-cn` 同理。
+
+**3. 出海域名集的多个来源**
+
+```mermaid
+venn-beta
+  set X["proxy（DustinWin 代理域名集）"]
+  set G["gfw（GFW 域名集）"]
+  set O["google（Loyalsoldier Google 域名集）"]
+  union X,G
+  union X,O
+  union G,O
+```
+
+`proxy`、`gfw` 同指 `🌍 PROXY`；`google`、`google-cn` 指向 `🔎 Google`，且这组规则排在 `🤖 AI大模型` 之前，因此 Google 域名不会被 `proxy`、`gfw` 抢先匹配。
+
+**4. Twitter 的三套规则集**
+
+```mermaid
+venn-beta
+  set D["twitter-x-domain（bett-rules）"]
+  set I["twitter-x-ip（bett-rules）"]
+  set B["twitter-x-ipcidr（magicrule IP）"]
+  union I,B
+```
+
+`twitter-x-ipcidr` 为 ipcidr 类型，仅含 IP 条目。其前身是 classical 类型的聚合集：域名条目与 `twitter-x-domain` 重合，实际生效的是其中 8 条 IP 段，现改用 `magicrule.pages.dev` 同源的 ipcidr 拆分产物并更名。该 8 条与 `twitter-x-ip` 部分重合，且包含其未收录的网段（如 `69.195.160.0/19` 及更宽的前缀）。若该地址当前无法直出 YAML（网络原因或站点行为），客户端会拉到空集，此时 Twitter 分流由 `twitter-x-domain`、`twitter-x-ip` 两套承担。
+
+> 以上重合关系按各规则集的覆盖范围与来源判断（依据取自 `mihomo.yaml` 的 `rules:` 引用与注释）。
+
+---
+
+<a id="acknowledgments"></a>
+
+<br>
+
+<h2 align="center">🙏 致谢</h2>
+
+<br>
+
+本项目建立在开源内核、客户端、规则集与图标资源之上。以下列出本项目使用或参考的相关项目；引用或参考不代表这些项目与本仓库存在合作或背书关系。具体资源请以各上游项目的说明和许可为准。
+
+### 内核与客户端
+
+- [Mihomo](https://github.com/MetaCubeX/mihomo)
+- [Bettbox](https://github.com/appshubcc/Bettbox)
+- [FlClash](https://github.com/chen08209/FlClash)
+
+### 规则集作者与原项目
+
+- [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat)
+- [DustinWin/ruleset_geodata](https://github.com/DustinWin/ruleset_geodata)
+- [echs-top/proxy](https://github.com/echs-top/proxy)
+- [appshubcc/bett-rules](https://github.com/appshubcc/bett-rules)
+- [reddishJade/private_proxy](https://github.com/reddishJade/private_proxy)
+- [Accademia/Additional_Rule_For_Clash](https://github.com/Accademia/Additional_Rule_For_Clash)
+- [Loyalsoldier/clash-rules](https://github.com/Loyalsoldier/clash-rules)
+- [blackmatrix7/ios_rule_script](https://github.com/blackmatrix7/ios_rule_script)
+- [static-file-global.353355.xyz](https://static-file-global.353355.xyz/rules/cn-additional-list.mrs)（`cn-additional` 国内补充规则集）
+
+
+
+### 图标作者与原项目
+
+- [Koolson/Qure](https://github.com/Koolson/Qure)
+- [aaANDkk/Qure_Style_SVG](https://github.com/aaANDkk/Qure_Style_SVG)
+- [DustinWin/ruleset_geodata](https://github.com/DustinWin/ruleset_geodata)
+- [AIsouler/MyClash](https://github.com/AIsouler/MyClash)
+- [Clash Verge](https://www.clashverge.dev/)
+- [Simple Icons](https://github.com/simple-icons/simple-icons)
+
+各图标文件的来源、许可、可使用范围及 SVG 优先维护约定，统一见 [图标资源与使用说明](https://github.com/XVSVTsama/XVSVT-Clash-Config/blob/main/assets/icons/README.md)。
+
+### 脚本与配置参考
+
+- [AIsouler/MyClash](https://github.com/AIsouler/MyClash)
+- [echs-top/proxy](https://github.com/echs-top/proxy)
+- [HenryChiao/MIHOMO_YAMLS](https://github.com/HenryChiao/MIHOMO_YAMLS)
+
+以上参考均用于学习与对照，具体实现以本仓库代码为准。
+
+<a id="star-history"></a>
+
+<br>
+
+<h2 align="center">⭐ Star History</h2>
+
+<br>
+
+[![Star History Chart](https://api.star-history.com/svg?repos=XVSVTsama/XVSVT-Clash-Config&type=Date)](https://star-history.com/#XVSVTsama/XVSVT-Clash-Config&Date)
+
+<a id="warning"></a>
+
+<br>
+
+<h2 align="center">🚨 警告</h2>
+
+<br>
+
+<!-- 新增警告在本节末尾照第一条的格式追加，一条一句话：对象 + 起始版本 + 变更 + 影响 + 本仓库态度 + 请用户自行安排。第一条即模板示例，不留空位。 -->
+
+- FlClash 自 **v0.9.4-rs.1** 起的 `-rs` 系列已换用 [Concord](https://github.com/chen08209/concord) 内核，其不支持 `path-in-bundle`，本仓库没有适配独立内核的计划，请用户自行安排。
+- `实验剔除指定类型` 的协议表默认取值全为 false，等效于不生效，需用户手动调整相关取值才起作用；若已实际使用该功能，后续更新脚本前请先自行记录当前取值，获取新版脚本后再改回。
+- 本仓库没有计划安排链式代理，需要链式代理的用户请自行安排。
+
+<a id="disclaimer"></a>
+
+<br>
+
+<h2 align="center">⚠️ 免责声明</h2>
+
+<br>
+
+1. 本仓库的YAML模板与JS脚本设计并非完美，或可能有代码质量问题，也不一定适合所有环境，尤其是 DNS 与路由规则。
+2. 使用者应自行评估使用、修改或传播本仓库内容所涉及的风险，并遵守所在地区适用的法律法规。因使用本仓库内容产生的后果，由使用者自行承担。
