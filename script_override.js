@@ -58,10 +58,10 @@ const Compatible_With_Bettbox = {
  *    数据面库为 CHIZI-0618/sing-ebpf。
  *    本脚本只写角色参数：enable 与 exclude-uid 由客户端（如 BoxProxy 的 boxctl）注入，
  *    同时写会触发 "mode cannot be combined with local.enable or shared.enable"。
- *    预留段与国内 IP 交给 listeners 的 bypass-rule-set：规则集内容由内核填进 LPM 表，
- *    命中的目标在内核直接放行、不进用户态，规则段因此不再写
- *    RULE-SET,echs_direct_ip,DIRECT,no-resolve；这两个规则集只被 listener 引用，
- *    所以 removeUnusedRuleProviders 也认 bypass-rule-set。
+ *    预留段由内核内置的强制放行处理，国内 IP 交给 listeners 的 bypass-rule-set：
+ *    规则集内容由内核填进 LPM 表，命中的目标在内核直接放行、不进用户态，规则段
+ *    因此不再写 RULE-SET,echs_direct_ip,DIRECT,no-resolve；这个规则集只被 listener
+ *    引用，所以 removeUnusedRuleProviders 也认 bypass-rule-set。
  *    使用AIsouler直连规则 打开时，规则段换成 AIsouler 的国内直连规则集，
  *    内核放行集同步换成 cn_ip，避免两层各用一套国内 IP 表。
  *    fakeip-icmp: reply 让发往 fake-ip 的 ICMP Echo 在内核应答；
@@ -163,17 +163,17 @@ const ruleOptionsEnable = {
   // 负载均衡策略组
   '🔄 负载均衡': false,
   // Google / Google-CN 共用独立策略组；Google FCM 与 AI 特例仍由原规则处理。
-  '🔎 Google': true,
+  '🔎 Google': false,
   // Meta 社交平台策略组
-  '♾️ Meta': true,
+  '♾️ Meta': false,
   // AI 大模型策略组
-  '🤖 AI大模型': true,
+  '🤖 AI大模型': false,
   // Telegram 通讯软件策略组
   '📲 Telegram': false,
   // Twitter 社交平台策略组
   '✖️ Twitter': false,
   // Discord 通讯软件策略组
-  '💬 Discord': true,
+  '💬 Discord': false,
   // Reddit 社交平台策略组
   '👽 Reddit': false,
   // LINE 通讯软件策略组
@@ -181,13 +181,13 @@ const ruleOptionsEnable = {
 
 
   // TikTok 视频平台策略组
-  '🎵 TikTok': true,
+  '🎵 TikTok': false,
   // Netflix 流媒体策略组
   '🎥 Netflix': false,
   // Spotify 音乐流媒体策略组
-  '🎧 Spotify': true,
+  '🎧 Spotify': false,
   // Emby 播放器进程分流策略组
-  '🎬 Emby': true,
+  '🎬 Emby': false,
   // 海外 Apple 平台服务
   '🍎 海外苹果': false,
   // 海外 Microsoft 平台服务
@@ -197,7 +197,7 @@ const ruleOptionsEnable = {
   // 游戏策略组
   '🎮 Games-Global': false,
   // 金融支付；Instagram 统一归入 Meta。
-  '💳 金融支付': true,
+  '💳 金融支付': false,
   // Patreon 赞助平台策略组
   '💝 Patreon': false,
   // EHentai 策略组
@@ -218,7 +218,7 @@ const ruleOptionsEnable = {
   '关闭 Reality 增强': false,
   // 默认不改动订阅节点的 udp；开启时统一设置为 true，允许 UDP 通过代理。
   // provider 节点不在此遍历范围内，开启时改由 override.udp 生效。
-  '试开启节点UDP': true,
+  '试开启节点UDP': false,
   // 开启后按节点 ip-version 优先使用 IPv6；provider 节点不在此遍历范围内，
   // 开启时改由 override.ip-version（统一 ipv6-prefer）生效。
   'IPv6优先': false,
@@ -226,7 +226,7 @@ const ruleOptionsEnable = {
   // 默认关闭：隐藏组 FCM 仅含 DIRECT；打开后优先使用 👉 手动选择，若该组已关闭则回退到 🌍 PROXY，再回退到 DIRECT（不移除 FCM 组）。开关图标取自 FCM 代理组的 icon 字段。
   '关闭FCM直连': false,
   // 开启 Telegram DC/地区实验分流；关闭时不改变原 Telegram 规则、策略组和规则集。
-  'TGDC实验分流': true,
+  'TGDC实验分流': false,
   // 开启后注入 SukkaW/Surge 的 reject 规则集与广告拦截策略组；关闭时不注入其策略组、规则集和规则。
   '使用SKK广告拦截': false,
   // 默认关闭：不做任何改动。开启后按 AIsouler/MyClash 的写法替换国内直连类规则（规则集均取自 bett-rules）：
@@ -241,9 +241,9 @@ const ruleOptionsEnable = {
   // 先按节点名称中的显式数值倍率筛选顶层节点，再据此生成国家/地区组；
   // 某地区节点全部被筛除时不建该地区组。不处理 proxy-providers。
   '剔除≥2x': false,
-  '剔除≤0.5x': true,
+  '剔除≤0.5x': false,
   // 开启后删除名称中带免费类过滤词的顶层节点；过滤词独立维护（见 FREE_NODE_FILTER_REGEX），与倍率剔除互不影响。
-  '剔除免费': true,
+  '剔除免费': false,
   '实验剔除指定类型': false,
   // 开启后，维护区所有分类的入口节点统一加入“国内入口解析”组，不进入其他代理组。
   '入口解析': false,
@@ -259,10 +259,8 @@ const ruleOptionsEnable = {
   'QUIC阻断': false,
   // 默认关闭：直接从输出中删除整个 sniffer 字段（而非改 enable: false），嗅探交由内核或客户端默认值决定；
   // 打开后保留模板 sniffer。
-  '开启Sniffer': true,
+  '开启Sniffer': false,
   '代理组interval改为5': false,
-  'TUN MTU改为9000': false,
-  '开启端点独立NAT': false,
 };
 
 // 关闭这些业务组时删除指向它们的路由规则，而不是把规则改写到全局兜底。
@@ -433,7 +431,6 @@ const TEMPLATE = {
       ],
       "udp-timeout": 300,
       "bypass-rule-set": [
-        "ebpf_bypass_ip",
         "echs_direct_ip"
       ],
       "fakeip-icmp": "reply",
@@ -1206,17 +1203,6 @@ const TEMPLATE = {
       "path": "./ruleset/games-cn.mrs",
       "path-in-bundle": "geo/geosite/category-games-cn.mrs"
     },
-    // 预留、组播与保留段：只喂 listeners 的 bypass-rule-set，不参与规则匹配。
-    "ebpf_bypass_ip": {
-      "type": "inline",
-      "behavior": "ipcidr",
-      "payload": [
-        "0.0.0.0/8",
-        "224.0.0.0/4",
-        "240.0.0.0/4",
-        "ff00::/8"
-      ]
-    },
     "echs_direct_ip": {
       "type": "http",
       "interval": 86400,
@@ -1760,8 +1746,6 @@ const FEATURE_SWITCH_ICONS = {
   'QUIC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Quic.svg',
   '开启Sniffer': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Tracking.svg',
   '代理组interval改为5': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-auto.png',
-  'TUN MTU改为9000': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-mtu.svg',
-  '开启端点独立NAT': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-einat.svg',
   '使用AIsouler直连规则': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-AIsouler-MyClash-China.svg',
 };
 
@@ -1860,14 +1844,6 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     {
       name: '代理组interval改为5',
       icon: FEATURE_SWITCH_ICONS['代理组interval改为5']
-    },
-    {
-      name: 'TUN MTU改为9000',
-      icon: FEATURE_SWITCH_ICONS['TUN MTU改为9000']
-    },
-    {
-      name: '开启端点独立NAT',
-      icon: FEATURE_SWITCH_ICONS['开启端点独立NAT']
     }
   ]);
 
@@ -3133,7 +3109,6 @@ const AISOULER_NEW_UDP_EXCLUSION =
 // 从直连段删除的规则（被新规则集取代，或按用户决定删除的字面直连）。
 const AISOULER_REMOVED_RULES = new Set([
   'DOMAIN-SUFFIX,alipayeshop.com,DIRECT',
-  'RULE-SET,echs_direct_ip,DIRECT,no-resolve',
   'RULE-SET,cn-additional,DIRECT',
   'RULE-SET,apple-cn,DIRECT',
   'RULE-SET,microsoft-cn,DIRECT',
@@ -3254,11 +3229,6 @@ function applyAisoulerDirectRules(result) {
   const sniffer = result.sniffer;
   if (sniffer && typeof sniffer === 'object') {
     sniffer['skip-domain'] = replaceAisoulerDomainFilters(sniffer['skip-domain']);
-    if (Array.isArray(sniffer['skip-dst-address'])) {
-      sniffer['skip-dst-address'] = sniffer['skip-dst-address'].flatMap((entry) =>
-        entry === 'rule-set:echs_direct_ip' ? ['rule-set:cn_ip', 'rule-set:private_ip'] : [entry]
-      );
-    }
   }
 }
 
@@ -4089,6 +4059,10 @@ const DOMESTIC_ENTRY_PROXIES = {
     type: 'http',
     server: '101.251.204.174',
     port: 8080
+  }, {
+    type: 'http',
+    server: '120.136.23.176',
+    port: 8800
   }],
 
   // 中国移动
@@ -4468,14 +4442,6 @@ function main(config, profileName) {
         }
       });
     });
-  }
-
-  if (ruleOptionsEnable['TUN MTU改为9000'] === true && result.tun) {
-    result.tun.mtu = 9000;
-  }
-
-  if (ruleOptionsEnable['开启端点独立NAT'] === true && result.tun) {
-    result.tun['endpoint-independent-nat'] = true;
   }
 
   // ---- 2.5 TGDC 实验分流（默认关闭；由 UI 开关控制） ----

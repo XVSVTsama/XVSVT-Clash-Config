@@ -8,7 +8,7 @@
 |---|---|---|
 | `tun` | 完整 TUN 配置：`device`、`mtu`、`stack`、`route-address`、`route-exclude-address`、`dns-hijack` 等 | `enable: false`，其余 TUN 字段全部删除 |
 | 入站 | TUN 设备 | 顶层 `listeners` 增加一项 `name: ebpf-in`、`type: ebpf`：`local` 走 cgroup，`shared` 走 packet_rewrite |
-| 内网与预留段 | `route-exclude-address` 列私网、CGNAT、组播、保留网段，不接管 | `bypass-private-address: true` 让私网放行；`0.0.0.0/8`、`224.0.0.0/4`、`240.0.0.0/4`、`ff00::/8` 由内核内置的强制放行处理，`ebpf_bypass_ip` 只是把这四条写进配置 |
+| 内网与预留段 | `route-exclude-address` 列私网、CGNAT、组播、保留网段，不接管 | `bypass-private-address: true` 让私网放行；`0.0.0.0/8`、`224.0.0.0/4`、`240.0.0.0/4`、`ff00::/8` 由内核内置的强制放行处理（`private_address.h` 的 safety bypass），配置里不再重复列出 |
 | 国内 IP | 规则段用 `RULE-SET,echs_direct_ip,DIRECT,no-resolve` 匹配 | `listeners.bypass-rule-set` 引用 `echs_direct_ip`：命中的目标在内核直接放行，规则段那条与 `sniffer.skip-dst-address` 里的 `rule-set:echs_direct_ip` 一并删除 |
 | `使用AIsouler直连规则` | 把国内直连规则集替换成 AIsouler 那套（`cn`、`cn_ip` 等） | 同样替换，并把内核放行集从 `echs_direct_ip` 换成 `cn_ip`，两个层面保持一致 |
 | fake-ip ICMP | 由核心处理 | `fakeip-icmp: reply`：发往 fake-ip 的 ICMP Echo 在内核应答，不到核心 |
@@ -16,6 +16,7 @@
 | 共享下联 | 无 | 顶层常量 `EBPF_SHARED_IFACE_SPEC` 记录下联网卡，`main()` 里的 `applyEbpfListener()` 把它写进 `shared.interface`；没有下联时用空转 dummy 网卡占位 |
 | `IPv6优先` 开关 | 改核心侧字段与 `tun.inet6-address`、`tun.route-address` | 改核心侧 `ipv6`、`dns.ipv6`、`fake-ip-range6`，并把两个角色的 `ipv6` 一起切：关闭后内核不再拦截 v6 |
 | `enable` / `exclude-uid` | 由客户端注入 `tun` 的同名字段 | 同样由客户端（例如 BoxProxy 的 boxctl）注入：`applyEbpfListener()` 删掉 `mode` 与两个角色上的 `enable`，避免与客户端注入的 `local.enable` / `shared.enable` 冲突 |
+| `TUN MTU改为9000`、`开启端点独立NAT` | 两个开关 | 移除：两者只改 `tun` 字段，而本分支的 `tun` 已停用 |
 
 ## 与 main 的对应关系
 
@@ -52,6 +53,8 @@
 - `shared.data-plane: socket_assign` 需要内核支持 `bpf_sk_assign`（Linux 5.7+ 或厂商回移），否则用默认的 `packet_rewrite`。
 - `enable` 与 `exclude-uid` 由客户端注入；直接在纯 mihomo 环境加载本脚本时，这两个字段要自己补，否则监听不会启用。
 - 换回主线内核时，`listeners` 里的 eBPF 项必须一起去掉，否则核心起不来。
+- `IPv6优先` 对两个角色 `ipv6` 的设置在 BoxProxy 里会被客户端覆盖：boxctl 按 `runtime_profile.ipv6_mode` 写这两个字段，实际以 App 里的 IPv6 设置为准；脚本里的值只在没有客户端接管时生效。
+- 本分支的放行改动只用 `core-ebpf -t` 做过配置校验，没有真机运行时验证：内核放行是否按预期命中、`respect_policy` 与 `fakeip-icmp: reply` 的实际行为都还没实测。
 
 ### 内核放行带来的取舍
 
