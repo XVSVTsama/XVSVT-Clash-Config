@@ -73,14 +73,18 @@ listeners:
       - "tcp"
       - "udp"
     udp-timeout: 300
+    bypass-rule-set:
+      - ebpf_bypass_ip
+      - echs_direct_ip
+    fakeip-icmp: reply
     local:
       data-plane: cgroup
-      dns-mode: hijack
+      dns-mode: respect_policy
       ipv6: true
       bypass-private-address: true
     shared:
       data-plane: packet_rewrite
-      dns-mode: hijack
+      dns-mode: respect_policy
       interface: []
       ipv6: true
       bypass-private-address: true
@@ -593,6 +597,14 @@ rule-providers:
   apple-cn: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/apple-cn.mrs', path: ./ruleset/apple-cn.mrs, path-in-bundle: 'geo/geosite/apple@cn.mrs' }
   microsoft-cn: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/microsoft-cn.mrs', path: ./ruleset/microsoft-cn.mrs, path-in-bundle: 'geo/geosite/microsoft@cn.mrs' }
   games-cn: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/games-cn.mrs', path: ./ruleset/games-cn.mrs, path-in-bundle: 'geo/geosite/category-games-cn.mrs' }
+  ebpf_bypass_ip:
+    type: inline
+    behavior: ipcidr
+    payload:
+      - 0.0.0.0/8
+      - 224.0.0.0/4
+      - 240.0.0.0/4
+      - ff00::/8
   echs_direct_ip: { <<: *ipcidr_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/echs-top/proxy/main/mrs/ip/direct.mrs', path: ./ruleset/echs_direct_ip.mrs, path-in-bundle: 'geo/geoip/cn.mrs' }
   ehentai: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://raw.githubusercontent.com/appshubcc/bett-rules/meta/geo/geosite/ehentai.mrs', path: ./ruleset/ehentai.mrs, path-in-bundle: 'geo/geosite/ehentai.mrs' }
   fakeip-filter_domain: { <<: *domain_mrs, url: 'https://gh-proxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/fakeip-filter.mrs', path: ./ruleset/fakeip-filter_domain.mrs, path-in-bundle: 'geo/geosite/fakeip-filter.mrs' }
