@@ -873,3 +873,6 @@ rules:
   # - RULE-SET,proxy,🌍 PROXY
   # - RULE-SET,gfw,🌍 PROXY
   - MATCH,🌍 PROXY
+  # 如请求为 udp，而代理节点没有 udp 支持 (例如ss节点没写udp: true),则会继续向下匹配
+  # 为防止泄露故reject
+  - NETWORK,UDP,REJECT

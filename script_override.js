@@ -248,6 +248,10 @@ const ruleOptionsEnable = {
   // “关闭WebRTC阻断”未开启时，把 443 并入 WebRTC 阻断规则的 DST-PORT；
   // 已开启时，按同一组 NOT 条件另建一条 UDP 443 阻断规则并置顶。
   'QUIC阻断': false,
+  // 默认关闭：打开后在 MATCH,🌍 PROXY 之后平铺订阅顶层节点中明确写了 udp: true 的节点，
+  // 各生成一条 MATCH,<节点名>，供 🌍 PROXY 当前节点不支持 UDP 时继续向下命中；
+  // 仍无可用节点时由其后的 NETWORK,UDP,REJECT 拒绝。
+  'UDP节点平铺': false,
   // 默认关闭：直接从输出中删除整个 sniffer 字段（而非改 enable: false），嗅探交由内核或客户端默认值决定；
   // 打开后保留模板 sniffer。
   '开启Sniffer': false,
@@ -1651,7 +1655,10 @@ const TEMPLATE = {
     "PROCESS-NAME,bf6.exe,🎮 Games-Global",
     "RULE-SET,games,🎮 Games-Global",
     "RULE-SET,TikTok,🎵 TikTok",
-    "MATCH,🌍 PROXY"
+    "MATCH,🌍 PROXY",
+    // 如请求为 udp，而代理节点没有 udp 支持 (例如ss节点没写udp: true),则会继续向下匹配
+    // 为防止泄露故reject
+    "NETWORK,UDP,REJECT"
   ]
 };
 
@@ -1696,6 +1703,7 @@ const FEATURE_SWITCH_ICONS = {
   '代理节点 DNS 使用国内': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-AIsouler-MyClash-China.svg',
   '关闭WebRTC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-webrtc-block.svg',
   'QUIC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Quic.svg',
+  'UDP节点平铺': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-udp.svg',
   '开启Sniffer': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Tracking.svg',
   '代理组interval改为5': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-auto.png',
   '使用AIsouler直连规则': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-AIsouler-MyClash-China.svg',
@@ -1788,6 +1796,10 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     {
       name: 'QUIC阻断',
       icon: FEATURE_SWITCH_ICONS['QUIC阻断']
+    },
+    {
+      name: 'UDP节点平铺',
+      icon: FEATURE_SWITCH_ICONS['UDP节点平铺']
     },
     {
       name: '开启Sniffer',
@@ -4502,6 +4514,22 @@ function main(config, profileName) {
 
   // 仅删除在最终路由、DNS 或其他配置中都不再被引用的规则集。
   removeUnusedRuleProviders(result);
+
+  // ---- 11. UDP 节点平铺开关：默认关闭时不做任何处理 ----
+  // 打开后在 MATCH,🌍 PROXY 之后平铺订阅顶层节点中明确写了 udp: true 的节点：
+  // UDP 请求在 🌍 PROXY 当前节点不支持 UDP 时继续向下命中这些节点，
+  // 仍无可用节点时由其后的 NETWORK,UDP,REJECT 拒绝。
+  if (ruleOptionsEnable['UDP节点平铺'] === true && Array.isArray(result.rules) && Array.isArray(result.proxies)) {
+    const matchIndex = result.rules.indexOf('MATCH,🌍 PROXY');
+    if (matchIndex !== -1) {
+      const udpNodeRules = result.proxies
+        .filter((proxy) => proxy && proxy.udp === true && typeof proxy.name === 'string' && !proxy.name.includes(','))
+        .map((proxy) => `MATCH,${proxy.name}`);
+      if (udpNodeRules.length > 0) {
+        result.rules.splice(matchIndex + 1, 0, ...udpNodeRules);
+      }
+    }
+  }
 
   return result;
 }
