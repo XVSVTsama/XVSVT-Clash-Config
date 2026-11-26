@@ -18,7 +18,7 @@
 ## 用法
 
 ```text
-https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/no-tun/script_override.js
+https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/03-no-tun/script_override.js
 ```
 
 把该地址作为订阅的覆写脚本加载，入站交给客户端或其它组件。文件首行的 `Compatible_With_Bettbox` 声明不要删除。
