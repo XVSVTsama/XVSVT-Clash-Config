@@ -76,7 +76,7 @@
 ## 用法
 
 ```text
-https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/ebpf/script_override.js
+https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/01-ebpf/script_override.js
 ```
 
 把该地址作为订阅的覆写脚本加载，网络模式选 eBPF，内核用上表中的 `-ebpf` 构建。文件首行的 `Compatible_With_Bettbox` 声明不要删除。
