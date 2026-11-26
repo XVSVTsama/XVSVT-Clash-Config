@@ -38,9 +38,9 @@ const Compatible_With_Bettbox = {
  *
  *  来源：
  *    JS 脚本：
- *    https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js
+ *    https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/01-ebpf/script_override.js
  *    YAML 模板：
- *    https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/mihomo.yaml
+ *    https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/01-ebpf/mihomo.yaml
  *    仓库：
  *    https://github.com/XVSVTsama/XVSVT-Clash-Config
  *    作者：
@@ -49,23 +49,17 @@ const Compatible_With_Bettbox = {
  *    用法：本脚本可直接作为 Bettbox / FlClash 系客户端的远程覆写脚本加载
  *         （文件首行为 Bettbox 兼容声明，请勿删除）。
  *
+ *    本分支：01-ebpf（派生自 main，只保留 eBPF 透明入站的差异，其余内容与 main 相同）
+ *
  *  eBPF 入站（本分支特有）：
- *    "listeners" 里 ebpf 入站的字段（mode / network / udp-timeout / local / shared 等）
- *    以 https://github.com/liuran001/mihomo 的 docs/ebpf-inbound.md 为准；
- *    实际适配的内核同样取自该仓库的 -ebpf 构建（alpha-…-ebpf）。
- *    实现上游是 https://github.com/TanakaLun/mihomo
- *    （ebpf-inbound 分支，CI 分支 automation/ebpf-* 下的 listener/sing_ebpf），
- *    数据面库为 CHIZI-0618/sing-ebpf。
- *    本脚本只写角色参数：enable 与 exclude-uid 由客户端（如 BoxProxy 的 boxctl）注入，
- *    同时写会触发 "mode cannot be combined with local.enable or shared.enable"。
- *    预留段由内核内置的强制放行处理，国内 IP 交给 listeners 的 bypass-rule-set：
- *    规则集内容由内核填进 LPM 表，命中的目标在内核直接放行、不进用户态，规则段
- *    因此不再写 RULE-SET,echs_direct_ip,DIRECT,no-resolve；这个规则集只被 listener
- *    引用，所以 removeUnusedRuleProviders 也认 bypass-rule-set。
- *    使用AIsouler直连规则 打开时，规则段换成 AIsouler 的国内直连规则集，
- *    内核放行集同步换成 cn_ip，避免两层各用一套国内 IP 表。
- *    fakeip-icmp: reply 让发往 fake-ip 的 ICMP Echo 在内核应答；
- *    dns-mode 取 respect_policy，DNS 劫持跟随 local／shared 各自的 UID／来源策略。
+ *    tun 收敛为 { enable: false }，其余 TUN 字段全部删除；入站由 listeners 的 ebpf 项提供
+ *    （local 走 cgroup，shared 走 packet_rewrite）。字段 schema 以 liuran001/mihomo 的
+ *    docs/ebpf-inbound.md 为准，内核同样用该仓库的 -ebpf 构建；实现上游是 TanakaLun/mihomo
+ *    的 ebpf-inbound 分支，数据面库为 CHIZI-0618/sing-ebpf。
+ *    enable 与 exclude-uid 由客户端注入，脚本只写角色参数；预留段由内核内置强制放行，
+ *    国内 IP 交给 bypass-rule-set，命中的目标不进用户态，规则段因此不再写
+ *    RULE-SET,echs_direct_ip,DIRECT,no-resolve。使用AIsouler直连规则 打开时，规则段与
+ *    内核放行集一起换成 cn_ip。IPv6优先 只切核心侧与两个角色的 ipv6。
  *
  *  用途：
  *    把当前订阅（原始配置）与本仓库维护的"标准模板"（mihomo.yaml）合并成最终生效配置。
