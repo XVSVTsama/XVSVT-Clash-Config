@@ -1,6 +1,6 @@
 # BoxProxy 生命周期脚本
 
-`iface-auto.sh` 是 BoxProxy 在服务启动前（`BOX_EVENT=pre-start`）以 root 执行的脚本，把「本次网络模式」翻译成内核、覆写脚本、网卡与转发规则的具体取值。本分支只保留这一个文件，不含覆写脚本本身；脚本改写的 `tun-我的.js`、`tproxy-我的.js`、`ebpf-我的.js` 属于客户端目录，与仓库其它分支的 `script_override.js` 没有直接关系。
+`iface-auto.sh` 是 BoxProxy 在服务启动前（`BOX_EVENT=pre-start`）以 root 执行的脚本，把「本次网络模式」翻译成内核、覆写脚本、网卡与转发规则的具体取值。本分支保留 `iface-auto.sh` 与 `update-core.sh` 两个脚本，都不含覆写脚本本身；被改写的 `tun-我的.js`、`tproxy-我的.js`、`ebpf-我的.js` 属于客户端目录，与仓库其它分支的 `script_override.js` 没有直接关系。
 
 默认不会关闭任何应用：只有当启动配置里要用的端口确实被第三方应用占着时，才停掉那个应用。
 
@@ -73,6 +73,34 @@ sh iface-auto.sh -h         # 帮助
 | `BOX_STOP_PACKAGES` | 空 | 额外无条件停止的包名，空格分隔；设成 `none` 表示不停 |
 
 boxctl 会自带 `BOX_HOME`、`BOX_RUN_DIR`、`BOX_SCRIPTS_DIR`、`BOX_MODE` 等变量，脚本优先按这些变量取值；其中 `BOX_SCRIPTS_DIR` 指向的是生命周期脚本目录本身，不是覆写脚本目录，所以脚本用「目录里有没有 `.js`」来判断，不盲信这个变量。
+
+## 内核更新（`update-core.sh` 模板）
+
+本分支另带一个**模板**脚本，负责「备份 → 下载 → 校验 → 替换 → 重启 → 失败回滚」，**不内置任何下载地址、版本号或校验值**：用什么核心分支、哪个版本、校验值多少，全部由你自己补完。
+
+```sh
+sh update-core.sh --core ebpf    --url <下载地址> [--sha256 <64 位十六进制>] [--tag <版本关键字>]
+sh update-core.sh --core vanilla --url <下载地址>
+sh update-core.sh --core ebpf    --url <地址> --dry-run     # 只看步骤，不下载不替换
+```
+
+| 参数 | 说明 |
+|---|---|
+| `--core ebpf\|vanilla` | 替换 `bin/core-ebpf` 还是 `bin/core-vanilla`，默认 `ebpf` |
+| `--url` | 必填；`http(s)://` 或 `file://`，`.gz` 压缩包与裸二进制都接受 |
+| `--sha256` | 可选；给了就校验下载结果 |
+| `--tag` | 可选；新内核 `-v` 的输出里必须包含这个关键字（例如 eBPF 构建的哈希） |
+| `--home` | 可选；Box 工作目录，默认 `/data/user/0/com.boxproxy.box/files/box` |
+| `--dry-run` | 只打印将要执行的步骤 |
+
+流程固定为七步：备份 → 下载 → 解包 → SHA-256（可选）→ `-v` 自检（要求 arm64，可加 `--tag`）→ `-t` 用新内核检查当前启动配置 → 原子替换（`root:net_admin`，`6755`）后 `boxctl restart`；重启失败自动回滚到备份并再启一次。
+
+要点：
+
+- 在 BoxProxy 的「工具 → 脚本」里运行，或 `su` 后手动执行；需要 root。
+- **新内核必须先过 `-t`**：不通过就退出，不会改动任何文件（用官方版冒充 eBPF 版会在这里被拒，日志会给出 `unsupport proxy type: ebpf`）。
+- `bin/` 下的核心会被 BoxProxy 设为 setuid/setgid 运行，只装可信来源的二进制。
+- 备份留在 `bin/core-*.bak-<时间>`，确认稳定后可自行删掉，避免长期堆积大文件。
 
 ## 已知边界
 
