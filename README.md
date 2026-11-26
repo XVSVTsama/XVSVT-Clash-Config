@@ -51,8 +51,8 @@ https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/s
 
 CDN 链接：
 
-- <img src="https://img.shields.io/badge/CDN-gh--proxy-blue?style=flat-square" alt="gh-proxy">：全球 Anycast，更新即时，无缓存
-- <img src="https://img.shields.io/badge/CDN-jsdmirror-blue?style=flat-square" alt="jsdmirror">：腾讯云 EdgeOne，自动同步源站
+- <a href="https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/main/script_override.js"><img src="https://img.shields.io/badge/CDN-gh--proxy-blue?style=flat-square" alt="gh-proxy"></a>：全球 Anycast，更新即时，无缓存
+- <a href="https://cdn.jsdmirror.com/gh/XVSVTsama/XVSVT-Clash-Config@main/script_override.js"><img src="https://img.shields.io/badge/CDN-jsdmirror-blue?style=flat-square" alt="jsdmirror"></a>：腾讯云 EdgeOne，自动同步源站
 
 <a id="branches"></a>
 
@@ -76,6 +76,8 @@ CDN 链接：
 <tr><td><strong>04-boxproxy</strong></td><td>BoxProxy 启动前生命周期脚本 <code>iface-auto.sh</code>，不含覆写脚本</td><td>—</td></tr>
 </tbody>
 </table>
+
+`main`、`01-ebpf`、`02-tproxy` 与 `03-no-tun` 均提供 `script_override_lite.js` 精简版，并保留对应分支的入站模式。使用 Lite 版时，选择相应分支并将远程脚本文件名设为 `script_override_lite.js`；`04-boxproxy` 不提供 JS 覆写脚本。
 
 <a id="yaml-config"></a>
 
