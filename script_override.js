@@ -45,7 +45,7 @@ const Compatible_With_Bettbox = {
  *    https://github.com/XVSVTsama/XVSVT-Clash-Config
  *    作者：
  *    https://github.com/XVSVTsama
- *    版本：上一提交 0473133905599027757dc2cd95ca31b94cc71ed9，本提交时间 2026-11-26 23:01:19 +0800
+ *    版本：上一提交 5307103b16dfed5b2eb3fedc8599752482a2c4b5，本提交时间 2026-11-27 03:44:00 +0800
  *    用法：本脚本可直接作为 Bettbox / FlClash 系客户端的远程覆写脚本加载
  *         （文件首行为 Bettbox 兼容声明，请勿删除）。
  *
@@ -377,6 +377,7 @@ const TEMPLATE = {
   "global-ua": "clash.meta",
   "ipv6": true,
   "log-level": "info",
+  // 安全警告：管理 API 绑定所有网络接口，且 CORS 允许任意来源；请仅在可信网络使用，并通过防火墙限制访问。
   "external-controller": "0.0.0.0:9090",
   "external-controller-cors": {
     "allow-origins": [
@@ -384,6 +385,7 @@ const TEMPLATE = {
     ],
     "allow-private-network": true
   },
+  // 安全警告：此固定值随公开模板发布；部署前请替换为自己的独有强随机密钥。
   "secret": "318a2fbc9f4836b114c0ada7e6d5f36e",
   "external-ui": "dashboard",
   "external-ui-name": "metacubexd",
