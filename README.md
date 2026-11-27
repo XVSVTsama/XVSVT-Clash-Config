@@ -176,7 +176,7 @@ sh iface-auto.sh update --core <名字> --dry-run  # 只解析来源、打印步
 | 只更新官方内核 | 填 `CORE_vanilla_REPO` / `_ASSET` | `sh iface-auto.sh update --core vanilla` |
 | 临时装某个具体版本 | 命令行 `--url <地址>` 或 `--version tag --release-tag <标签>` | `sh iface-auto.sh update --core ebpf --url ...` |
 | 先看会不会换版本 | 不改 | `sh iface-auto.sh update --core ebpf --dry-run` |
-| 想知道某个模式到底用哪个文件 | 不改 | `sh iface-auto.sh --show` |
+| 想知道某个模式到底用哪个文件 | 不改 | `sh iface-auto.sh show` |
 
 ---
 
@@ -241,10 +241,10 @@ sh iface-auto.sh update --core <名字> --dry-run  # 只解析来源、打印步
 ```sh
 sh -n iface-auto.sh                           # 语法（入口）
 for f in lib/*.sh; do sh -n "$f"; done        # 语法（模块）
-sh iface-auto.sh --show                       # 配置解析是否正确
+sh iface-auto.sh show                         # 配置解析是否正确
 sh iface-auto.sh show                         # 内核来源与安装状态
 sh iface-auto.sh --dry-run                    # 启动前脚本会做什么
 sh iface-auto.sh update --core <名字> --dry-run  # 会下载哪个资产
 ```
 
-`--show` 与 `--dry-run` 都不写盘、不替换、不重启。改动脚本后建议按上面四条顺序验一遍。
+`show` 与 `--dry-run` 都不写盘、不替换、不重启。改动脚本后建议按上面四条顺序验一遍。

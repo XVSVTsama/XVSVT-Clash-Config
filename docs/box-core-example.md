@@ -87,7 +87,7 @@ boxctl 用 bin/mihomo 启动核心
 想验证这条链，不需要启动服务：
 
 ```sh
-sh iface-auto.sh --show
+sh iface-auto.sh show
 ```
 
 输出里 `ebpf → ebpf  .../bin/core-ebpf` 就是这条链的最终结果；如果这行不是你要的，改配置而不是改脚本。
@@ -163,7 +163,7 @@ cp box-core.full-example.conf box-core.conf     # 放到 scripts/ 下
 sh iface-auto.sh show
 
 # 3. 看模式映射：哪个入站用哪个文件
-sh iface-auto.sh --show
+sh iface-auto.sh show
 
 # 4. 装第一个内核（首次安装就是这条命令）
 sh iface-auto.sh update --core ebpf
