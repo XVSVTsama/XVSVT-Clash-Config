@@ -26,6 +26,9 @@ MARK=hotspot-lan
 
 DRY_RUN=0
 DO_APPLY=1
+APPLY_RESULT=''
+DROPPED=''
+MARK_LEFT=0
 
 usage() {
     awk 'NR > 1 {
@@ -127,6 +130,7 @@ drop_rules() {
             continue
         fi
         if drop_marked "$file"; then
+            DROPPED="$DROPPED $(basename "$file")"
             log "  $(basename "$file"): 已清理"
         else
             log "warn: 清理 $(basename "$file") 失败"
@@ -156,28 +160,54 @@ core_reload() {
     return 1
 }
 
+print_summary() {
+    local ra v6state left
+    if [ "$DRY_RUN" = 1 ]; then
+        log "—— 运行结果（dry-run）——"
+        log "没做任何改动；正式运行会按上面的步骤执行"
+        return 0
+    fi
+    ra=$(ip6tables -S OUTPUT 2>/dev/null | grep -c -- "$MARK")
+    v6state=$(sysctl -n "net.ipv6.conf.${SUMMARY_IFACE:-wlan0}.disable_ipv6" 2>/dev/null)
+    left=0
+    for f in "$JS_DIR"/*.js; do
+        [ -f "$f" ] || continue
+        grep -q "// $MARK\$" "$f" && left=$((left + 1))
+    done
+    log "—— 运行结果 ——"
+    log "热点出口: 已恢复核心原有分流（本机不受影响）"
+    log "规则清理:${DROPPED:- 无标记行可删}（残留标记的脚本 $left 份，应为 0）"
+    log "IPv6: 拦通告规则剩 $ra 条（应 0），网卡 ${SUMMARY_IFACE:-?} 的 disable_ipv6=$v6state"
+    log "生效: ${APPLY_RESULT:-未执行}"
+    log "配置: HOTSPOT_SHARE='off' 已写入 box-auto.conf"
+}
+
 make_effective() {
     if [ "$DRY_RUN" = 1 ]; then
-        log "  [dry-run] boxctl config sync && boxctl restart"
+        log "  [dry-run] boxctl config sync + 重载核心（不重启进程）"
         return 0
     fi
     log "重新生成启动配置…"
     "$BOXCTL" config sync >/dev/null 2>&1 || log "warn: 重新生成配置失败"
     if [ "$DO_APPLY" != 1 ]; then
+        APPLY_RESULT='已跳过生效（需要你自己点一次「重载」）'
         log "已跳过生效：回首页点一次「重载」即可"
         return 0
     fi
     if ! "$BOXCTL" status 2>/dev/null | grep -q '正在运行'; then
+        APPLY_RESULT='服务没在运行，下次启动自动生效'
         log "服务当前没在运行，下次启动会直接用上新配置"
         return 0
     fi
     if core_reload; then
+        APPLY_RESULT="已重载核心（PID $(cat "$BOX_HOME/run/box.pid" 2>/dev/null) 未变，没跑启动前脚本）"
         log "已生效：核心重载了新配置（进程没重启，也没跑启动前脚本）"
         return 0
     fi
     log "重载不可用，改成重启核心（会断几秒）…"
     "$BOXCTL" restart >/dev/null 2>&1
     if "$BOXCTL" status 2>/dev/null | grep -q '正在运行'; then
+        APPLY_RESULT="已重启核心（新 PID $(cat "$BOX_HOME/run/box.pid" 2>/dev/null)）"
         log "已生效：核心已重启，规则已撤掉"
     else
         log "warn: 重启后没检测到运行中的服务，回 App 看一眼"
@@ -206,10 +236,12 @@ main() {
     else
         set_conf
     fi
+    SUMMARY_IFACE=$iface
     drop_rules
     ra_block_clear
     enable_iface_ipv6 "$iface"
     make_effective
+    print_summary
 
     [ "$DRY_RUN" = 1 ] && log "dry-run 完成，什么都没改"
     return 0

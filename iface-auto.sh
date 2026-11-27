@@ -62,6 +62,39 @@ load_modules() {
     done
 }
 
+# 手动运行（工具 → 脚本）还是被 boxctl 当启动前脚本调用：看父进程链里有没有 boxctl
+is_manual_run() {
+    local p=$PPID i=0 cmd
+    while [ "$i" -lt 3 ] && [ -n "$p" ] && [ "$p" != 0 ]; do
+        cmd=$(tr '\0' ' ' <"/proc/$p/cmdline" 2>/dev/null)
+        case "$cmd" in *boxctl*) return 1 ;; esac
+        p=$(awk '/^PPid:/{print $2}' "/proc/$p/status" 2>/dev/null)
+        i=$((i + 1))
+    done
+    return 0
+}
+
+# 给人看的收尾小结：手动运行打屏，自动运行只进日志
+print_summary() {
+    local share script marker
+    share=$(sed -n "s/^[[:space:]]*HOTSPOT_SHARE=['\"]\{0,1\}\([^'\"]*\)['\"]\{0,1\}[[:space:]]*$/\1/p" \
+        "$BOX_HOME/scripts/box-auto.conf" 2>/dev/null | tail -1)
+    marker=$(grep -l "// hotspot-lan" "$JS_DIR"/*.js 2>/dev/null | wc -l | tr -d ' ')
+    log "—— 运行结果 ——"
+    log "模式: ${MODE:-未知}    内核: ${CORE_USED:-未知}（$(core_file "${CORE_USED:-}")）"
+    log "上游: ${UPSTREAM:-未识别}    下联: ${DOWNSTREAM:-无（热点没开）}"
+    if script=$(mode_script_name 2>/dev/null); then
+        log "覆写脚本: $script"
+    fi
+    log "FORWARD 放行: ${DOWNSTREAM:-无下联，跳过}"
+    if [ "${share:-}" = off ] || [ -z "${share:-}" ]; then
+        log "热点共享: 关（HOTSPOT_SHARE=${share:-off}）"
+    else
+        log "热点共享: 开（HOTSPOT_SHARE=$share，$marker 份覆写脚本带规则）"
+    fi
+    log "日志: $LOG_FILE"
+}
+
 main() {
     parse_args "$@"
     load_modules
@@ -75,7 +108,13 @@ main() {
     check_core_names
     detect_mode
 
+    if is_manual_run && [ "$DRY_RUN" = 0 ]; then
+        LOG_TERMINAL=1
+        printf '开始：%s 模式 %s\n' "$(basename "$0")" "${MODE:-未知}"
+    fi
+
     run_prestart
+    print_summary
     exit 0
 }
 
