@@ -180,6 +180,36 @@ print_summary() {
     log "IPv6: 拦通告规则剩 $ra 条（应 0），网卡 ${SUMMARY_IFACE:-?} 的 disable_ipv6=$v6state"
     log "生效: ${APPLY_RESULT:-未执行}"
     log "配置: HOTSPOT_SHARE='off' 已写入 box-auto.conf"
+    print_controls
+}
+
+# 首页那三个按钮到底有没有被脚本碰过：用户在意的就是这一点
+print_controls() {
+    local svc
+    svc=$("$BOXCTL" status 2>/dev/null | grep -q '正在运行' && echo '运行中' || echo '已停止')
+    log "—— 对首页按钮的影响 ——"
+    if [ "$DRY_RUN" = 1 ]; then
+        log "重新生成启动配置: 没做 | 重载: 没做 | 重启: 没做 | 停止: 没做（dry-run）"
+        log "服务状态: $svc（没动）"
+        return 0
+    fi
+    if [ "$DID_SYNC" = 1 ]; then
+        log "重新生成启动配置: 已做（boxctl config sync）"
+    else
+        log "重新生成启动配置: 没做"
+    fi
+    if [ "$DID_RELOAD" = 1 ]; then
+        log "重载: 已做（核心重载配置，进程未重启，PID $(cat "$BOX_HOME/run/box.pid" 2>/dev/null) 不变）"
+    else
+        log "重载: 没做"
+    fi
+    if [ "$DID_RESTART" = 1 ]; then
+        log "重启: 已做（新 PID $(cat "$BOX_HOME/run/box.pid" 2>/dev/null)，服务中断过几秒）"
+    else
+        log "重启: 没做"
+    fi
+    log "停止: 没做（服务一直是$svc，没有中断）"
+    log "服务状态: $svc"
 }
 
 make_effective() {
@@ -188,7 +218,11 @@ make_effective() {
         return 0
     fi
     log "重新生成启动配置…"
-    "$BOXCTL" config sync >/dev/null 2>&1 || log "warn: 重新生成配置失败"
+    if "$BOXCTL" config sync >/dev/null 2>&1; then
+        DID_SYNC=1
+    else
+        log "warn: 重新生成配置失败"
+    fi
     if [ "$DO_APPLY" != 1 ]; then
         APPLY_RESULT='已跳过生效（需要你自己点一次「重载」）'
         log "已跳过生效：回首页点一次「重载」即可"
@@ -200,12 +234,14 @@ make_effective() {
         return 0
     fi
     if core_reload; then
+        DID_RELOAD=1
         APPLY_RESULT="已重载核心（PID $(cat "$BOX_HOME/run/box.pid" 2>/dev/null) 未变，没跑启动前脚本）"
         log "已生效：核心重载了新配置（进程没重启，也没跑启动前脚本）"
         return 0
     fi
     log "重载不可用，改成重启核心（会断几秒）…"
     "$BOXCTL" restart >/dev/null 2>&1
+    DID_RESTART=1
     if "$BOXCTL" status 2>/dev/null | grep -q '正在运行'; then
         APPLY_RESULT="已重启核心（新 PID $(cat "$BOX_HOME/run/box.pid" 2>/dev/null)）"
         log "已生效：核心已重启，规则已撤掉"
