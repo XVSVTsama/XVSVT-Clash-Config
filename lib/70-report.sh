@@ -47,4 +47,16 @@ show_config() {
         printf '  %-9s → %-10s %s\n' "$mode" "$name" "$(core_path "$name")"
     done
     printf '\n当前检测到的模式: %s → %s\n' "$MODE" "$(mode_core "$MODE")"
+
+    [ -n "${RULES:-}" ] || return 0
+    printf '\n规则表预览（按当前条件求值）:\n'
+    DRY_RUN=1
+    select_core_by_rules
+    rc=$?
+    DRY_RUN=0
+    case "$rc" in
+        0) printf '  结果: 会选中 %s\n' "${CORE_USED:-?}" ;;
+        1) printf '  结果: 没有规则命中，将退回模式映射（%s）\n' "$(mode_core "$MODE")" ;;
+        *) printf '  结果: 规则要求的内核不可用，启动会失败\n' ;;
+    esac
 }

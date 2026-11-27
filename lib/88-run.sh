@@ -14,10 +14,29 @@
 run_prestart() {
     require_root
     resolve_js_dir
-    select_core
-    select_script
     detect_upstream
     detect_downstream
+    if [ -n "${DOWNSTREAM:-}" ]; then TETHER_ON=on; else TETHER_ON=off; fi
+
+    if [ -n "${RULES:-}" ]; then
+        select_core_by_rules
+        rc=$?
+        case "$rc" in
+            0) ;;
+            1)
+                log "warn: 规则表没有命中任何一条，退回模式映射"
+                select_core
+                ;;
+            *)
+                log "错误: 规则表要求的内核不可用，停止启动前流程"
+                exit 1
+                ;;
+        esac
+    else
+        select_core
+    fi
+
+    select_script
     ensure_dummy_iface
     update_interface_name
     update_ebpf_shared_iface

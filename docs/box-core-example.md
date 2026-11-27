@@ -108,7 +108,25 @@ CORE_ebpf_b_REPO='<owner-b>/<repo>'
 文件名默认是 `core-<名字>`（名字里只用字母、数字、下划线），想自定义就写 `_FILE`。
 改 `MODE_CORE_ebpf` 再启动即可在两者间切换。
 
-### 变体 3：离线，只装本地文件
+### 变体 3：规则式选择（多条件 + 次选）
+
+需要「按条件切换、候选内核一个个试」时，用 `RULES` 代替映射：
+
+```sh
+# box-auto.conf
+CORE_alpha_FILE='core-alpha'
+RULES='
+mode=ebpf and installed=ebpf   => ebpf, alpha
+tethering=on                   => alpha, ebpf
+js=ebpf-我的.js                 => ebpf
+always                         => vanilla
+'
+```
+
+求值顺序：自上而下第一条命中的生效；命中后按候选顺序试，第一个可用的胜出；
+整条规则的候选都不可用 → 直接退出（不退回映射表）。`js=` 不满足时也直接退出。
+
+### 变体 4：离线，只装本地文件
 
 ```sh
 # box-update.conf

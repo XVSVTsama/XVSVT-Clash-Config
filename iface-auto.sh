@@ -67,7 +67,7 @@ load_modules() {
         printf '错误: 找不到模块目录 %s，请把 lib/ 一起放进 scripts/\n' "$lib_dir" >&2
         exit 2
     fi
-    for module in 00-common 10-mode 20-core 30-scripts 40-net 50-js-fields 60-conflict 88-run; do
+    for module in 00-common 10-mode 20-core 25-rules 30-scripts 40-net 50-js-fields 60-conflict 88-run; do
         file=$lib_dir/$module.sh
         if [ ! -f "$file" ]; then
             printf '错误: 缺少模块 %s\n' "$file" >&2

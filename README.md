@@ -89,6 +89,50 @@ CORE_mycore_FILE='core-mycore'
 
 ---
 
+### 可选：规则式选择内核（`RULES`）
+
+不写 `RULES` 就按上面的默认映射走。写了 `RULES`，映射表不再生效：
+
+```sh
+RULES='
+# 条件                                    => 内核名（可写多个候选，按顺序试）
+mode=ebpf and installed=ebpf             => ebpf
+js=ebpf-我的.js                           => ebpf, alpha
+tethering=on                             => alpha, ebpf
+conf~家用                                 => vanilla
+always                                   => vanilla
+'
+```
+
+- **自上而下求值，第一条命中的生效**；`always` 常放最后当兜底；
+- 命中后按顺序试候选内核，第一个「文件存在且可执行」的胜出；
+- **某个候选不可用只是换下一个；整条规则都不可用 → 直接退出**，不会退回映射表；
+- `js=` 是硬条件：那个脚本既不在启用清单里、文件也不存在时，直接失败退出。
+
+判断项：
+
+| 写法 | 含义 |
+|---|---|
+| `mode=ebpf` / `mode!=tun` / `mode~pro` | 当前网络模式 |
+| `js=ebpf-我的.js` | 覆写脚本已启用（清单里）；清单没有则看文件是否存在；都没有 → 失败退出 |
+| `conf~关键字` | `boxctl status` 的输出或启动配置里出现该关键字 |
+| `tethering=on` / `off` | 是否开着热点/共享（有下联即 on） |
+| `installed=ebpf` | 该内核文件存在且可执行 |
+| `exists=core-ebpf` | `bin/` 下有这个文件 |
+| `env=NAME:值` | 环境变量等于某值 |
+
+组合：`not` / `!`、`and`、`or`、`( )`，优先级 括号 > not > and > or。
+
+规则写错了怎么看？`工具 → 脚本` 运行 `show-config.sh`，末尾会按当前模式把规则逐条求值并给出结论：
+
+```
+规则表预览（按当前条件求值）:
+规则 1 命中：mode=ebpf
+  结果: 会选中 ebpf
+```
+
+`iface-auto.sh --dry-run` 也会打印每条规则的真假，便于调规则。
+
 ## 手动部分：`box-update.conf` + 三个脚本
 
 ### `update-core.sh`：装 / 更新内核（会联网）

@@ -72,6 +72,7 @@ init_defaults() {
     STOP_PACKAGES=${STOP_PACKAGES:-}
     EXTRA_PORTS=${EXTRA_PORTS:-}
     CORE_LIST=${CORE_LIST:-'ebpf vanilla'}
+    RULES=${RULES:-}
 
     # 内置内核定义（配置里没写时生效）
     CORE_ebpf_FILE=${CORE_ebpf_FILE:-core-ebpf}
@@ -117,6 +118,26 @@ discover_cores() {
     done
 }
 
+# 从 RULES 的候选里补充内核名（=> 右边，逗号或空格分隔）
+discover_rule_cores() {
+    local line cand
+    [ -n "${RULES:-}" ] || return 0
+    while IFS= read -r line; do
+        case "$line" in
+            *'=>'*) ;;
+            *) continue ;;
+        esac
+        for cand in $(printf '%s' "${line#*=>}" | tr ',' ' '); do
+            case " $CORE_LIST " in
+                *" $cand "*) ;;
+                *) CORE_LIST="$CORE_LIST $cand" ;;
+            esac
+        done
+    done <<EOF
+$RULES
+EOF
+}
+
 # 扫描两个默认配置文件里出现过的内核名（含只在 box-update.conf 里出现的）
 discover_cores_from_confs() {
     local dir
@@ -136,6 +157,7 @@ load_auto_conf() {
     . "$CONF_AUTO"
     CONF_AUTO_USED=$CONF_AUTO
     discover_cores "$CONF_AUTO"
+    discover_rule_cores
 }
 
 # 载入手动部分配置（box-update.conf）
