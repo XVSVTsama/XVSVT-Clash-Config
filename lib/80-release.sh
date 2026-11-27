@@ -64,6 +64,7 @@ resolve_source() {
     SHA256=$(pick SHA256)
     EXPECT_TAG=$(pick TAG)
     [ -n "$VERSION" ] || VERSION=latest
+    [ -n "$ASSET" ] || ASSET='*android-arm64*.gz'
     [ -n "$O_API_BASE" ] && API_BASE=$O_API_BASE
     [ -n "$O_DOWNLOAD_PREFIX" ] && DOWNLOAD_PREFIX=$O_DOWNLOAD_PREFIX
 
@@ -77,7 +78,6 @@ resolve_source() {
         return 0
     fi
     [ -n "$REPO" ] || die "配置错误：内核 $CORE_NAME 既没有 CORE_${CORE_NAME}_REPO 也没有 _URL"
-    [ -n "$ASSET" ] || die "配置错误：内核 $CORE_NAME 缺少 CORE_${CORE_NAME}_ASSET"
     case "$VERSION" in
         latest | prerelease | tag) ;;
         *) die "配置错误：内核 $CORE_NAME 的版本策略只能是 latest / prerelease / tag" ;;

@@ -50,20 +50,47 @@ install_core() {
 }
 
 # ---------------------------------------------------------------------------
-# 三、手动 update：装完后挂链、必要时重启
+# 三、手动 update：把配置了来源的内核都装一遍，必要时重启
 # ---------------------------------------------------------------------------
+
+# 配了来源（REPO 或 URL）的内核
+configured_cores() {
+    local name
+    for name in $CORE_LIST; do
+        if [ -n "$(core_field "$name" REPO)" ] || [ -n "$(core_field "$name" URL)" ]; then
+            printf '%s\n' "$name"
+        fi
+    done
+}
+
 run_update() {
     require_root
-    CORE_NAME=${CORE_NAME:-$CORE_DEFAULT}
-    in_list "$CORE_NAME" || die "内核 '$CORE_NAME' 不在 CORE_LIST 里（用 show 看可用名字）"
-
-    LINK=$BIN_DIR/mihomo
     BOXCTL=$BIN_DIR/boxctl
     RUN_DIR=$BOX_HOME/run
     STARTUP=$RUN_DIR/state/config/startup-config
+    LINK=$BIN_DIR/mihomo
 
-    install_core "$CORE_NAME"
-    link_if_needed
+    local targets installed name mode mapped need
+    if [ -n "$CORE_NAME" ]; then
+        in_list "$CORE_NAME" || die "内核 '$CORE_NAME' 不在配置里（用 show-config.sh 看可用的名字）"
+        targets=$CORE_NAME
+    else
+        targets=$(configured_cores)
+        [ -n "$targets" ] || die "没有内核配置来源：在 box-update.conf 里填 CORE_ebpf_REPO（或 CORE_<名字>_URL）"
+    fi
+
+    installed=''
+    for name in $targets; do
+        install_core "$name" || return 1
+        installed="$installed $name"
+    done
+
+    mode=$(current_mode)
+    mapped=$(mode_core "$mode")
+    need=0
+    case " $installed " in
+        *" $mapped "*) need=1 ;;
+    esac
 
     if [ "$DRY_RUN" = 1 ]; then
         restart_service
@@ -71,20 +98,24 @@ run_update() {
         return 0
     fi
 
-    if [ ! -x "$BOXCTL" ]; then
-        log "warn: 找不到 $BOXCTL，跳过重启；下次启动会用上新内核"
-        log "完成：$CORE_NAME（$(core_file "$CORE_NAME")）"
+    if [ "$need" = 1 ]; then
+        ln -f "$(core_path "$mapped")" "$LINK" 2>/dev/null
+        log "已把 $mapped 挂到 bin/mihomo（当前模式 $mode）"
+    fi
+
+    if [ "$need" != 1 ]; then
+        log "当前模式 $mode 用的是 $mapped，这次没动它，跳过重启"
+        log "完成：$(printf '%s' "$installed")"
         return 0
     fi
 
-    if ! apply_needed; then
-        log "当前模式没有用到 $CORE_NAME，跳过重启；下次启动时按模式自动挂载"
-        log "完成：$CORE_NAME（$(core_file "$CORE_NAME")）"
+    if [ ! -x "$BOXCTL" ]; then
+        log "warn: 找不到 $BOXCTL，跳过重启；下次启动会用上新内核"
         return 0
     fi
 
     if restart_service; then
-        log "完成：$CORE_NAME（$(core_file "$CORE_NAME")）"
+        log "完成：$(printf '%s' "$installed")"
         return 0
     fi
     rollback

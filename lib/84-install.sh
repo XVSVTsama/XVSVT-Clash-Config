@@ -40,29 +40,6 @@ install_binary() {
     return 0
 }
 
-link_if_needed() {
-    local mode mapped
-    mode=$(current_mode)
-    mapped=$(mode_core "$mode")
-
-    if [ "$LINKED_BEFORE" = 1 ] || [ "$mapped" = "$CORE_NAME" ]; then
-        log "[8/9] 挂到 bin/mihomo（当前模式 $mode → $CORE_NAME）"
-        if [ "$DRY_RUN" = 1 ]; then
-            log "      [dry-run] ln -f $TARGET $LINK"
-        else
-            ln -f "$TARGET" "$LINK" 2>/dev/null || log "warn: 挂链失败，下次启动由 iface-auto.sh 处理"
-        fi
-        return 0
-    fi
-    log "[8/9] 当前模式 $mode 用的是 $mapped，不动 bin/mihomo（下次启动由 iface-auto.sh 按模式挂）"
-}
-
-apply_needed() {
-    [ "${LINKED_BEFORE:-0}" = 1 ] && return 0
-    [ "$(mode_core "$(current_mode)")" = "$CORE_NAME" ] && return 0
-    return 1
-}
-
 restart_service() {
     if [ "$DRY_RUN" = 1 ]; then
         log "[9/9] [dry-run] $BOXCTL restart"

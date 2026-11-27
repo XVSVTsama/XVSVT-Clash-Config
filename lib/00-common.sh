@@ -18,7 +18,6 @@ check_core_names() {
             */*) die "配置错误：CORE_${name}_FILE 只能写文件名，不能带路径" ;;
         esac
     done
-    [ -n "${CORE_DEFAULT:-}" ] || CORE_DEFAULT=ebpf
 }
 
 # 模式映射的校验（自动部分 / show-config 需要）
@@ -30,12 +29,6 @@ check_mode_map() {
     done
 }
 
-# 兼容旧调用：完整校验
-check_config() {
-    check_core_names
-    check_mode_map
-    in_list "$CORE_DEFAULT" || die "配置错误：CORE_DEFAULT='$CORE_DEFAULT' 不在 CORE_LIST 里"
-}
 
 core_field() {
     eval "value=\${CORE_$1_$2:-}"
@@ -105,6 +98,28 @@ init_defaults() {
     CONF_USED=${CONF_USED:-}
 }
 
+# 从配置文件里发现定义了 CORE_<名字>_ 的内核（用户不用手写 CORE_LIST）
+discover_cores() {
+    local file name
+    for file in "$@"; do
+        [ -n "$file" ] && [ -f "$file" ] || continue
+        for name in $(grep -ho 'CORE_[A-Za-z0-9][A-Za-z0-9]*_' "$file" 2>/dev/null \
+            | sed 's/^CORE_//; s/_$//' | sort -u); do
+            case " $CORE_LIST " in
+                *" $name "*) ;;
+                *) CORE_LIST="$CORE_LIST $name" ;;
+            esac
+        done
+    done
+}
+
+# 扫描两个默认配置文件里出现过的内核名（含只在 box-update.conf 里出现的）
+discover_cores_from_confs() {
+    local dir
+    dir=$(cd "$(dirname "$0")" 2>/dev/null && pwd)
+    discover_cores "${CONF_AUTO:-$dir/box-auto.conf}" "${CONF_UPDATE:-$dir/box-update.conf}"
+}
+
 # 载入自动部分配置（box-auto.conf）
 load_auto_conf() {
     script_dir=$(cd "$(dirname "$0")" 2>/dev/null && pwd)
@@ -116,6 +131,7 @@ load_auto_conf() {
     # shellcheck disable=SC1090
     . "$CONF_AUTO"
     CONF_AUTO_USED=$CONF_AUTO
+    discover_cores "$CONF_AUTO"
 }
 
 # 载入手动部分配置（box-update.conf）
@@ -129,6 +145,7 @@ load_update_conf() {
     # shellcheck disable=SC1090
     . "$CONF_UPDATE"
     CONF_UPDATE_USED=$CONF_UPDATE
+    discover_cores "$CONF_UPDATE"
 }
 
 # 两份配置各写一份 CORE_LIST 时合并（show-config 用）

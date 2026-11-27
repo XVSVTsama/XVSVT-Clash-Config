@@ -47,5 +47,4 @@ show_config() {
         printf '  %-9s → %-10s %s\n' "$mode" "$name" "$(core_path "$name")"
     done
     printf '\n当前检测到的模式: %s → %s\n' "$MODE" "$(mode_core "$MODE")"
-    printf '默认内核（update 不带 --core 时）: %s\n' "${CORE_DEFAULT:-ebpf}"
 }

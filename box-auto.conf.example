@@ -1,55 +1,32 @@
 # ============================================================================
-# box-auto.conf —— 自动部分（iface-auto.sh 启动前执行）的配置
+# box-auto.conf —— 自动部分（iface-auto.sh）的配置
 # ============================================================================
 #
-# 自动部分只做本地的事：按当前模式把已装好的内核挂到 bin/mihomo、切覆写脚本、
-# 认网卡、放行转发、处理端口冲突。它不联网、不下载。
+# 只有一件事非改不可的可能性：eBPF 模式想用别的内核。
+# 其它全有默认值，不写就用默认。
 #
-# 怎么用：
-#   1. 把本文件复制成同目录下的 box-auto.conf（去掉 .example 后缀）；
-#   2. 通常只需要改「模式映射」，或者在加新内核时补一行文件名；
-#   3. 装/更新内核是手动部分的事，配置在 box-update.conf，运行时点一下 update-core.sh。
+# 默认行为：
+#   ebpf 模式        → 内核 ebpf     → 文件 bin/core-ebpf
+#   tun/tproxy/其它  → 内核 vanilla  → 文件 bin/core-vanilla
 #
-# 语法：KEY='值'，一行一个。只写变量赋值，不要写别的命令。
-#
-# ============================================================================
-# 一、内核名字与文件
-# ============================================================================
-# 内核名要和 box-update.conf 里的名字一致（那边用同一个名字记录下载来源）。
-# 文件名默认是 core-<名字>，只有想换文件才需要写。
+# 复制本文件为 box-auto.conf，改下面这一行就够：
 
-CORE_LIST='ebpf vanilla'
-
-# 想改名或改文件时，按这个格式写（不写就是 core-ebpf / core-vanilla）：
-# CORE_ebpf_FILE='core-ebpf'
-# CORE_vanilla_FILE='core-vanilla'
-
-# ============================================================================
-# 二、模式映射：哪个入站用哪个内核（最常改这里）
-# ============================================================================
-# 右边的值必须是上面 CORE_LIST 里有的名字，否则启动前会直接报配置错误。
-# 只有被某个模式用到的内核，才会在启动时被挂到 bin/mihomo。
-
-MODE_CORE_tun='vanilla'
-MODE_CORE_tproxy='vanilla'
 MODE_CORE_ebpf='ebpf'
-MODE_CORE_redirect='vanilla'
-MODE_CORE_mixed='vanilla'
-MODE_CORE_enhance='vanilla'
-MODE_CORE_unknown='vanilla'
 
-# ============================================================================
-# 三、启动前的行为（都有默认值，一般不用改）
-# ============================================================================
-
-# eBPF 没有下联（没开热点）时挂的空转网卡
-DUMMY_IFACE='boxebpf0'
-
-# 端口冲突：auto 停掉占着核心端口的第三方应用 | log 只记录 | off 不检测
-CONFLICT_STOP='auto'
-
-# 额外无条件停止的包名（空格分隔），例如 'com.example.a com.example.b'
-STOP_PACKAGES=''
-
-# 除了启动配置里的端口，额外要检查冲突的端口（空格分隔）
-EXTRA_PORTS=''
+# ----------------------------------------------------------------------------
+# 下面这些默认值已经够用，需要时再写（不写就等于注释里的值）
+# ----------------------------------------------------------------------------
+# MODE_CORE_tun='vanilla'
+# MODE_CORE_tproxy='vanilla'
+# MODE_CORE_redirect='vanilla'
+# MODE_CORE_mixed='vanilla'
+# MODE_CORE_enhance='vanilla'
+# MODE_CORE_unknown='vanilla'
+#
+# 新增自己的内核时，在这里写文件名（不写就是 core-<名字>）：
+# CORE_mycore_FILE='core-mycore'
+#
+# DUMMY_IFACE='boxebpf0'     # eBPF 没开热点时的空转网卡
+# CONFLICT_STOP='auto'       # 端口被占用时：auto 停掉 | log 只记 | off 不查
+# STOP_PACKAGES=''           # 额外无条件停的包（空格分隔）
+# EXTRA_PORTS=''             # 额外检查冲突的端口（空格分隔）

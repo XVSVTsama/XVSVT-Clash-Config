@@ -7,8 +7,8 @@
 #   后续更新：先备份旧文件，再替换；服务起不来会自动回滚
 #
 # 用法（在 BoxProxy 的「工具 → 脚本」里运行，或 su 后手动执行）：
-#   sh update-core.sh                    安装/更新 CORE_DEFAULT 指向的内核
-#   sh update-core.sh --core <名字>      安装/更新指定内核
+#   sh update-core.sh                    把配了来源的内核都装一遍（日常点这个）
+#   sh update-core.sh --core <名字>      只装指定内核
 #   sh update-core.sh --core <名字> --dry-run   只解析来源并打印步骤
 #   sh update-core.sh -h                 帮助
 #
@@ -111,6 +111,7 @@ main() {
     init_defaults
     # 先读自动部分：只是为了拿模式映射（判断更新后要不要重启）与文件名
     load_auto_conf
+    discover_cores_from_confs
     list_auto=$CORE_LIST
     load_update_conf
     init_defaults
@@ -118,7 +119,6 @@ main() {
     BIN_DIR=$BOX_HOME/bin
     CORE_LINK=$BIN_DIR/mihomo
     check_core_names
-    in_list "$CORE_DEFAULT" || die "配置错误：CORE_DEFAULT='$CORE_DEFAULT' 不在 CORE_LIST 里"
 
     LOG_TERMINAL=1
     run_update

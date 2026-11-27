@@ -41,65 +41,51 @@
 
 | 文件 | 要改什么 |
 |---|---|
-| `box-update.conf` | 给要用的内核填 `REPO`（仓库 `owner/repo`）；`CORE_DEFAULT='ebpf'` 表示点运行时默认装它 |
+| `box-update.conf` | 只填内核的仓库：`CORE_ebpf_REPO='<owner>/<repo>'`（想要官方版再填 `CORE_vanilla_REPO`） |
 | `box-auto.conf` | 一般不用改；要让 eBPF 模式用别的内核，改 `MODE_CORE_ebpf` |
 
 **第 4 步：装内核（点一下）**
 
-`工具 → 脚本` → 运行 `update-core.sh`。它按 `CORE_DEFAULT` 装那个内核，不需要任何参数。
+`工具 → 脚本` → 运行 `update-core.sh`。它把所有填了仓库的内核都装一遍，不需要任何参数。
 
 **第 5 步：用起来**
 
 首页选网络模式 → 启动。启动前 `iface-auto.sh` 只把已装好的内核挂上去，不联网。
 
-> 想装另一个内核（比如官方版或备用内核）：把 `box-update.conf` 里的 `CORE_DEFAULT` 改成那个名字，再点一次 `update-core.sh`。
+> 想装别的内核（比如官方版或备用内核）：在 `box-update.conf` 里加一行 `CORE_<名字>_REPO` 或 `_URL`，再点一次 `update-core.sh`。
 > 想看配置解析成什么样：`工具 → 脚本` 里运行 `show-config.sh`。
 
-## 自动部分：`box-auto.conf`
+## 自动部分：`box-auto.conf`（通常一行都不用改）
 
-由 `boxctl` 在启动前调用 `iface-auto.sh`，**全程本地、不联网、不下载**。
+默认就够用：
 
-### 内核名字与文件
-
-```sh
-CORE_LIST='ebpf vanilla'          # 有哪些内核（名字要和 box-update.conf 对齐）
-# CORE_ebpf_FILE='core-ebpf'      # 文件名默认 core-<名字>，想改才写
-```
-
-### 模式映射（最常改）
-
-```sh
-MODE_CORE_tun='vanilla'
-MODE_CORE_tproxy='vanilla'
-MODE_CORE_ebpf='ebpf'          # eBPF 模式用 ebpf 这个名字
-MODE_CORE_redirect='vanilla'
-MODE_CORE_mixed='vanilla'
-MODE_CORE_enhance='vanilla'
-MODE_CORE_unknown='vanilla'
-```
-
-右边的值必须是 `CORE_LIST` 里有的名字，否则启动前直接报配置错误；只有被模式用到的内核才会被挂到 `bin/mihomo`。
-
-### 启动前行为
-
-| 项 | 默认 | 说明 |
+| 模式 | 用的内核 | 文件 |
 |---|---|---|
-| `DUMMY_IFACE` | `boxebpf0` | eBPF 没有下联时挂的空转网卡名 |
-| `CONFLICT_STOP` | `auto` | `auto` 停掉占着核心端口的第三方应用；`log` 只记录；`off` 不检测 |
-| `STOP_PACKAGES` | 空 | 额外无条件停止的包名 |
-| `EXTRA_PORTS` | 空 | 除启动配置里的端口外，额外检查冲突的端口 |
+| `ebpf` | `ebpf` | `bin/core-ebpf` |
+| `tun` / `tproxy` / `redirect` / `mixed` / `enhance` / `unknown` | `vanilla` | `bin/core-vanilla` |
 
-### 启动前它会做什么
+只有一种情况要改——**eBPF 模式想用别的内核**：
 
-1. 解析「当前模式 → 内核名 → 文件 → 路径」；
-2. 文件存在且可执行就 `ln -f` 到 `bin/mihomo`；**不存在只记一条 warn**（提示去 `工具 → 脚本` 装一次），不会去下载；
-3. 切覆写脚本清单（`tun-我的.js` / `tproxy-我的.js` / `ebpf-我的.js`）；
-4. 认出口网卡与下联，必要时挂 dummy；
-5. 把网卡名写进覆写脚本字段；
-6. 为下联放行 `FORWARD`；
-7. 端口冲突检测（系统进程、本应用、查不到包名的一律不动）。
+```sh
+MODE_CORE_ebpf='ebpf'     # 换成你的内核名即可
+```
 
-想看它会做什么：命令行 `sh iface-auto.sh --dry-run`（可选，日常不需要）。
+新增自己的内核时，才需要写文件名（不写就是 `core-<名字>`）：
+
+```sh
+CORE_mycore_FILE='core-mycore'
+```
+
+高级项都有默认值，需要时再加：
+
+```sh
+# DUMMY_IFACE='boxebpf0'     # eBPF 没开热点时的空转网卡
+# CONFLICT_STOP='auto'       # auto 停掉占用端口的应用 | log 只记 | off 不查
+# STOP_PACKAGES=''           # 额外无条件停的包
+# EXTRA_PORTS=''             # 额外检查冲突的端口
+```
+
+启动前它会做：解析「模式 → 内核 → 文件 → 路径」→ 把文件 `ln -f` 到 `bin/mihomo`（**文件不存在只 warn，不下载**）→ 切覆写脚本 → 认网卡/挂 dummy → 写 JS 字段 → 放行 `FORWARD` → 端口冲突检测。全程不联网。
 
 ---
 
@@ -107,48 +93,53 @@ MODE_CORE_unknown='vanilla'
 
 ### `update-core.sh`：装 / 更新内核（会联网）
 
-在 `工具 → 脚本` 里点一下运行即可，装的永远是 `box-update.conf` 里 `CORE_DEFAULT` 指定的那个内核。想装别的，先把 `CORE_DEFAULT` 改过去。
+在 `工具 → 脚本` 里点一下运行。它会把**所有配了来源的内核**都装一遍，所以不用选装哪个。
 
-来源写在 `box-update.conf`：
+`box-update.conf` 里只有一件必填的事——内核从哪来：
 
-| 字段 | 说明 |
-|---|---|
-| `CORE_<名字>_REPO` | GitHub 仓库 `owner/repo`；与 `_URL` 二选一 |
-| `CORE_<名字>_ASSET` | 资产名匹配（默认 glob，`*` 可用，别写死哈希） |
-| `CORE_<名字>_VERSION` | `latest`（默认）\| `prerelease` \| `tag` |
-| `CORE_<名字>_RELEASE_TAG` | `VERSION=tag` 时必填 |
-| `CORE_<名字>_URL` | 固定地址或 `file:///...`；填了就不查仓库 |
-| `CORE_<名字>_SHA256` / `_TAG` | 可选校验：文件哈希 / `-v` 里必须出现的关键字 |
-| `CORE_DEFAULT` | 点运行 `update-core.sh` 时装哪个内核 |
-| `API_BASE` / `DOWNLOAD_PREFIX` / `TOKEN` | 镜像与 GitHub Token |
+```sh
+CORE_ebpf_REPO='<owner>/<repo>'      # 想要官方版就再填这一行
+# CORE_vanilla_REPO='<owner>/<repo>'
+```
 
-流程固定：解析来源 → 下载 → SHA-256（仓库带 `digest` 就用它）→ 解包 → `-v` 自检（要求 arm64）→ `-t` 检查当前启动配置 → 备份并写入（`root:net_admin`、`6755`）→ 当前模式用到它才重启，起不来自动回滚。
+其余全有默认值：
 
-备份在 `bin/<文件名>.bak-<时间>`，约 70 MB，确认稳定后自己删。
+| 内核 | 版本策略 | 资产名匹配 | 文件 |
+|---|---|---|---|
+| `ebpf` | `prerelease` | `*android-arm64*ebpf*.gz` | `bin/core-ebpf` |
+| 其它（含 `vanilla`） | `latest` | `*android-arm64*.gz` | `bin/core-<名字>` |
 
-### `show-config.sh`：看配置解析成什么样
+需要时再写的高级项：
 
-`工具 → 脚本` 里点一下运行，屏幕上会列出解析结果。
+```sh
+# CORE_ebpf_VERSION='prerelease'
+# CORE_ebpf_ASSET='*android-arm64*ebpf*.gz'
+# CORE_ebpf_TAG='-ebpf'        # -v 输出必须含这个串
+# CORE_ebpf_URL=''             # 固定地址 / file://，填了就不查仓库
+# CORE_ebpf_SHA256=''          # 仓库带 digest 时自动用
+# API_BASE='https://api.github.com'
+# DOWNLOAD_PREFIX=''           # 镜像前缀
+# TOKEN=''                     # GitHub Token，等同账号凭据，别提交
+```
 
-会**同时读两份配置**，输出：内核名 / 文件 / 路径 / 安装状态、来源与版本策略、模式映射、当前检测到的模式。不需要 root（非 root 时「已安装/未安装」可能不准）。
+装的时候依次做：解析来源 → 下载 → SHA-256 → 解包 → `-v` 自检（arm64）→ `-t` 检查当前启动配置 → 备份并写入（`root:net_admin`、`6755`）；只有当前模式用到的那个内核变了才重启，起不来自动回滚。备份在 `bin/<文件名>.bak-<时间>`，约 70 MB，稳定后自己删。
 
-### `check-core.sh`：校验已装的内核（不联网）
+### `show-config.sh` / `check-core.sh`
 
-`工具 → 脚本` 里点一下运行，默认校验当前模式要用的内核。
+`工具 → 脚本` 里各点一下：
 
-输出 `-v` 版本、`bin/mihomo` 是否指向它、对当前启动配置的 `-t` 结果。
-
----
+- `show-config.sh`：列出内核 / 文件 / 路径 / 安装状态 / 来源 / 模式映射（同时读两份配置，不用 root）。
+- `check-core.sh`：对已装内核跑 `-v` 与 `-t`，报告 `bin/mihomo` 是否指向它（不联网）。
 
 ## 常见任务
 
 | 想做的事 | 改哪个配置 | 之后做什么 |
 |---|---|---|
 | 用官方内核跑 eBPF 模式 | `box-auto.conf`：`MODE_CORE_ebpf='vanilla'` | 直接启动 |
-| 换一个自己的 eBPF 分支 | 两份都加名字；`box-auto.conf` 改映射 | 把 `CORE_DEFAULT` 改成新名字，点一次 `update-core.sh`，再启动 |
+| 换一个自己的 eBPF 分支 | `box-auto.conf` 改 `MODE_CORE_ebpf`；`box-update.conf` 加一行 `CORE_<名字>_REPO` | 点一次 `update-core.sh`，再启动 |
 | 升级内核 | `box-update.conf` 的 `REPO` 已填 | 点一次 `update-core.sh` |
 | 换某个模式的出口内核 | `box-auto.conf`：`MODE_CORE_<模式>` | 启动 |
-| 临时装某个固定版本 | `box-update.conf`：给该内核填 `URL`，并把 `CORE_DEFAULT` 指过去 | 点一次 `update-core.sh` |
+| 临时装某个固定版本 | `box-update.conf`：给该内核填 `URL` | 点一次 `update-core.sh` |
 
 ---
 
@@ -166,9 +157,9 @@ MODE_CORE_unknown='vanilla'
 
 | 看到 | 意思 | 怎么办 |
 |---|---|---|
-| `配置错误：MODE_CORE_x 指向的内核 'y' 不在 CORE_LIST 里` | 映射写了个没定义的名字 | 在 `box-auto.conf` 的 `CORE_LIST` 里补上，或改映射 |
+| `配置错误：MODE_CORE_x 指向的内核 'y' 不在 CORE_LIST 里` | 映射写了没定义过的名字 | 在 `box-auto.conf` 写下 `CORE_y_FILE` 或在 `box-update.conf` 写下 `CORE_y_REPO`，或改映射 |
 | `配置错误：CORE_x_FILE 只能写文件名` | 文件字段里带了路径 | 只留文件名，路径固定是 `bin/` |
-| `warn: 内核 x 的文件 y 不存在……` | 还没装 | 把 `CORE_DEFAULT` 改成 x，点一次 `update-core.sh` |
+| `warn: 内核 x 的文件 y 不存在……` | 还没装 | 在 `box-update.conf` 填它的 `REPO`，点一次 `update-core.sh` |
 | `没有匹配 '...' 的资产` | 资产名匹配不对 | 照发布页文件名把版本/哈希换成 `*` |
 | `查询失败` / `HTTP 403` | 网络不通或 API 限流 | `API_BASE` 指镜像、填 `TOKEN`，或稍后再试 |
 | `SHA-256 不匹配` | 文件不完整或被改 | 重跑；反复出现换来源 |
@@ -205,7 +196,7 @@ MODE_CORE_unknown='vanilla'
 
 ```sh
 sh show-config.sh                        # = 运行 show-config.sh
-sh update-core.sh                        # 装 CORE_DEFAULT 指向的内核
+sh update-core.sh                        # 装所有配了来源的内核
 sh update-core.sh --core <名字>          # 临时装别的内核，不改配置
 sh iface-auto.sh --dry-run               # 预览启动前会做什么
 sh update-core.sh --core <名字> --dry-run # 只看会下载哪个资产

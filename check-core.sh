@@ -64,6 +64,7 @@ main() {
     parse_args "$@"
     init_defaults
     load_auto_conf
+    discover_cores_from_confs
     init_defaults
     BIN_DIR=$BOX_HOME/bin
     CORE_LINK=$BIN_DIR/mihomo

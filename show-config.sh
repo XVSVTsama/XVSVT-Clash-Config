@@ -64,6 +64,7 @@ main() {
     parse_args "$@"
     init_defaults
     load_auto_conf
+    discover_cores_from_confs
     init_defaults
     list_auto=$CORE_LIST
     load_update_conf
