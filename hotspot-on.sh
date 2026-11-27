@@ -14,7 +14,7 @@
 #   sh hotspot-on.sh               热点客户端直连（direct）
 #   sh hotspot-on.sh '📲 热点组'    热点客户端走该策略组
 #   sh hotspot-on.sh -n            只打印，什么都不改
-#   sh hotspot-on.sh --no-restart   改完不重启核心（自己点重载）
+#   sh hotspot-on.sh --no-apply     改完不自动让核心生效（自己点重载）
 #   sh hotspot-on.sh -h
 #
 # 网段默认按当前下联网卡地址自动算；要写死就在 box-auto.conf 里设 HOTSPOT_CIDR。
@@ -29,7 +29,7 @@ MARK=hotspot-lan
 ANCHOR='  "rules": ['
 
 DRY_RUN=0
-DO_RESTART=1
+DO_APPLY=1
 VALUE=direct
 
 usage() {
@@ -209,6 +209,25 @@ apply_block() {     # $1 = 规则块文件
 
 # ---------------- 生效 ----------------
 
+# 让核心重载新配置：不重启进程，也就不会跑服务启动前脚本。
+# 做法是把生成的启动配置复制进 mihomo 家目录（API 只接受家目录内的绝对路径），
+# 再用 Clash API 的 PUT /configs 重载，最后删掉临时文件。
+core_reload() {
+    local cfg=$BOX_HOME/run/state/config/startup-config secret tmp code
+    command -v curl >/dev/null 2>&1 || return 1
+    [ -f "$cfg" ] || return 1
+    "$BOXCTL" status 2>/dev/null | grep -q '正在运行' || return 1
+    secret=$(sed -n 's/^secret: //p' "$cfg" | head -1)
+    tmp=$BOX_HOME/mihomo/.hotspot-reload.yaml
+    cp -f "$cfg" "$tmp" || return 1
+    code=$(curl -s -o /dev/null -w '%{http_code}' -X PUT \
+        -H "Authorization: Bearer $secret" -H 'Content-Type: application/json' \
+        -d "{\"path\":\"$tmp\"}" 'http://127.0.0.1:9090/configs?force=true')
+    rm -f "$tmp"
+    case "$code" in 200 | 204) return 0 ;; esac
+    return 1
+}
+
 make_effective() {
     if [ "$DRY_RUN" = 1 ]; then
         log "  [dry-run] boxctl config sync && boxctl restart"
@@ -216,18 +235,22 @@ make_effective() {
     fi
     log "重新生成启动配置…"
     "$BOXCTL" config sync >/dev/null 2>&1 || log "warn: 重新生成配置失败"
-    if [ "$DO_RESTART" != 1 ]; then
-        log "已跳过重启：回首页点一次「重载」即可"
+    if [ "$DO_APPLY" != 1 ]; then
+        log "已跳过生效：回首页点一次「重载」即可"
         return 0
     fi
     if ! "$BOXCTL" status 2>/dev/null | grep -q '正在运行'; then
         log "服务当前没在运行，下次启动会直接用上新配置"
         return 0
     fi
-    log "重启核心让它生效（会断几秒）…"
+    if core_reload; then
+        log "已生效：核心重载了新配置（进程没重启，也没跑启动前脚本）"
+        return 0
+    fi
+    log "重载不可用，改成重启核心（会断几秒）…"
     "$BOXCTL" restart >/dev/null 2>&1
     if "$BOXCTL" status 2>/dev/null | grep -q '正在运行'; then
-        log "已生效：核心在跑，规则已加载"
+        log "已生效：核心已重启，规则已加载"
     else
         log "warn: 重启后没检测到运行中的服务，回 App 看一眼"
     fi
@@ -241,7 +264,7 @@ main() {
         case "$1" in
             -h | --help) usage ; exit 0 ;;
             -n | --dry-run) DRY_RUN=1 ;;
-            --no-restart) DO_RESTART=0 ;;
+            --no-apply | --no-restart) DO_APPLY=0 ;;
             -*) die "未知参数 $1（用 -h 看用法）" ;;
             *) VALUE=$1 ;;
         esac
@@ -290,7 +313,7 @@ main() {
     rm -f "$block"
     make_effective
     # 重启会把网卡 v6 重新打开，这里再补一次
-    [ "$DO_RESTART" = 1 ] && disable_iface_ipv6 "$iface"
+    [ "$DO_APPLY" = 1 ] && disable_iface_ipv6 "$iface"
 
     [ "$DRY_RUN" = 1 ] && log "dry-run 完成，什么都没改"
     return 0
