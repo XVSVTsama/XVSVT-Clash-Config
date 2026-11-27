@@ -41,7 +41,11 @@ show_config() {
         printf '%-10s %-18s %-12s %s\n' "$name" "$src" "$ver" "$asset"
     done
 
-    printf '\n选择方式: 规则表（%s）\n' "$([ -n "${RULES:-}" ] && echo box-auto.conf 的 RULES || echo 内置默认规则)"
+    if rules_empty; then
+        printf '\n选择方式: 未配置 RULES（只有唯一内核时会自动用它）\n'
+    else
+        printf '\n选择方式: box-auto.conf 的 RULES\n'
+    fi
     printf '当前模式: %s\n' "$MODE"
 
     printf '\n规则表预览（按当前条件求值）:\n'

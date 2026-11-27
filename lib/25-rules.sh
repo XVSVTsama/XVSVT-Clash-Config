@@ -246,6 +246,18 @@ resolve_core_by_rules() {
     rules_context
     CORE_USED=''
 
+    if rules_empty; then
+        # 没有规则表：只有唯一内核时用它，多于一个就报错（不替用户猜）
+        if [ "$(printf '%s' "$CORE_LIST" | wc -w)" = 1 ]; then
+            CORE_USED=$CORE_LIST
+            log "未配置 RULES，使用唯一的内核：$CORE_USED"
+            return 0
+        fi
+        log "错误: 没有配置 RULES，且定义了多个内核（$CORE_LIST）"
+        log "      请在 box-auto.conf 里写明规则，例如 RULES='mode=ebpf => ebpf'"
+        return 2
+    fi
+
     while IFS= read -r line; do
         line=$(printf '%s' "$line" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
         case "$line" in

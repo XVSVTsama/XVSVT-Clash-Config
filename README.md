@@ -57,22 +57,18 @@
 
 ## 自动部分：`box-auto.conf`（通常一行都不用改）
 
-内核选择**只由规则表决定**。不写 `RULES` 就用内置默认规则：
-
-```sh
-mode=ebpf => ebpf
-always    => vanilla
-```
-
-也就是「eBPF 模式用 `core-ebpf`，其余模式用 `core-vanilla`」，和以前一样，但改成规则表达。要让某个模式换内核，改规则即可，例如：
+内核选择**只由规则表决定**，脚本不预设任何内核或选择习惯。规则写在 `box-auto.conf`：
 
 ```sh
 RULES='
-mode=ebpf     => vanilla
-mode=tun      => ebpf
-always        => vanilla
+mode=ebpf => ebpf
+always    => vanilla
 '
 ```
+
+上面这段是本仓库 `box-auto.conf` 里的内容（个人用法），可以按需改。判断项与写法见下方「规则式选择」。
+
+**没有写 `RULES` 时**：只定义了一个内核就用它；定义了多个则启动报错，提示你补规则——脚本不替用户猜。
 
 新增自己的内核时，才需要写文件名（不写就是 `core-<名字>`）：
 
@@ -95,7 +91,7 @@ CORE_mycore_FILE='core-mycore'
 
 ### 可选：规则式选择内核（`RULES`）
 
-上面就是内置默认规则；写了 `RULES` 就用你的规则表：
+规则写在这里，自上而下求值：
 
 ```sh
 RULES='
@@ -155,7 +151,7 @@ CORE_ebpf_REPO='<owner>/<repo>'      # 想要官方版就再填这一行
 
 | 内核 | 版本策略 | 资产名匹配 | 文件 |
 |---|---|---|---|
-| `ebpf` | `prerelease` | `*android-arm64*ebpf*.gz` | `bin/core-ebpf` |
+| `ebpf`（本仓库配置显式指定） | `prerelease` | `*android-arm64*ebpf*.gz` | `bin/core-ebpf` |
 | 其它（含 `vanilla`） | `latest` | `*android-arm64*.gz` | `bin/core-<名字>` |
 
 需要时再写的高级项：
@@ -222,7 +218,7 @@ CORE_ebpf_REPO='<owner>/<repo>'      # 想要官方版就再填这一行
 
 | 模块 | 谁用 | 负责 |
 |---|---|---|
-| `00-common.sh` | 全部 | 两份配置的加载、`CORE_*` 取值、内置默认规则、日志、校验 |
+| `00-common.sh` | 全部 | 两份配置的加载、`CORE_*` 取值、日志、校验 |
 | `10-mode.sh` | 全部 | 识别当前网络模式 |
 | `20-core.sh` | iface-auto | 模式 → 内核 → 文件 → 路径，缺文件退回 vanilla，`ln -f` |
 | `30-scripts.sh` | iface-auto | 覆写脚本目录与 `mihomo-scripts.yaml` |

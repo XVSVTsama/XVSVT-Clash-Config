@@ -67,7 +67,7 @@ CORE_vanilla_REPO='<owner>/<repo>'    # 想要官方版才填
 
 | 内核 | 默认 `VERSION` | 默认 `ASSET` |
 |---|---|---|
-| `ebpf` | `prerelease` | `*android-arm64*ebpf*.gz` |
+| `ebpf`（本仓库配置里显式写了） | `prerelease` | `*android-arm64*ebpf*.gz` |
 | 其它（含 `vanilla`） | `latest` | `*android-arm64*.gz` |
 
 所以正常情况你不需要写 `ASSET`、`VERSION`、`CORE_LIST`、`CORE_DEFAULT`——这些已经从配置项里删掉了。
@@ -183,6 +183,6 @@ CORE_ebpf_URL='file:///sdcard/Download/core-ebpf.gz'
 
 ## 七、设计取舍
 
-- **默认值优先**：能推断的都不写进配置（文件名、版本策略、资产名、行为开关、内置默认规则）。
+- **默认值优先，但不预设习惯**：文件名、版本策略、资产名用通用默认（`latest` + `*android-arm64*.gz`）；具体分支要用预发布或特殊资产名，就在 `box-update.conf` 里写明；选哪个内核一律由 `RULES` 决定。
 - **名字即键**：规则里的 `=> ebpf` 指向名为 `ebpf` 的内核，它的文件与来源分别由两份配置里的 `CORE_ebpf_*` 决定；`CORE_LIST` 由脚本自动扫描得到，不需要维护。
 - **两部分各管一段**：自动部分不知道任何下载地址，手动部分不决定谁用哪个内核。

@@ -11,7 +11,9 @@
 # 内核名与文件名的校验（两个部分都要）
 check_core_names() {
     BIN_DIR=$BOX_HOME/bin
-    [ -n "$CORE_LIST" ] || die "配置错误：CORE_LIST 为空"
+    # 去掉多余空白，避免后续取名字时带前导空格
+    CORE_LIST=$(printf '%s' "$CORE_LIST" | tr -s '[:space:]' ' ' | sed 's/^ //; s/ $//')
+    [ -n "$CORE_LIST" ] || die "配置错误：没有定义任何内核（box-auto.conf / box-update.conf 里要写 CORE_<名字>_* ）"
     for name in $CORE_LIST; do
         valid_name "$name" || die "配置错误：内核名 '$name' 只能用字母、数字、下划线"
         case "$(core_file "$name")" in
@@ -67,21 +69,9 @@ init_defaults() {
     STOP_PACKAGES=''
     EXTRA_PORTS=''
 
-    CORE_LIST=${CORE_LIST:-'ebpf vanilla'}
+    # 内核清单与规则全部来自配置文件，脚本不预设任何内核或选择习惯
+    CORE_LIST=${CORE_LIST:-}
     RULES=${RULES:-}
-    # 没写 RULES 时的内置默认规则（等价于以前「ebpf 用 ebpf，其余用 vanilla」）
-    DEFAULT_RULES='
-mode=ebpf => ebpf
-always    => vanilla
-'
-
-    # 内置内核定义（配置里没写时生效）
-    CORE_ebpf_FILE=${CORE_ebpf_FILE:-core-ebpf}
-    CORE_ebpf_VERSION=${CORE_ebpf_VERSION:-prerelease}
-    CORE_ebpf_ASSET=${CORE_ebpf_ASSET:-*android-arm64*ebpf*.gz}
-    CORE_vanilla_FILE=${CORE_vanilla_FILE:-core-vanilla}
-    CORE_vanilla_VERSION=${CORE_vanilla_VERSION:-latest}
-    CORE_vanilla_ASSET=${CORE_vanilla_ASSET:-*android-arm64*.gz}
 
     # 下载相关（不再从环境或命令行取）
     API_BASE=https://api.github.com
@@ -195,11 +185,21 @@ log() {
 }
 
 rules_text() {
-    if [ -n "${RULES:-}" ]; then
-        printf '%s\n' "$RULES"
-    else
-        printf '%s\n' "$DEFAULT_RULES"
-    fi
+    printf '%s\n' "${RULES:-}"
+}
+
+# 规则表是否为空（忽略空行与注释行）
+rules_empty() {
+    local line
+    while IFS= read -r line; do
+        case "$line" in
+            '' | '#'*) continue ;;
+        esac
+        return 1
+    done <<EOF
+$(rules_text)
+EOF
+    return 0
 }
 
 require_root() {
