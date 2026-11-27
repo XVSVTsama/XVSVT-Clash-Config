@@ -118,3 +118,12 @@ resolve_source() {
         log "      使用仓库提供的 SHA-256"
     fi
 }
+
+pick() {
+    eval "override=\${O_$1:-}"
+    if [ -n "$override" ]; then
+        printf '%s' "$override"
+    else
+        core_field "$CORE_NAME" "$1"
+    fi
+}

@@ -101,7 +101,7 @@ load_conf() {
 }
 
 log() {
-    if [ "$DRY_RUN" -eq 1 ] || [ "$SHOW" -eq 1 ]; then
+    if [ "${LOG_TERMINAL:-0}" = 1 ] || [ "$DRY_RUN" -eq 1 ]; then
         printf '%s\n' "$*"
         return 0
     fi

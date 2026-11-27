@@ -160,20 +160,20 @@ CORE_ebpf_URL='file:///sdcard/Download/core-ebpf.gz'
 cp box-core.full-example.conf box-core.conf     # 放到 scripts/ 下
 
 # 2. 看解析结果：名字、文件、路径、来源
-sh update-core.sh --show
+sh iface-auto.sh show
 
 # 3. 看模式映射：哪个入站用哪个文件
 sh iface-auto.sh --show
 
 # 4. 装第一个内核（首次安装就是这条命令）
-sh update-core.sh --core ebpf
+sh iface-auto.sh update --core ebpf
 
 # 5. 装官方内核（其余模式要用）
-sh update-core.sh --core vanilla
+sh iface-auto.sh update --core vanilla
 
 # 6. 备用内核按需装（不装也不影响其它模式）
-sh update-core.sh --core spare --dry-run
-sh update-core.sh --core spare
+sh iface-auto.sh update --core spare --dry-run
+sh iface-auto.sh update --core spare
 
 # 7. BoxProxy 里选 eBPF 启动；启动前 iface-auto.sh 会自动挂载对应内核
 ```
@@ -189,7 +189,7 @@ sh update-core.sh --core spare
 | `没有匹配 '...' 的资产` | `ASSET` 里写死了版本号或哈希 | 只保留稳定部分，把会变的换成 `*` |
 | `配置错误：MODE_CORE_ebpf 指向的内核 'ebpf' 不在 CORE_LIST 里` | 新增了内核但没加进 `CORE_LIST` | 把名字加进去 |
 | `配置错误：CORE_ebpf_FILE 只能写文件名` | 文件字段里带了 `bin/` 前缀 | 只写 `core-ebpf` |
-| `warn: 内核 ebpf 的文件 core-ebpf 不存在，退回 vanilla` | 还没装就先把模式指过去了 | 先 `sh update-core.sh --core ebpf` |
+| `warn: 内核 ebpf 的文件 core-ebpf 不存在，退回 vanilla` | 还没装就先把模式指过去了 | 先 `sh iface-auto.sh update --core ebpf` |
 
 ---
 
