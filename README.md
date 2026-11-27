@@ -225,7 +225,7 @@ sh update-core.sh --core ebpf --url <下载地址> [--sha256 <值>] [--tag <版�
 
 `bin/` 里的核心会被 BoxProxy 设成 **setuid/setgid** 运行，任何放进去的程序都是提权执行。所以：只装你能确认来源的核心，别用别人随手发的二进制。
 
-## 已知边界
+## `iface-auto.sh` 已知边界
 
 - 只在 Android（root）上验证；下联依赖 `dumpsys tethering` 的 `tetherableWifiRegexs`，取不到时退回内置正则（`wlan0`、`softap0`、`ap_br_wlan0` 等）。
 - 下联必须带 IPv4 地址才会被认作热点：AP 起好后才会有地址，未启用的接口因此被跳过；纯 IPv6 共享场景会识别不到下联。
@@ -237,4 +237,14 @@ sh update-core.sh --core ebpf --url <下载地址> [--sha256 <值>] [--tag <版�
 
 ## 维护
 
-脚本只依赖 busybox / toybox 的常见命令（`ip`、`iptables`、`stat`、`awk`、`sed`、`cmp`、`dumpsys`、`am`）。改动后先 `sh -n iface-auto.sh` 做语法检查，再用 `--dry-run` 在真机跑一遍确认路径与识别结果。
+两个脚本都只用系统自带命令（`ip`、`iptables`、`stat`、`awk`、`sed`、`cmp`、`dumpsys`、`am`、`curl`、`gzip`、`sha256sum`），不需要额外装东西。
+
+改动后按这个顺序验：
+
+```sh
+sh -n iface-auto.sh && sh -n update-core.sh   # 语法
+sh iface-auto.sh --dry-run                    # 启动前脚本：只打印要做的事
+sh update-core.sh --dry-run                   # 内核更新：只查版本、打印会下载哪个文件
+```
+
+两个 `--dry-run` 都不会写盘、不会替换、不会重启。
