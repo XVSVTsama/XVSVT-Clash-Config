@@ -17,6 +17,10 @@
 #   sh hotspot-on.sh -n            只打印，不改配置也不写 js
 #   sh hotspot-on.sh -h
 #
+# 另外会关掉下联网卡的 IPv6（sysctl net.ipv6.conf.<网卡>.disable_ipv6=1）：
+# 热点客户端与手机共用运营商同一个 /64，不关的话客户端 v6 会绕过规则进核心；
+# 关掉只影响热点网卡，手机自己的 v6（蜂窝网卡）不受影响。关热点再开会失效，重跑本脚本即可。
+#
 # 网段默认按当前下联网卡地址自动算；要写死就在 box-auto.conf 里设 HOTSPOT_CIDR。
 # 改完仍需「重新生成启动配置」再重启或重载服务，规则才进入内核。
 # 覆写脚本被重新部署后标记行会消失，需要再跑一次本脚本。
@@ -126,6 +130,24 @@ client_ipv6_addrs() {   # $1 = 网卡
         }'
 }
 
+disable_client_ipv6() {   # $1 = 下联网卡
+    local iface=$1 cur
+    cur=$(sysctl -n "net.ipv6.conf.$iface.disable_ipv6" 2>/dev/null)
+    if [ "$cur" = 1 ]; then
+        log "热点共享: $iface 的 IPv6 已经是关的"
+        return 0
+    fi
+    if [ "$DRY_RUN" = 1 ]; then
+        log "  [dry-run] sysctl -w net.ipv6.conf.$iface.disable_ipv6=1（热点客户端不用 IPv6）"
+        return 0
+    fi
+    if sysctl -w "net.ipv6.conf.$iface.disable_ipv6=1" >/dev/null 2>&1; then
+        log "热点共享: 已关掉 $iface 的 IPv6（手机自己的 v6 不受影响）"
+    else
+        log "warn: 关不掉 $iface 的 IPv6，客户端 v6 仍会进核心"
+    fi
+}
+
 # ---------------- 写规则 ----------------
 
 drop_marked() {     # $1 = 文件，删掉带标记的行
@@ -202,6 +224,8 @@ main() {
     else
         log "热点共享: 使用配置里的 IPv4 网段 $cidr"
     fi
+
+    disable_client_ipv6 "$iface"
 
     block=${TMPDIR:-/data/local/tmp}/hotspot-rules.$$
     : >"$block" || die "无法创建临时文件 $block"
