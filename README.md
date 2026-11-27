@@ -5,11 +5,11 @@
 ## 初次安装：四步
 
 1. **放文件**
-   把 `iface-auto.sh`、`update-core.sh`、`show-config.sh`、`check-core.sh`、`box-auto.conf`、`box-update.conf` 和整个 `lib/` 文件夹一起复制到
+   把 `iface-auto.sh`、`update-core.sh`、`show-config.sh`、`box-auto.conf`、`box-update.conf` 和整个 `lib/` 文件夹一起复制到
    `/data/user/0/com.boxproxy.box/files/box/scripts/`
    （BoxProxy → `工具 → 文件管理` 能直接进这个目录。）
 2. **登记启动前脚本**
-   在 BoxProxy 设置里把 `iface-auto.sh` 选为「服务启动前脚本」。另外三个脚本不用登记。
+   在 BoxProxy 设置里把 `iface-auto.sh` 选为「服务启动前脚本」。另一个脚本不用登记。
 3. **装内核**
    `工具 → 脚本` → 运行 `update-core.sh`。它会把配置里填了来源的内核全部装一遍，不需要参数。
 4. **启动**
@@ -35,13 +35,12 @@ always    => vanilla
 
 读法：eBPF 模式用 `ebpf`（文件 `bin/ebpf-我的`），其它模式用 `vanilla`（文件 `bin/vanilla-我的`）。想让 eBPF 也用官方内核，就把第一行改成 `mode=ebpf => vanilla`。
 
-## 三个按钮
+## 两个按钮
 
 | 脚本 | 干什么 | 联网 |
 |---|---|---|
 | `update-core.sh` | 装 / 升级内核 | 会 |
 | `show-config.sh` | 看配置解析成什么、内核装没装 | 不会 |
-| `check-core.sh` | 检查已装内核能不能用 | 不会 |
 
 启动前 `iface-auto.sh` 自动做的事：按规则选内核 → 复制成 `bin/mihomo` → 切换覆写脚本 → 认网卡 → 端口冲突检查。全程不联网，缺内核只会报错提示，不会自己去下载。
 

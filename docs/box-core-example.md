@@ -166,7 +166,6 @@ CORE_ebpf_URL='file:///sdcard/Download/ebpf-我的.gz'
 | 装/升级内核 | `box-update.conf` 的 `REPO` | 点一次 `update-core.sh` |
 | 换 eBPF 用的内核 | `box-auto.conf` 的 `RULES` 对应行 | 启动 |
 | 只看配置解析 | 不改 | 点一次 `show-config.sh` |
-| 校验已装内核 | 不改 | 点一次 `check-core.sh` |
 
 ---
 
