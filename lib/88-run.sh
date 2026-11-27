@@ -13,6 +13,14 @@
 # ---------------------------------------------------------------------------
 run_prestart() {
     require_root
+
+    # 让路：App 当前核心不是 mihomo（sing-box / xray / v2fly / hysteria 等）时不介入
+    core_now=$(app_current_core)
+    if [ -n "$core_now" ] && [ "$core_now" != mihomo ]; then
+        log "App 当前核心是 $core_now（不是 mihomo），本脚本只处理 mihomo，跳过"
+        exit 0
+    fi
+
     resolve_js_dir
     detect_upstream
     detect_downstream
@@ -124,7 +132,7 @@ run_update() {
     fi
 
     if [ "$need" = 1 ]; then
-        ln -f "$(core_path "$mapped")" "$LINK" 2>/dev/null
+        mount_core "$mapped"
         log "已把 $mapped 挂到 bin/mihomo（当前模式 $mode）"
     fi
 

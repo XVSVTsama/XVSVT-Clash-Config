@@ -329,40 +329,26 @@ EOF
     return 0
 }
 
-# bin/mihomo 现在是不是我们挂的（和某个已知内核同一 inode）
-link_is_ours() {
-    local link_inode name inode
-    link_inode=$(stat -c %i "$CORE_LINK" 2>/dev/null)
-    [ -n "$link_inode" ] || return 1
-    for name in $CORE_LIST; do
-        inode=$(stat -c %i "$(core_path "$name")" 2>/dev/null)
-        [ -n "$inode" ] && [ "$link_inode" = "$inode" ] && return 0
-    done
-    return 1
-}
 
-# 求值并挂到 bin/mihomo
+
+# ---------------------------------------------------------------------------
+# 让路挂载
+# ---------------------------------------------------------------------------
+
+# 求值并按让路规则挂载：
+#   目标 == FALLBACK_CORE（默认 vanilla）且 bin/mihomo 是 App 自己装的 → 不动它
+#   目标 == 其它自定义内核（ebpf 等）→ 覆盖 bin/mihomo
+#   目标 == FALLBACK_CORE 且 bin/mihomo 是本脚本装的 → 换回 fallback
 select_core_by_rules() {
-    resolve_core_by_rules
-    local rc=$?
-    [ "$rc" = 0 ] || return "$rc"
+    local cur
+    resolve_core_by_rules || return $?
 
-    # 让路：bin/mihomo 是外部写进来的（例如 App 自带的「更新核心」），本次不覆盖
-    if [ -f "$CORE_LINK" ] && ! link_is_ours; then
-        log "检测到 bin/mihomo 是外部安装的内核（不是本脚本挂的），本次不重挂，直接用它启动"
-        log "  想恢复按规则切换：删掉 bin/mihomo，或跑一次 update-core.sh"
+    [ -n "${CORE_USED:-}" ] || return 0
+    cur=$(describe_core)
+    if [ "$CORE_USED" = "${FALLBACK_CORE:-vanilla}" ] && [ "$cur" = external ]; then
+        log "bin/mihomo 是 App 自己装的内核，按让路规则不覆盖，直接用它启动"
         CORE_USED=''
         return 0
     fi
-
-    if [ "$DRY_RUN" = 1 ]; then
-        log "  [dry-run] ln -f $(core_path "$CORE_USED") $CORE_LINK"
-        return 0
-    fi
-    if ln -f "$(core_path "$CORE_USED")" "$CORE_LINK" 2>/dev/null; then
-        log "core -> $CORE_USED（$(core_file "$CORE_USED")）"
-        return 0
-    fi
-    log "错误: 无法把 $CORE_USED 挂到 $CORE_LINK"
-    return 2
+    mount_core "$CORE_USED"
 }

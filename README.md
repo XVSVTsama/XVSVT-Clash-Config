@@ -41,7 +41,7 @@
 
 | 文件 | 要改什么 |
 |---|---|
-| `box-update.conf` | 只填内核的仓库：`CORE_ebpf_REPO='<owner>/<repo>'`（想要官方版再填 `CORE_vanilla_REPO`） |
+| `box-update.conf` | 只填自定义内核的仓库：`CORE_ebpf_REPO='<owner>/<repo>'`（官方 mihomo 交给 App 的「更新核心」，不用在这填） |
 | `box-auto.conf` | 一般不用改；要让某个模式用别的内核，改 `RULES` 里对应那行 |
 
 **第 4 步：装内核（点一下）**
@@ -83,11 +83,12 @@ CORE_mycore_FILE='core-mycore'
 # CONFLICT_STOP='auto'       # auto 停掉占用端口的应用 | log 只记 | off 不查
 # STOP_PACKAGES=''           # 额外无条件停的包
 # EXTRA_PORTS=''             # 额外检查冲突的端口
+# FALLBACK_CORE='vanilla'    # 兜底内核：选中它时 App 自己装的 bin/mihomo 不覆盖
 ```
 
-启动前它会做：解析「模式 → 内核 → 文件 → 路径」→ 把文件 `ln -f` 到 `bin/mihomo`（**文件不存在只 warn，不下载**）→ 切覆写脚本 → 认网卡/挂 dummy → 写 JS 字段 → 放行 `FORWARD` → 端口冲突检测。全程不联网。
+启动前它会做：解析「模式 → 内核 → 文件 → 路径」→ 需要时用独立副本 `cp` 覆盖 `bin/mihomo`（**文件不存在只 warn，不下载**）→ 切覆写脚本 → 认网卡/挂 dummy → 写 JS 字段 → 放行 `FORWARD` → 端口冲突检测。全程不联网。
 
-**与 BoxProxy 自带「更新核心」的分工**：如果 `bin/mihomo` 已经是外部装进来的普通文件（不是脚本挂的链接），本次不覆盖，直接用它启动，并在日志里写 `检测到 bin/mihomo 是外部安装的内核…`；想恢复按规则切换，删掉 `bin/mihomo` 或跑一次 `update-core.sh`。
+**与 BoxProxy 自带「更新核心」的分工**：`bin/mihomo` 是 App 也在写的核心槽。规则选中 `FALLBACK_CORE`（默认 `vanilla`）时，若 `bin/mihomo` 的内容与任何自定义内核都不同（= App 自己装的），本次不覆盖，直接用它启动，日志写 `bin/mihomo 是 App 自己装的内核，按让路规则不覆盖…`；只有 `bin/mihomo` 是本脚本装过的另一个内核时才换回 fallback。选中 `ebpf` 这类自定义内核时才会覆盖，用 `rm + cp` 写独立副本，不留备份文件。
 
 ---
 
@@ -145,8 +146,8 @@ always                                   => vanilla
 `box-update.conf` 里只有一件必填的事——内核从哪来：
 
 ```sh
-CORE_ebpf_REPO='<owner>/<repo>'      # 想要官方版就再填这一行
-# CORE_vanilla_REPO='<owner>/<repo>'
+CORE_ebpf_REPO='<owner>/<repo>'      # 只填自定义内核；官方 mihomo 交给 App
+# CORE_vanilla_REPO='<owner>/<repo>'  # 想让脚本自己维护官方副本时才填
 ```
 
 其余全有默认值：
@@ -222,7 +223,7 @@ CORE_ebpf_REPO='<owner>/<repo>'      # 想要官方版就再填这一行
 |---|---|---|
 | `00-common.sh` | 全部 | 两份配置的加载、`CORE_*` 取值、日志、校验 |
 | `10-mode.sh` | 全部 | 识别当前网络模式 |
-| `20-core.sh` | iface-auto | 模式 → 内核 → 文件 → 路径，缺文件退回 vanilla，`ln -f` |
+| `20-core.sh` | iface-auto / check-core | 按内容识别 `bin/mihomo`，按让路规则挂载（`cp` 独立副本，不做备份） |
 | `30-scripts.sh` | iface-auto | 覆写脚本目录与 `mihomo-scripts.yaml` |
 | `40-net.sh` | iface-auto | 出口网卡、下联网卡、dummy、`FORWARD` |
 | `50-js-fields.sh` | iface-auto | `interface-name` / `EBPF_SHARED_IFACE_SPEC` |

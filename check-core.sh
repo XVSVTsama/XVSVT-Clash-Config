@@ -2,7 +2,7 @@
 # 手动：校验已经装好的内核（本地，不联网）
 #
 # 默认校验「按规则表为当前模式选出的那个内核」；也可以 --core 指定。
-# 报告：版本、bin/mihomo 是否指向它、它对当前启动配置的 -t 结果。
+# 报告：版本、bin/mihomo 现在是哪个内核、它对当前启动配置的 -t 结果。
 #
 # 用法：
 #   sh check-core.sh                 校验规则选出的内核
@@ -17,7 +17,7 @@ if [ ! -d "$lib_dir" ]; then
     printf '错误: 找不到模块目录 %s，请把 lib/ 一起放进 scripts/\n' "$lib_dir" >&2
     exit 2
 fi
-for mod in 00-common 10-mode 25-rules; do
+for mod in 00-common 10-mode 20-core 25-rules; do
     if [ ! -f "$lib_dir/$mod.sh" ]; then
         printf '错误: 缺少模块 %s\n' "$lib_dir/$mod.sh" >&2
         exit 2
@@ -77,12 +77,10 @@ main() {
     printf '版本: '
     "$target" -v 2>&1 | head -1
 
-    link=$(stat -c %i "$CORE_LINK" 2>/dev/null)
-    inode=$(stat -c %i "$target" 2>/dev/null)
-    if [ -n "$link" ] && [ "$link" = "$inode" ]; then
-        printf '当前 bin/mihomo: 指向它\n'
+    if link_matches "$CORE_NAME"; then
+        printf '当前 bin/mihomo: 就是它\n'
     else
-        printf '当前 bin/mihomo: 不指向它（下次启动会按规则重新挂）\n'
+        printf '当前 bin/mihomo: 不是它（当前 %s）\n' "$(describe_core)"
     fi
 
     startup=$BOX_HOME/run/state/config/startup-config

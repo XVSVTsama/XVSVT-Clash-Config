@@ -53,9 +53,11 @@ detect_upstream() {
     [ -n "$dev" ] || dev=$(ip route show default 2>/dev/null | iface_of_dev)
     is_tunnel_iface "$dev" && dev=''
     if [ -z "$dev" ]; then
-        # 路由落到隧道上时，退一步找默认路由里的物理接口
-        for iface in $(ip route show table all 2>/dev/null             | awk '$1 == "default" { for (i = 1; i <= NF; i++) if ($i == "dev") print $(i + 1) }'             | sort -u); do
+        # 路由落到隧道上时，按默认路由的先后顺序找第一个带 IPv4 的物理接口
+        for iface in $(ip route show table all 2>/dev/null \
+            | awk '$1 == "default" { for (i = 1; i <= NF; i++) if ($i == "dev") print $(i + 1) }'); do
             is_tunnel_iface "$iface" && continue
+            ip -o -4 addr show "$iface" 2>/dev/null | grep -q ' inet ' || continue
             dev=$iface
             break
         done
@@ -83,11 +85,14 @@ iface_of_dev() {
     sed -n 's/.* dev \([A-Za-z0-9_@.-]*\).*/\1/p' | head -1
 }
 
+# 隧道接口：名字不固定（BoxProxy 的 TUN 网卡可能叫 XVSVT 之类），
+# 所以除了按名字，还按 Clash/mihomo TUN 的 198.18.0.0/16 网关地址判断
 is_tunnel_iface() {
     case "$1" in
         '' | lo | tun* | tap* | meta | clash* | wg* | ppp* | ipsec* | dummy*) return 0 ;;
-        *) return 1 ;;
     esac
+    ip -o -4 addr show "$1" 2>/dev/null | grep -q ' inet 198\.18\.' && return 0
+    return 1
 }
 
 tetherable_pattern() {

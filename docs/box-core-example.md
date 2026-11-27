@@ -47,7 +47,7 @@ iface-auto.sh 按规则表求值：mode=ebpf 命中 → 内核 ebpf
         ↓
 文件名默认 ebpf-我的 → bin/ebpf-我的
         ↓
-存在且可执行 → ln -f bin/ebpf-我的 bin/mihomo
+存在且可执行 → cp -f bin/ebpf-我的 bin/mihomo（独立副本）
         ↓
 boxctl 用 bin/mihomo 启动核心
 ```
@@ -60,7 +60,7 @@ boxctl 用 bin/mihomo 启动核心
 
 ```sh
 CORE_ebpf_REPO='<owner>/<repo>'
-CORE_vanilla_REPO='<owner>/<repo>'    # 想要官方版才填
+# CORE_vanilla_REPO='<owner>/<repo>'  # 想让脚本自己维护官方副本时才填
 ```
 
 版本策略与资产名按内核名给默认值：

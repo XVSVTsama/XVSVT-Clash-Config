@@ -66,6 +66,8 @@ init_defaults() {
 
     DUMMY_IFACE=boxebpf0
     CONFLICT_STOP=auto
+    # 兜底内核：规则选中它时若 bin/mihomo 是 App 自己装的，就不覆盖（让路）
+    FALLBACK_CORE=${FALLBACK_CORE:-vanilla}
     STOP_PACKAGES=''
     EXTRA_PORTS=''
 
