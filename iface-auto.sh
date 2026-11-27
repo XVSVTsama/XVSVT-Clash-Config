@@ -17,13 +17,16 @@
 #   sh iface-auto.sh --dry-run  只打印将要做的改动，不写盘、不动 iptables
 #   sh iface-auto.sh -h         帮助
 #
+# 配置：同目录的 box-auto.conf（没有就用内置默认值）。
+# 手动部分（装/更新内核）用另一份 box-update.conf，见 update-core.sh。
+#
 # ============================================================================
 # 以下为代码
 # ============================================================================
 
 DRY_RUN=0
 VERBOSE=0
-CONF=''
+CONF_AUTO=''
 BOX_HOME_CLI=''
 
 usage() {
@@ -46,7 +49,7 @@ parse_args() {
         case "$1" in
             -n | --dry-run) DRY_RUN=1; shift ;;
             -v | --verbose) VERBOSE=1; shift ;;
-            -c | --conf) need_value "$1" $#; CONF=$2; shift 2 ;;
+            -c | --conf) need_value "$1" $#; CONF_AUTO=$2; shift 2 ;;
             --home) need_value "$1" $#; BOX_HOME_CLI=$2; shift 2 ;;
             -h | --help) usage; exit 0 ;;
             *)
@@ -80,11 +83,12 @@ main() {
     load_modules
 
     init_defaults
-    load_conf
+    load_auto_conf
     init_defaults
     BIN_DIR=$BOX_HOME/bin
     CORE_LINK=$BIN_DIR/mihomo
-    check_config
+    check_core_names
+    check_mode_map
     detect_mode
 
     run_prestart

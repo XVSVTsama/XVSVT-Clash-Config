@@ -1,6 +1,6 @@
 # 完整配置实例：一台手机，eBPF 用自己的内核
 
-这篇文档配一份可以照着抄的完整配置，用来研究 `box-core.conf` 各字段之间怎么咬合。文件本体在仓库根目录：`box-core.full-example.conf`。
+这篇文档配一份可以照着抄的完整配置，用来研究 `box-auto.conf` / `box-update.conf` 各字段之间怎么咬合。文件本体在仓库根目录：`box-auto.full-example.conf / box-update.full-example.conf`。
 
 读完你应该能回答三个问题：
 
@@ -156,8 +156,9 @@ CORE_ebpf_URL='file:///sdcard/Download/core-ebpf.gz'
 ## 六、用起来：手动装一次，之后启动即用
 
 ```sh
-# 1. 抄配置
-cp box-core.full-example.conf box-core.conf     # 放到 scripts/ 下，填好 REPO
+# 1. 抄配置（两份）
+cp box-auto.full-example.conf   box-auto.conf     # 放到 scripts/ 下，一般不用改
+cp box-update.full-example.conf box-update.conf   # 填好 REPO
 
 # 2. 手动装一次要用的内核（会联网；以后升级也是这条）
 sh update-core.sh --core ebpf
@@ -197,4 +198,4 @@ sh update-core.sh --core vanilla
 - **脚本固化、配置外置**：升级脚本不会覆盖你的参数，反之改参数也不会碰脚本逻辑。
 - **名字与文件分离**：`ebpf` 是给人看的标签，`core-ebpf` 是给系统看的路径；换构建只改仓库/资产，不动映射。
 - **只挂被用到的内核**：`spare` 这种备胎不会污染 `bin/mihomo`，也不参与启动。
-- **默认值兜底**：不建 `box-core.conf` 时，行为和旧版一致（`ebpf` → `core-ebpf`，其余 → `core-vanilla`），所以升级脚本本身是安全的。
+- **默认值兜底**：不建 `box-auto.conf` / `box-update.conf` 时，行为和旧版一致（`ebpf` → `core-ebpf`，其余 → `core-vanilla`），所以升级脚本本身是安全的。

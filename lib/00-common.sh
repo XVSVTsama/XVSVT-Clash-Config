@@ -8,20 +8,32 @@
     exit 2
 }
 
-check_config() {
+# 内核名与文件名的校验（两个部分都要）
+check_core_names() {
     BIN_DIR=$BOX_HOME/bin
+    [ -n "$CORE_LIST" ] || die "配置错误：CORE_LIST 为空"
     for name in $CORE_LIST; do
         valid_name "$name" || die "配置错误：内核名 '$name' 只能用字母、数字、下划线"
         case "$(core_file "$name")" in
             */*) die "配置错误：CORE_${name}_FILE 只能写文件名，不能带路径" ;;
         esac
     done
+    [ -n "${CORE_DEFAULT:-}" ] || CORE_DEFAULT=ebpf
+}
+
+# 模式映射的校验（自动部分 / show-config 需要）
+check_mode_map() {
     for mode in tun tproxy ebpf redirect mixed enhance unknown; do
         name=$(mode_core "$mode")
         valid_name "$name" || die "配置错误：MODE_CORE_$mode 的内核名 '$name' 不合法"
         in_list "$name" || die "配置错误：MODE_CORE_$mode 指向的内核 '$name' 不在 CORE_LIST 里"
     done
-    [ -n "${CORE_DEFAULT:-}" ] || CORE_DEFAULT=ebpf
+}
+
+# 兼容旧调用：完整校验
+check_config() {
+    check_core_names
+    check_mode_map
     in_list "$CORE_DEFAULT" || die "配置错误：CORE_DEFAULT='$CORE_DEFAULT' 不在 CORE_LIST 里"
 }
 
@@ -81,6 +93,11 @@ init_defaults() {
     MODE_CORE_enhance=${MODE_CORE_enhance:-vanilla}
     MODE_CORE_unknown=${MODE_CORE_unknown:-vanilla}
 
+    CONF_AUTO=${CONF_AUTO:-}
+    CONF_UPDATE=${CONF_UPDATE:-}
+    CONF_AUTO_USED=${CONF_AUTO_USED:-}
+    CONF_UPDATE_USED=${CONF_UPDATE_USED:-}
+
     MODE=''
     UPSTREAM=''
     DOWNSTREAM=''
@@ -88,16 +105,43 @@ init_defaults() {
     CONF_USED=${CONF_USED:-}
 }
 
-load_conf() {
+# 载入自动部分配置（box-auto.conf）
+load_auto_conf() {
     script_dir=$(cd "$(dirname "$0")" 2>/dev/null && pwd)
-    if [ -z "$CONF" ]; then
-        CONF=$script_dir/box-core.conf
-        [ -f "$CONF" ] || CONF=''
+    if [ -z "$CONF_AUTO" ]; then
+        CONF_AUTO=$script_dir/box-auto.conf
+        [ -f "$CONF_AUTO" ] || CONF_AUTO=''
     fi
-    [ -n "$CONF" ] && [ -f "$CONF" ] || return 0
+    [ -n "$CONF_AUTO" ] && [ -f "$CONF_AUTO" ] || return 0
     # shellcheck disable=SC1090
-    . "$CONF"
-    CONF_USED=$CONF
+    . "$CONF_AUTO"
+    CONF_AUTO_USED=$CONF_AUTO
+}
+
+# 载入手动部分配置（box-update.conf）
+load_update_conf() {
+    script_dir=$(cd "$(dirname "$0")" 2>/dev/null && pwd)
+    if [ -z "$CONF_UPDATE" ]; then
+        CONF_UPDATE=$script_dir/box-update.conf
+        [ -f "$CONF_UPDATE" ] || return 0
+    fi
+    [ -n "$CONF_UPDATE" ] && [ -f "$CONF_UPDATE" ] || return 0
+    # shellcheck disable=SC1090
+    . "$CONF_UPDATE"
+    CONF_UPDATE_USED=$CONF_UPDATE
+}
+
+# 两份配置各写一份 CORE_LIST 时合并（show-config 用）
+merge_core_list() {
+    local merged=$1 name
+    shift
+    for name in "$@"; do
+        case " $merged " in
+            *" $name "*) ;;
+            *) merged="$merged $name" ;;
+        esac
+    done
+    printf '%s\n' "$merged"
 }
 
 log() {

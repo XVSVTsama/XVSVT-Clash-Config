@@ -11,7 +11,7 @@
 #   sh check-core.sh --core <名字>   校验指定内核
 #   sh check-core.sh -h
 
-CONF=''
+CONF_AUTO=''
 BOX_HOME_CLI=''
 CORE_NAME=''
 
@@ -49,7 +49,7 @@ parse_args() {
     while [ $# -gt 0 ]; do
         case "$1" in
             --core) need_value "$1" $#; CORE_NAME=$2; shift 2 ;;
-            -c | --conf) need_value "$1" $#; CONF=$2; shift 2 ;;
+            -c | --conf) need_value "$1" $#; CONF_AUTO=$2; shift 2 ;;
             --home) need_value "$1" $#; BOX_HOME_CLI=$2; shift 2 ;;
             -h | --help) usage; exit 0 ;;
             *)
@@ -63,11 +63,11 @@ parse_args() {
 main() {
     parse_args "$@"
     init_defaults
-    load_conf
+    load_auto_conf
     init_defaults
     BIN_DIR=$BOX_HOME/bin
     CORE_LINK=$BIN_DIR/mihomo
-    check_config
+    check_core_names
     detect_mode
 
     CORE_NAME=${CORE_NAME:-$(mode_core "$MODE")}

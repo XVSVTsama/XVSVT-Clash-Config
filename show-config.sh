@@ -2,15 +2,17 @@
 # 手动：查看配置解析结果（只读，不下载、不改任何东西）
 #
 # 显示：内核名 / 文件 / 路径 / 安装状态、来源与版本策略、模式映射、当前检测到的模式。
+# 会同时读自动部分的 box-auto.conf 与手动部分的 box-update.conf。
 # 不需要 root 也能跑（非 root 时“已安装/未安装”可能不准）。
 #
 # 用法：
 #   sh show-config.sh
-#   sh show-config.sh --conf <文件> --home <目录>
+#   sh show-config.sh --conf-auto <文件> --conf-update <文件> --home <目录>
 #   sh show-config.sh -h
 
 DRY_RUN=0
-CONF=''
+CONF_AUTO=''
+CONF_UPDATE=''
 BOX_HOME_CLI=''
 
 BOX_CORE_LIB=1
@@ -46,7 +48,8 @@ need_value() {
 parse_args() {
     while [ $# -gt 0 ]; do
         case "$1" in
-            -c | --conf) need_value "$1" $#; CONF=$2; shift 2 ;;
+            --conf-auto) need_value "$1" $#; CONF_AUTO=$2; shift 2 ;;
+            --conf-update) need_value "$1" $#; CONF_UPDATE=$2; shift 2 ;;
             --home) need_value "$1" $#; BOX_HOME_CLI=$2; shift 2 ;;
             -h | --help) usage; exit 0 ;;
             *)
@@ -60,11 +63,16 @@ parse_args() {
 main() {
     parse_args "$@"
     init_defaults
-    load_conf
+    load_auto_conf
     init_defaults
+    list_auto=$CORE_LIST
+    load_update_conf
+    init_defaults
+    CORE_LIST=$(merge_core_list "$list_auto" $CORE_LIST)
     BIN_DIR=$BOX_HOME/bin
     CORE_LINK=$BIN_DIR/mihomo
-    check_config
+    check_core_names
+    check_mode_map
     detect_mode
     show_config
     exit 0

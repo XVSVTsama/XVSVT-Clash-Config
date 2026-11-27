@@ -9,7 +9,8 @@
 }
 
 show_config() {
-    printf '配置文件: %s\n' "${CONF_USED:-（未使用，走内置默认值）}"
+    printf '自动部分配置: %s\n' "${CONF_AUTO_USED:-（未使用，走内置默认值）}"
+    printf '手动部分配置: %s\n' "${CONF_UPDATE_USED:-（未使用，走内置默认值）}"
     printf 'Box 目录: %s\n' "$BOX_HOME"
     [ "$(id -u)" = 0 ] || printf '（非 root，下面的“已安装/未安装”可能不准）\n'
     printf '\n'

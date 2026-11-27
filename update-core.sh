@@ -1,7 +1,8 @@
 #!/system/bin/sh
 # 手动：安装 / 更新内核（会联网下载）
 #
-# 读同一份 box-core.conf，按里面的来源下载并写入 bin/<文件>：
+# 读同目录的 box-update.conf（没有就用内置默认值），按里面的来源下载并写入 bin/<文件>；
+# 会顺带读一次 box-auto.conf，只为判断「当前模式用不用得到这个内核」（决定要不要重启）：
 #   首次安装：文件不存在就直接写入
 #   后续更新：先备份旧文件，再替换；服务起不来会自动回滚
 #
@@ -24,7 +25,7 @@ set -u
 # ============================================================================
 
 DRY_RUN=0
-CONF=''
+CONF_UPDATE=''
 BOX_HOME_CLI=''
 CORE_NAME=''
 
@@ -98,7 +99,7 @@ parse_args() {
             --download-prefix) need_value "$1" $#; O_DOWNLOAD_PREFIX=$2; shift 2 ;;
             --token) need_value "$1" $#; O_TOKEN=$2; shift 2 ;;
             --home) need_value "$1" $#; BOX_HOME_CLI=$2; shift 2 ;;
-            --conf) need_value "$1" $#; CONF=$2; shift 2 ;;
+            --conf) need_value "$1" $#; CONF_UPDATE=$2; shift 2 ;;
             -h | --help) usage; exit 0 ;;
             *) printf '错误: 未知参数 %s（用 -h 看用法）\n' "$1" >&2; exit 2 ;;
         esac
@@ -108,12 +109,16 @@ parse_args() {
 main() {
     parse_args "$@"
     init_defaults
-    load_conf
+    # 先读自动部分：只是为了拿模式映射（判断更新后要不要重启）与文件名
+    load_auto_conf
+    list_auto=$CORE_LIST
+    load_update_conf
     init_defaults
+    CORE_LIST=$(merge_core_list "$list_auto" $CORE_LIST)
     BIN_DIR=$BOX_HOME/bin
     CORE_LINK=$BIN_DIR/mihomo
-    check_config
-    detect_mode
+    check_core_names
+    in_list "$CORE_DEFAULT" || die "配置错误：CORE_DEFAULT='$CORE_DEFAULT' 不在 CORE_LIST 里"
 
     LOG_TERMINAL=1
     run_update
