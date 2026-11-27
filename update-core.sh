@@ -25,6 +25,26 @@
 
 set -u
 
+# ---------------------------------------------------------------------------
+# 公共部分：配置加载、变量取用、校验、日志包装（与 iface-auto.sh 共用）
+# ---------------------------------------------------------------------------
+BOX_CORE_LIB=1
+lib_dir=$(cd "$(dirname "$0")" 2>/dev/null && pwd)/lib
+if [ ! -f "$lib_dir/00-common.sh" ]; then
+    printf '错误: 缺少 %s/00-common.sh，请把 lib/ 一起放进 scripts/\n' "$lib_dir" >&2
+    exit 2
+fi
+# shellcheck disable=SC1090
+. "$lib_dir/00-common.sh"
+
+# update-core 自己的默认值与输出方式（只打终端，不写 prestart.log）
+API_BASE=${API_BASE:-https://api.github.com}
+DOWNLOAD_PREFIX=${DOWNLOAD_PREFIX:-}
+TOKEN=${TOKEN:-}
+log() {
+    printf '%s\n' "$*"
+}
+
 # ============================================================================
 # 0. 参数
 # ============================================================================
@@ -90,62 +110,6 @@ parse_args() {
 # 1. 配置与默认值（与 iface-auto.sh 同一份）
 # ============================================================================
 
-init_defaults() {
-    BOX_HOME=${BOX_HOME_CLI:-${BOX_HOME:-/data/user/0/com.boxproxy.box/files/box}}
-    DUMMY_IFACE=${DUMMY_IFACE:-boxebpf0}
-    CONFLICT_STOP=${CONFLICT_STOP:-auto}
-    CORE_LIST=${CORE_LIST:-'ebpf vanilla'}
-    CORE_DEFAULT=${CORE_DEFAULT:-ebpf}
-
-    CORE_ebpf_FILE=${CORE_ebpf_FILE:-core-ebpf}
-    CORE_ebpf_ASSET=${CORE_ebpf_ASSET:-*android-arm64*ebpf*.gz}
-    CORE_ebpf_VERSION=${CORE_ebpf_VERSION:-prerelease}
-    CORE_vanilla_FILE=${CORE_vanilla_FILE:-core-vanilla}
-    CORE_vanilla_ASSET=${CORE_vanilla_ASSET:-*android-arm64*.gz}
-    CORE_vanilla_VERSION=${CORE_vanilla_VERSION:-latest}
-
-    MODE_CORE_tun=${MODE_CORE_tun:-vanilla}
-    MODE_CORE_tproxy=${MODE_CORE_tproxy:-vanilla}
-    MODE_CORE_ebpf=${MODE_CORE_ebpf:-ebpf}
-    MODE_CORE_redirect=${MODE_CORE_redirect:-vanilla}
-    MODE_CORE_mixed=${MODE_CORE_mixed:-vanilla}
-    MODE_CORE_enhance=${MODE_CORE_enhance:-vanilla}
-    MODE_CORE_unknown=${MODE_CORE_unknown:-vanilla}
-
-    API_BASE=${API_BASE:-https://api.github.com}
-    DOWNLOAD_PREFIX=${DOWNLOAD_PREFIX:-}
-    TOKEN=${TOKEN:-}
-    CONF_USED=${CONF_USED:-}
-}
-
-load_conf() {
-    script_dir=$(cd "$(dirname "$0")" 2>/dev/null && pwd)
-    if [ -z "$CONF" ]; then
-        CONF=$script_dir/box-core.conf
-        [ -f "$CONF" ] || CONF=''
-    fi
-    [ -n "$CONF" ] && [ -f "$CONF" ] || return 0
-    # shellcheck disable=SC1090
-    . "$CONF"
-    CONF_USED=$CONF
-}
-
-core_field() {
-    eval "value=\${CORE_$1_$2:-}"
-    printf '%s' "$value"
-}
-
-mode_core() {
-    eval "name=\${MODE_CORE_$1:-vanilla}"
-    printf '%s' "$name"
-}
-
-core_file() {
-    file=$(core_field "$1" FILE)
-    [ -n "$file" ] || file=core-$1
-    printf '%s' "$file"
-}
-
 # 优先取命令行覆盖，其次配置
 pick() {
     eval "override=\${O_$1:-}"
@@ -159,45 +123,6 @@ pick() {
 # ============================================================================
 # 2. 校验与环境
 # ============================================================================
-
-die() {
-    printf '错误: %s\n' "$*" >&2
-    exit 2
-}
-
-valid_name() {
-    case "$1" in
-        '' | *[!A-Za-z0-9_]*) return 1 ;;
-        *) return 0 ;;
-    esac
-}
-
-in_list() {
-    for known in $CORE_LIST; do
-        [ "$known" = "$1" ] && return 0
-    done
-    return 1
-}
-
-check_config() {
-    BIN_DIR=$BOX_HOME/bin
-    for name in $CORE_LIST; do
-        valid_name "$name" || die "配置错误：内核名 '$name' 只能用字母、数字、下划线"
-        case "$(core_file "$name")" in
-            */*) die "配置错误：CORE_${name}_FILE 只能写文件名，不能带路径" ;;
-        esac
-    done
-    for mode in tun tproxy ebpf redirect mixed enhance unknown; do
-        name=$(mode_core "$mode")
-        valid_name "$name" || die "配置错误：MODE_CORE_$mode 的内核名 '$name' 不合法"
-        in_list "$name" || die "配置错误：MODE_CORE_$mode 指向的内核 '$name' 不在 CORE_LIST 里"
-    done
-    in_list "$CORE_DEFAULT" || die "配置错误：CORE_DEFAULT='$CORE_DEFAULT' 不在 CORE_LIST 里"
-}
-
-require_root() {
-    [ "$(id -u)" = 0 ] || die "需要 root：请先 su，或在 BoxProxy 的「工具 → 脚本」里运行"
-}
 
 # ============================================================================
 # 3. 输出与通用工具

@@ -6,7 +6,8 @@
 |---|---|---|
 | `box-core.conf.example` | 配置模板，带完整注释（就是这份脚本的说明书） | 复制一份改成 `box-core.conf` 后填 |
 | `update-core.sh` | 安装 / 更新核心：查发布、下载、校验、检查、写入、必要时重启，失败回滚 | 装或更新内核时跑 |
-| `iface-auto.sh` | 服务启动前跑：按当前模式把对应内核挂到 `bin/mihomo`，切覆写脚本，认网卡，放行转发 | 装一次登记为启动前脚本，之后不用管 |
+| `iface-auto.sh` | 服务启动前的**唯一入口**：按当前模式把内核挂到 `bin/mihomo`，切覆写脚本，认网卡，放行转发 | 装一次、登记为启动前脚本，之后不用管 |
+| `lib/*.sh` | 入口脚本的功能模块（配置、模式、内核、脚本清单、网卡、JS 字段、端口冲突、`--show`） | 不用管；不要单独运行，也不要登记 |
 
 两个脚本**读同一份 `box-core.conf`**：你在配置里定好「哪个模式用哪个内核」「内核文件叫什么」「去哪儿下载」，脚本不用改。
 
@@ -14,8 +15,9 @@
 
 ## 五分钟上手
 
-1. **放文件**：把三个文件放进 BoxProxy 的脚本目录
-   `/data/user/0/com.boxproxy.box/files/box/scripts/`，`chmod 755` 两个 `.sh`。
+1. **放文件**：把 `iface-auto.sh`、`update-core.sh` 和整个 `lib/` 目录放进 BoxProxy 的脚本目录
+   `/data/user/0/com.boxproxy.box/files/box/scripts/`，`chmod 755` 两个 `.sh` 和 `lib/*.sh`。
+   启动前脚本只登记 `iface-auto.sh` 一个，`lib/` 里的文件不要登记。
 2. **建配置**：把 `box-core.conf.example` 复制成 `box-core.conf`。
 3. **填来源**：编辑 `box-core.conf`，给要用的内核填 `REPO` 与 `ASSET`（例：
    `CORE_ebpf_REPO='<owner>/<repo>'`、`CORE_ebpf_ASSET='*android-arm64*ebpf*.gz'`）。
@@ -202,6 +204,21 @@ boxctl 只会自动跑登记为「服务启动前脚本」的那份，所以 `if
 
 ## `iface-auto.sh` 细节
 
+入口文件只做三件事：解析参数、按顺序加载 `lib/` 里的模块、跑主流程。
+
+| 模块 | 负责 |
+|---|---|
+| `lib/00-common.sh` | 配置加载与默认值、`CORE_*` / `MODE_CORE_*` 取值、日志与执行包装、配置校验（`update-core.sh` 也用它） |
+| `lib/10-mode.sh` | 识别当前网络模式（`BOX_MODE` → `runs.log` → `BOX_PROXY_MODE`） |
+| `lib/20-core.sh` | 模式 → 内核名 → 文件 → 路径，缺文件退回 vanilla，`ln -f` 到 `bin/mihomo` |
+| `lib/30-scripts.sh` | 定位覆写脚本目录、改写 `mihomo-scripts.yaml` 里的模式脚本 |
+| `lib/40-net.sh` | 出口网卡、下联网卡、dummy 网卡、`FORWARD` 放行 |
+| `lib/50-js-fields.sh` | 出口写进 `interface-name`、下联写进 `EBPF_SHARED_IFACE_SPEC` |
+| `lib/60-conflict.sh` | 端口冲突检测与按规则停包 |
+| `lib/70-report.sh` | `--show` 的表格输出 |
+
+模块只能被入口 `. ` 加载；单独 `sh lib/10-mode.sh` 会被拒绝（退出码 2），避免误跑。
+
 启动前按顺序做这些（都有日志）：
 
 1. 读配置，解析「当前模式 → 内核名 → 文件 → 路径」；
@@ -224,7 +241,8 @@ boxctl 只会自动跑登记为「服务启动前脚本」的那份，所以 `if
 ## 维护
 
 ```sh
-sh -n iface-auto.sh && sh -n update-core.sh   # 语法
+sh -n iface-auto.sh && sh -n update-core.sh   # 语法（入口）
+for f in lib/*.sh; do sh -n "$f"; done        # 语法（模块）
 sh iface-auto.sh --show                       # 配置解析是否正确
 sh update-core.sh --show                      # 内核来源与安装状态
 sh iface-auto.sh --dry-run                    # 启动前脚本会做什么
