@@ -75,7 +75,11 @@ init_defaults() {
 
     # 内置内核定义（配置里没写时生效）
     CORE_ebpf_FILE=${CORE_ebpf_FILE:-core-ebpf}
+    CORE_ebpf_VERSION=${CORE_ebpf_VERSION:-prerelease}
+    CORE_ebpf_ASSET=${CORE_ebpf_ASSET:-*android-arm64*ebpf*.gz}
     CORE_vanilla_FILE=${CORE_vanilla_FILE:-core-vanilla}
+    CORE_vanilla_VERSION=${CORE_vanilla_VERSION:-latest}
+    CORE_vanilla_ASSET=${CORE_vanilla_ASSET:-*android-arm64*.gz}
 
     # 内置模式映射（配置里没写时生效）
     MODE_CORE_tun=${MODE_CORE_tun:-vanilla}
@@ -103,8 +107,8 @@ discover_cores() {
     local file name
     for file in "$@"; do
         [ -n "$file" ] && [ -f "$file" ] || continue
-        for name in $(grep -ho 'CORE_[A-Za-z0-9][A-Za-z0-9]*_' "$file" 2>/dev/null \
-            | sed 's/^CORE_//; s/_$//' | sort -u); do
+        for name in $(grep -hoE '^[[:space:]]*CORE_[A-Za-z0-9]+_' "$file" 2>/dev/null \
+            | sed 's/^[[:space:]]*CORE_//; s/_$//' | sort -u); do
             case " $CORE_LIST " in
                 *" $name "*) ;;
                 *) CORE_LIST="$CORE_LIST $name" ;;
