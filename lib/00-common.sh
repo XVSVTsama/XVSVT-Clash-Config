@@ -31,7 +31,7 @@ core_field() {
 
 core_file() {
     file=$(core_field "$1" FILE)
-    [ -n "$file" ] || file=core-$1
+    [ -n "$file" ] || file=mihomo-$1
     printf '%s' "$file"
 }
 

@@ -32,10 +32,10 @@ always    => vanilla
 
 | 模式 | 默认内核 | 默认文件 |
 |---|---|---|
-| `ebpf` | `ebpf`（就是上面那行） | `bin/core-ebpf` |
-| `tun` / `tproxy` / `redirect` / `mixed` / `enhance` / `unknown` | `vanilla` | `bin/core-vanilla` |
+| `ebpf` | `ebpf`（就是上面那行） | `bin/mihomo-ebpf` |
+| `tun` / `tproxy` / `redirect` / `mixed` / `enhance` / `unknown` | `vanilla` | `bin/mihomo-vanilla` |
 
-文件名也默认是 `core-<名字>`，所以不用写 `CORE_ebpf_FILE`。
+文件名也默认是 `mihomo-<名字>`，所以不用写 `CORE_ebpf_FILE`。
 `DUMMY_IFACE`、`CONFLICT_STOP`、`STOP_PACKAGES`、`EXTRA_PORTS` 都有默认值，只在需要调整时才写。
 
 启动时的链条：
@@ -45,9 +45,9 @@ BoxProxy 记下本次网络模式（例如 ebpf）
         ↓
 iface-auto.sh 按规则表求值：mode=ebpf 命中 → 内核 ebpf
         ↓
-文件名默认 core-ebpf → bin/core-ebpf
+文件名默认 mihomo-ebpf → bin/mihomo-ebpf
         ↓
-存在且可执行 → ln -f bin/core-ebpf bin/mihomo
+存在且可执行 → ln -f bin/mihomo-ebpf bin/mihomo
         ↓
 boxctl 用 bin/mihomo 启动核心
 ```
@@ -106,15 +106,15 @@ RULES='
 mode=ebpf => ebpf_b
 always    => vanilla
 '
-CORE_ebpf_a_FILE='core-ebpf-a'
-CORE_ebpf_b_FILE='core-ebpf-b'
+CORE_ebpf_a_FILE='mihomo-ebpf-a'
+CORE_ebpf_b_FILE='mihomo-ebpf-b'
 
 # box-update.conf
 CORE_ebpf_a_REPO='<owner-a>/<repo>'
 CORE_ebpf_b_REPO='<owner-b>/<repo>'
 ```
 
-文件名默认是 `core-<名字>`（名字里只用字母、数字、下划线），想自定义就写 `_FILE`。
+文件名默认是 `mihomo-<名字>`（名字里只用字母、数字、下划线），想自定义就写 `_FILE`。
 改 `RULES` 里 `mode=ebpf` 那行的目标内核，再启动即可切换。
 
 ### 变体 3：规则式选择（多条件 + 次选）
@@ -147,7 +147,7 @@ mode=ebpf            => ghost, alpha # = mode=ebpf => ghost 和 mode=ebpf => alp
 
 ```sh
 # box-update.conf
-CORE_ebpf_URL='file:///sdcard/Download/core-ebpf.gz'
+CORE_ebpf_URL='file:///sdcard/Download/mihomo-ebpf.gz'
 ```
 
 填了 `URL` 就不查仓库。装完一样走校验与配置检查。

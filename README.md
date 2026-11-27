@@ -70,7 +70,7 @@ always    => vanilla
 
 **没有写 `RULES` 时**：只定义了一个内核就用它；定义了多个则启动报错，提示你补规则——脚本不替用户猜。
 
-新增自己的内核时，才需要写文件名（不写就是 `core-<名字>`）：
+新增自己的内核时，才需要写文件名（不写就是 `mihomo-<名字>`）：
 
 ```sh
 CORE_mycore_FILE='core-mycore'
@@ -119,7 +119,7 @@ always                                   => vanilla
 | `conf~关键字` | `boxctl status` 的输出或启动配置里出现该关键字 |
 | `tethering=on` / `off` | 是否开着热点/共享（有下联即 on） |
 | `installed=ebpf` | 该内核文件存在且可执行 |
-| `exists=core-ebpf` | `bin/` 下有这个文件 |
+| `exists=mihomo-ebpf` | `bin/` 下有这个文件 |
 | `env=NAME:值` | 运行时环境变量等于某值（极少数场景用） |
 
 组合：`not` / `!`、`and`、`or`、`( )`，优先级 括号 > not > and > or。
@@ -151,8 +151,8 @@ CORE_ebpf_REPO='<owner>/<repo>'      # 想要官方版就再填这一行
 
 | 内核 | 版本策略 | 资产名匹配 | 文件 |
 |---|---|---|---|
-| `ebpf`（本仓库配置显式指定） | `prerelease` | `*android-arm64*ebpf*.gz` | `bin/core-ebpf` |
-| 其它（含 `vanilla`） | `latest` | `*android-arm64*.gz` | `bin/core-<名字>` |
+| `ebpf`（本仓库配置显式指定） | `prerelease` | `*android-arm64*ebpf*.gz` | `bin/mihomo-ebpf` |
+| 其它（含 `vanilla`） | `latest` | `*android-arm64*.gz` | `bin/mihomo-<名字>` |
 
 需要时再写的高级项：
 
