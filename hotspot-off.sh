@@ -1,26 +1,31 @@
 #!/system/bin/sh
 # 手动：关闭热点共享代理，把 hotspot-on.sh 做的事全部还原
 #
-# 做三件事（与 hotspot-on.sh 完全相反）：
-#   1. 删掉 mihomo 覆写脚本 rules 里带 // hotspot-lan 标记的规则（v4 与 v6 /128 都删）
-#   2. 把 box-auto.conf 的 HOTSPOT_SHARE 改回 off
-#   3. 重新打开下联网卡的 IPv6（sysctl net.ipv6.conf.<网卡>.disable_ipv6=0）
+# 一次做完，不需要再去别处点：
+#   1. 删掉 mihomo 覆写脚本 rules 里带 // hotspot-lan 标记的规则
+#      （IPv4 一条 + 可能存在的 IPv6 /128）
+#   2. 恢复热点网卡自身的 IPv6（sysctl）
+#   3. 删掉拦 IPv6 路由通告的 ip6tables 规则
+#   4. 把 box-auto.conf 的 HOTSPOT_SHARE 改回 off
+#   5. 重新生成启动配置，并重启核心让它生效
 #
 # 用法：
 #   sh hotspot-off.sh        关闭
-#   sh hotspot-off.sh -n     只打印，不改配置、不写 js、不改 sysctl
+#   sh hotspot-off.sh -n     只打印，什么都不改
+#   sh hotspot-off.sh --no-restart   改完不重启核心（自己点重载）
 #   sh hotspot-off.sh -h
 #
-# 关热点时下联网卡不存在，IPv6 那一步会跳过并说明——重开热点时 v6 会自己回来。
-# 改完仍需「重新生成启动配置」再重启或重载服务，规则才离开内核。
+# 关热点时下联网卡不存在：IPv6 两项会跳过并说明，重开热点时 v6 会自己回来。
 # ============================================================================
 
 BOX_HOME=/data/user/0/com.boxproxy.box/files/box
 CONF=$BOX_HOME/scripts/box-auto.conf
 JS_DIR=$BOX_HOME/mihomo/scripts
+BOXCTL=$BOX_HOME/bin/boxctl
 MARK=hotspot-lan
 
 DRY_RUN=0
+DO_RESTART=1
 
 usage() {
     awk 'NR > 1 {
@@ -45,7 +50,7 @@ set_conf() {
     chmod 644 "$CONF" 2>/dev/null
 }
 
-# 与 hotspot-on.sh 相同的识别逻辑：tetherable 名字规则里、有 IPv4、不是上联的那个
+# 与 hotspot-on.sh 相同的识别逻辑
 downstream_iface() {
     local pattern upstream iface
     pattern=$(dumpsys tethering 2>/dev/null \
@@ -63,29 +68,46 @@ downstream_iface() {
     return 1
 }
 
-enable_client_ipv6() {   # $1 = 下联网卡（空 = 没有下联）
-    local iface=$1 cur
+# ---------------- IPv6 还原 ----------------
+
+ra_block_clear() {
+    local spec n=0
+    if [ "$DRY_RUN" = 1 ]; then
+        if ip6tables -S OUTPUT 2>/dev/null | grep -q "$MARK"; then
+            log "  [dry-run] 删除拦 IPv6 通告的规则"
+        else
+            log "  [dry-run] 没有拦 IPv6 通告的规则"
+        fi
+        return 0
+    fi
+    ip6tables -S OUTPUT 2>/dev/null | grep -- "$MARK" | sed 's/^-A OUTPUT //' | \
+    while IFS= read -r spec; do
+        [ -n "$spec" ] || continue
+        ip6tables -D OUTPUT $spec 2>/dev/null && log "  已删除拦 IPv6 通告的规则"
+    done
+}
+
+enable_iface_ipv6() {   # $1 = 网卡（空 = 没有下联）
+    local iface=$1
     if [ -z "$iface" ]; then
         log "热点共享: 当前没有下联网卡（热点关着），IPv6 恢复跳过——重开热点时 v6 会自己回来"
         return 0
     fi
-    cur=$(sysctl -n "net.ipv6.conf.$iface.disable_ipv6" 2>/dev/null)
-    if [ "$cur" = 0 ]; then
+    if [ "$(sysctl -n "net.ipv6.conf.$iface.disable_ipv6" 2>/dev/null)" = 0 ]; then
         log "热点共享: $iface 的 IPv6 本来就是开的"
         return 0
     fi
     if [ "$DRY_RUN" = 1 ]; then
-        log "  [dry-run] sysctl -w net.ipv6.conf.$iface.disable_ipv6=0（热点客户端恢复 IPv6）"
+        log "  [dry-run] sysctl -w net.ipv6.conf.$iface.disable_ipv6=0"
         return 0
     fi
-    if sysctl -w "net.ipv6.conf.$iface.disable_ipv6=0" >/dev/null 2>&1; then
+    sysctl -w "net.ipv6.conf.$iface.disable_ipv6=0" >/dev/null 2>&1 &&
         log "热点共享: 已恢复 $iface 的 IPv6"
-    else
-        log "warn: 恢复不了 $iface 的 IPv6，重开热点也能恢复"
-    fi
 }
 
-drop_marked() {     # $1 = 文件，删掉带标记的行
+# ---------------- 规则 ----------------
+
+drop_marked() {     # $1 = 文件
     local file=$1 tmp
     tmp=$file.tmp.$$
     grep -v "// $MARK\$" "$file" >"$tmp" 2>/dev/null
@@ -113,31 +135,61 @@ drop_rules() {
     [ "$any" = 1 ] || log "  没有找到标记行（本来就是关的）"
 }
 
+# ---------------- 生效 ----------------
+
+make_effective() {
+    if [ "$DRY_RUN" = 1 ]; then
+        log "  [dry-run] boxctl config sync && boxctl restart"
+        return 0
+    fi
+    log "重新生成启动配置…"
+    "$BOXCTL" config sync >/dev/null 2>&1 || log "warn: 重新生成配置失败"
+    if [ "$DO_RESTART" != 1 ]; then
+        log "已跳过重启：回首页点一次「重载」即可"
+        return 0
+    fi
+    if ! "$BOXCTL" status 2>/dev/null | grep -q '正在运行'; then
+        log "服务当前没在运行，下次启动会直接用上新配置"
+        return 0
+    fi
+    log "重启核心让它生效（会断几秒）…"
+    "$BOXCTL" restart >/dev/null 2>&1
+    if "$BOXCTL" status 2>/dev/null | grep -q '正在运行'; then
+        log "已生效：核心在跑，规则已撤掉"
+    else
+        log "warn: 重启后没检测到运行中的服务，回 App 看一眼"
+    fi
+}
+
+# ---------------- 主流程 ----------------
+
 main() {
     local iface
-    case "${1:-}" in
-        -h | --help) usage ; exit 0 ;;
-        -n | --dry-run) DRY_RUN=1 ;;
-        '') ;;
-        *) die "未知参数 $1（用 -h 看用法）" ;;
-    esac
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -h | --help) usage ; exit 0 ;;
+            -n | --dry-run) DRY_RUN=1 ;;
+            --no-restart) DO_RESTART=0 ;;
+            *) die "未知参数 $1（用 -h 看用法）" ;;
+        esac
+        shift
+    done
 
     iface=$(downstream_iface) || iface=''
 
     log "配置: HOTSPOT_SHARE='off'（热点客户端按核心原有分流走）"
     if [ "$DRY_RUN" = 1 ]; then
-        log "[dry-run] 不写配置，也不写 js"
+        log "[dry-run] 不写配置"
     else
         set_conf
     fi
     drop_rules
-    enable_client_ipv6 "$iface"
+    ra_block_clear
+    enable_iface_ipv6 "$iface"
+    make_effective
 
-    if [ "$DRY_RUN" = 1 ]; then
-        log "dry-run 完成，未写任何文件"
-        return 0
-    fi
-    log "下一步：设置 → 基础代理配置 → 重新生成启动配置，然后重启或重载服务"
+    [ "$DRY_RUN" = 1 ] && log "dry-run 完成，什么都没改"
+    return 0
 }
 
 main "$@"
