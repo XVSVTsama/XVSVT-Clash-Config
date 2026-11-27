@@ -1,5 +1,5 @@
 #!/system/bin/sh
-# 写入/备份/回滚、挂链、重启（update-core.sh 用）
+# 写入、挂链、重启（update-core.sh 用；不生成备份文件）
 #
 # 由入口脚本通过 . 加载，不单独运行。
 
@@ -8,29 +8,18 @@
     exit 2
 }
 
+# 直接替换目标文件：不生成 .bak 之类的新文件（临时文件当场 rename 掉）
 install_binary() {
-    local first=0 tmp
+    local tmp
     LINKED_BEFORE=0
     if [ -f "$LINK" ] && [ "$(stat -c %i "$LINK" 2>/dev/null)" = "$(stat -c %i "$TARGET" 2>/dev/null)" ]; then
         LINKED_BEFORE=1
     fi
-    [ -f "$TARGET" ] || first=1
     if [ "$DRY_RUN" = 1 ]; then
-        if [ "$first" = 1 ]; then
-            log "[7/9] [dry-run] 首次安装：写入 $TARGET"
-        else
-            log "[7/9] [dry-run] 备份并替换 $TARGET"
-        fi
+        log "[7/9] [dry-run] 写入 $TARGET"
         return 0
     fi
-    if [ "$first" = 1 ]; then
-        log "[7/9] 首次安装：$TARGET"
-    else
-        log "[7/9] 备份并替换 $TARGET"
-        BACKUP=$TARGET.bak-$(date +%Y%m%d-%H%M%S)
-        cp -p "$TARGET" "$BACKUP" || die "备份失败，未做任何改动"
-        log "      备份：$BACKUP"
-    fi
+    log "[7/9] 写入 $TARGET"
     tmp=$BIN_DIR/.$(core_file "$CORE_NAME").new
     cp "$NEW" "$tmp" || die "写入临时文件失败"
     chown root:net_admin "$tmp" 2>/dev/null
@@ -55,23 +44,6 @@ restart_service() {
     return 1
 }
 
-rollback() {
-    if [ -z "${BACKUP:-}" ] || [ ! -f "$BACKUP" ]; then
-        log "首次安装失败，没有旧版本可回滚；已写入的文件请手动删除：$TARGET"
-        return 1
-    fi
-    log "回滚到 $BACKUP"
-    cp -p "$BACKUP" "$BIN_DIR/.$(core_file "$CORE_NAME").rollback" &&
-        chown root:net_admin "$BIN_DIR/.$(core_file "$CORE_NAME").rollback" 2>/dev/null
-    chmod 6755 "$BIN_DIR/.$(core_file "$CORE_NAME").rollback" 2>/dev/null
-    mv "$BIN_DIR/.$(core_file "$CORE_NAME").rollback" "$TARGET" || return 1
-    "$BOXCTL" restart >/dev/null 2>&1 || true
-    if "$BOXCTL" status 2>/dev/null | grep -q '正在运行'; then
-        log "已恢复旧内核并重启"
-    else
-        log "回滚后服务仍未起来，请用 BoxProxy 界面手动启动并查看日志"
-    fi
-}
 
 cleanup() {
     [ -n "${STAGE:-}" ] && rm -rf "$STAGE"

@@ -143,6 +143,6 @@ run_update() {
         log "完成：$(printf '%s' "$installed")"
         return 0
     fi
-    rollback
+    log "错误: 新内核已写入，但服务没能起来；请用 BoxProxy 界面手动启动，或再跑一次 update-core.sh"
     return 1
 }

@@ -167,7 +167,7 @@ CORE_ebpf_REPO='<owner>/<repo>'      # 想要官方版就再填这一行
 # TOKEN=''                     # GitHub Token，等同账号凭据，别提交
 ```
 
-装的时候依次做：解析来源 → 下载 → SHA-256 → 解包 → `-v` 自检（arm64）→ `-t` 检查当前启动配置 → 备份并写入（`root:net_admin`、`6755`）；只有当前模式用到的那个内核变了才重启，起不来自动回滚。备份在 `bin/<文件名>.bak-<时间>`，约 70 MB，稳定后自己删。
+装的时候依次做：解析来源 → 下载 → SHA-256 → 解包 → `-v` 自检（arm64）→ `-t` 检查当前启动配置 → 直接写入（`root:net_admin`、`6755`）；只有当前模式用到的那个内核变了才重启。**不生成任何备份文件**，重启失败会明确报错，由你决定重装哪个版本。
 
 ### `show-config.sh` / `check-core.sh`
 
@@ -210,7 +210,7 @@ CORE_ebpf_REPO='<owner>/<repo>'      # 想要官方版就再填这一行
 | `SHA-256 不匹配` | 文件不完整或被改 | 重跑；反复出现换来源 |
 | `架构不符` | 下错架构 | 资产名里要有 `android-arm64` |
 | `新内核不接受当前启动配置` | 内核与配置不匹配（如官方版当 eBPF 用） | 没动任何文件，换回正确分支 |
-| `回滚到 ...` | 新内核起不来，已自动退回 | 服务已恢复；换版本再试 |
+| `错误: 新内核已写入，但服务没能起来` | 新内核与本机/配置不兼容 | 用 BoxProxy 界面手动启动，或把 `box-update.conf` 的来源换成别的版本再跑 `update-core.sh` |
 
 ---
 
@@ -228,7 +228,7 @@ CORE_ebpf_REPO='<owner>/<repo>'      # 想要官方版就再填这一行
 | `70-report.sh` | show-config | 配置与状态表格 |
 | `80-release.sh` | update-core | 查发布、匹配资产、拼下载地址 |
 | `82-fetch.sh` | update-core | 下载 → SHA-256 → 解包 → `-v` → `-t` |
-| `84-install.sh` | update-core | 写入 / 备份 / 回滚、挂链、重启 |
+| `84-install.sh` | update-core | 写入、挂链、重启 |
 | `88-run.sh` | iface-auto / update-core | 两条流水线：`run_prestart`、`run_update` |
 
 模块只能被入口 `.` 加载，单独执行会被拒绝（退出码 2）。
