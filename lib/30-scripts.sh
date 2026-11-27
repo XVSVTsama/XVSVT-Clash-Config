@@ -52,6 +52,10 @@ select_script() {
     header='# BoxProxy mihomo override scripts, in execution order.'
 
     if grep -qE '^- *"(tun|tproxy|ebpf)-我的\.js"$' "$manifest" 2>/dev/null; then
+        if [ "$DRY_RUN" = 1 ]; then
+            log "[dry-run] 清单里的覆写脚本切换成 $want"
+            return 0
+        fi
         tmp=$TMP_BASE/box-scripts.$$
         printf '%s\n' "$header" >"$tmp"
         rewrite_manifest "$manifest" "$want" "$tmp"

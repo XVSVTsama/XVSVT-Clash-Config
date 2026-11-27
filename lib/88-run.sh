@@ -14,12 +14,18 @@
 run_prestart() {
     require_root
 
-    # 让路：App 当前核心不是 mihomo（sing-box / xray / v2fly / hysteria 等）时不介入
+    # 让路：App 明确用的是别的核心（sing-box / xray / v2fly / hysteria 等）时不介入。
+    # unknown 说明服务还没起、拿不到核心信息，这种情况照常往下做，
+    # 否则每次冷启动都会整段跳过（不挂内核、不放行、不切脚本）。
     core_now=$(app_current_core)
-    if [ -n "$core_now" ] && [ "$core_now" != mihomo ]; then
-        log "App 当前核心是 $core_now（不是 mihomo），本脚本只处理 mihomo，跳过"
-        exit 0
-    fi
+    case "$core_now" in
+        '' | unknown) log "App 当前核心未知，按 mihomo 处理" ;;
+        mihomo) ;;
+        *)
+            log "App 当前核心是 $core_now（不是 mihomo），本脚本只处理 mihomo，跳过"
+            exit 0
+            ;;
+    esac
 
     resolve_js_dir
     detect_upstream

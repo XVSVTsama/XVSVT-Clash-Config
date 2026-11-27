@@ -25,14 +25,23 @@ add_downstream() {
     fi
 }
 
+# iptables 一律带 -w 等 xtables 锁：启动阶段 boxctl 自己也在改规则，
+# 不等锁会直接失败（Can't lock /system/etc/xtables.lock），放行就静默丢掉了。
 allow_forward() {
-    local iface
+    local iface dir
     for iface in $(printf '%s\n' "${DOWNSTREAM:-}" | tr ',' ' '); do
-        run iptables -C FORWARD -i "$iface" -j ACCEPT 2>/dev/null \
-            || run iptables -I FORWARD 1 -i "$iface" -j ACCEPT
-        run iptables -C FORWARD -o "$iface" -j ACCEPT 2>/dev/null \
-            || run iptables -I FORWARD 1 -o "$iface" -j ACCEPT
-        log "forward allow $iface"
+        for dir in -i -o; do
+            if [ "$DRY_RUN" = 1 ]; then
+                printf '[dry-run] iptables -w 5 -I FORWARD 1 %s %s -j ACCEPT\n' "$dir" "$iface"
+                continue
+            fi
+            iptables -w 5 -C FORWARD "$dir" "$iface" -j ACCEPT 2>/dev/null && continue
+            if iptables -w 5 -I FORWARD 1 "$dir" "$iface" -j ACCEPT 2>/dev/null; then
+                log "forward allow $dir $iface"
+            else
+                log "warn: 放行 FORWARD $dir $iface 失败（xtables 锁被占用或权限不足）"
+            fi
+        done
     done
 }
 

@@ -37,23 +37,27 @@ describe_core() {
 }
 
 # 正在运行的核心（读 /proc/*/cmdline，只看 bin/ 下的二进制）
+# 先用一次 grep 扫过所有 cmdline，只对命中的进程取 argv[0]，
+# 避免逐个 pid 开子进程（设备上有几百个进程时能拖十几秒）。
 running_core() {
-    local pid line base
-    for pid in $(ls /proc 2>/dev/null | grep -E '^[0-9]+$'); do
-        [ -r "/proc/$pid/cmdline" ] || continue
-        line=$(tr '\0' '\n' <"/proc/$pid/cmdline" 2>/dev/null | head -1)
-        case "$line" in
-            "$BIN_DIR"/*) ;;
-            *) continue ;;
-        esac
-        base=${line##*/}
-        case "$base" in
-            boxctl | boxbpf | box) continue ;;
-        esac
-        printf '%s\n' "$base"
-        return 0
-    done
-    return 1
+    local path line base
+    # 外层括号 + 2>/dev/null：进程在 grep 之后退出时读 cmdline 会报 No such file，不用管
+    (
+        for path in $(grep -la "$BIN_DIR/" /proc/[0-9]*/cmdline 2>/dev/null); do
+            line=$(tr '\0' '\n' <"$path" 2>/dev/null | head -1)
+            case "$line" in
+                "$BIN_DIR"/*) ;;
+                *) continue ;;
+            esac
+            base=${line##*/}
+            case "$base" in
+                boxctl | boxbpf | box) continue ;;
+            esac
+            printf '%s\n' "$base"
+            return 0
+        done
+        return 1
+    ) 2>/dev/null
 }
 
 # App 当前核心：先看运行中的进程，再问 boxctl，最后读 run/box.identity 末行

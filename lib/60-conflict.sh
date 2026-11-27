@@ -31,25 +31,38 @@ config_ports() {
     } | grep -E '^[0-9]+$' | sort -u
 }
 
+# 是不是 bin/ 下的核心（排除 boxctl/boxbpf/box 这几个管理进程）
 is_box_core_pid() {
-    local cmd
+    local cmd base
     cmd=$(tr '\0' '\n' <"/proc/$1/cmdline" 2>/dev/null | head -1)
     case "$cmd" in
-        "$BIN_DIR"/*) return 0 ;;
+        "$BIN_DIR"/*) ;;
+        *) return 1 ;;
     esac
-    return 1
+    base=${cmd##*/}
+    case "$base" in
+        boxctl | boxbpf | box) return 1 ;;
+    esac
+    return 0
 }
 
 pid_uid() {
     stat -c %u "/proc/$1" 2>/dev/null
 }
 
+# ss 一次要 0.2 秒左右，按端口逐个调用会很慢，这里缓存一份快照；
+# 停完应用要复查时先把 SS_TEXT 清空再查。
+ss_snapshot() {
+    [ -n "${SS_TEXT:-}" ] || SS_TEXT=$(ss -Hlntup 2>/dev/null)
+    printf '%s\n' "$SS_TEXT"
+}
+
 port_owner_pid() {
-    ss -Hlntup 2>/dev/null | grep -E "[:.]$1 " | grep -oE 'pid=[0-9]+' | head -1 | cut -d= -f2
+    ss_snapshot | grep -E "[:.]$1 " | grep -oE 'pid=[0-9]+' | head -1 | cut -d= -f2
 }
 
 stop_conflicting_packages() {
-    local port pid uid package self
+    local port pid uid package
     case "$CONFLICT_STOP" in
         off | no | false | 0)
             log "端口冲突检测: 已关闭"
@@ -62,13 +75,16 @@ stop_conflicting_packages() {
     esac
     [ "$CONFLICT_STOP" = log ] && log "端口冲突检测: 只记录，不停止应用"
 
-    self=$(id -u)
+    # 不再跳过「与本脚本同 uid」的进程：核心也以 root 运行，
+    # 旧版本会把上一次没退出的核心当成自己人跳过，端口就一直被占着。
+    # 快照要在父 shell 里取：port_owner_pid 跑在 $( ) 子 shell 里，
+    # 在子 shell 里缓存不了 SS_TEXT，会变成每个端口重新跑一次 ss。
+    ss_snapshot >/dev/null
     for port in $(config_ports); do
         pid=$(port_owner_pid "$port")
         [ -n "$pid" ] || continue
         uid=$(pid_uid "$pid")
         case "$uid" in '' | *[!0-9]*) continue ;; esac
-        [ "$uid" = "$self" ] && continue
         if [ "$uid" -lt 10000 ]; then
             if is_box_core_pid "$pid"; then
                 if [ "$pid" = "$(cat "$RUN_DIR/box.pid" 2>/dev/null)" ]; then
@@ -103,6 +119,7 @@ stop_conflicting_packages() {
                     fi
                     [ "$DRY_RUN" -eq 1 ] && continue
                     sleep 1
+                    SS_TEXT=$(ss -Hlntup 2>/dev/null)
                     [ -n "$(port_owner_pid "$port")" ] && \
                         log "warn: $package 停止后端口 $port 仍被占用，核心可能仍无法启动"
                 else
