@@ -98,7 +98,11 @@ init_defaults() {
     CORE_DEFAULT=${CORE_DEFAULT:-ebpf}
 
     CORE_ebpf_FILE=${CORE_ebpf_FILE:-core-ebpf}
+    CORE_ebpf_ASSET=${CORE_ebpf_ASSET:-*android-arm64*ebpf*.gz}
+    CORE_ebpf_VERSION=${CORE_ebpf_VERSION:-prerelease}
     CORE_vanilla_FILE=${CORE_vanilla_FILE:-core-vanilla}
+    CORE_vanilla_ASSET=${CORE_vanilla_ASSET:-*android-arm64*.gz}
+    CORE_vanilla_VERSION=${CORE_vanilla_VERSION:-latest}
 
     MODE_CORE_tun=${MODE_CORE_tun:-vanilla}
     MODE_CORE_tproxy=${MODE_CORE_tproxy:-vanilla}
