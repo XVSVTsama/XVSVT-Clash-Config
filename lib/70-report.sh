@@ -1,5 +1,5 @@
 #!/system/bin/sh
-# 统一展示：配置来源、内核清单、模式映射
+# 统一展示：配置来源、内核清单、规则表求值预览
 #
 # 由入口脚本通过 . 加载，不单独运行。
 
@@ -41,14 +41,9 @@ show_config() {
         printf '%-10s %-18s %-12s %s\n' "$name" "$src" "$ver" "$asset"
     done
 
-    printf '\n模式映射:\n'
-    for mode in tun tproxy ebpf redirect mixed enhance unknown; do
-        name=$(mode_core "$mode")
-        printf '  %-9s → %-10s %s\n' "$mode" "$name" "$(core_path "$name")"
-    done
-    printf '\n当前检测到的模式: %s → %s\n' "$MODE" "$(mode_core "$MODE")"
+    printf '\n选择方式: 规则表（%s）\n' "$([ -n "${RULES:-}" ] && echo box-auto.conf 的 RULES || echo 内置默认规则)"
+    printf '当前模式: %s\n' "$MODE"
 
-    [ -n "${RULES:-}" ] || return 0
     printf '\n规则表预览（按当前条件求值）:\n'
     DRY_RUN=1
     select_core_by_rules
@@ -56,7 +51,7 @@ show_config() {
     DRY_RUN=0
     case "$rc" in
         0) printf '  结果: 会选中 %s\n' "${CORE_USED:-?}" ;;
-        1) printf '  结果: 没有规则命中，将退回模式映射（%s）\n' "$(mode_core "$MODE")" ;;
+        1) printf '  结果: 没有规则命中，启动会失败（建议加 always => <默认内核>）\n' ;;
         *) printf '  结果: 规则要求的内核不可用，启动会失败\n' ;;
     esac
 }

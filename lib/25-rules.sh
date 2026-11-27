@@ -28,8 +28,6 @@
 # 求值上下文（只读，缓存一次）
 # ---------------------------------------------------------------------------
 
-JS_MANIFEST=$RUN_DIR/state/config/mihomo-scripts.yaml
-
 status_text() {
     if [ -z "${STATUS_TEXT:-}" ]; then
         STATUS_TEXT=$("$BIN_DIR/boxctl" status 2>/dev/null || true)
@@ -70,7 +68,7 @@ rules_tethering() {
 rules_context() {
     BIN_DIR=${BIN_DIR:-$BOX_HOME/bin}
     RUN_DIR=${RUN_DIR:-$BOX_HOME/run}
-    JS_DIR=${JS_DIR:-$BOX_BASE/mihomo/scripts}
+    JS_DIR=${JS_DIR:-${BOX_BASE:-$BOX_HOME}/mihomo/scripts}
     JS_MANIFEST=$RUN_DIR/state/config/mihomo-scripts.yaml
     rules_tethering
 }
@@ -241,10 +239,12 @@ cond_eval() {
 # 规则表求值
 # ---------------------------------------------------------------------------
 
-# 返回值：0 已挂好内核；1 没有规则命中；2 命中但全部候选不可用 / 硬失败
-select_core_by_rules() {
-    local line cond cands cand chosen='' st n=0 one rest matched=0 hit_cond='' 
+# 只求值、不挂链：成功时把内核名放进 CORE_USED
+# 返回：0 命中且候选可用；1 没有规则命中；2 硬失败 / 候选全不可用
+resolve_core_by_rules() {
+    local line cond cands cand chosen='' st n=0 one rest matched=0 hit_cond=''
     rules_context
+    CORE_USED=''
 
     while IFS= read -r line; do
         line=$(printf '%s' "$line" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
@@ -307,23 +307,30 @@ select_core_by_rules() {
         fi
         break
     done <<EOF
-$RULES
+$(rules_text)
 EOF
 
     if [ -z "$chosen" ]; then
         return 1
     fi
+    CORE_USED=$chosen
+    return 0
+}
+
+# 求值并挂到 bin/mihomo
+select_core_by_rules() {
+    resolve_core_by_rules
+    local rc=$?
+    [ "$rc" = 0 ] || return "$rc"
 
     if [ "$DRY_RUN" = 1 ]; then
-        log "  [dry-run] ln -f $(core_path "$chosen") $CORE_LINK"
-        CORE_USED=$chosen
+        log "  [dry-run] ln -f $(core_path "$CORE_USED") $CORE_LINK"
         return 0
     fi
-    if ln -f "$(core_path "$chosen")" "$CORE_LINK" 2>/dev/null; then
-        log "core -> $chosen（$(core_file "$chosen")）"
-        CORE_USED=$chosen
+    if ln -f "$(core_path "$CORE_USED")" "$CORE_LINK" 2>/dev/null; then
+        log "core -> $CORE_USED（$(core_file "$CORE_USED")）"
         return 0
     fi
-    log "错误: 无法把 $chosen 挂到 $CORE_LINK"
+    log "错误: 无法把 $CORE_USED 挂到 $CORE_LINK"
     return 2
 }

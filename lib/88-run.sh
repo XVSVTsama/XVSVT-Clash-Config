@@ -18,22 +18,15 @@ run_prestart() {
     detect_downstream
     if [ -n "${DOWNSTREAM:-}" ]; then TETHER_ON=on; else TETHER_ON=off; fi
 
-    if [ -n "${RULES:-}" ]; then
-        select_core_by_rules
-        rc=$?
-        case "$rc" in
-            0) ;;
-            1)
-                log "warn: 规则表没有命中任何一条，退回模式映射"
-                select_core
-                ;;
-            *)
-                log "错误: 规则表要求的内核不可用，停止启动前流程"
-                exit 1
-                ;;
-        esac
-    else
-        select_core
+    select_core_by_rules
+    rc=$?
+    if [ "$rc" != 0 ]; then
+        if [ "$rc" = 1 ]; then
+            log "错误: 规则表没有命中任何一条，停止启动前流程（建议结尾加 always => <默认内核>）"
+        else
+            log "错误: 规则表要求的内核不可用，停止启动前流程"
+        fi
+        exit 1
     fi
 
     select_script
@@ -105,14 +98,27 @@ run_update() {
     done
 
     mode=$(current_mode)
-    mapped=$(mode_core "$mode")
+    MODE=$mode
+    resolve_core_by_rules >/dev/null 2>&1
+    rc=$?
+    if [ "$rc" = 0 ]; then
+        mapped=$CORE_USED
+    else
+        mapped=''
+    fi
     need=0
-    case " $installed " in
-        *" $mapped "*) need=1 ;;
-    esac
+    if [ -n "$mapped" ]; then
+        case " $installed " in
+            *" $mapped "*) need=1 ;;
+        esac
+    fi
 
     if [ "$DRY_RUN" = 1 ]; then
-        restart_service
+        if [ "$need" = 1 ]; then
+            restart_service
+        else
+            log "[9/9] [dry-run] 当前模式（$mode）用 ${mapped:-?}，这次没动它，不会重启"
+        fi
         log "dry-run 完成，未做任何改动"
         return 0
     fi

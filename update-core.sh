@@ -50,7 +50,7 @@ if [ ! -d "$lib_dir" ]; then
     printf '错误: 找不到模块目录 %s，请把 lib/ 一起放进 scripts/\n' "$lib_dir" >&2
     exit 2
 fi
-for mod in 00-common 10-mode 80-release 82-fetch 84-install 88-run; do
+for mod in 00-common 10-mode 25-rules 80-release 82-fetch 84-install 88-run; do
     if [ ! -f "$lib_dir/$mod.sh" ]; then
         printf '错误: 缺少模块 %s\n' "$lib_dir/$mod.sh" >&2
         exit 2

@@ -22,7 +22,10 @@
 ## 二、自动部分只有一行
 
 ```sh
-MODE_CORE_ebpf='ebpf'
+RULES='
+mode=ebpf => ebpf
+always    => vanilla
+'
 ```
 
 其余全是默认：
@@ -40,7 +43,7 @@ MODE_CORE_ebpf='ebpf'
 ```
 BoxProxy 记下本次网络模式（例如 ebpf）
         ↓
-iface-auto.sh 读 MODE_CORE_ebpf → 'ebpf'
+iface-auto.sh 按规则表求值：mode=ebpf 命中 → 内核 ebpf
         ↓
 文件名默认 core-ebpf → bin/core-ebpf
         ↓
@@ -86,7 +89,10 @@ CORE_vanilla_REPO='<owner>/<repo>'    # 想要官方版才填
 
 ```sh
 # box-auto.conf
-MODE_CORE_ebpf='vanilla'
+RULES='
+mode=ebpf => vanilla
+always    => vanilla
+'
 
 # box-update.conf
 CORE_vanilla_REPO='<owner>/<repo>'
@@ -96,7 +102,10 @@ CORE_vanilla_REPO='<owner>/<repo>'
 
 ```sh
 # box-auto.conf
-MODE_CORE_ebpf='ebpf_b'
+RULES='
+mode=ebpf => ebpf_b
+always    => vanilla
+'
 CORE_ebpf_a_FILE='core-ebpf-a'
 CORE_ebpf_b_FILE='core-ebpf-b'
 
@@ -106,7 +115,7 @@ CORE_ebpf_b_REPO='<owner-b>/<repo>'
 ```
 
 文件名默认是 `core-<名字>`（名字里只用字母、数字、下划线），想自定义就写 `_FILE`。
-改 `MODE_CORE_ebpf` 再启动即可在两者间切换。
+改 `RULES` 里 `mode=ebpf` 那行的目标内核，再启动即可切换。
 
 ### 变体 3：规则式选择（多条件 + 次选）
 
@@ -156,7 +165,7 @@ CORE_ebpf_URL='file:///sdcard/Download/core-ebpf.gz'
 | 想做的事 | 改哪里 | 之后 |
 |---|---|---|
 | 装/升级内核 | `box-update.conf` 的 `REPO` | 点一次 `update-core.sh` |
-| 换 eBPF 用的内核 | `box-auto.conf` 的 `MODE_CORE_ebpf` | 启动 |
+| 换 eBPF 用的内核 | `box-auto.conf` 的 `RULES` 对应行 | 启动 |
 | 只看配置解析 | 不改 | 点一次 `show-config.sh` |
 | 校验已装内核 | 不改 | 点一次 `check-core.sh` |
 
@@ -167,7 +176,7 @@ CORE_ebpf_URL='file:///sdcard/Download/core-ebpf.gz'
 | 现象 | 原因 | 修法 |
 |---|---|---|
 | `没有匹配 ... 的资产` | 自己写了 `ASSET` 且写死了版本号/哈希 | 删掉那行用默认，或只保留固定部分、把会变的换成 `*` |
-| `配置错误：MODE_CORE_ebpf 指向的内核 'x' 不在 CORE_LIST 里` | 映射写了名字，但两份配置都没定义这个内核 | 在 `box-update.conf` 写 `CORE_x_REPO`，或在 `box-auto.conf` 写 `CORE_x_FILE` |
+| `错误: 规则表没有命中任何一条` | 规则没写兜底 | 在 `RULES` 最后加 `always => <默认内核>` |
 | `warn: 内核 x 的文件 core-x 不存在` | 还没装 | 填好 `CORE_x_REPO` 后点一次 `update-core.sh` |
 | `新内核不接受当前启动配置` | 内核与配置不匹配（如官方版当 eBPF 用） | 没动任何文件，换回正确分支 |
 
@@ -175,6 +184,6 @@ CORE_ebpf_URL='file:///sdcard/Download/core-ebpf.gz'
 
 ## 七、设计取舍
 
-- **默认值优先**：能推断的都不写进配置（文件名、版本策略、资产名、模式映射、行为开关）。
-- **名字即键**：`MODE_CORE_ebpf='ebpf'` 指向名为 `ebpf` 的内核，这个内核的文件与来源分别由两份配置里的 `CORE_ebpf_*` 决定；`CORE_LIST` 由脚本自动扫描得到，不需要维护。
+- **默认值优先**：能推断的都不写进配置（文件名、版本策略、资产名、行为开关、内置默认规则）。
+- **名字即键**：规则里的 `=> ebpf` 指向名为 `ebpf` 的内核，它的文件与来源分别由两份配置里的 `CORE_ebpf_*` 决定；`CORE_LIST` 由脚本自动扫描得到，不需要维护。
 - **两部分各管一段**：自动部分不知道任何下载地址，手动部分不决定谁用哪个内核。

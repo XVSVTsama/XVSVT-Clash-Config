@@ -73,7 +73,6 @@ main() {
     BIN_DIR=$BOX_HOME/bin
     CORE_LINK=$BIN_DIR/mihomo
     check_core_names
-    check_mode_map
     detect_mode
     show_config
     exit 0

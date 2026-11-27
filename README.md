@@ -42,7 +42,7 @@
 | 文件 | 要改什么 |
 |---|---|
 | `box-update.conf` | 只填内核的仓库：`CORE_ebpf_REPO='<owner>/<repo>'`（想要官方版再填 `CORE_vanilla_REPO`） |
-| `box-auto.conf` | 一般不用改；要让 eBPF 模式用别的内核，改 `MODE_CORE_ebpf` |
+| `box-auto.conf` | 一般不用改；要让某个模式用别的内核，改 `RULES` 里对应那行 |
 
 **第 4 步：装内核（点一下）**
 
@@ -57,17 +57,21 @@
 
 ## 自动部分：`box-auto.conf`（通常一行都不用改）
 
-默认就够用：
-
-| 模式 | 用的内核 | 文件 |
-|---|---|---|
-| `ebpf` | `ebpf` | `bin/core-ebpf` |
-| `tun` / `tproxy` / `redirect` / `mixed` / `enhance` / `unknown` | `vanilla` | `bin/core-vanilla` |
-
-只有一种情况要改——**eBPF 模式想用别的内核**：
+内核选择**只由规则表决定**。不写 `RULES` 就用内置默认规则：
 
 ```sh
-MODE_CORE_ebpf='ebpf'     # 换成你的内核名即可
+mode=ebpf => ebpf
+always    => vanilla
+```
+
+也就是「eBPF 模式用 `core-ebpf`，其余模式用 `core-vanilla`」，和以前一样，但改成规则表达。要让某个模式换内核，改规则即可，例如：
+
+```sh
+RULES='
+mode=ebpf     => vanilla
+mode=tun      => ebpf
+always        => vanilla
+'
 ```
 
 新增自己的内核时，才需要写文件名（不写就是 `core-<名字>`）：
@@ -91,7 +95,7 @@ CORE_mycore_FILE='core-mycore'
 
 ### 可选：规则式选择内核（`RULES`）
 
-不写 `RULES` 就按上面的默认映射走。写了 `RULES`，映射表不再生效：
+上面就是内置默认规则；写了 `RULES` 就用你的规则表：
 
 ```sh
 RULES='
@@ -107,7 +111,7 @@ always                                   => vanilla
 - **自上而下求值，第一条命中的生效**；`always` 常放最后当兜底（`never` 恒假）；
 - **逗号简化**：`A, B => X` 等于 `A => X` 和 `B => X`（任一条件成立）；`X => B, C` 等于 `X => B` 和 `X => C`（按顺序试）；两边都有逗号就按「任一条件 × 顺序候选」展开；
 - 命中后按顺序试候选内核，第一个「文件存在且可执行」的胜出；
-- **某个候选不可用只是换下一个；整条规则都不可用 → 直接退出**，不会退回映射表；
+- **某个候选不可用只是换下一个；整条规则都不可用 → 直接退出**（不回退到任何内置映射）；
 - `js=` 是硬条件：那个脚本既不在启用清单里、文件也不存在时，直接失败退出。
 
 判断项：
@@ -180,10 +184,10 @@ CORE_ebpf_REPO='<owner>/<repo>'      # 想要官方版就再填这一行
 
 | 想做的事 | 改哪个配置 | 之后做什么 |
 |---|---|---|
-| 用官方内核跑 eBPF 模式 | `box-auto.conf`：`MODE_CORE_ebpf='vanilla'` | 直接启动 |
-| 换一个自己的 eBPF 分支 | `box-auto.conf` 改 `MODE_CORE_ebpf`；`box-update.conf` 加一行 `CORE_<名字>_REPO` | 点一次 `update-core.sh`，再启动 |
+| 用官方内核跑 eBPF 模式 | `box-auto.conf` 的 `RULES` 里改成 `mode=ebpf => vanilla` | 直接启动 |
+| 换一个自己的 eBPF 分支 | `box-auto.conf` 的 `RULES` 指向新名字；`box-update.conf` 加一行 `CORE_<名字>_REPO` | 点一次 `update-core.sh`，再启动 |
 | 升级内核 | `box-update.conf` 的 `REPO` 已填 | 点一次 `update-core.sh` |
-| 换某个模式的出口内核 | `box-auto.conf`：`MODE_CORE_<模式>` | 启动 |
+| 换某个模式的出口内核 | `box-auto.conf` 的 `RULES` 里加/改对应条件 | 启动 |
 | 临时装某个固定版本 | `box-update.conf`：给该内核填 `URL` | 点一次 `update-core.sh` |
 
 ---
@@ -202,7 +206,7 @@ CORE_ebpf_REPO='<owner>/<repo>'      # 想要官方版就再填这一行
 
 | 看到 | 意思 | 怎么办 |
 |---|---|---|
-| `配置错误：MODE_CORE_x 指向的内核 'y' 不在 CORE_LIST 里` | 映射写了没定义过的名字 | 在 `box-auto.conf` 写下 `CORE_y_FILE` 或在 `box-update.conf` 写下 `CORE_y_REPO`，或改映射 |
+| `错误: 规则表没有命中任何一条` | 规则没有兜底 | 在 `RULES` 最后加 `always => <默认内核>` |
 | `配置错误：CORE_x_FILE 只能写文件名` | 文件字段里带了路径 | 只留文件名，路径固定是 `bin/` |
 | `warn: 内核 x 的文件 y 不存在……` | 还没装 | 在 `box-update.conf` 填它的 `REPO`，点一次 `update-core.sh` |
 | `没有匹配 '...' 的资产` | 资产名匹配不对 | 照发布页文件名把版本/哈希换成 `*` |
@@ -218,7 +222,7 @@ CORE_ebpf_REPO='<owner>/<repo>'      # 想要官方版就再填这一行
 
 | 模块 | 谁用 | 负责 |
 |---|---|---|
-| `00-common.sh` | 全部 | 两份配置的加载、`CORE_*` / `MODE_CORE_*` 取值、日志、校验 |
+| `00-common.sh` | 全部 | 两份配置的加载、`CORE_*` 取值、内置默认规则、日志、校验 |
 | `10-mode.sh` | 全部 | 识别当前网络模式 |
 | `20-core.sh` | iface-auto | 模式 → 内核 → 文件 → 路径，缺文件退回 vanilla，`ln -f` |
 | `30-scripts.sh` | iface-auto | 覆写脚本目录与 `mihomo-scripts.yaml` |

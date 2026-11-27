@@ -21,7 +21,7 @@ if [ ! -d "$lib_dir" ]; then
     printf '错误: 找不到模块目录 %s，请把 lib/ 一起放进 scripts/\n' "$lib_dir" >&2
     exit 2
 fi
-for mod in 00-common 10-mode; do
+for mod in 00-common 10-mode 25-rules; do
     if [ ! -f "$lib_dir/$mod.sh" ]; then
         printf '错误: 缺少模块 %s\n' "$lib_dir/$mod.sh" >&2
         exit 2
@@ -71,7 +71,13 @@ main() {
     check_core_names
     detect_mode
 
-    CORE_NAME=${CORE_NAME:-$(mode_core "$MODE")}
+    if [ -z "$CORE_NAME" ]; then
+        if resolve_core_by_rules >/dev/null 2>&1; then
+            CORE_NAME=$CORE_USED
+        else
+            die "规则表没有选出可用内核（用 show-config.sh 看求值过程）"
+        fi
+    fi
     in_list "$CORE_NAME" || die "内核 '$CORE_NAME' 不在 CORE_LIST 里"
     target=$(core_path "$CORE_NAME")
     [ -f "$target" ] || die "内核 $CORE_NAME 还没装：$target（用 update-core.sh 装）"

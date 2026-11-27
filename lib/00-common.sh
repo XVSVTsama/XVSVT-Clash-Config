@@ -20,14 +20,6 @@ check_core_names() {
     done
 }
 
-# 模式映射的校验（自动部分 / show-config 需要）
-check_mode_map() {
-    for mode in tun tproxy ebpf redirect mixed enhance unknown; do
-        name=$(mode_core "$mode")
-        valid_name "$name" || die "配置错误：MODE_CORE_$mode 的内核名 '$name' 不合法"
-        in_list "$name" || die "配置错误：MODE_CORE_$mode 指向的内核 '$name' 不在 CORE_LIST 里"
-    done
-}
 
 
 core_field() {
@@ -73,6 +65,11 @@ init_defaults() {
     EXTRA_PORTS=${EXTRA_PORTS:-}
     CORE_LIST=${CORE_LIST:-'ebpf vanilla'}
     RULES=${RULES:-}
+    # 没写 RULES 时的内置默认规则（等价于以前「ebpf 用 ebpf，其余用 vanilla」）
+    DEFAULT_RULES='
+mode=ebpf => ebpf
+always    => vanilla
+' 
 
     # 内置内核定义（配置里没写时生效）
     CORE_ebpf_FILE=${CORE_ebpf_FILE:-core-ebpf}
@@ -82,14 +79,6 @@ init_defaults() {
     CORE_vanilla_VERSION=${CORE_vanilla_VERSION:-latest}
     CORE_vanilla_ASSET=${CORE_vanilla_ASSET:-*android-arm64*.gz}
 
-    # 内置模式映射（配置里没写时生效）
-    MODE_CORE_tun=${MODE_CORE_tun:-vanilla}
-    MODE_CORE_tproxy=${MODE_CORE_tproxy:-vanilla}
-    MODE_CORE_ebpf=${MODE_CORE_ebpf:-ebpf}
-    MODE_CORE_redirect=${MODE_CORE_redirect:-vanilla}
-    MODE_CORE_mixed=${MODE_CORE_mixed:-vanilla}
-    MODE_CORE_enhance=${MODE_CORE_enhance:-vanilla}
-    MODE_CORE_unknown=${MODE_CORE_unknown:-vanilla}
 
     CONF_AUTO=${CONF_AUTO:-}
     CONF_UPDATE=${CONF_UPDATE:-}
@@ -198,9 +187,12 @@ log() {
     fi
 }
 
-mode_core() {
-    eval "name=\${MODE_CORE_$1:-vanilla}"
-    printf '%s' "$name"
+rules_text() {
+    if [ -n "${RULES:-}" ]; then
+        printf '%s\n' "$RULES"
+    else
+        printf '%s\n' "$DEFAULT_RULES"
+    fi
 }
 
 require_root() {
