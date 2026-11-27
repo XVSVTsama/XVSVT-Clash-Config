@@ -93,10 +93,10 @@ print_summary() {
         log "热点共享: 开（HOTSPOT_SHARE=$share，$marker 份覆写脚本带规则）"
     fi
     log "日志: $LOG_FILE"
-    log "—— 对首页按钮的影响 ——"
+    log "—— 生效操作 ——"
     log "重新生成启动配置: 没做（本脚本只改 bin/mihomo 与覆写脚本启用清单）"
-    log "重载: 没做 | 重启: 没做 | 停止: 没做（核心进程没被碰）"
-    log "服务状态: $("$BOX_HOME/bin/boxctl" status 2>/dev/null | grep -q '正在运行' && echo '运行中' || echo '已停止')（脚本不改变）"
+    log "重载: 没做 | 重启: 没做 | 停止: 没做"
+    log "服务状态: $("$BOX_HOME/bin/boxctl" status 2>/dev/null | grep -q '正在运行' && echo '运行中' || echo '已停止')（未改变）"
     log "生效时机: 内核与覆写脚本的改动，在下次启动或点一次「重载」后生效"
 }
 

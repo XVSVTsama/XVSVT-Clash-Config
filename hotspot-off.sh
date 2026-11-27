@@ -183,14 +183,14 @@ print_summary() {
     print_controls
 }
 
-# 首页那三个按钮到底有没有被脚本碰过：用户在意的就是这一点
+# 这次运行到底动了什么：重新生成配置 / 重载 / 重启 / 停止
 print_controls() {
     local svc
     svc=$("$BOXCTL" status 2>/dev/null | grep -q '正在运行' && echo '运行中' || echo '已停止')
-    log "—— 对首页按钮的影响 ——"
+    log "—— 生效操作 ——"
     if [ "$DRY_RUN" = 1 ]; then
         log "重新生成启动配置: 没做 | 重载: 没做 | 重启: 没做 | 停止: 没做（dry-run）"
-        log "服务状态: $svc（没动）"
+        log "服务状态: $svc（未改变）"
         return 0
     fi
     if [ "$DID_SYNC" = 1 ]; then
