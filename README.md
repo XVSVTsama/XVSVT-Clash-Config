@@ -208,14 +208,22 @@ boxctl 只会自动跑登记为「服务启动前脚本」的那份，所以 `if
 
 | 模块 | 负责 |
 |---|---|
-| `lib/00-common.sh` | 配置加载与默认值、`CORE_*` / `MODE_CORE_*` 取值、日志与执行包装、配置校验（`update-core.sh` 也用它） |
-| `lib/10-mode.sh` | 识别当前网络模式（`BOX_MODE` → `runs.log` → `BOX_PROXY_MODE`） |
-| `lib/20-core.sh` | 模式 → 内核名 → 文件 → 路径，缺文件退回 vanilla，`ln -f` 到 `bin/mihomo` |
-| `lib/30-scripts.sh` | 定位覆写脚本目录、改写 `mihomo-scripts.yaml` 里的模式脚本 |
-| `lib/40-net.sh` | 出口网卡、下联网卡、dummy 网卡、`FORWARD` 放行 |
-| `lib/50-js-fields.sh` | 出口写进 `interface-name`、下联写进 `EBPF_SHARED_IFACE_SPEC` |
-| `lib/60-conflict.sh` | 端口冲突检测与按规则停包 |
-| `lib/70-report.sh` | `--show` 的表格输出 |
+两个入口都只是「参数 + 加载模块 + 主流程」，功能全在 `lib/`：
+
+| 模块 | 谁用 | 负责 |
+|---|---|---|
+| `lib/00-common.sh` | 两个 | 配置加载与默认值、`CORE_*` / `MODE_CORE_*` 取值、日志与执行包装、配置校验 |
+| `lib/10-mode.sh` | 两个 | 识别当前网络模式（`BOX_MODE` → `runs.log` → `BOX_PROXY_MODE`），以及给 update-core 判定「现在用的是哪个内核」 |
+| `lib/20-core.sh` | iface | 模式 → 内核名 → 文件 → 路径，缺文件退回 vanilla，`ln -f` 到 `bin/mihomo` |
+| `lib/30-scripts.sh` | iface | 定位覆写脚本目录、改写 `mihomo-scripts.yaml` 里的模式脚本 |
+| `lib/40-net.sh` | iface | 出口网卡、下联网卡、dummy 网卡、`FORWARD` 放行 |
+| `lib/50-js-fields.sh` | iface | 出口写进 `interface-name`、下联写进 `EBPF_SHARED_IFACE_SPEC` |
+| `lib/60-conflict.sh` | iface | 端口冲突检测与按规则停包 |
+| `lib/70-report.sh` | iface | `iface-auto.sh --show` 的表格 |
+| `lib/80-release.sh` | update | 查仓库发布、匹配资产、拼下载地址（含镜像与 Token） |
+| `lib/82-fetch.sh` | update | 下载 → SHA-256 → 解包 → `-v` 自检 → `-t` 配置检查 |
+| `lib/84-install.sh` | update | 写入/备份/回滚、挂链、重启 |
+| `lib/86-report.sh` | update | `update-core.sh --show` 的表格 |
 
 模块只能被入口 `. ` 加载；单独 `sh lib/10-mode.sh` 会被拒绝（退出码 2），避免误跑。
 

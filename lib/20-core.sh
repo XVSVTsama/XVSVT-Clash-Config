@@ -1,10 +1,10 @@
 #!/system/bin/sh
 # 按模式选内核并挂到 bin/mihomo
 #
-# 由 iface-auto.sh 通过 . 加载，不单独运行。
+# 由入口脚本通过 . 加载，不单独运行。
 
 [ -n "${BOX_CORE_LIB:-}" ] || {
-    printf '%s\n' "这是 iface-auto.sh 的模块，不能单独运行。" >&2
+    printf '%s\n' "这是 BoxProxy 脚本的功能模块，不能单独运行。" >&2
     exit 2
 }
 
