@@ -162,19 +162,6 @@ load_update_conf() {
     discover_cores "$CONF_UPDATE"
 }
 
-# 两份配置各写一份 CORE_LIST 时合并（show-config 用）
-merge_core_list() {
-    local merged=$1 name
-    shift
-    for name in "$@"; do
-        case " $merged " in
-            *" $name "*) ;;
-            *) merged="$merged $name" ;;
-        esac
-    done
-    printf '%s\n' "$merged"
-}
-
 log() {
     if [ "${LOG_TERMINAL:-0}" = 1 ] || [ "$DRY_RUN" -eq 1 ]; then
         printf '%s\n' "$*"

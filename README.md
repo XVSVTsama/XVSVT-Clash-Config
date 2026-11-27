@@ -5,11 +5,11 @@
 ## 初次安装：四步
 
 1. **放文件**
-   把 `iface-auto.sh`、`update-core.sh`、`show-config.sh`、`box-auto.conf`、`box-update.conf` 和整个 `lib/` 文件夹一起复制到
+   把 `iface-auto.sh`、`update-core.sh`、`box-auto.conf`、`box-update.conf` 和整个 `lib/` 文件夹一起复制到
    `/data/user/0/com.boxproxy.box/files/box/scripts/`
    （BoxProxy → `工具 → 文件管理` 能直接进这个目录。）
 2. **登记启动前脚本**
-   在 BoxProxy 设置里把 `iface-auto.sh` 选为「服务启动前脚本」。另一个脚本不用登记。
+   在 BoxProxy 设置里把 `iface-auto.sh` 选为「服务启动前脚本」。`update-core.sh` 不用登记。
 3. **装内核**
    `工具 → 脚本` → 运行 `update-core.sh`。它会把配置里填了来源的内核全部装一遍，不需要参数。
 4. **启动**
@@ -35,14 +35,14 @@ always    => vanilla
 
 读法：eBPF 模式用 `ebpf`（文件 `bin/ebpf-我的`），其它模式用 `vanilla`（文件 `bin/vanilla-我的`）。想让 eBPF 也用官方内核，就把第一行改成 `mode=ebpf => vanilla`。
 
-## 两个按钮
+## 两个脚本
 
 | 脚本 | 干什么 | 联网 |
 |---|---|---|
-| `update-core.sh` | 装 / 升级内核 | 会 |
-| `show-config.sh` | 看配置解析成什么、内核装没装 | 不会 |
+| `iface-auto.sh` | 启动前按规则选内核 → 复制成 `bin/mihomo` → 切换覆写脚本 → 认网卡 → 端口冲突检查 | 不会 |
+| `update-core.sh` | 装 / 升级内核（唯一会联网的脚本） | 会 |
 
-启动前 `iface-auto.sh` 自动做的事：按规则选内核 → 复制成 `bin/mihomo` → 切换覆写脚本 → 认网卡 → 端口冲突检查。全程不联网，缺内核只会报错提示，不会自己去下载。
+`iface-auto.sh` 缺内核只会报错提示，不会自己去下载。
 
 ## 出错了看这里
 
@@ -108,13 +108,12 @@ always    => vanilla
 ### 命令行等价操作
 
 ```sh
-sh show-config.sh                         # = 点 show-config.sh
 sh update-core.sh                         # 装所有配了来源的内核
 sh update-core.sh --core <名字>           # 临时装别的内核，不改配置
 sh iface-auto.sh --dry-run                # 预览启动前会做什么
 sh update-core.sh --core <名字> --dry-run # 只看会下载哪个资产
 ```
 
-`show-config.sh` 与 `--dry-run` 都不写盘、不替换、不重启。
+`--dry-run` 不写盘、不替换、不重启。
 
 </details>

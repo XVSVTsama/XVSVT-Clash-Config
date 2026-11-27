@@ -92,7 +92,7 @@ run_update() {
 
     local targets installed name mode mapped need
     if [ -n "$CORE_NAME" ]; then
-        in_list "$CORE_NAME" || die "内核 '$CORE_NAME' 不在配置里（用 show-config.sh 看可用的名字）"
+        in_list "$CORE_NAME" || die "内核 '$CORE_NAME' 不在配置里（可用名字见 box-auto.conf / box-update.conf）"
         targets=$CORE_NAME
     else
         targets=$(configured_cores)

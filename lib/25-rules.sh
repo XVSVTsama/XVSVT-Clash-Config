@@ -64,7 +64,7 @@ rules_tethering() {
     fi
 }
 
-# 补全求值需要的路径（show-config 这类没跑过完整流程的入口用）
+# 补全求值需要的路径（没跑过完整启动流程时用）
 rules_context() {
     BIN_DIR=${BIN_DIR:-$BOX_HOME/bin}
     RUN_DIR=${RUN_DIR:-$BOX_HOME/run}
