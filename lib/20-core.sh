@@ -22,6 +22,7 @@ describe_core() {
             return 0
         fi
     done
-    printf 'unknown\n'
+    # 文件在、但不是我们挂上去的（例如用 App 的「更新核心」装的）
+    printf 'external\n'
 }
 

@@ -87,6 +87,8 @@ CORE_mycore_FILE='core-mycore'
 
 启动前它会做：解析「模式 → 内核 → 文件 → 路径」→ 把文件 `ln -f` 到 `bin/mihomo`（**文件不存在只 warn，不下载**）→ 切覆写脚本 → 认网卡/挂 dummy → 写 JS 字段 → 放行 `FORWARD` → 端口冲突检测。全程不联网。
 
+**与 BoxProxy 自带「更新核心」的分工**：如果 `bin/mihomo` 已经是外部装进来的普通文件（不是脚本挂的链接），本次不覆盖，直接用它启动，并在日志里写 `检测到 bin/mihomo 是外部安装的内核…`；想恢复按规则切换，删掉 `bin/mihomo` 或跑一次 `update-core.sh`。
+
 ---
 
 ### 可选：规则式选择内核（`RULES`）

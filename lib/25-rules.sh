@@ -329,11 +329,31 @@ EOF
     return 0
 }
 
+# bin/mihomo 现在是不是我们挂的（和某个已知内核同一 inode）
+link_is_ours() {
+    local link_inode name inode
+    link_inode=$(stat -c %i "$CORE_LINK" 2>/dev/null)
+    [ -n "$link_inode" ] || return 1
+    for name in $CORE_LIST; do
+        inode=$(stat -c %i "$(core_path "$name")" 2>/dev/null)
+        [ -n "$inode" ] && [ "$link_inode" = "$inode" ] && return 0
+    done
+    return 1
+}
+
 # 求值并挂到 bin/mihomo
 select_core_by_rules() {
     resolve_core_by_rules
     local rc=$?
     [ "$rc" = 0 ] || return "$rc"
+
+    # 让路：bin/mihomo 是外部写进来的（例如 App 自带的「更新核心」），本次不覆盖
+    if [ -f "$CORE_LINK" ] && ! link_is_ours; then
+        log "检测到 bin/mihomo 是外部安装的内核（不是本脚本挂的），本次不重挂，直接用它启动"
+        log "  想恢复按规则切换：删掉 bin/mihomo，或跑一次 update-core.sh"
+        CORE_USED=''
+        return 0
+    fi
 
     if [ "$DRY_RUN" = 1 ]; then
         log "  [dry-run] ln -f $(core_path "$CORE_USED") $CORE_LINK"

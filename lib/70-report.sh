@@ -54,7 +54,13 @@ show_config() {
     rc=$?
     DRY_RUN=0
     case "$rc" in
-        0) printf '  结果: 会选中 %s\n' "${CORE_USED:-?}" ;;
+        0)
+            if [ -n "${CORE_USED:-}" ]; then
+                printf '  结果: 会选中 %s\n' "$CORE_USED"
+            else
+                printf '  结果: 沿用 bin/mihomo 里的外部内核（本次不重挂）\n'
+            fi
+            ;;
         1) printf '  结果: 没有规则命中，启动会失败（建议加 always => <默认内核>）\n' ;;
         *) printf '  结果: 规则要求的内核不可用，启动会失败\n' ;;
     esac
