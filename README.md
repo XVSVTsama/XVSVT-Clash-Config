@@ -76,37 +76,50 @@ boxctl 会自带 `BOX_HOME`、`BOX_RUN_DIR`、`BOX_SCRIPTS_DIR`、`BOX_MODE` 等
 
 ## 内核更新（`update-core.sh` 模板）
 
-本分支另带一个**模板**脚本，负责「备份 → 下载 → 校验 → 替换 → 重启 → 失败回滚」，**不内置任何下载地址、版本号或校验值**：用什么核心分支、哪个版本、校验值多少，全部由你自己补完。
+本分支带一个**模板**脚本：给一个 GitHub 仓库和资产名匹配规则，它自己查最新发布、下载、校验、检查、替换、重启，失败自动回滚。模板里不写死任何仓库、地址、版本或校验值，由你自己补完。
 
-两种用法，任选：
+两种用法，任选。
 
-**命令行带参数**（适合终端里临时跑）
+**跟着仓库走**（推荐，不用记版本号）
 
 ```sh
-sh update-core.sh --core ebpf    --url <下载地址> [--sha256 <64 位十六进制>] [--tag <版本关键字>]
-sh update-core.sh --core vanilla --url <下载地址>
-sh update-core.sh --core ebpf    --url <地址> --dry-run     # 只看步骤，不下载不替换
+sh update-core.sh --core ebpf --repo <owner/repo> --asset '<资产名匹配>' [--version latest|prerelease|tag]
+sh update-core.sh --core ebpf --repo <owner/repo> --asset '<匹配>' --dry-run   # 只看会拿到哪一版
 ```
 
-**不带参数**（适合在 BoxProxy 的「工具 → 脚本」里点运行）
+`--version`：`latest` 取最新稳定版（默认），`prerelease` 取含预发布的最新一条，`tag` 配合 `--release-tag` 取指定标签。`--asset` 默认按 glob（`*`、`?` 生效），加 `--asset-regex` 就按正则解释；匹配不到会列出可用资产名。
 
-把 `update-core.conf.example` 复制成同目录的 `update-core.conf`，填好 `CORE` / `URL`（可选 `SHA256` / `TAG`），再运行 `update-core.sh` 即可；命令行参数优先于配置文件。
+**直接给地址**（固定版本，或本地文件）
+
+```sh
+sh update-core.sh --core ebpf --url <下载地址> [--sha256 <值>] [--tag <版本关键字>]
+```
+
+**不带参数**（在 BoxProxy 的「工具 → 脚本」里点运行）
+
+把 `update-core.conf.example` 复制成同目录的 `update-core.conf`，填好 `CORE`、`REPO`、`ASSET`（或直接填 `URL`），再运行 `update-core.sh`；命令行参数优先于配置文件。
 
 | 参数 | 说明 |
 |---|---|
 | `--core ebpf\|vanilla` | 替换 `bin/core-ebpf` 还是 `bin/core-vanilla`，默认 `ebpf` |
-| `--url` | 必填；`http(s)://` 或 `file://`，`.gz` 压缩包与裸二进制都接受 |
-| `--sha256` | 可选；给了就校验下载结果 |
-| `--tag` | 可选；新内核 `-v` 的输出里必须包含这个关键字（例如 eBPF 构建的哈希） |
-| `--home` | 可选；Box 工作目录，默认 `/data/user/0/com.boxproxy.box/files/box` |
-| `--dry-run` | 只打印将要执行的步骤 |
+| `--repo <owner/repo>` | 跟着仓库走时必填；与 `--url` 二选一 |
+| `--asset '<匹配>'` | 资产名匹配，默认 glob；`--asset-regex` 改为正则 |
+| `--version latest\|prerelease\|tag` | 取哪个发布，默认 `latest` |
+| `--release-tag <标签>` | `--version tag` 时必填 |
+| `--url <地址>` | 直接下载地址（`http(s)://`、`file://`），优先于 `--repo` |
+| `--sha256 <值>` | 可选；下载文件的 SHA-256。仓库发布带 `digest` 时会自动使用，不必手填 |
+| `--tag <关键字>` | 可选；新内核 `-v` 输出里必须包含这个关键字 |
+| `--api-base` / `--download-prefix` / `--token` | 可选；API 前缀、下载改写前缀、GitHub Token（提高配额） |
+| `--home <目录>` | 可选；Box 工作目录 |
+| `--dry-run` | 只解析并打印步骤，不下载、不替换、不重启 |
 
-流程固定为七步：备份 → 下载 → 解包 → SHA-256（可选）→ `-v` 自检（要求 arm64，可加 `--tag`）→ `-t` 用新内核检查当前启动配置 → 原子替换（`root:net_admin`，`6755`）后 `boxctl restart`；重启失败自动回滚到备份并再启一次。
+流程八步：解析发布 → 下载 → SHA-256 → 解包 → `-v` 自检（要求 arm64，可加 `--tag`）→ `-t` 用新内核检查当前启动配置 → 备份并原子替换（`root:net_admin`、`6755`）→ `boxctl restart`；重启失败自动回滚到备份并再启一次。
 
 要点：
 
 - 在 BoxProxy 的「工具 → 脚本」里运行，或 `su` 后手动执行；需要 root。
-- **新内核必须先过 `-t`**：不通过就退出，不会改动任何文件（用官方版冒充 eBPF 版会在这里被拒，日志会给出 `unsupport proxy type: ebpf`）。
+- **新内核必须先过 `-t`**：不通过就退出，不会改动任何文件（用官方版冒充 eBPF 版会在这里被拒，日志给出 `unsupport proxy type: ebpf`）。
+- 仓库里的 `digest` 是**压缩包**的 SHA-256，所以校验对象就是下载到的文件本身。
 - `bin/` 下的核心会被 BoxProxy 设为 setuid/setgid 运行，只装可信来源的二进制。
 - 备份留在 `bin/core-*.bak-<时间>`，确认稳定后可自行删掉，避免长期堆积大文件。
 
