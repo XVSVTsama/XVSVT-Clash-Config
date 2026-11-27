@@ -1,9 +1,9 @@
 #!/system/bin/sh
 # 手动：关闭热点共享代理（热点客户端恢复核心原有分流）
 #
-# 做两件事，顺序固定：
+# 做两件事：
 #   1. 把 box-auto.conf 的 HOTSPOT_SHARE 改成 off
-#   2. 调 hotspot.sh 删掉 rules 里那条带 // hotspot-lan 标记的规则
+#   2. 删掉 mihomo 覆写脚本 rules 里那条带 // hotspot-lan 标记的规则
 #
 # 用法：
 #   sh hotspot-off.sh        关闭
@@ -15,7 +15,8 @@
 
 BOX_HOME=/data/user/0/com.boxproxy.box/files/box
 CONF=$BOX_HOME/scripts/box-auto.conf
-ENGINE=$BOX_HOME/scripts/hotspot.sh
+JS_DIR=$BOX_HOME/mihomo/scripts
+MARK=hotspot-lan
 
 DRY_RUN=0
 
@@ -31,17 +32,43 @@ log() { printf '%s\n' "$*" ; }
 die() { printf '错误: %s\n' "$*" >&2 ; exit 2 ; }
 
 set_conf() {
-    local esc
     [ -f "$CONF" ] || die "找不到 $CONF"
-    esc=off
     if grep -q '^#\{0,1\}[[:space:]]*HOTSPOT_SHARE=' "$CONF" 2>/dev/null; then
-        sed -i "s|^#\{0,1\}[[:space:]]*HOTSPOT_SHARE=.*|HOTSPOT_SHARE='$esc'|" "$CONF" ||
+        sed -i "s|^#\{0,1\}[[:space:]]*HOTSPOT_SHARE=.*|HOTSPOT_SHARE='off'|" "$CONF" ||
             die "写 $CONF 失败"
     else
-        printf "HOTSPOT_SHARE='%s'\n" "$esc" >>"$CONF" || die "写 $CONF 失败"
+        printf "HOTSPOT_SHARE='%s'\n" off >>"$CONF" || die "写 $CONF 失败"
     fi
     chown root:root "$CONF" 2>/dev/null
     chmod 644 "$CONF" 2>/dev/null
+}
+
+drop_marked() {     # $1 = 文件，删掉带标记的行
+    local file=$1 tmp
+    tmp=$file.tmp.$$
+    grep -v "// $MARK\$" "$file" >"$tmp" 2>/dev/null
+    [ -s "$tmp" ] || { rm -f "$tmp"; return 1; }
+    chmod 644 "$tmp" 2>/dev/null
+    mv -f "$tmp" "$file"
+}
+
+drop_rules() {
+    local file any=0
+    for file in "$JS_DIR"/*.js; do
+        [ -f "$file" ] || continue
+        grep -q "// $MARK\$" "$file" || continue
+        any=1
+        if [ "$DRY_RUN" = 1 ]; then
+            log "  [dry-run] $(basename "$file"): 删除标记行"
+            continue
+        fi
+        if drop_marked "$file"; then
+            log "  $(basename "$file"): 已清理"
+        else
+            log "warn: 清理 $(basename "$file") 失败"
+        fi
+    done
+    [ "$any" = 1 ] || log "  没有找到标记行（本来就是关的）"
 }
 
 main() {
@@ -52,14 +79,19 @@ main() {
         *) die "未知参数 $1（用 -h 看用法）" ;;
     esac
 
+    log "配置: HOTSPOT_SHARE='off'（热点客户端按核心原有分流走）"
     if [ "$DRY_RUN" = 1 ]; then
-        log "[dry-run] 会把 $CONF 里的 HOTSPOT_SHARE 改成 'off'"
-        exec sh "$ENGINE" -n off
+        log "[dry-run] 不写配置，也不写 js"
+    else
+        set_conf
     fi
+    drop_rules
 
-    log "配置: HOTSPOT_SHARE='off'"
-    set_conf
-    exec sh "$ENGINE"
+    if [ "$DRY_RUN" = 1 ]; then
+        log "dry-run 完成，未写任何文件"
+        return 0
+    fi
+    log "下一步：设置 → 基础代理配置 → 重新生成启动配置，然后重启或重载服务"
 }
 
 main "$@"
