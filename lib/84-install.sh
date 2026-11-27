@@ -36,6 +36,7 @@ install_binary() {
     chown root:net_admin "$tmp" 2>/dev/null
     chmod 6755 "$tmp" 2>/dev/null
     mv "$tmp" "$TARGET" || die "替换失败"
+    printf '%s\n' "${ASSET_NAME:-${URL:-}}" >"$TARGET.source" 2>/dev/null
     log "      已写入：$TARGET"
     return 0
 }

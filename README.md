@@ -12,21 +12,20 @@
 
 ---
 
-## 五分钟上手
+## 五分钟上手（不用敲命令）
 
 1. **放文件**：把 `iface-auto.sh` 和整个 `lib/` 目录放进 BoxProxy 的脚本目录
-   `/data/user/0/com.boxproxy.box/files/box/scripts/`，`chmod 755 iface-auto.sh` 与 `lib/*.sh`。
-   启动前脚本只登记 `iface-auto.sh` 一个，`lib/` 里的文件不要登记。
-2. **建配置**：把 `box-core.conf.example` 复制成 `box-core.conf`。
-3. **填来源**：编辑 `box-core.conf`，给要用的内核填 `REPO` 与 `ASSET`（例：
-   `CORE_ebpf_REPO='<owner>/<repo>'`、`CORE_ebpf_ASSET='*android-arm64*ebpf*.gz'`）。
-4. **确认**：跑一次 `sh iface-auto.sh show`，看清「模式 → 内核 → 文件 → 路径、来源、安装状态」是不是你要的。
-5. **装内核**：`sh iface-auto.sh update --core ebpf`（第一次就是安装，以后就是更新）。
-6. **用起来**：BoxProxy 里选对应模式启动。启动前 `iface-auto.sh` 会自动把该模式配的内核挂到 `bin/mihomo`。
+   `/data/user/0/com.boxproxy.box/files/box/scripts/`，`chmod 755 iface-auto.sh` 与 `lib/*.sh`，
+   并在 App 里把 `iface-auto.sh` 登记为「服务启动前脚本」。只登记这一个，`lib/` 不要登记。
+2. **填配置**：把 `box-core.conf.example` 复制成 `box-core.conf`，给要用的内核填上仓库：
+   ```sh
+   CORE_ebpf_REPO='<owner>/<repo>'
+   CORE_vanilla_REPO='<owner>/<repo>'
+   ```
+   其余保持默认即可（`ASSET`、`VERSION`、模式映射都有默认值）。
+3. **直接用**：在 BoxProxy 里选好网络模式，启动。
 
-> 没建 `box-core.conf` 也能跑：脚本有内置默认值（`ebpf` 模式用 `core-ebpf`，其余模式用 `core-vanilla`），行为和旧版一致。
-
----
+首次启动时，模式要用的内核还没装？脚本会按配置自动下载、校验、装好再挂上去，你不需要做别的事。
 
 ## 配置文件说明
 
@@ -87,49 +86,23 @@ MODE_CORE_unknown='vanilla'
 
 ---
 
-## 确认配置：`sh iface-auto.sh show`
+## 内核怎么装、怎么更新（自动）
 
-```
-$ sh iface-auto.sh show
-配置文件: .../scripts/box-core.conf
-Box 目录: /data/user/0/com.boxproxy.box/files/box
+| 情况 | 脚本会怎么做 | 开关 |
+|---|---|---|
+| 当前模式要用的内核还没装 | 启动前按配置的来源自动安装，装完挂到 `bin/mihomo` | `AUTO_INSTALL='on'`（默认） |
+| 已经装了，想跟着仓库升级 | 每次启动前查一次来源，资产变了就自动升级 | `AUTO_UPDATE='on'`（默认 `off`，不联网） |
+| 完全不想让它联网 | 两个开关都设 `off`，自己把内核文件放进 `bin/` | — |
 
-内核名     文件             路径                       状态
-ebpf       core-ebpf        .../bin/core-ebpf          已安装
-vanilla    core-vanilla     .../bin/core-vanilla       已安装
-spare      core-spare       .../bin/core-spare         未安装
+自动安装/升级同样走完整校验，不用你操心：
 
-内核名     来源（仓库 / 链接）   版本策略      资产匹配
-ebpf       <owner>/<repo>        prerelease    *android-arm64*ebpf*.gz
-vanilla    <owner>/<repo>        latest        *android-arm64*.gz
-spare      （未配置）             tag           *android-arm64*.gz
+1. 下载后比对 SHA-256（仓库发布带 `digest` 就用它）；
+2. 解包，确认是 `arm64` 的有效核心（配了 `TAG` 还会核对关键字）；
+3. 用新内核 `-t` 检查**当前启动配置**，不通过就放弃，不动任何文件；
+4. 备份旧文件后写入，属主 `root:net_admin`、权限 `6755`；
+5. 装完立刻挂到 `bin/mihomo`，服务随即用新内核启动；起不来会自动回滚到备份。
 
-模式映射:
-  tun       → vanilla    .../bin/core-vanilla
-  tproxy    → vanilla    .../bin/core-vanilla
-  ebpf      → ebpf       .../bin/core-ebpf
-  redirect  → vanilla    .../bin/core-vanilla
-  mixed     → vanilla    .../bin/core-vanilla
-  enhance   → vanilla    .../bin/core-vanilla
-  unknown   → vanilla    .../bin/core-vanilla
-
-当前检测到的模式: ebpf → ebpf
-默认内核（update 不带 --core 时）: ebpf
-```
-
-一张表回答三个问题：**给哪个入站用哪个内核、下载的内核叫什么名字、文件落在哪个路径**。`show` 不需要 root，也不会改任何东西（旧写法 `--show` 仍然可用）。
-
-## 安装 / 更新内核
-
-首次安装和后续更新是**同一条命令**：文件不存在就创建，存在就先备份再替换。
-
-```sh
-sh iface-auto.sh update --core <名字>          # 装/更新指定内核
-sh iface-auto.sh update                       # 不写就用 CORE_DEFAULT
-sh iface-auto.sh update --core <名字> --dry-run  # 只解析来源、打印步骤
-```
-
-来源就三种写法，写在配置里即可：
+来源写在配置里，三种写法：
 
 | 想怎么更新 | 配置 | 说明 |
 |---|---|---|
@@ -138,47 +111,64 @@ sh iface-auto.sh update --core <名字> --dry-run  # 只解析来源、打印步
 | 锁定某标签 | `VERSION='tag'` + `RELEASE_TAG='...'` | 只有它变了才换 |
 | 固定地址 / 本地文件 | 填 `URL='https://...'` 或 `file:///...` | 不再查仓库 |
 
-脚本自己做的校验（都不用你操心）：
-
-1. 下载后比对 SHA-256（仓库发布带 `digest` 就用它）；
-2. 解包，确认是 `arm64` 的有效核心（配了 `TAG` 还会核对关键字）；
-3. 用新内核 `-t` 检查**当前启动配置**，不通过就退出、不动任何文件；
-4. 写入时设 `root:net_admin` + `6755`，与 BoxProxy 的期望一致。
-
-关于重启：
-
-- **只有会影响你在用的内核时才重启**（替换前 `bin/mihomo` 就挂着它，或当前模式映射到它）；
-- 装一个当前没在用的内核（比如备用的 `probe`）不会打断服务，下次启动自然生效；
-- 重启失败会自动回滚到备份，并把服务再拉起来。
-
 备份在 `bin/<文件名>.bak-<时间>`，约 70 MB，确认稳定后自己删。
 
----
+## 可选：想核对配置时
 
-## 执行顺序（照这个顺序用就不会乱）
+平时不需要敲命令，下面这些只是排错和检查用：
+
+```sh
+sh iface-auto.sh show        # 看内核 / 文件 / 路径 / 状态 / 来源 / 模式映射（不需要 root）
+sh iface-auto.sh --dry-run   # 预览“启动前会做什么”，不下载、不替换、不重启
+```
+
+`show` 输出长这样（节选）：
+
+```
+内核名     文件             路径                       状态
+ebpf       core-ebpf        .../bin/core-ebpf          已安装
+vanilla    core-vanilla     .../bin/core-vanilla       已安装
+
+内核名     来源（仓库 / 链接）   版本策略      资产匹配
+ebpf       <owner>/<repo>        prerelease    *android-arm64*ebpf*.gz
+
+模式映射:
+  ebpf      → ebpf       .../bin/core-ebpf
+当前检测到的模式: ebpf → ebpf
+```
+
+## 可选：立刻装/更新，不等下次启动
+
+只有这两种情况你会用到：
+
+- 想现在就把某个内核装好（比如备用的 `spare`）；
+- 不想开 `AUTO_UPDATE`，但想手动升一次。
+
+```sh
+sh iface-auto.sh update --core <名字>          # 装/更新指定内核
+sh iface-auto.sh update --core <名字> --dry-run  # 只看会拿哪个资产
+```
+
+当前模式用到的内核更新完会自动重启服务；装一个当前没用的内核不会打断服务，下次启动自然生效。
+
+## 常见任务：只改配置
+
+| 想做的事 | 改哪里 | 之后做什么 |
+|---|---|---|
+| 用官方内核跑 eBPF 模式 | `MODE_CORE_ebpf='vanilla'` | 启动 |
+| 装一个自己的 eBPF 分支 | 新增 `CORE_myebpf_*` 三行、加进 `CORE_LIST`、`MODE_CORE_ebpf='myebpf'` | 启动（首次自动安装） |
+| 只更新官方内核 | 填 `CORE_vanilla_REPO` | 启动；想把更新自动化就设 `AUTO_UPDATE='on'` |
+| 换某个模式的出口内核 | 改 `MODE_CORE_<模式>` | 启动 |
+| 临时装某个固定版本 | 给该内核填 `URL='...'` | 启动 |
+| 不想让它联网自动装 | `AUTO_INSTALL='off'`，自己把文件放进 `bin/` | 启动 |
+
+## 执行顺序
 
 | 什么时候 | 谁在跑 | 干什么 |
 |---|---|---|
-| 平时 | 你 → `sh iface-auto.sh update ...` | 装/更新内核，必要时重启 |
-| 服务启动前 | `boxctl` → `iface-auto.sh` | 按当前模式把内核挂到 `bin/mihomo`、切覆写脚本、认网卡、放行转发 |
-| 启动 | `boxctl` → 核心 | 用 `bin/mihomo` 指向的内核启动 |
-
-只在 BoxProxy 里登记 `iface-auto.sh` 一件事：boxctl 启动前调用它（不带参数 = 启动前流程），你在终端里给它加子命令就是别的用途。
-
----
-
-## 常见任务速查
-
-| 想做的事 | 改哪里 | 跑什么 |
-|---|---|---|
-| 用 eBPF 模式跑官方内核 | `MODE_CORE_ebpf='vanilla'` | `sh iface-auto.sh show` 确认后启动 |
-| 装一个自己的 eBPF 分支 | 新增 `CORE_myebpf_*`，加进 `CORE_LIST`，`MODE_CORE_ebpf='myebpf'` | `sh iface-auto.sh update --core myebpf` |
-| 只更新官方内核 | 填 `CORE_vanilla_REPO` / `_ASSET` | `sh iface-auto.sh update --core vanilla` |
-| 临时装某个具体版本 | 命令行 `--url <地址>` 或 `--version tag --release-tag <标签>` | `sh iface-auto.sh update --core ebpf --url ...` |
-| 先看会不会换版本 | 不改 | `sh iface-auto.sh update --core ebpf --dry-run` |
-| 想知道某个模式到底用哪个文件 | 不改 | `sh iface-auto.sh show` |
-
----
+| 你在 App 里点启动 | `boxctl` → `iface-auto.sh` | 检查内核在不在 → 不在就按配置装 → 挂到 `bin/mihomo` → 切覆写脚本、认网卡、放行转发 |
+| 服务起来 | `boxctl` → 核心 | 用 `bin/mihomo` 指向的内核启动 |
+| 平时 | 你 | 只改 `box-core.conf`；不放心时可以跑 `show` 核对 |
 
 ## 出错怎么办
 
@@ -192,7 +182,7 @@ sh iface-auto.sh update --core <名字> --dry-run  # 只解析来源、打印步
 | `架构不符` | 下错架构 | 资产名里要有 `android-arm64` |
 | `新内核不接受当前启动配置` | 内核与配置不匹配（如官方版当 eBPF 用） | 没动任何文件，换回正确分支 |
 | `回滚到 ...` | 新内核起不来，已自动退回 | 服务已恢复；换版本再试 |
-| `warn: 内核 x 的文件 y 不存在，退回 vanilla` | 映射的内核还没装 | 先 `sh iface-auto.sh update --core x` |
+| `warn: 内核 x 的文件 y 不存在，退回 vanilla` | 映射的内核还没装，且自动安装没成功 | 看同一段日志里 `自动安装` 后面的报错（来源/网络/校验） |
 
 ---
 
@@ -219,7 +209,8 @@ sh iface-auto.sh update --core <名字> --dry-run  # 只解析来源、打印步
 
 启动前按顺序做这些（都有日志）：
 
-1. 读配置，解析「当前模式 → 内核名 → 文件 → 路径」；
+0. 读配置，看当前模式要用的内核在不在：不在就按来源自动安装（`AUTO_INSTALL`），配了 `AUTO_UPDATE='on'` 还会先查一次新版本；
+1. 解析「当前模式 → 内核名 → 文件 → 路径」；
 2. 该文件存在且可执行就 `ln -f` 到 `bin/mihomo`，不存在则退回 `vanilla` 内核并记一条 warn；
 3. 按模式切换覆写脚本清单（`tun-我的.js` / `tproxy-我的.js` / `ebpf-我的.js`）；
 4. 识别出口网卡（路由 → 各表默认路由，跳过 tun/dummy 等隧道）与下联（热点网卡）；

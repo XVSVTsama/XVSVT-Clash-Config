@@ -64,6 +64,8 @@ init_defaults() {
     LOG_FILE=${BOX_PRE_LOG:-/data/local/tmp/prestart.log}
     DUMMY_IFACE=${DUMMY_IFACE:-boxebpf0}
     CONFLICT_STOP=${CONFLICT_STOP:-auto}
+    AUTO_INSTALL=${AUTO_INSTALL:-on}
+    AUTO_UPDATE=${AUTO_UPDATE:-off}
     STOP_PACKAGES=${STOP_PACKAGES:-}
     EXTRA_PORTS=${EXTRA_PORTS:-}
     CORE_LIST=${CORE_LIST:-'ebpf vanilla'}
