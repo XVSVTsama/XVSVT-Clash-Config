@@ -1,39 +1,21 @@
 #!/system/bin/sh
-# BoxProxy 唯一执行脚本
+# BoxProxy 服务启动前的自动脚本（不联网、不下载）
 #
-# 一条命令三件事：
+# 由 boxctl 在启动前调用，只做本地的事：
+#   1. 读配置：当前模式用哪个内核、文件叫什么
+#   2. 把该内核硬链接到 bin/mihomo（文件不在就报警跳过，不会去下载）
+#   3. 切换覆写脚本清单里的模式脚本
+#   4. 识别出口网卡与下联，必要时挂 dummy
+#   5. 把网卡名写进覆写脚本字段
+#   6. 为下联放行 FORWARD
+#   7. 端口冲突检测
 #
-#   sh iface-auto.sh                 服务启动前流程（由 boxctl 自动调用，不用你管）
-#   sh iface-auto.sh show            看配置解析：模式 → 内核 → 文件 → 路径、来源与安装状态
-#   sh iface-auto.sh update [...]    安装 / 更新内核（首次安装也是它）
+# 装内核、更新内核属于手动操作，见同目录的 update-core.sh；查看配置用 show-config.sh。
 #
-# 配置只有一份：同目录的 box-core.conf（没有就用内置默认值）。
-# 功能都拆在 lib/ 里，本文件只做参数、加载模块、分发：
-#
-#   lib/00-common.sh   配置加载与默认值、CORE_*/MODE_CORE_* 取值、日志包装、校验
-#   lib/10-mode.sh     当前网络模式识别（也给 update 判断“现在用的是哪个内核”）
-#   lib/20-core.sh     模式 → 内核名 → 文件 → 路径 → ln -f bin/mihomo
-#   lib/30-scripts.sh  覆写脚本目录与 mihomo-scripts.yaml
-#   lib/40-net.sh      出口网卡、下联网卡、dummy、FORWARD
-#   lib/50-js-fields.sh interface-name / EBPF_SHARED_IFACE_SPEC
-#   lib/60-conflict.sh 端口冲突检测与停包
-#   lib/70-report.sh   show 的表格输出
-#   lib/80-release.sh  查仓库发布、匹配资产、拼下载地址（镜像 / Token）
-#   lib/82-fetch.sh    下载 → SHA-256 → 解包 → -v 自检 → -t 配置检查
-#   lib/84-install.sh  写入 / 备份 / 回滚、挂链、重启
-#   lib/88-run.sh      两条流水线：pre-start 与 update
-#
-# 常用参数：
-#   --dry-run            只打印将要做的改动（pre-start 与 update 都支持）
-#   --conf <文件>        指定配置文件（默认同目录 box-core.conf）
-#   --home <目录>        Box 工作目录
-#   --core <名字>        update 时指定内核（名字来自配置，默认 CORE_DEFAULT）
-#   --url / --repo / --asset / --version / --release-tag / --sha256 / --tag
-#   --api-base / --download-prefix / --token   临时覆盖配置里的下载选项
-#   -v, --verbose        pre-start 时把日志同时打到终端
-#   -h, --help           帮助
-#
-# 退出码：0 成功；1 已回滚（update）；2 参数或环境错误（未改动任何文件）
+# 用法：
+#   sh iface-auto.sh            正常执行（boxctl 自动调用）
+#   sh iface-auto.sh --dry-run  只打印将要做的改动，不写盘、不动 iptables
+#   sh iface-auto.sh -h         帮助
 #
 # ============================================================================
 # 以下为代码
@@ -43,19 +25,6 @@ DRY_RUN=0
 VERBOSE=0
 CONF=''
 BOX_HOME_CLI=''
-CMD=prestart
-CORE_NAME=''
-
-O_REPO=''
-O_ASSET=''
-O_VERSION=''
-O_RELEASE_TAG=''
-O_URL=''
-O_SHA256=''
-O_TAG=''
-O_API_BASE=''
-O_DOWNLOAD_PREFIX=''
-O_TOKEN=''
 
 usage() {
     awk 'NR > 1 {
@@ -75,25 +44,10 @@ need_value() {
 parse_args() {
     while [ $# -gt 0 ]; do
         case "$1" in
-            prestart | start) CMD=prestart; shift ;;
-            show | status) CMD=show; shift ;;
-            update | install) CMD=update; shift ;;
-            --show) CMD=show; shift ;;
             -n | --dry-run) DRY_RUN=1; shift ;;
             -v | --verbose) VERBOSE=1; shift ;;
             -c | --conf) need_value "$1" $#; CONF=$2; shift 2 ;;
             --home) need_value "$1" $#; BOX_HOME_CLI=$2; shift 2 ;;
-            --core) need_value "$1" $#; CORE_NAME=$2; shift 2 ;;
-            --repo) need_value "$1" $#; O_REPO=$2; shift 2 ;;
-            --asset) need_value "$1" $#; O_ASSET=$2; shift 2 ;;
-            --version) need_value "$1" $#; O_VERSION=$2; shift 2 ;;
-            --release-tag) need_value "$1" $#; O_RELEASE_TAG=$2; shift 2 ;;
-            --url) need_value "$1" $#; O_URL=$2; shift 2 ;;
-            --sha256) need_value "$1" $#; O_SHA256=$2; shift 2 ;;
-            --tag) need_value "$1" $#; O_TAG=$2; shift 2 ;;
-            --api-base) need_value "$1" $#; O_API_BASE=$2; shift 2 ;;
-            --download-prefix) need_value "$1" $#; O_DOWNLOAD_PREFIX=$2; shift 2 ;;
-            --token) need_value "$1" $#; O_TOKEN=$2; shift 2 ;;
             -h | --help) usage; exit 0 ;;
             *)
                 printf '错误: 未知参数 %s（用 -h 看用法）\n' "$1" >&2
@@ -107,11 +61,10 @@ load_modules() {
     BOX_CORE_LIB=1
     lib_dir=$(cd "$(dirname "$0")" 2>/dev/null && pwd)/lib
     if [ ! -d "$lib_dir" ]; then
-        printf '错误: 找不到模块目录 %s\n' "$lib_dir" >&2
-        printf '      请把仓库里的 lib/ 一起放到 scripts/ 下\n' >&2
+        printf '错误: 找不到模块目录 %s，请把 lib/ 一起放进 scripts/\n' "$lib_dir" >&2
         exit 2
     fi
-    for module in 00-common 10-mode 20-core 30-scripts 40-net 50-js-fields 60-conflict 70-report 80-release 82-fetch 84-install 88-run; do
+    for module in 00-common 10-mode 20-core 30-scripts 40-net 50-js-fields 60-conflict 88-run; do
         file=$lib_dir/$module.sh
         if [ ! -f "$file" ]; then
             printf '错误: 缺少模块 %s\n' "$file" >&2
@@ -134,21 +87,8 @@ main() {
     check_config
     detect_mode
 
-    case "$CMD" in
-        show)
-            show_config
-            exit 0
-            ;;
-        update)
-            LOG_TERMINAL=1
-            run_update
-            exit $?
-            ;;
-        *)
-            run_prestart
-            exit 0
-            ;;
-    esac
+    run_prestart
+    exit 0
 }
 
 main "$@"

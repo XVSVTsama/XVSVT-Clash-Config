@@ -1,39 +1,42 @@
-# BoxProxy 脚本（唯一入口 `iface-auto.sh`）
+# BoxProxy 脚本
 
-一个入口 + 一份配置 + 一组模块：
+分成两部分，共用同一份 `box-core.conf`：
 
-| 文件 | 作用 | 你会碰它吗 |
-|---|---|---|
-| `iface-auto.sh` | **唯一入口**。不带参数 = 服务启动前流程；`show` 看配置；`update` 装/更新内核 | 装一次、登记为启动前脚本 |
-| `box-core.conf.example` | 配置模板，带完整注释（就是这份脚本的说明书） | 复制一份改成 `box-core.conf` 后填 |
-| `lib/*.sh` | 入口的功能模块：配置、模式、内核、脚本清单、网卡、JS 字段、端口冲突、查发布、下载、写入、show | 不用管；别单独运行，也别登记 |
+| 部分 | 脚本 | 什么时候跑 | 联网吗 |
+|---|---|---|---|
+| **自动** | `iface-auto.sh` | BoxProxy 每次启动前自动调用 | **不联网**，只挂已装好的内核、认网卡、放行转发 |
+| **手动** | `update-core.sh` | 你想装/更新内核时 | 会下载，失败自动回滚 |
+| | `show-config.sh` | 想看配置解析成什么样 | 不联网 |
+| | `check-core.sh` | 想校验已装的内核 | 不联网 |
 
-入口、模块都**读同一份 `box-core.conf`**：你在配置里定好「哪个模式用哪个内核」「内核文件叫什么」「去哪儿下载」，脚本不用改。
+功能都在 `lib/` 里，四个脚本只是入口。配置文件只有一份：`box-core.conf`（模板 `box-core.conf.example`；填满的示例 `box-core.full-example.conf`，讲解见 [docs/box-core-example.md](docs/box-core-example.md)）。
 
 ---
 
-## 五分钟上手（不用敲命令）
+## 五分钟上手（4 步）
 
-1. **放文件**：把 `iface-auto.sh` 和整个 `lib/` 目录放进 BoxProxy 的脚本目录
-   `/data/user/0/com.boxproxy.box/files/box/scripts/`，`chmod 755 iface-auto.sh` 与 `lib/*.sh`，
-   并在 App 里把 `iface-auto.sh` 登记为「服务启动前脚本」。只登记这一个，`lib/` 不要登记。
-2. **填配置**：把 `box-core.conf.example` 复制成 `box-core.conf`，给要用的内核填上仓库：
+1. **放文件**：把 `iface-auto.sh`、`update-core.sh`、`show-config.sh`、`check-core.sh` 和整个 `lib/` 目录放进
+   `/data/user/0/com.boxproxy.box/files/box/scripts/`，`chmod 755` 这 4 个 `.sh` 与 `lib/*.sh`；
+   在 App 里把 **`iface-auto.sh`** 登记为「服务启动前脚本」（其它三个不用登记）。
+2. **填配置**：把 `box-core.conf.example` 复制成 `box-core.conf`，给要用的内核填仓库：
    ```sh
    CORE_ebpf_REPO='<owner>/<repo>'
    CORE_vanilla_REPO='<owner>/<repo>'
    ```
-   其余保持默认即可（`ASSET`、`VERSION`、模式映射都有默认值）。
-3. **直接用**：在 BoxProxy 里选好网络模式，启动。
+   其余（`ASSET`、`VERSION`、模式映射）都有默认值，可以不动。
+3. **装一次内核**（手动，只有装/升级时才需要）：
+   ```sh
+   sh update-core.sh --core ebpf
+   ```
+4. **用起来**：在 BoxProxy 里选网络模式 → 启动。启动前 `iface-auto.sh` 只做本地准备，不会联网。
 
-首次启动时，模式要用的内核还没装？脚本会按配置自动下载、校验、装好再挂上去，你不需要做别的事。
+之后想升级内核，重复第 3 步（或换个 `--core`）；启动流程始终不下载。
+
+---
 
 ## 配置文件说明
 
 完整注释在 `box-core.conf.example` 里，这里只讲结构和「哪些必须填」。
-
-想先看一份**填满的完整实例**（一台手机：eBPF 用自己的构建、其余模式用官方版、外加一个备用内核）：
-根目录的 `box-core.full-example.conf`，配套讲解见 **[docs/box-core-example.md](docs/box-core-example.md)**——
-里面按「读三行就能回答：哪个入站用哪个内核、点更新会拿哪个资产、想换要改哪几行」组织，还带三种变体（只用一个内核 / 两个 eBPF 构建对比 / 离线本地文件）。
 
 ### 1. 内核清单
 
@@ -54,10 +57,8 @@
 
 ```sh
 CORE_LIST='ebpf vanilla'   # 必须列出全部内核名，顺序即遍历顺序
-CORE_DEFAULT='ebpf'        # 不带 --core 时装这个
+CORE_DEFAULT='ebpf'        # update-core.sh 不带 --core 时装这个
 ```
-
-默认已定义 `ebpf`（`core-ebpf`）和 `vanilla`（`core-vanilla`），只有 `FILE` 有默认值，下载来源留空待你填。
 
 ### 2. 模式映射（哪个入站用哪个内核）
 
@@ -71,9 +72,7 @@ MODE_CORE_enhance='vanilla'
 MODE_CORE_unknown='vanilla'
 ```
 
-- 右边填上面定义过的内核**名字**，没定义的名字会直接报错；
-- 只有被某个模式用到的内核，才会在启动时被挂到 `bin/mihomo`；
-- 想用自己新加的内核跑 eBPF？把 `MODE_CORE_ebpf` 改成那个名字即可。
+右边的值必须是 `CORE_LIST` 里有的名字；只有被某个模式用到的内核，才会在启动时被挂到 `bin/mihomo`。
 
 ### 3. 启动前行为
 
@@ -86,45 +85,62 @@ MODE_CORE_unknown='vanilla'
 
 ---
 
-## 内核怎么装、怎么更新（自动）
+## 自动部分：`iface-auto.sh` 启动前做什么
 
-| 情况 | 脚本会怎么做 | 开关 |
-|---|---|---|
-| 当前模式要用的内核还没装 | 启动前按配置的来源自动安装，装完挂到 `bin/mihomo` | `AUTO_INSTALL='on'`（默认） |
-| 已经装了，想跟着仓库升级 | 每次启动前查一次来源，资产变了就自动升级 | `AUTO_UPDATE='on'`（默认 `off`，不联网） |
-| 完全不想让它联网 | 两个开关都设 `off`，自己把内核文件放进 `bin/` | — |
+由 `boxctl` 调用，**全程本地操作、不联网、不下载**：
 
-自动安装/升级同样走完整校验，不用你操心：
+1. 读配置，解析「当前模式 → 内核名 → 文件 → 路径」；
+2. 该文件存在且可执行就 `ln -f` 到 `bin/mihomo`；**不存在只记一条 warn**（提示去跑 `update-core.sh`），不会自己去下载；
+3. 按模式切换覆写脚本清单（`tun-我的.js` / `tproxy-我的.js` / `ebpf-我的.js`）；
+4. 识别出口网卡（路由 → 各表默认路由，跳过 tun/dummy 等隧道）与下联（热点网卡）；
+5. 没下联时给 eBPF 挂空转 dummy；
+6. 把出口写进 `interface-name`、把下联写进 `EBPF_SHARED_IFACE_SPEC`（值不变就不写）；
+7. 为下联放行 `FORWARD`；
+8. 端口冲突检测：只停真正占着核心端口的第三方应用（系统进程、本应用、查不到包名的一律不动）。
 
-1. 下载后比对 SHA-256（仓库发布带 `digest` 就用它）；
-2. 解包，确认是 `arm64` 的有效核心（配了 `TAG` 还会核对关键字）；
-3. 用新内核 `-t` 检查**当前启动配置**，不通过就放弃，不动任何文件；
-4. 备份旧文件后写入，属主 `root:net_admin`、权限 `6755`；
-5. 装完立刻挂到 `bin/mihomo`，服务随即用新内核启动；起不来会自动回滚到备份。
+预览它要做什么：
 
-来源写在配置里，三种写法：
+```sh
+sh iface-auto.sh --dry-run
+```
+
+---
+
+## 手动部分
+
+### `update-core.sh`：装 / 更新内核（会联网）
+
+```sh
+sh update-core.sh                        # 装/更新 CORE_DEFAULT
+sh update-core.sh --core <名字>          # 指定内核
+sh update-core.sh --core <名字> --dry-run  # 只看会拿哪个资产，不下载
+```
+
+首次安装与更新是同一条命令：文件不存在就写入，存在就先备份再替换。流程固定：
+
+解析来源 → 下载 → SHA-256（仓库带 `digest` 就用它）→ 解包 → `-v` 自检（要求 arm64，可配 `TAG` 核对）→ `-t` 检查当前启动配置 → 备份并写入（`root:net_admin`、`6755`）→ 当前模式用到它才重启，起不来自动回滚。
+
+来源写在配置里，四种写法：
 
 | 想怎么更新 | 配置 | 说明 |
 |---|---|---|
 | 跟最新稳定版 | `VERSION='latest'` | 取 `/releases/latest` |
 | 跟预发布（滚动标签） | `VERSION='prerelease'` | 取含预发布的最新一条 |
 | 锁定某标签 | `VERSION='tag'` + `RELEASE_TAG='...'` | 只有它变了才换 |
-| 固定地址 / 本地文件 | 填 `URL='https://...'` 或 `file:///...` | 不再查仓库 |
+| 固定地址 / 本地文件 | `URL='https://...'` 或 `file:///...` | 不查仓库 |
 
 备份在 `bin/<文件名>.bak-<时间>`，约 70 MB，确认稳定后自己删。
 
-## 可选：想核对配置时
-
-平时不需要敲命令，下面这些只是排错和检查用：
+### `show-config.sh`：看配置解析成什么样
 
 ```sh
-sh iface-auto.sh show        # 看内核 / 文件 / 路径 / 状态 / 来源 / 模式映射（不需要 root）
-sh iface-auto.sh --dry-run   # 预览“启动前会做什么”，不下载、不替换、不重启
+sh show-config.sh
 ```
 
-`show` 输出长这样（节选）：
-
 ```
+配置文件: .../scripts/box-core.conf
+Box 目录: /data/user/0/com.boxproxy.box/files/box
+
 内核名     文件             路径                       状态
 ebpf       core-ebpf        .../bin/core-ebpf          已安装
 vanilla    core-vanilla     .../bin/core-vanilla       已安装
@@ -137,38 +153,40 @@ ebpf       <owner>/<repo>        prerelease    *android-arm64*ebpf*.gz
 当前检测到的模式: ebpf → ebpf
 ```
 
-## 可选：立刻装/更新，不等下次启动
+不需要 root 也能跑（非 root 时「已安装/未安装」可能不准）。
 
-只有这两种情况你会用到：
-
-- 想现在就把某个内核装好（比如备用的 `spare`）；
-- 不想开 `AUTO_UPDATE`，但想手动升一次。
+### `check-core.sh`：校验已装的内核（不联网）
 
 ```sh
-sh iface-auto.sh update --core <名字>          # 装/更新指定内核
-sh iface-auto.sh update --core <名字> --dry-run  # 只看会拿哪个资产
+sh check-core.sh                  # 校验当前模式要用的内核
+sh check-core.sh --core vanilla   # 校验指定内核
 ```
 
-当前模式用到的内核更新完会自动重启服务；装一个当前没用的内核不会打断服务，下次启动自然生效。
+输出该内核的 `-v` 版本、`bin/mihomo` 是否指向它、以及它对当前启动配置的 `-t` 结果。
 
-## 常见任务：只改配置
+---
 
-| 想做的事 | 改哪里 | 之后做什么 |
+## 常见任务：只改配置，然后手动装一次
+
+| 想做的事 | 改哪里 | 之后 |
 |---|---|---|
-| 用官方内核跑 eBPF 模式 | `MODE_CORE_ebpf='vanilla'` | 启动 |
-| 装一个自己的 eBPF 分支 | 新增 `CORE_myebpf_*` 三行、加进 `CORE_LIST`、`MODE_CORE_ebpf='myebpf'` | 启动（首次自动安装） |
-| 只更新官方内核 | 填 `CORE_vanilla_REPO` | 启动；想把更新自动化就设 `AUTO_UPDATE='on'` |
+| 用官方内核跑 eBPF 模式 | `MODE_CORE_ebpf='vanilla'` | 直接启动（文件已在） |
+| 换一个自己的 eBPF 分支 | 新增 `CORE_myebpf_*`、加进 `CORE_LIST`、`MODE_CORE_ebpf='myebpf'` | `sh update-core.sh --core myebpf`，再启动 |
+| 升级官方内核 | 填好 `CORE_vanilla_REPO` | `sh update-core.sh --core vanilla` |
 | 换某个模式的出口内核 | 改 `MODE_CORE_<模式>` | 启动 |
-| 临时装某个固定版本 | 给该内核填 `URL='...'` | 启动 |
-| 不想让它联网自动装 | `AUTO_INSTALL='off'`，自己把文件放进 `bin/` | 启动 |
+| 临时装某个固定版本 | 给该内核填 `URL='...'` | `sh update-core.sh --core <名字>` |
+
+---
 
 ## 执行顺序
 
 | 什么时候 | 谁在跑 | 干什么 |
 |---|---|---|
-| 你在 App 里点启动 | `boxctl` → `iface-auto.sh` | 检查内核在不在 → 不在就按配置装 → 挂到 `bin/mihomo` → 切覆写脚本、认网卡、放行转发 |
+| 你想装/升级内核 | 你 → `update-core.sh` | 下载、校验、写入，必要时重启服务 |
+| 你在 App 里点启动 | `boxctl` → `iface-auto.sh` | 把已装好的内核挂到 `bin/mihomo`、切覆写脚本、认网卡、放行转发（不联网） |
 | 服务起来 | `boxctl` → 核心 | 用 `bin/mihomo` 指向的内核启动 |
-| 平时 | 你 | 只改 `box-core.conf`；不放心时可以跑 `show` 核对 |
+
+---
 
 ## 出错怎么办
 
@@ -176,66 +194,45 @@ sh iface-auto.sh update --core <名字> --dry-run  # 只看会拿哪个资产
 |---|---|---|
 | `配置错误：MODE_CORE_x 指向的内核 'y' 不在 CORE_LIST 里` | 映射写了个没定义的名字 | 把 `y` 加进 `CORE_LIST` 并定义 `CORE_y_FILE`，或改映射 |
 | `配置错误：CORE_x_FILE 只能写文件名` | 文件字段里带了路径 | 只留文件名，路径固定是 `bin/` |
-| `没有匹配 '...' 的资产` | 资产名匹配不对 | 照发布页的文件名把版本/哈希换成 `*` |
-| `查询失败` / `HTTP 403` | 网络不通或 API 限流 | 用 `API_BASE` 指镜像、填 `TOKEN`，或稍后再试 |
+| `warn: 内核 x 的文件 y 不存在……` | 还没装 | `sh update-core.sh --core x` |
+| `没有匹配 '...' 的资产` | 资产名匹配不对 | 照发布页文件名把版本/哈希换成 `*` |
+| `查询失败` / `HTTP 403` | 网络不通或 API 限流 | `API_BASE` 指镜像、填 `TOKEN`，或稍后再试 |
 | `SHA-256 不匹配` | 文件不完整或被改 | 重跑；反复出现换来源 |
 | `架构不符` | 下错架构 | 资产名里要有 `android-arm64` |
 | `新内核不接受当前启动配置` | 内核与配置不匹配（如官方版当 eBPF 用） | 没动任何文件，换回正确分支 |
 | `回滚到 ...` | 新内核起不来，已自动退回 | 服务已恢复；换版本再试 |
-| `warn: 内核 x 的文件 y 不存在，退回 vanilla` | 映射的内核还没装，且自动安装没成功 | 看同一段日志里 `自动安装` 后面的报错（来源/网络/校验） |
 
 ---
 
-## `iface-auto.sh` 细节
-
-入口文件只做三件事：解析参数与子命令、按顺序加载 `lib/` 里的模块、分发到对应流水线。功能全在 `lib/`：
+## 模块结构（`lib/`）
 
 | 模块 | 谁用 | 负责 |
 |---|---|---|
-| `lib/00-common.sh` | 全部 | 配置加载与默认值、`CORE_*` / `MODE_CORE_*` 取值、日志与执行包装、配置校验 |
-| `lib/10-mode.sh` | 全部 | 识别当前网络模式（`BOX_MODE` → `runs.log` → `BOX_PROXY_MODE`），也给 update 判断「现在用的是哪个内核」 |
-| `lib/20-core.sh` | pre-start | 模式 → 内核名 → 文件 → 路径，缺文件退回 vanilla，`ln -f` 到 `bin/mihomo` |
-| `lib/30-scripts.sh` | pre-start | 定位覆写脚本目录、改写 `mihomo-scripts.yaml` 里的模式脚本 |
-| `lib/40-net.sh` | pre-start | 出口网卡、下联网卡、dummy 网卡、`FORWARD` 放行 |
-| `lib/50-js-fields.sh` | pre-start | 出口写进 `interface-name`、下联写进 `EBPF_SHARED_IFACE_SPEC` |
-| `lib/60-conflict.sh` | pre-start | 端口冲突检测与按规则停包 |
-| `lib/70-report.sh` | show | `show` 子命令的统一表格（内核 / 来源 / 映射） |
-| `lib/80-release.sh` | update | 查仓库发布、匹配资产、拼下载地址（含镜像与 Token） |
-| `lib/82-fetch.sh` | update | 下载 → SHA-256 → 解包 → `-v` 自检 → `-t` 配置检查 |
-| `lib/84-install.sh` | update | 写入/备份/回滚、挂链、重启 |
-| `lib/88-run.sh` | 全部 | 两条流水线：`run_prestart`（启动前）与 `run_update`（装/更新） |
+| `00-common.sh` | 全部 | 配置加载与默认值、`CORE_*` / `MODE_CORE_*` 取值、日志、校验 |
+| `10-mode.sh` | 全部 | 识别当前网络模式（`BOX_MODE` → `runs.log` → `BOX_PROXY_MODE`） |
+| `20-core.sh` | iface-auto | 模式 → 内核 → 文件 → 路径，缺文件退回 vanilla，`ln -f` |
+| `30-scripts.sh` | iface-auto | 覆写脚本目录与 `mihomo-scripts.yaml` |
+| `40-net.sh` | iface-auto | 出口网卡、下联网卡、dummy、`FORWARD` |
+| `50-js-fields.sh` | iface-auto | `interface-name` / `EBPF_SHARED_IFACE_SPEC` |
+| `60-conflict.sh` | iface-auto | 端口冲突检测与停包 |
+| `70-report.sh` | show-config | 配置与状态表格 |
+| `80-release.sh` | update-core | 查发布、匹配资产、拼下载地址 |
+| `82-fetch.sh` | update-core | 下载 → SHA-256 → 解包 → `-v` → `-t` |
+| `84-install.sh` | update-core | 写入 / 备份 / 回滚、挂链、重启 |
+| `88-run.sh` | iface-auto / update-core | 两条流水线：`run_prestart`、`run_update` |
 
-模块只能被入口 `. ` 加载；单独 `sh lib/10-mode.sh` 会被拒绝（退出码 2），避免误跑。
-
-启动前按顺序做这些（都有日志）：
-
-0. 读配置，看当前模式要用的内核在不在：不在就按来源自动安装（`AUTO_INSTALL`），配了 `AUTO_UPDATE='on'` 还会先查一次新版本；
-1. 解析「当前模式 → 内核名 → 文件 → 路径」；
-2. 该文件存在且可执行就 `ln -f` 到 `bin/mihomo`，不存在则退回 `vanilla` 内核并记一条 warn；
-3. 按模式切换覆写脚本清单（`tun-我的.js` / `tproxy-我的.js` / `ebpf-我的.js`）；
-4. 识别出口网卡（路由 → 各表默认路由，跳过 tun/dummy 等隧道）与下联（热点网卡）；
-5. 没下联时给 eBPF 挂空转 dummy；
-6. 把出口写进 `interface-name`、把下联写进 `EBPF_SHARED_IFACE_SPEC`（值不变就不写）；
-7. 为下联放行 `FORWARD`；
-8. 端口冲突检测：只停真正占着核心端口的第三方应用（系统进程、本应用、查不到包名的一律不动）。
-
-已知边界：
-
-- 下联依赖 `dumpsys tethering` 的 `tetherableWifiRegexs`，取不到时退回内置正则；下联必须带 IPv4 地址，纯 IPv6 共享识别不到。
-- 端口检测依赖 `ss -lntup` 与 `/data/system/packages.list`；读不到就只记日志、不采取行动。
-- 只在 Android（root）上验证。
+模块只能被入口 `.` 加载，单独执行会被拒绝（退出码 2）。
 
 ---
 
 ## 维护
 
 ```sh
-sh -n iface-auto.sh                           # 语法（入口）
-for f in lib/*.sh; do sh -n "$f"; done        # 语法（模块）
-sh iface-auto.sh show                         # 配置解析是否正确
-sh iface-auto.sh show                         # 内核来源与安装状态
-sh iface-auto.sh --dry-run                    # 启动前脚本会做什么
-sh iface-auto.sh update --core <名字> --dry-run  # 会下载哪个资产
+for f in iface-auto.sh update-core.sh show-config.sh check-core.sh; do sh -n "$f"; done
+for f in lib/*.sh; do sh -n "$f"; done          # 语法
+sh show-config.sh                               # 配置解析是否符合预期
+sh iface-auto.sh --dry-run                      # 启动前会做什么
+sh update-core.sh --core <名字> --dry-run        # 会下载哪个资产
 ```
 
-`show` 与 `--dry-run` 都不写盘、不替换、不重启。改动脚本后建议按上面四条顺序验一遍。
+`show-config`、`--dry-run` 都不写盘、不替换、不重启。

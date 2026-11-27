@@ -153,29 +153,31 @@ CORE_ebpf_URL='file:///sdcard/Download/core-ebpf.gz'
 
 ---
 
-## 六、用起来：只需要改配置和启动
+## 六、用起来：手动装一次，之后启动即用
 
 ```sh
 # 1. 抄配置
 cp box-core.full-example.conf box-core.conf     # 放到 scripts/ 下，填好 REPO
 
-# 2. 在 BoxProxy 里选 eBPF 模式，启动
-#    首次启动：ebpf 内核还没装 → 自动按上面的来源下载、校验、装好、挂到 bin/mihomo
+# 2. 手动装一次要用的内核（会联网；以后升级也是这条）
+sh update-core.sh --core ebpf
+sh update-core.sh --core vanilla
+
+# 3. BoxProxy 里选 eBPF 模式启动
+#    启动前 iface-auto.sh 只把已装好的 core-ebpf 挂到 bin/mihomo，不联网
 ```
 
-之后什么都不用管：
+为什么分开：启动是高频动作，联网下载是低频动作。把下载留在手动脚本里，启动流程就不会因为网络慢、限流或仓库改资产名而卡住或变慢。
 
-| 场景 | 脚本自己处理 |
-|---|---|
-| 换到 TUN 模式，`core-vanilla` 还没装 | 启动前自动装官方版，再挂载 |
-| 想跟着仓库升级 eBPF 构建 | 把 `AUTO_UPDATE='on'`，每次启动前查一次资产名，变了就升级 |
-| 只想跑现有文件、不联网 | `AUTO_INSTALL='off'`、`AUTO_UPDATE='off'`，自己把文件放进 `bin/` |
-| 想确认配成什么样 | 可选：`sh iface-auto.sh show` |
+| 想做的事 | 手动跑 | 自动部分 |
+|---|---|---|
+| 首次安装 | `sh update-core.sh --core ebpf` | 启动时挂上去 |
+| 升级到最新 | 同一条命令 | 启动时用新文件 |
+| 装个备用的 | `sh update-core.sh --core spare` | 不参与启动（没被模式引用） |
+| 只看配置 | `sh show-config.sh` | — |
+| 校验已装内核 | `sh check-core.sh` | — |
 
-自动安装/升级的内部顺序是固定的：解析来源 → 下载 → SHA-256 → 解包 → `-v` 自检 → `-t` 检查当前启动配置 → 备份并替换 → 挂链 → 启动服务。任何一步失败都不会留下半成品：首次安装失败会放弃并继续尝试启动（缺内核会在日志里写明），升级失败会回滚到备份。
-
-> 想立刻装某个内核（比如备用的 `spare`），才需要手动跑一次：
-> `sh iface-auto.sh update --core spare`。这是可选项，不跑也能正常使用其它模式。
+装/更新内部的顺序是固定的：解析来源 → 下载 → SHA-256 → 解包 → `-v` 自检 → `-t` 检查当前启动配置 → 备份并替换 → 当前模式用到它才重启。任何一步失败都不会留下半成品：首次安装失败不会写入，升级失败会回滚到备份。
 
 ---
 
