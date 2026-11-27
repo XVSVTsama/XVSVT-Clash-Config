@@ -5,10 +5,10 @@
 # 这里只关心「内核从哪来」：仓库、资产名、版本策略、校验。
 # 哪个入站用哪个内核、文件叫什么，在 box-auto.conf 里。
 #
-# 怎么用：
-#   1. 把本文件复制成同目录下的 box-update.conf（去掉 .example 后缀）；
+# 怎么用（只用文件管理器复制改名，然后编辑本文件）：
+#   1. 把本文件复制一份，改名成 box-update.conf（去掉 .example 后缀）；
 #   2. 给要用的内核填 REPO（其余有默认值，可以不动）；
-#   3. 装/更新：sh update-core.sh --core ebpf
+#   3. 装/更新：把 CORE_DEFAULT 指到那个内核，然后在 App 的「工具 → 脚本」里点 update-core.sh
 #
 # 语法：KEY='值'，一行一个。只写变量赋值，不要写别的命令。
 #
@@ -19,7 +19,7 @@
 
 CORE_LIST='ebpf vanilla'
 
-# 不带 --core 时装哪个
+# 在「工具 → 脚本」里点 update-core.sh 时装哪个
 CORE_DEFAULT='ebpf'
 
 # 每个内核的字段：
