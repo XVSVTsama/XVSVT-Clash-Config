@@ -15,7 +15,7 @@
 #   conf~星尘 / conf=星尘         状态输出或启动配置里是否出现该关键字
 #   tethering=on / off          是否开着热点/共享（有下联即 on）
 #   installed=ebpf               该内核文件存在且可执行
-#   exists=mihomo-ebpf           bin/ 下存在该文件
+#   exists=ebpf-我的           bin/ 下存在该文件
 #   env=NAME:value               环境变量等于某值
 # 组合：not / ! 、and 、or 、( )，优先级 括号 > not > and > or
 
