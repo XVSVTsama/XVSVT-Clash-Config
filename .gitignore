@@ -1,2 +1,3 @@
-# 本地填写的更新配置（含下载地址），不要提交
+# 本地填写的配置（含下载地址、Token），不要提交
+box-core.conf
 update-core.conf

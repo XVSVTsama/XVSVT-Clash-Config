@@ -1,0 +1,94 @@
+# ============================================================================
+# box-core.conf —— iface-auto.sh 与 update-core.sh 共用的配置
+# ============================================================================
+#
+# 怎么用：
+#   1. 把本文件复制成同目录下的 box-core.conf（去掉 .example 后缀）；
+#   2. 只改你需要的行，其余保持不动；
+#   3. 两个脚本都会自动读它，不用改脚本本身。
+#
+# 语法：KEY='值'，一行一个。只写变量赋值，不要写别的命令。
+# 优先级：命令行参数 > 本文件 > 脚本内置默认值。
+#
+# 看完想确认自己配成什么样，跑（不需要 root，也不会改任何东西）：
+#   sh update-core.sh --show      列出每个内核：名字、文件、路径、来源、是否已安装
+#   sh iface-auto.sh --show       列出每种入站模式用哪个内核、文件在哪、在不在
+#
+# ============================================================================
+# 一、内核清单（必看）
+# ============================================================================
+# 每个内核有一个「名字」，下面用 CORE_<名字>_<字段> 描述它。
+# 名字只能用字母、数字、下划线；文件名只写文件名，不要带路径。
+#
+#   CORE_<名字>_FILE      必填。放在 bin/ 下的文件名，例如 core-ebpf
+#   CORE_<名字>_REPO      可选。GitHub 仓库 owner/repo，update-core.sh 用它查新版本
+#   CORE_<名字>_ASSET     可选。资产名匹配（默认 glob，* 和 ? 生效）
+#   CORE_<名字>_VERSION   可选。latest（默认）| prerelease | tag
+#   CORE_<名字>_RELEASE_TAG  VERSION=tag 时必填
+#   CORE_<名字>_URL       可选。固定下载地址；填了就不再查仓库
+#   CORE_<名字>_SHA256    可选。手动校验值（仓库发布带 digest 时自动使用）
+#   CORE_<名字>_TAG       可选。新内核 -v 输出里必须包含的关键字
+#
+# 下面两个是默认配置，对应「eBPF 内核」和「官方内核」：
+
+CORE_ebpf_FILE='core-ebpf'
+CORE_ebpf_REPO=''
+CORE_ebpf_ASSET='*android-arm64*ebpf*.gz'
+CORE_ebpf_VERSION='prerelease'
+CORE_ebpf_RELEASE_TAG=''
+CORE_ebpf_URL=''
+CORE_ebpf_SHA256=''
+CORE_ebpf_TAG=''
+
+CORE_vanilla_FILE='core-vanilla'
+CORE_vanilla_REPO=''
+CORE_vanilla_ASSET='*android-arm64*.gz'
+CORE_vanilla_VERSION='latest'
+CORE_vanilla_RELEASE_TAG=''
+CORE_vanilla_URL=''
+CORE_vanilla_SHA256=''
+CORE_vanilla_TAG=''
+
+# 内核清单：写在这里的名字才算“已定义”，脚本会按这个顺序遍历。
+CORE_LIST='ebpf vanilla'
+
+# 不带 --core 时，update-core.sh 默认安装/更新哪一个
+CORE_DEFAULT='ebpf'
+
+# 想加第三个内核？照抄一段，换个名字即可，例如：
+# CORE_smart_FILE='core-smart'
+# CORE_smart_REPO=''
+# CORE_smart_ASSET='*android-arm64*.gz'
+# CORE_smart_VERSION='prerelease'
+#
+# 加完记得把它写进 CORE_LIST，并写进下面的模式映射，否则没有入站会用到它。
+
+# ============================================================================
+# 二、入站模式 → 用哪个内核（重点）
+# ============================================================================
+# 左边是 BoxProxy 的网络模式，右边填上面定义过的内核「名字」。
+# 只有被某个模式用到的内核才会被 iface-auto.sh 挂到 bin/mihomo。
+
+MODE_CORE_tun='vanilla'
+MODE_CORE_tproxy='vanilla'
+MODE_CORE_ebpf='ebpf'
+MODE_CORE_redirect='vanilla'
+MODE_CORE_mixed='vanilla'
+MODE_CORE_enhance='vanilla'
+MODE_CORE_unknown='vanilla'
+
+# ============================================================================
+# 三、启动前脚本的行为（都有默认值，一般不用改）
+# ============================================================================
+
+# eBPF 没有下联时挂的空转网卡名
+DUMMY_IFACE='boxebpf0'
+
+# 端口冲突：auto 停掉占着端口的第三方应用 | log 只记录 | off 不检测
+CONFLICT_STOP='auto'
+
+# 额外无条件停止的包名（空格分隔），例如 'com.example.a com.example.b'
+STOP_PACKAGES=''
+
+# 除了启动配置里的端口，额外要检查冲突的端口（空格分隔）
+EXTRA_PORTS=''
