@@ -3,8 +3,13 @@
 #
 # 做两件事：
 #   1. 把 box-auto.conf 的 HOTSPOT_SHARE 改成目标值（状态留在配置里，可追溯）
-#   2. 在 mihomo 覆写脚本的 rules 第一条插入一条带标记的规则，
-#      由核心规则决定热点客户端出口，不动路由、不动 iptables
+#   2. 在 mihomo 覆写脚本的 rules 最前面插入带标记的规则，由核心规则决定
+#      热点客户端的出口，不动路由、不动 iptables
+#
+# 规则分两类：
+#   - IPv4：一条 SRC-IP-CIDR，覆盖整个热点网段（新设备连上也有效）
+#   - IPv6：热点客户端与手机共用运营商同一个 /64，按网段写会连带把手机自己
+#     变成直连，所以按在线客户端的 /128 逐条写（取自下联网卡的邻居表）
 #
 # 用法：
 #   sh hotspot-on.sh               热点客户端直连（direct）
@@ -15,6 +20,7 @@
 # 网段默认按当前下联网卡地址自动算；要写死就在 box-auto.conf 里设 HOTSPOT_CIDR。
 # 改完仍需「重新生成启动配置」再重启或重载服务，规则才进入内核。
 # 覆写脚本被重新部署后标记行会消失，需要再跑一次本脚本。
+# IPv6 客户端离线或换了临时地址后，重跑本脚本即可刷新那份 /128 清单。
 # ============================================================================
 
 BOX_HOME=/data/user/0/com.boxproxy.box/files/box
@@ -61,7 +67,7 @@ set_conf() {     # $1 = 值
 # ---------------- 网卡与网段 ----------------
 
 downstream_iface() {
-    local pattern upstream dev iface
+    local pattern upstream iface
     pattern=$(dumpsys tethering 2>/dev/null \
         | sed -n 's/.*tetherableWifiRegexs: \[\(.*\)\]/\1/p' | head -1 \
         | sed 's/\\d/[0-9]/g; s/, /|/g')
@@ -103,6 +109,23 @@ iface_ipv4_cidr() { # $1 = 网卡
     netmask_cidr "${spec%/*}" "${spec#*/}"
 }
 
+# 下联邻居表里的全局 IPv6 地址（排除本机自己的）
+client_ipv6_addrs() {   # $1 = 网卡
+    local iface=$1 mine
+    mine=$(ip -o -6 addr show dev "$iface" 2>/dev/null | awk '{print $4}' | cut -d/ -f1 | tr '\n' ' ')
+    # 不筛状态：客户端的临时地址经常出现 FAILED 但仍在使用，宁可多写一条 /128
+    ip -6 neigh show dev "$iface" 2>/dev/null | awk -v mine="$mine" '
+        BEGIN { n = split(mine, own, " ") }
+        {
+            addr = $1
+            if (addr !~ /:/) next
+            if (addr ~ /^fe80:/) next
+            for (i = 1; i <= n; i++) if (own[i] == addr) next
+            if (seen[addr]++) next
+            print addr
+        }'
+}
+
 # ---------------- 写规则 ----------------
 
 drop_marked() {     # $1 = 文件，删掉带标记的行
@@ -114,40 +137,41 @@ drop_marked() {     # $1 = 文件，删掉带标记的行
     mv -f "$tmp" "$file"
 }
 
-write_rule() {      # $1 = 文件, $2 = 规则行
-    local file=$1 tmp
+insert_block() {    # $1 = 文件, $2 = 规则块文件（多行）
+    local file=$1 block=$2 tmp
     tmp=$file.tmp.$$
-    awk -v anchor="$ANCHOR" -v rule="$2" '
+    awk -v anchor="$ANCHOR" -v block="$block" '
         { print }
-        $0 == anchor && !done { print rule; done = 1 }
+        $0 == anchor && !done {
+            while ((getline line < block) > 0) print line
+            close(block)
+            done = 1
+        }
     ' "$file" >"$tmp" || { rm -f "$tmp"; return 1; }
     chmod 644 "$tmp" 2>/dev/null
     mv -f "$tmp" "$file"
 }
 
-apply_rule() {      # $1 = 规则行（空 = 只清旧标记）
-    local rule=$1 file touched any=0
+apply_block() {     # $1 = 规则块文件（空文件 = 只清旧标记）
+    local block=$1 file any=0 dropped
     for file in "$JS_DIR"/*.js; do
         [ -f "$file" ] || continue
         grep -qxF "$ANCHOR" "$file" || continue
         any=1
-        touched=0
         if [ "$DRY_RUN" = 1 ]; then
-            if [ -n "$rule" ]; then
-                log "  [dry-run] $(basename "$file"): 插入 $(printf '%s' "$rule" | sed 's/^ *//')"
-            else
-                log "  [dry-run] $(basename "$file"): 删除标记行"
-            fi
+            log "  [dry-run] $(basename "$file"):"
+            if grep -q "// $MARK\$" "$file"; then log "      删除旧的标记行" ; fi
+            sed 's/^/      + /' "$block" 2>/dev/null
             continue
         fi
-        if grep -q "// $MARK\$" "$file"; then
-            drop_marked "$file" && touched=1
+        dropped=0
+        grep -q "// $MARK\$" "$file" && { drop_marked "$file" && dropped=1 ; }
+        if [ -s "$block" ]; then
+            insert_block "$file" "$block" || { log "warn: 写入 $(basename "$file") 失败" ; continue ; }
+            log "  $(basename "$file"): 已更新$([ "$dropped" = 1 ] && printf '（替换旧标记行）')"
+        else
+            [ "$dropped" = 1 ] && log "  $(basename "$file"): 已清理"
         fi
-        if [ -n "$rule" ]; then
-            write_rule "$file" "$rule" || { log "warn: 写入 $(basename "$file") 失败" ; continue ; }
-            touched=1
-        fi
-        [ "$touched" = 1 ] && log "  $(basename "$file"): 已更新"
     done
     [ "$any" = 1 ] || log "  没有可用的覆写脚本（$JS_DIR 下没有 rules 数组）"
 }
@@ -155,7 +179,7 @@ apply_rule() {      # $1 = 规则行（空 = 只清旧标记）
 # ---------------- 主流程 ----------------
 
 main() {
-    local iface cidr rule
+    local iface cidr block v6 n
     case "${1:-}" in
         -h | --help) usage ; exit 0 ;;
         -n | --dry-run) DRY_RUN=1; shift ;;
@@ -164,31 +188,46 @@ main() {
     case "$VALUE" in '' | off | OFF) die "hotspot-on.sh 不接受 off，用 hotspot-off.sh" ;; esac
     case "$VALUE" in *'"'* | *'\'*) die "组名里不能有引号或反斜杠" ;; esac
     [ "$VALUE" = DIRECT ] && VALUE=direct
-    [ "$VALUE" = direct ] || [ -n "$VALUE" ] || die "出口值不能为空"
+    if [ "$VALUE" = direct ]; then
+        EXIT=DIRECT
+    else
+        EXIT=$VALUE
+    fi
 
+    iface=$(downstream_iface) || die "找不到热点网卡：先开热点让客户端连上，或在 box-auto.conf 里写 HOTSPOT_CIDR"
     cidr=$(conf_value HOTSPOT_CIDR)
     if [ -z "$cidr" ]; then
-        iface=$(downstream_iface) || die "找不到热点网卡：先开热点让客户端连上，或在 box-auto.conf 里写 HOTSPOT_CIDR"
         cidr=$(iface_ipv4_cidr "$iface") || die "读不到 $iface 的 IPv4 地址"
-        log "热点共享: 下联网卡 $iface → 网段 $cidr"
+        log "热点共享: 下联网卡 $iface → IPv4 网段 $cidr"
     else
-        log "热点共享: 使用配置里的网段 $cidr"
+        log "热点共享: 使用配置里的 IPv4 网段 $cidr"
     fi
 
-    if [ "$VALUE" = direct ]; then
-        log "配置: HOTSPOT_SHARE='direct'（热点客户端直连）"
-        rule="    \"SRC-IP-CIDR,$cidr,DIRECT\", // $MARK"
+    block=${TMPDIR:-/data/local/tmp}/hotspot-rules.$$
+    : >"$block" || die "无法创建临时文件 $block"
+
+    printf '    "SRC-IP-CIDR,%s,%s", // %s\n' "$cidr" "$EXIT" "$MARK" >>"$block"
+
+    v6=$(client_ipv6_addrs "$iface")
+    n=0
+    for addr in $v6; do
+        printf '    "SRC-IP-CIDR6,%s/128,%s", // %s\n' "$addr" "$EXIT" "$MARK" >>"$block"
+        n=$((n + 1))
+    done
+    if [ "$n" = 0 ]; then
+        log "热点共享: 当前没有在线 IPv6 客户端，只写 IPv4 规则（有 v6 设备连上后重跑一次）"
     else
-        log "配置: HOTSPOT_SHARE='$VALUE'（热点客户端走该策略组）"
-        rule="    \"SRC-IP-CIDR,$cidr,$VALUE\", // $MARK"
+        log "热点共享: 在线 IPv6 客户端 $n 个，逐个写 /128"
     fi
 
+    log "配置: HOTSPOT_SHARE='$VALUE'，出口 $EXIT"
     if [ "$DRY_RUN" = 1 ]; then
-        log "[dry-run] 不写配置，也不写 js"
+        log "[dry-run] 不写配置"
     else
         set_conf "$VALUE"
     fi
-    apply_rule "$rule"
+    apply_block "$block"
+    rm -f "$block"
 
     if [ "$DRY_RUN" = 1 ]; then
         log "dry-run 完成，未写任何文件"
