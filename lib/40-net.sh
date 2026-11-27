@@ -49,8 +49,7 @@ detect_downstream() {
 
 detect_upstream() {
     local dev iface
-    dev=${BOX_NETWORK_IFACE:-}
-    [ -n "$dev" ] || dev=$(ip route get 1.1.1.1 2>/dev/null | iface_of_dev)
+    dev=$(ip route get 1.1.1.1 2>/dev/null | iface_of_dev)
     [ -n "$dev" ] || dev=$(ip route show default 2>/dev/null | iface_of_dev)
     is_tunnel_iface "$dev" && dev=''
     if [ -z "$dev" ]; then

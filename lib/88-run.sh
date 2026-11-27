@@ -48,7 +48,7 @@ install_core() {
     CORE_NAME=$1
     TARGET=$BIN_DIR/$(core_file "$CORE_NAME")
     STARTUP=$BOX_HOME/run/state/config/startup-config
-    STAGE=${TMPDIR:-/data/local/tmp}/box-core-install.$$
+    STAGE=$TMP_BASE/box-core-install.$$
     mkdir -p "$STAGE" 2>/dev/null || die "无法创建临时目录 $STAGE"
     trap cleanup EXIT INT TERM
 

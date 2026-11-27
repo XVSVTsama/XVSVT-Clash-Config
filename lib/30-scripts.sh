@@ -27,14 +27,7 @@ mode_script_name() {
 }
 
 resolve_js_dir() {
-    local candidate
-    for candidate in "${BOX_JS_SCRIPTS_DIR:-}" "${BOX_SCRIPTS_DIR:-}"; do
-        if [ -n "$candidate" ] && ls "$candidate"/*.js >/dev/null 2>&1; then
-            JS_DIR=$candidate
-            return 0
-        fi
-    done
-    JS_DIR=$BOX_BASE/mihomo/scripts
+    JS_DIR=$BOX_HOME/mihomo/scripts
 }
 
 rewrite_manifest() {
@@ -59,7 +52,7 @@ select_script() {
     header='# BoxProxy mihomo override scripts, in execution order.'
 
     if grep -qE '^- *"(tun|tproxy|ebpf)-我的\.js"$' "$manifest" 2>/dev/null; then
-        tmp=${TMPDIR:-/data/local/tmp}/box-scripts.$$
+        tmp=$TMP_BASE/box-scripts.$$
         printf '%s\n' "$header" >"$tmp"
         rewrite_manifest "$manifest" "$want" "$tmp"
         if commit_manifest "$manifest" "$tmp"; then

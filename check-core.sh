@@ -1,18 +1,14 @@
 #!/system/bin/sh
 # 手动：校验已经装好的内核（本地，不联网）
 #
-# 做的事：
-#   1. 跑 <内核> -v，打印版本；
-#   2. 用 <内核> -t 检查当前启动配置能不能被它接受；
-#   3. 报告 bin/mihomo 现在指向哪个内核。
+# 默认校验「按规则表为当前模式选出的那个内核」；也可以 --core 指定。
+# 报告：版本、bin/mihomo 是否指向它、它对当前启动配置的 -t 结果。
 #
 # 用法：
-#   sh check-core.sh                 校验当前模式要用的内核
-#   sh check-core.sh --core <名字>   校验指定内核
+#   sh check-core.sh                 校验规则选出的内核
+#   sh check-core.sh --core vanilla  校验指定内核
 #   sh check-core.sh -h
 
-CONF_AUTO=''
-BOX_HOME_CLI=''
 CORE_NAME=''
 
 BOX_CORE_LIB=1
@@ -49,13 +45,8 @@ parse_args() {
     while [ $# -gt 0 ]; do
         case "$1" in
             --core) need_value "$1" $#; CORE_NAME=$2; shift 2 ;;
-            -c | --conf) need_value "$1" $#; CONF_AUTO=$2; shift 2 ;;
-            --home) need_value "$1" $#; BOX_HOME_CLI=$2; shift 2 ;;
             -h | --help) usage; exit 0 ;;
-            *)
-                printf '错误: 未知参数 %s（用 -h 看用法）\n' "$1" >&2
-                exit 2
-                ;;
+            *) printf '错误: 未知参数 %s（用 -h 看用法）\n' "$1" >&2; exit 2 ;;
         esac
     done
 }
@@ -78,7 +69,7 @@ main() {
             die "规则表没有选出可用内核（用 show-config.sh 看求值过程）"
         fi
     fi
-    in_list "$CORE_NAME" || die "内核 '$CORE_NAME' 不在 CORE_LIST 里"
+    in_list "$CORE_NAME" || die "内核 '$CORE_NAME' 不在配置里"
     target=$(core_path "$CORE_NAME")
     [ -f "$target" ] || die "内核 $CORE_NAME 还没装：$target（用 update-core.sh 装）"
 
@@ -91,7 +82,7 @@ main() {
     if [ -n "$link" ] && [ "$link" = "$inode" ]; then
         printf '当前 bin/mihomo: 指向它\n'
     else
-        printf '当前 bin/mihomo: 不指向它（下次启动会按模式重新挂）\n'
+        printf '当前 bin/mihomo: 不指向它（下次启动会按规则重新挂）\n'
     fi
 
     startup=$BOX_HOME/run/state/config/startup-config
@@ -99,7 +90,7 @@ main() {
         printf '配置检查: 跳过（找不到 %s）\n' "$startup"
         exit 0
     fi
-    tmp=${TMPDIR:-/data/local/tmp}/box-core-check.$$
+    tmp=/data/local/tmp/box-core-check.$$
     mkdir -p "$tmp"
     if "$target" -t -f "$startup" -d "$tmp" >"$tmp/out.log" 2>&1; then
         printf '配置检查: 通过\n'

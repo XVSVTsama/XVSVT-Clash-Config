@@ -14,7 +14,7 @@
 - **`box-auto.conf`**：哪个入站用哪个内核、内核的文件叫什么、启动前的行为（dummy 网卡、端口冲突）。
 - **`box-update.conf`**：内核从哪个仓库/地址下载、版本策略、校验值与镜像（只有手动脚本会用）。
 
-功能都在 `lib/` 里，四个脚本只是入口。两份配置都有模板（`*.example`）和填满的示例（`*.full-example.conf`，讲解见 [docs/box-core-example.md](docs/box-core-example.md)）。
+功能都在 `lib/` 里，四个脚本只是入口。两份配置随仓库一起提供，开箱即用；讲解见 [docs/box-core-example.md](docs/box-core-example.md)。
 
 ---
 
@@ -32,8 +32,8 @@
 
 在 `scripts/` 里：
 
-- 长按 `box-auto.conf.example` → 复制 → 粘贴 → 重命名为 **`box-auto.conf`**
-- 长按 `box-update.conf.example` → 复制 → 粘贴 → 重命名为 **`box-update.conf`**
+两份配置已经随脚本一起放进 `scripts/`，**不需要复制改名**：
+`box-auto.conf`（规则表，默认全注释 = 内置规则）、`box-update.conf`（下载来源）。
 
 **第 3 步：编辑配置**
 
@@ -124,7 +124,7 @@ always                                   => vanilla
 | `tethering=on` / `off` | 是否开着热点/共享（有下联即 on） |
 | `installed=ebpf` | 该内核文件存在且可执行 |
 | `exists=core-ebpf` | `bin/` 下有这个文件 |
-| `env=NAME:值` | 环境变量等于某值 |
+| `env=NAME:值` | 运行时环境变量等于某值（极少数场景用） |
 
 组合：`not` / `!`、`and`、`or`、`( )`，优先级 括号 > not > and > or。
 

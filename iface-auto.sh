@@ -1,24 +1,19 @@
 #!/system/bin/sh
 # BoxProxy 服务启动前的自动脚本（不联网、不下载）
 #
-# 由 boxctl 在启动前调用，只做本地的事：
-#   1. 读配置：当前模式用哪个内核、文件叫什么
-#   2. 把该内核硬链接到 bin/mihomo（文件不在就报警跳过，不会去下载）
-#   3. 切换覆写脚本清单里的模式脚本
-#   4. 识别出口网卡与下联，必要时挂 dummy
-#   5. 把网卡名写进覆写脚本字段
-#   6. 为下联放行 FORWARD
-#   7. 端口冲突检测
+# 由 boxctl 在启动前调用，按规则表选出内核并挂到 bin/mihomo，再做本地准备：
+#   1. 读 box-auto.conf 的 RULES（没写就用内置默认规则）
+#   2. 规则求值：命中即用，候选按顺序试；不可用就报错退出
+#   3. 把选中的内核 ln -f 到 bin/mihomo
+#   4. 切覆写脚本清单、认网卡、挂 dummy、写 JS 字段、放行 FORWARD、端口冲突
 #
-# 装内核、更新内核属于手动操作，见同目录的 update-core.sh；查看配置用 show-config.sh。
+# 路径与参数全部固化：Box 目录固定 /data/user/0/com.boxproxy.box/files/box，
+# 配置文件固定在同目录的 box-auto.conf / box-update.conf。
 #
 # 用法：
 #   sh iface-auto.sh            正常执行（boxctl 自动调用）
 #   sh iface-auto.sh --dry-run  只打印将要做的改动，不写盘、不动 iptables
 #   sh iface-auto.sh -h         帮助
-#
-# 配置：同目录的 box-auto.conf（没有就用内置默认值）。
-# 手动部分（装/更新内核）用另一份 box-update.conf，见 update-core.sh。
 #
 # ============================================================================
 # 以下为代码
@@ -26,8 +21,6 @@
 
 DRY_RUN=0
 VERBOSE=0
-CONF_AUTO=''
-BOX_HOME_CLI=''
 
 usage() {
     awk 'NR > 1 {
@@ -37,23 +30,14 @@ usage() {
     }' "$0"
 }
 
-need_value() {
-    [ "$2" -ge 2 ] || {
-        printf '错误: %s 后面要跟一个值\n' "$1" >&2
-        exit 2
-    }
-}
-
 parse_args() {
-    while [ $# -gt 0 ]; do
-        case "$1" in
-            -n | --dry-run) DRY_RUN=1; shift ;;
-            -v | --verbose) VERBOSE=1; shift ;;
-            -c | --conf) need_value "$1" $#; CONF_AUTO=$2; shift 2 ;;
-            --home) need_value "$1" $#; BOX_HOME_CLI=$2; shift 2 ;;
+    for arg in "$@"; do
+        case "$arg" in
+            -n | --dry-run) DRY_RUN=1 ;;
+            -v | --verbose) VERBOSE=1 ;;
             -h | --help) usage; exit 0 ;;
             *)
-                printf '错误: 未知参数 %s（用 -h 看用法）\n' "$1" >&2
+                printf '错误: 未知参数 %s（用 -h 看用法）\n' "$arg" >&2
                 exit 2
                 ;;
         esac

@@ -2,8 +2,8 @@
 
 这篇配两份可以照抄的文件，用来说明「哪些必须写、哪些全走默认」。
 
-- `box-auto.full-example.conf` —— 自动部分（启动前挂内核）
-- `box-update.full-example.conf` —— 手动部分（下载内核）
+- `box-auto.conf` —— 自动部分（启动前挂内核，默认全注释 = 内置规则）
+- `box-update.conf` —— 手动部分（下载来源，已填好默认两个仓库）
 
 两份文件加起来，真正需要你改的只有 **2 行**。
 
@@ -156,8 +156,7 @@ CORE_ebpf_URL='file:///sdcard/Download/core-ebpf.gz'
 
 ## 五、用起来：复制改名 → 编辑 → 点运行
 
-1. 文件管理器进 `scripts/`，把两份 `.full-example.conf` 各复制一份，改名为
-   `box-auto.conf`、`box-update.conf`。
+1. 两份配置文件已经随脚本放进 `scripts/`，不需要复制改名。
 2. 文本编辑器打开 `box-update.conf`，把 `<owner>/<repo>` 换成你的仓库。
 3. `工具 → 脚本` → 运行 `update-core.sh`。
 4. 首页选 eBPF 模式 → 启动。

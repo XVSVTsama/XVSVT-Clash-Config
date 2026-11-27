@@ -54,22 +54,26 @@ in_list() {
 }
 
 init_defaults() {
-    BOX_HOME=${BOX_HOME_CLI:-${BOX_HOME:-/data/user/0/com.boxproxy.box/files/box}}
-    BOX_BASE=${BOX_BASE:-$BOX_HOME}
-    RUN_DIR=${BOX_RUN_DIR:-$BOX_BASE/run}
+    # 路径与运行参数全部固化，不接受环境变量覆盖
+    BOX_HOME=/data/user/0/com.boxproxy.box/files/box
+    BOX_BASE=$BOX_HOME
+    RUN_DIR=$BOX_HOME/run
     RUNLOG=$RUN_DIR/runs.log
-    LOG_FILE=${BOX_PRE_LOG:-/data/local/tmp/prestart.log}
-    DUMMY_IFACE=${DUMMY_IFACE:-boxebpf0}
-    CONFLICT_STOP=${CONFLICT_STOP:-auto}
-    STOP_PACKAGES=${STOP_PACKAGES:-}
-    EXTRA_PORTS=${EXTRA_PORTS:-}
+    LOG_FILE=/data/local/tmp/prestart.log
+    TMP_BASE=/data/local/tmp
+
+    DUMMY_IFACE=boxebpf0
+    CONFLICT_STOP=auto
+    STOP_PACKAGES=''
+    EXTRA_PORTS=''
+
     CORE_LIST=${CORE_LIST:-'ebpf vanilla'}
     RULES=${RULES:-}
     # 没写 RULES 时的内置默认规则（等价于以前「ebpf 用 ebpf，其余用 vanilla」）
     DEFAULT_RULES='
 mode=ebpf => ebpf
 always    => vanilla
-' 
+'
 
     # 内置内核定义（配置里没写时生效）
     CORE_ebpf_FILE=${CORE_ebpf_FILE:-core-ebpf}
@@ -79,6 +83,10 @@ always    => vanilla
     CORE_vanilla_VERSION=${CORE_vanilla_VERSION:-latest}
     CORE_vanilla_ASSET=${CORE_vanilla_ASSET:-*android-arm64*.gz}
 
+    # 下载相关（不再从环境或命令行取）
+    API_BASE=https://api.github.com
+    DOWNLOAD_PREFIX=''
+    TOKEN=''
 
     CONF_AUTO=${CONF_AUTO:-}
     CONF_UPDATE=${CONF_UPDATE:-}
@@ -89,7 +97,6 @@ always    => vanilla
     UPSTREAM=''
     DOWNSTREAM=''
     JS_DIR=''
-    CONF_USED=${CONF_USED:-}
 }
 
 # 从配置文件里发现定义了 CORE_<名字>_ 的内核（用户不用手写 CORE_LIST）
@@ -137,11 +144,11 @@ discover_cores_from_confs() {
 # 载入自动部分配置（box-auto.conf）
 load_auto_conf() {
     script_dir=$(cd "$(dirname "$0")" 2>/dev/null && pwd)
-    if [ -z "$CONF_AUTO" ]; then
-        CONF_AUTO=$script_dir/box-auto.conf
-        [ -f "$CONF_AUTO" ] || CONF_AUTO=''
+    CONF_AUTO=$script_dir/box-auto.conf
+    if [ ! -f "$CONF_AUTO" ]; then
+        CONF_AUTO=''
+        return 0
     fi
-    [ -n "$CONF_AUTO" ] && [ -f "$CONF_AUTO" ] || return 0
     # shellcheck disable=SC1090
     . "$CONF_AUTO"
     CONF_AUTO_USED=$CONF_AUTO
@@ -152,11 +159,11 @@ load_auto_conf() {
 # 载入手动部分配置（box-update.conf）
 load_update_conf() {
     script_dir=$(cd "$(dirname "$0")" 2>/dev/null && pwd)
-    if [ -z "$CONF_UPDATE" ]; then
-        CONF_UPDATE=$script_dir/box-update.conf
-        [ -f "$CONF_UPDATE" ] || return 0
+    CONF_UPDATE=$script_dir/box-update.conf
+    if [ ! -f "$CONF_UPDATE" ]; then
+        CONF_UPDATE=''
+        return 0
     fi
-    [ -n "$CONF_UPDATE" ] && [ -f "$CONF_UPDATE" ] || return 0
     # shellcheck disable=SC1090
     . "$CONF_UPDATE"
     CONF_UPDATE_USED=$CONF_UPDATE

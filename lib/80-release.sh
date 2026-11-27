@@ -9,16 +9,11 @@
 }
 
 api_get() {
-    local args='-fsSL --retry 2 --connect-timeout 20 --max-time 60'
-    if [ -n "$O_TOKEN" ]; then
-        # shellcheck disable=SC2086
-        curl $args -H "Authorization: Bearer $O_TOKEN" "$1"
-    elif [ -n "$TOKEN" ]; then
-        # shellcheck disable=SC2086
-        curl $args -H "Authorization: Bearer $TOKEN" "$1"
+    if [ -n "$TOKEN" ]; then
+        curl -fsSL --retry 2 --connect-timeout 20 --max-time 60 \
+            -H "Authorization: Bearer $TOKEN" "$1"
     else
-        # shellcheck disable=SC2086
-        curl $args "$1"
+        curl -fsSL --retry 2 --connect-timeout 20 --max-time 60 "$1"
     fi
 }
 
@@ -65,8 +60,6 @@ resolve_source() {
     EXPECT_TAG=$(pick TAG)
     [ -n "$VERSION" ] || VERSION=latest
     [ -n "$ASSET" ] || ASSET='*android-arm64*.gz'
-    [ -n "$O_API_BASE" ] && API_BASE=$O_API_BASE
-    [ -n "$O_DOWNLOAD_PREFIX" ] && DOWNLOAD_PREFIX=$O_DOWNLOAD_PREFIX
 
     log "[1/9] 来源"
     log "      内核：$CORE_NAME"
@@ -120,10 +113,5 @@ resolve_source() {
 }
 
 pick() {
-    eval "override=\${O_$1:-}"
-    if [ -n "$override" ]; then
-        printf '%s' "$override"
-    else
-        core_field "$CORE_NAME" "$1"
-    fi
+    core_field "$CORE_NAME" "$1"
 }
