@@ -125,6 +125,14 @@ always                         => vanilla
 
 求值顺序：自上而下第一条命中的生效；命中后按候选顺序试，第一个可用的胜出；
 整条规则的候选都不可用 → 直接退出（不退回映射表）。`js=` 不满足时也直接退出。
+`always` 恒真、`never` 恒假，适合当兜底。
+
+逗号是简写：
+
+```sh
+mode=tun, mode=tproxy => alpha      # = mode=tun => alpha 和 mode=tproxy => alpha
+mode=ebpf            => ghost, alpha # = mode=ebpf => ghost 和 mode=ebpf => alpha（顺序试）
+```
 
 ### 变体 4：离线，只装本地文件
 

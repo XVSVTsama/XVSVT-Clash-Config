@@ -96,6 +96,8 @@ rt_atom() {
     RT_I=$((RT_I + 1))
 
     case "$atom" in
+        always) return 0 ;;
+        never) return 1 ;;
         *'!='*) key=${atom%%!=*}; val=${atom#*!=}; op='='; negate=1 ;;
         *'!~'*) key=${atom%%!~*}; val=${atom#*!~}; op='~'; negate=1 ;;
         *'='*) key=${atom%%=*}; val=${atom#*=}; op='=' ;;
@@ -241,7 +243,7 @@ cond_eval() {
 
 # 返回值：0 已挂好内核；1 没有规则命中；2 命中但全部候选不可用 / 硬失败
 select_core_by_rules() {
-    local line cond cands cand chosen='' st n=0
+    local line cond cands cand chosen='' st n=0 one rest matched=0 hit_cond='' 
     rules_context
 
     while IFS= read -r line; do
@@ -261,19 +263,35 @@ select_core_by_rules() {
         cond=$(printf '%s' "${line%%=>*}" | sed 's/[[:space:]]*$//')
         cands=$(printf '%s' "${line#*=>}" | sed 's/^[[:space:]]*//')
 
-        cond_eval "$cond"
-        st=$?
-        if [ "$st" = 2 ]; then
-            log "错误: 第 $n 条规则求值失败，停止"
-            return 2
-        fi
-        if [ "$st" = 1 ]; then
+        # 逗号简化语法：左边多个条件 = 任意一个成立即算命中（等价于拆成多条）
+        matched=0
+        rest=$cond
+        while [ -n "$rest" ]; do
+            case "$rest" in
+                *,*) one=${rest%%,*}; rest=${rest#*,} ;;
+                *) one=$rest; rest='' ;;
+            esac
+            one=$(printf '%s' "$one" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
+            [ -n "$one" ] || continue
+            cond_eval "$one"
+            st=$?
+            if [ "$st" = 2 ]; then
+                log "错误: 第 $n 条规则求值失败，停止"
+                return 2
+            fi
+            if [ "$st" = 0 ]; then
+                matched=1
+                hit_cond=$one
+                break
+            fi
+        done
+        if [ "$matched" != 1 ]; then
             if [ "${DRY_RUN:-0}" = 1 ] || [ "${VERBOSE:-0}" = 1 ]; then
                 log "  规则 $n: $cond → 假"
             fi
             continue
         fi
-        log "规则 $n 命中：$cond"
+        log "规则 $n 命中：$hit_cond"
 
         for cand in $(printf '%s' "$cands" | tr ',' ' '); do
             if [ -x "$(core_path "$cand")" ]; then

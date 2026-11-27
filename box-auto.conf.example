@@ -20,6 +20,11 @@ MODE_CORE_ebpf='ebpf'
 # 从上往下求值，第一条命中的生效；命中后的候选内核按顺序试，第一个可用的胜出；
 # 全部不可用 → 直接退出，不继续往下匹配。
 #
+# 简化语法（逗号）：
+#   A, B => X      等价于  A => X 和 B => X（任一条件成立即用 X）
+#   X => B, C      等价于  X => B 和 X => C（按顺序试 B、C）
+#   两边都有逗号于是按「任一条件 × 顺序候选」展开。
+#
 # 判断项：mode=ebpf | js=ebpf-我的.js | conf~关键字 | tethering=on/off
 #         installed=内核名 | exists=文件名 | env=NAME:值
 # 组合：not / ! 、and 、or 、( )
@@ -27,6 +32,7 @@ MODE_CORE_ebpf='ebpf'
 # RULES='
 # mode=ebpf and installed=ebpf   => ebpf
 # js=ebpf-我的.js                 => ebpf, alpha
+# mode=tun, mode=tproxy          => alpha
 # tethering=on                   => alpha, ebpf
 # always                         => vanilla
 # '
