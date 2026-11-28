@@ -45,7 +45,7 @@ const Compatible_With_Bettbox = {
  *    https://github.com/XVSVTsama/XVSVT-Clash-Config
  *    作者：
  *    https://github.com/XVSVTsama
- *    版本：上一提交 2da8fd15462ef221dfa6ffca584e76169d93f614，本提交时间 2026-11-28 17:40:00 +0800
+ *    版本：上一提交 a978b1a0ed47a155675b37a280ad09b7fd137af1，本提交时间 2026-11-28 21:43:00 +0800
  *    用法：本脚本可直接作为 Bettbox / FlClash 系客户端的远程覆写脚本加载
  *         （文件首行为 Bettbox 兼容声明，请勿删除）。
  *
@@ -136,7 +136,7 @@ const Compatible_With_Bettbox = {
  */
 
 // ============================================================================
-// Bettbox 开关定义（ruleOptionsEnable 的键即客户端开关面板；开关图标表见模板之后的 serviceConfigs）
+// Bettbox 开关定义（ruleOptionsEnable 的键即客户端开关面板）
 // ============================================================================
 
 const ruleOptionsEnable = {
@@ -217,7 +217,7 @@ const ruleOptionsEnable = {
   // 开启时改由 override.ip-version（统一 ipv6-prefer）生效。
   'IPv6优先': false,
   // --- 组与实验 ---
-  // 默认关闭：隐藏组 FCM 仅含 DIRECT；打开后优先使用 👉 手动选择，若该组已关闭则回退到 🌍 PROXY，再回退到 DIRECT（不移除 FCM 组）。开关图标取自 FCM 代理组的 icon 字段。
+  // 默认关闭：隐藏组 FCM 仅含 DIRECT；打开后优先使用 👉 手动选择，若该组已关闭则回退到 🌍 PROXY，再回退到 DIRECT（不移除 FCM 组）。
   '关闭FCM直连': false,
   // 开启 Telegram DC/地区实验分流；关闭时不改变原 Telegram 规则、策略组和规则集。
   'TGDC实验分流': false,
@@ -1733,30 +1733,7 @@ function findPriorityGroupInsertionIndex(proxyGroups) {
   return 1;
 }
 
-// 纯功能开关的面板图标：这些开关不生成策略组，图标只出现在开关面板（由 serviceConfigs 引用）。
-const FEATURE_SWITCH_ICONS = {
-  '强制证书验证': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-SSL.svg',
-  '关闭 Reality 增强': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Spark.svg',
-  '试开启节点UDP': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-udp.svg',
-  'IPv6优先': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-ipv6-prefer.svg',
-  '剔除≥2x': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-high.svg',
-  '剔除≤0.5x': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-low.svg',
-  '剔除免费': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-free.svg',
-  '实验剔除指定类型': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-type.svg',
-  '代理节点 DNS 使用 TCP': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-TCP.png',
-  '代理节点 DNS 使用国内': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-AIsouler-MyClash-China.svg',
-  '关闭WebRTC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-webrtc-block.svg',
-  'QUIC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Quic.svg',
-  'UDP节点平铺': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-udp.svg',
-  '开启Sniffer': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Tracking.svg',
-  '代理组interval改为5': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-auto.png',
-  '使用AIsouler直连规则': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-AIsouler-MyClash-China.svg',
-};
-
-// Bettbox 的可视化开关图标：客户端会读取全局 serviceConfigs（name 对应 ruleOptionsEnable 的 key，
-// icon 为该开关行显示的图标）。上面只覆盖代理组；功能开关的图标来源：
-// 关闭FCM直连 从 FCM 代理组的 icon 字段派生；
-// 其余功能开关在此直接指定固定图标；所有图标均由本仓库 assets/icons 通过 jsDelivr 提供。
+// Bettbox 的可视化开关配置：代理组项保留组自身图标，纯功能开关只提供名称。
 const serviceConfigs = TEMPLATE['proxy-groups']
   .filter(
     (group) =>
@@ -1769,90 +1746,27 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     icon: group.icon
   }))
   .concat([
-    {
-      name: '关闭FCM直连',
-      icon: (TEMPLATE['proxy-groups'].find((group) => group && group.name === 'FCM') || {}).icon
-    },
-    {
-      name: '强制证书验证',
-      icon: FEATURE_SWITCH_ICONS['强制证书验证']
-    },
-    {
-      name: '关闭 Reality 增强',
-      icon: FEATURE_SWITCH_ICONS['关闭 Reality 增强']
-    },
-    {
-      name: '试开启节点UDP',
-      icon: FEATURE_SWITCH_ICONS['试开启节点UDP']
-    },
-    {
-      name: 'IPv6优先',
-      icon: FEATURE_SWITCH_ICONS['IPv6优先']
-    },
-    {
-      name: 'TGDC实验分流',
-      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Telegram.svg'
-    },
-    {
-      name: '使用SKK广告拦截',
-      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-adblock.svg'
-    },
-    {
-      name: '使用AIsouler直连规则',
-      icon: FEATURE_SWITCH_ICONS['使用AIsouler直连规则']
-    },
-    {
-      name: '国家/地区分组',
-      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Global.svg'
-    },
-    {
-      name: '剔除≥2x',
-      icon: FEATURE_SWITCH_ICONS['剔除≥2x']
-    },
-    {
-      name: '剔除≤0.5x',
-      icon: FEATURE_SWITCH_ICONS['剔除≤0.5x']
-    },
-    {
-      name: '剔除免费',
-      icon: FEATURE_SWITCH_ICONS['剔除免费']
-    },
-    {
-      name: '实验剔除指定类型',
-      icon: FEATURE_SWITCH_ICONS['实验剔除指定类型']
-    },
-    {
-      name: '入口解析',
-      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Domestic.svg'
-    },
-    {
-      name: '代理节点 DNS 使用 TCP',
-      icon: FEATURE_SWITCH_ICONS['代理节点 DNS 使用 TCP']
-    },
-    {
-      name: '代理节点 DNS 使用国内',
-      icon: FEATURE_SWITCH_ICONS['代理节点 DNS 使用国内']
-    },
-    {
-      name: '关闭WebRTC阻断',
-      icon: FEATURE_SWITCH_ICONS['关闭WebRTC阻断']
-    },
-    {
-      name: 'QUIC阻断',
-      icon: FEATURE_SWITCH_ICONS['QUIC阻断']
-    },
-    {
-      name: 'UDP节点平铺',
-      icon: FEATURE_SWITCH_ICONS['UDP节点平铺']
-    },
-    {
-      name: '开启Sniffer',
-      icon: FEATURE_SWITCH_ICONS['开启Sniffer']
-    },
-    {
-      name: '代理组interval改为5',
-      icon: FEATURE_SWITCH_ICONS['代理组interval改为5']
-    }
+    { name: '关闭FCM直连' },
+    { name: '强制证书验证' },
+    { name: '关闭 Reality 增强' },
+    { name: '试开启节点UDP' },
+    { name: 'IPv6优先' },
+    { name: 'TGDC实验分流' },
+    { name: '使用SKK广告拦截' },
+    { name: '使用AIsouler直连规则' },
+    { name: '国家/地区分组' },
+    { name: '剔除≥2x' },
+    { name: '剔除≤0.5x' },
+    { name: '剔除免费' },
+    { name: '实验剔除指定类型' },
+    { name: '入口解析' },
+    { name: '代理节点 DNS 使用 TCP' },
+    { name: '代理节点 DNS 使用国内' },
+    { name: '关闭WebRTC阻断' },
+    { name: 'QUIC阻断' },
+    { name: 'UDP节点平铺' },
+    { name: '开启Sniffer' },
+    { name: '代理组interval改为5' }
   ]);
 
 // ============================================================================
@@ -3079,7 +2993,7 @@ function applyProviderOverrides(result) {
 // （反钓鱼，非广告）与 reject-no-drop（PCDN，非广告且 mihomo 无对应策略）。
 // ============================================================================
 
-// 开关图标：serviceConfigs 中同值内联（模板区求值时本常量尚未定义）。
+// 策略组图标：serviceConfigs 在模板区求值，此常量在后续注入策略组时使用。
 const SKK_ADBLOCK_ICON =
   'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-adblock.svg';
 
