@@ -45,7 +45,7 @@ const Compatible_With_Bettbox = {
  *    https://github.com/XVSVTsama/XVSVT-Clash-Config
  *    作者：
  *    https://github.com/XVSVTsama
- *    版本：上一提交 5307103b16dfed5b2eb3fedc8599752482a2c4b5，本提交时间 2026-11-27 03:44:00 +0800
+ *    版本：上一提交 19a6fe38b1e56c7065eb617865701d476d1035f3，本提交时间 2026-11-28 16:45:00 +0800
  *    用法：本脚本可直接作为 Bettbox / FlClash 系客户端的远程覆写脚本加载
  *         （文件首行为 Bettbox 兼容声明，请勿删除）。
  *
@@ -2075,6 +2075,14 @@ const publicDnsList = [
   '156.154.70.2', '156.154.71.2', '2610:a1:1018::1',
   '2610:a1:1019::1', '194.242.2.2', '2a07:e340::2',
   '74.82.42.42', '2001:470:20::2',
+  // 补齐 MyClash 清单中当前未覆盖的公共 DNS 地址
+  '4.2.2.1', '4.2.2.2', '4.2.2.3', '4.2.2.4', '4.2.2.5', '4.2.2.6',
+  '8.20.247.20', '8.26.56.26', '45.11.45.11',
+  '64.6.64.6', '64.6.65.6', '94.140.14.140', '94.140.14.141',
+  '101.101.101.101', '101.102.103.104', '185.222.222.222',
+  '216.146.35.35', '216.146.36.36',
+  '2620:0:ccc::2', '2620:0:ccd::2', '2620:fe::10', '2a09::', '2a11::',
+  '2a10:50c0::1:ff', '2a10:50c0::2:ff',
   // 公共 DoH/DoT 主机名（完整域名，避免宽泛品牌关键字误判私有端点）
   'dns.alidns.com', 'doh.pub', 'dot.pub', 'dns.pub',
   'dnspod.cn', 'dnspod.net', 'dns.baidu.com', 'dns.google',
@@ -2083,7 +2091,53 @@ const publicDnsList = [
   'resolver2.opendns.com', 'dns.nextdns.io',
   'dns.adguard-dns.com', 'family.adguard-dns.com',
   'unfiltered.adguard-dns.com', 'dns.cnnic.cn', 'doh.360.cn',
-  'dot.360.cn', 'dns.360.cn', 'onedns.net', 'dns.apple.com'
+  'dot.360.cn', 'dns.360.cn', 'onedns.net', 'dns.apple.com',
+  'dns.sb', 'doh.sb',
+  // Quad9 历史 DoH 地址与 Cisco OpenDNS DDR 互操作测试地址。
+  '149.112.112.9', '2620:119:fc::2', '2620:119:fc::3', '2620:119:fc::4',
+  'dot.sb',
+  // 新增经官方资料核验的公共 DNS 地址与识别名
+  '2402:4e00:1::', '2402:f000:1:416:101:6:6:6', '2001:4860:4860::6464', '2001:4860:4860::64',
+  '2620:fe::fe:10', '2620:fe::11', '2620:fe::fe:11',
+
+  '77.88.8.88', '77.88.8.2', '77.88.8.7', '77.88.8.3',
+  '2a02:6b8::feed:bad', '2a02:6b8:0:1::feed:bad',
+  '2a02:6b8::feed:a11', '2a02:6b8:0:1::feed:a11',
+  // Mullvad 官方迁移/关闭公告日期已过，保留历史端点以识别旧配置
+  '194.242.2.3', '194.242.2.4', '194.242.2.5', '194.242.2.6', '194.242.2.9',
+  '2a07:e340::3', '2a07:e340::4', '2a07:e340::5', '2a07:e340::6', '2a07:e340::9',
+
+  '2001:de4::101', '2001:de4::102',
+  '76.76.2.11', '2606:1a40::11', '2606:1a40::', '2606:1a40:1::',
+  '2a0d:2a00:1::', '2a0d:2a00:2::', '2a0d:2a00:1::1', '2a0d:2a00:2::1',
+  // DNS4EU 公共解析端点
+  '86.54.11.1', '86.54.11.201', '86.54.11.12', '86.54.11.212',
+  '86.54.11.13', '86.54.11.213', '86.54.11.11', '86.54.11.211',
+  '86.54.11.100', '86.54.11.200', '2a13:1001::86:54:11:1', '2a13:1001::86:54:11:201',
+  '2a13:1001::86:54:11:12', '2a13:1001::86:54:11:212', '2a13:1001::86:54:11:13', '2a13:1001::86:54:11:213',
+  '2a13:1001::86:54:11:11', '2a13:1001::86:54:11:211', '2a13:1001::86:54:11:100', '2a13:1001::86:54:11:200',
+  'protective.joindns4.eu', 'child.joindns4.eu', 'noads.joindns4.eu', 'child-noads.joindns4.eu',
+  'unfiltered.joindns4.eu',
+  // DNS.WATCH 公共解析端点
+  '84.200.69.80', '84.200.70.40', '2001:1608:10:25::1c04:b12f', '2001:1608:10:25::9249:d69b',
+  'resolver1.dns.watch', 'resolver2.dns.watch', 'resolver1v6.dns.watch', 'resolver2v6.dns.watch',
+  // LibreDNS 加密解析端点
+  '116.202.176.26', '2a01:4f8:1c0c:8274::1', 'doh.libredns.gr', 'dot.libredns.gr',
+  'noads.libredns.gr',
+  // UncensoredDNS 公共解析端点
+  '91.239.100.100', '2001:67c:28a4::', '89.233.43.71', '2a01:3a0:53:53::',
+  'anycast.uncensoreddns.org', 'unicast.uncensoreddns.org',
+  // FDN 公共 DoH 主机名
+  'ns0.fdn.fr', 'ns1.fdn.fr',
+  // CZ.NIC ODVR 公共解析端点
+  '193.17.47.1', '185.43.135.1', '2001:148f:ffff::1', '2001:148f:fffe::1',
+  'odvr.nic.cz',
+];
+
+// 用户指定的服务关键词只按 DNS 主机名中的完整标签匹配。
+const publicDnsHostnameKeywords = [
+  'yandex', 'mullvad', 'tuna.tsinghua', 'twnic', 'dns.sb',
+  'controld', 'cleanbrowsing',
 ];
 
 function dnsServerAddress(value) {
@@ -2127,9 +2181,18 @@ function normalizeDnsIpAddress(value) {
   return parts.map((part) => parseInt(part, 16).toString(16).padStart(4, '0')).join(':');
 }
 
+// 仅按完整 DNS 标签序列匹配，不检查 URL 路径或任意子串。
+function matchesDnsHostnameKeyword(hostname, keyword) {
+  const hostnameLabels = hostname.split('.');
+  const keywordLabels = keyword.split('.');
+  return hostnameLabels.some((_, index) =>
+    keywordLabels.every((label, offset) => hostnameLabels[index + offset] === label)
+  );
+}
+
 function isPublicDnsServer(value) {
   const hostname = dnsServerHostname(value);
-  return publicDnsList.some((dns) => {
+  const listedPublicDns = publicDnsList.some((dns) => {
     const candidate = dns.toLowerCase();
     if (isIPAddress(candidate)) {
       const normalizedHostname = normalizeDnsIpAddress(hostname);
@@ -2138,6 +2201,12 @@ function isPublicDnsServer(value) {
     }
     return hostname === candidate || hostname.endsWith('.' + candidate);
   });
+  if (listedPublicDns) {
+    return true;
+  }
+  return publicDnsHostnameKeywords.some((keyword) =>
+    matchesDnsHostnameKeyword(hostname, keyword)
+  );
 }
 
 // 逐域规则迁移到节点专用 policy 时只剔除公共解析器；保留原值形态。
