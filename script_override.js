@@ -45,15 +45,16 @@ const Compatible_With_Bettbox = {
  *    https://github.com/XVSVTsama/XVSVT-Clash-Config
  *    作者：
  *    https://github.com/XVSVTsama
- *    版本：上一提交 1413080141b2c8e9796e26c554ee4e220df9c474，本提交时间 2026-11-28 17:40:00 +0800
+ *    版本：上一提交 e534f787508a4919890ec588a12a543e55817235，本提交时间 2026-11-28 22:00:00 +0800
  *    用法：本脚本可直接作为 Bettbox / FlClash 系客户端的远程覆写脚本加载
  *         （文件首行为 Bettbox 兼容声明，请勿删除）。
  *
  *    本分支：02-tproxy（派生自 main，只保留 TPROXY 透明入站的差异，其余内容与 main 相同）
  *
  *  TPROXY 入站（本分支特有）：
- *    tun 收敛为 { enable: false }，其余 TUN 字段全部删除；入站由顶层 tproxy-port: 9898 提供，
- *    把流量送到该端口的 TPROXY / REDIRECT 规则由客户端或系统侧建立，脚本不生成这些规则。
+ *    tun 收敛为 { enable: false }，其余 TUN 字段全部删除；入站由 listeners 中的 tproxy-in 提供，
+ *    监听 0.0.0.0:9898 并启用 UDP；把流量送到该端口的 TPROXY / REDIRECT 规则由客户端或系统侧建立，
+ *    脚本不生成这些规则。
  *    IPv6优先 只切核心侧（ipv6、dns.ipv6、fake-ip-range6），没有 tun 侧字段可改。
  *
  *  用途：
@@ -403,7 +404,15 @@ const TEMPLATE = {
     "store-selected": true,
     "store-fake-ip": true
   },
-  "tproxy-port": 9898,
+  "listeners": [
+    {
+      "name": "tproxy-in",
+      "type": "tproxy",
+      "port": 9898,
+      "listen": "0.0.0.0",
+      "udp": true
+    }
+  ],
   "tun": {
     "enable": false
   },

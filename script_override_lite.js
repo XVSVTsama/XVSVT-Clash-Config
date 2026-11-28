@@ -247,7 +247,15 @@ const TEMPLATE = {
     "store-selected": true,
     "store-fake-ip": true
   },
-  "tproxy-port": 9898,
+  "listeners": [
+    {
+      "name": "tproxy-in",
+      "type": "tproxy",
+      "port": 9898,
+      "listen": "0.0.0.0",
+      "udp": true
+    }
+  ],
   "tun": {
     "enable": false
   },
