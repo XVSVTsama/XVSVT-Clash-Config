@@ -1,4 +1,4 @@
-# tproxy 覆写脚本（派生自 main）
+# listener(Tproxy) 覆写脚本（派生自 main）
 
 `main` 分支是 TUN 版脚本，本分支是同一份脚本的 tproxy 变体：只改与 TPROXY 透明入站相关的部分，其余内容取自 `main`。本分支只保留 `script_override.js` 与 `mihomo.yaml` 两个文件，仓库其余说明（YAML 结构、JS 能力边界、远程地址）见 `main` 分支的 README。
 
@@ -19,7 +19,7 @@
 ## 用法
 
 ```text
-https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/02-tproxy/script_override.js
+https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/listener(Tproxy)/script_override.js
 ```
 
 把该地址作为订阅的覆写脚本加载，网络模式选 tproxy。文件首行的 `Compatible_With_Bettbox` 声明不要删除。

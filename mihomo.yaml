@@ -1,13 +1,13 @@
 #   JS 脚本：
-#   https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/02-tproxy/script_override.js
+#   https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/listener(Tproxy)/script_override.js
 #   YAML 模板：
-#   https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/02-tproxy/mihomo.yaml
+#   https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/listener(Tproxy)/mihomo.yaml
 #   仓库：
 #   https://github.com/XVSVTsama/XVSVT-Clash-Config
 #   作者：
 #   https://github.com/XVSVTsama
-#   版本：上一提交 e534f787508a4919890ec588a12a543e55817235，本提交时间 2026-11-28 22:00:00 +0800
-#   本分支：02-tproxy（派生自 main，只保留本分支的差异）
+#   版本：上一提交 2bd7a9d7c6ab3822d1ada0cd6d2165585612d4dc，本提交时间 2026-11-28 23:00:00 +0800
+#   本分支：listener(Tproxy)（派生自 main，只保留本分支的差异）
 
 .templates:
   # proxy-groups 共享片段

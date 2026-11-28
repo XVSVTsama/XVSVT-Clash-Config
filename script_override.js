@@ -38,18 +38,18 @@ const Compatible_With_Bettbox = {
  *
  *  来源：
  *    JS 脚本：
- *    https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/02-tproxy/script_override.js
+ *    https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/listener(Tproxy)/script_override.js
  *    YAML 模板：
- *    https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/02-tproxy/mihomo.yaml
+ *    https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/listener(Tproxy)/mihomo.yaml
  *    仓库：
  *    https://github.com/XVSVTsama/XVSVT-Clash-Config
  *    作者：
  *    https://github.com/XVSVTsama
- *    版本：上一提交 e534f787508a4919890ec588a12a543e55817235，本提交时间 2026-11-28 22:00:00 +0800
+ *    版本：上一提交 2bd7a9d7c6ab3822d1ada0cd6d2165585612d4dc，本提交时间 2026-11-28 23:00:00 +0800
  *    用法：本脚本可直接作为 Bettbox / FlClash 系客户端的远程覆写脚本加载
  *         （文件首行为 Bettbox 兼容声明，请勿删除）。
  *
- *    本分支：02-tproxy（派生自 main，只保留 TPROXY 透明入站的差异，其余内容与 main 相同）
+ *    本分支：listener(Tproxy)（派生自 main，只保留 TPROXY 透明入站的差异，其余内容与 main 相同）
  *
  *  TPROXY 入站（本分支特有）：
  *    tun 收敛为 { enable: false }，其余 TUN 字段全部删除；入站由 listeners 中的 tproxy-in 提供，
