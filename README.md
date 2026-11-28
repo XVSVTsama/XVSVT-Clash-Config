@@ -1,13 +1,12 @@
 # not-any-listener 覆写脚本（派生自 main）
 
-`main` 分支是 TUN 版脚本，本分支是同一份脚本的 no-tun 变体：只删掉与 TUN 相关的部分，其余内容取自 `main`。本分支只保留 `script_override.js` 与 `mihomo.yaml` 两个文件，仓库其余说明（YAML 结构、JS 能力边界、远程地址）见 `main` 分支的 README。
+本分支从 `main` 派生，移除与 TUN 相关的内容；其余说明见 `main` 分支 README。本分支只保留 `script_override.js` 与 `mihomo.yaml` 两个文件。
 
 ## 与 main 的差别
 
-| 项 | `main`（TUN） | 本分支（no-tun） |
+| 项 | `main`（TUN） | 本分支（移除 TUN 相关内容） |
 |---|---|---|
-| `tun` | 完整 TUN 配置：`device`、`mtu`、`stack`、`route-address`、`route-exclude-address`、`dns-hijack` 等 | 模板不定义 `tun`，生成的配置不含任何 `tun` 字段 |
-| `TUN MTU改为9000`、`开启端点独立NAT` | 两个开关 | 移除：两者只改 `tun` 字段，没有 `tun` 就没有作用对象 |
+| TUN 配置 | 保留完整配置 | 移除 |
 | `IPv6优先` 开关 | 改核心侧字段与 `tun.inet6-address`、`tun.route-address` | 只改核心侧：`ipv6`、`dns.ipv6`、`fake-ip-range6` |
 
 ## 已知约束

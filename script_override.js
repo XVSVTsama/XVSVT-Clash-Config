@@ -38,23 +38,22 @@ const Compatible_With_Bettbox = {
  *
  *  来源：
  *    JS 脚本：
- *    https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/03-no-tun/script_override.js
+ *    https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/not-any-listener/script_override.js
  *    YAML 模板：
- *    https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/03-no-tun/mihomo.yaml
+ *    https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/not-any-listener/mihomo.yaml
  *    仓库：
  *    https://github.com/XVSVTsama/XVSVT-Clash-Config
  *    作者：
  *    https://github.com/XVSVTsama
- *    版本：上一提交 2cc353e88bef75c4a4b4d00df64cf46f82e4c97c，本提交时间 2026-11-28 17:40:00 +0800
+ *    版本：上一提交 aa56441b5e1807f6c7258fafcfbcdec63db27e29，本提交时间 2026-11-29 00:20:00 +0800
  *    用法：本脚本可直接作为 Bettbox / FlClash 系客户端的远程覆写脚本加载
  *         （文件首行为 Bettbox 兼容声明，请勿删除）。
  *
- *    本分支：03-no-tun（派生自 main，只删掉与 TUN 相关的部分，其余内容与 main 相同）
+ *    本分支：not-any-listener（派生自 main，仅移除与 TUN 相关的内容，其余内容与 main 相同）
  *
- *  no-tun（本分支特有）：
- *    模板不定义 tun，最终配置不带任何 tun 字段；脚本以模板为主体生成配置，订阅自带的 tun
- *    也不会被保留。TUN MTU改为9000、开启端点独立NAT 两个开关已移除：两者只改 tun 字段，
- *    没有作用对象。IPv6优先 只切核心侧（ipv6、dns.ipv6、fake-ip-range6）。
+ *  TUN 处理：
+ *    模板不定义 tun，最终配置不带 tun 字段；脚本以模板为主体生成配置，订阅自带的 tun 也不会
+ *    被保留。IPv6优先 只切核心侧（ipv6、dns.ipv6、fake-ip-range6）。
  *    本分支不建立任何入站：TUN、TPROXY、eBPF 都要由客户端或其它组件提供，否则生成的
  *    配置没有入站。
  *
