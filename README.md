@@ -62,7 +62,7 @@ CDN 链接：
 
 <br>
 
-`main` 是 TUN 版，也是本仓库唯一的完整分支（YAML、脚本、文档、图标、CI 都在这里）；其余分支都是它的派生分支，只保留各自的差异文件，说明以 `main` 为准。分支下拉按名字排序，前缀数字决定展示顺序。
+`main` 是 TUN 版，也是本仓库唯一的完整分支（YAML、脚本、文档、图标、CI 都在这里）；其余分支都是它的派生分支，只保留各自的差异文件，说明以 `main` 为准。
 
 <table width="100%">
 <thead>
@@ -70,14 +70,15 @@ CDN 链接：
 </thead>
 <tbody>
 <tr><td><strong>main</strong></td><td>TUN 版，完整仓库</td><td><code>refs/heads/main/script_override.js</code></td></tr>
-<tr><td><strong>01-ebpf</strong></td><td>eBPF 透明入站：<code>tun</code> 停用，预留段与国内 IP 在内核放行</td><td><code>refs/heads/01-ebpf/script_override.js</code></td></tr>
-<tr><td><strong>02-tproxy</strong></td><td>TPROXY 透明入站：<code>tun</code> 停用，顶层加 <code>tproxy-port</code></td><td><code>refs/heads/02-tproxy/script_override.js</code></td></tr>
-<tr><td><strong>03-no-tun</strong></td><td>删除全部 TUN 字段与两个 TUN 专属开关，入站交给其它组件</td><td><code>refs/heads/03-no-tun/script_override.js</code></td></tr>
+<tr><td><strong>listener(TUN)</strong></td><td>将顶层 <code>tun</code> 配置迁移至 <code>listeners</code> 的 <code>type: tun</code> 入站</td><td><code>refs/heads/listener(TUN)/script_override.js</code></td></tr>
+<tr><td><strong>listener(Tproxy)</strong></td><td>TPROXY 透明入站：<code>tun</code> 停用，顶层加 <code>tproxy-port</code></td><td><code>refs/heads/listener(Tproxy)/script_override.js</code></td></tr>
+<tr><td><strong>listener(eBPF)</strong></td><td>eBPF 透明入站：<code>tun</code> 停用，预留段与国内 IP 在内核放行</td><td><code>refs/heads/listener(eBPF)/script_override.js</code></td></tr>
+<tr><td><strong>not-any-listener</strong></td><td>不定义任何入站，由客户端或其它组件提供</td><td><code>refs/heads/not-any-listener/script_override.js</code></td></tr>
 <tr><td><strong>04-boxproxy</strong></td><td>BoxProxy 启动前生命周期脚本 <code>iface-auto.sh</code>，不含覆写脚本</td><td>—</td></tr>
 </tbody>
 </table>
 
-`main`、`01-ebpf`、`02-tproxy` 与 `03-no-tun` 均提供 `script_override_lite.js` 精简版，并保留对应分支的入站模式。使用 Lite 版时，选择相应分支并将远程脚本文件名设为 `script_override_lite.js`；`04-boxproxy` 不提供 JS 覆写脚本。
+`main`、`listener(TUN)`、`listener(Tproxy)`、`listener(eBPF)` 与 `not-any-listener` 均提供 `script_override_lite.js` 精简版，并保留对应分支的入站模式。使用 Lite 版时，选择相应分支并将远程脚本文件名设为 `script_override_lite.js`；`04-boxproxy` 不提供 JS 覆写脚本。
 
 <a id="yaml-config"></a>
 
