@@ -1,4 +1,4 @@
-# eBPF 覆写脚本（派生自 main）
+# listener(eBPF) 覆写脚本（派生自 main）
 
 `main` 是 TUN 版；本分支只改与 eBPF 透明入站相关的部分，其余内容取自 `main`。预留段与国内 IP 由内核放行表处理，命中的流量不进用户态。本分支只保留 `script_override.js` 与 `mihomo.yaml`，仓库其余说明（YAML 结构、JS 能力边界、远程地址）见 `main` 的 README。
 
@@ -42,7 +42,7 @@
 ## 用法
 
 ```text
-https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/01-ebpf/script_override.js
+https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/listener(eBPF)/script_override.js
 ```
 
 把该地址作为订阅的覆写脚本加载，网络模式选 eBPF，内核用上表中的 `-ebpf` 构建。文件首行的 `Compatible_With_Bettbox` 声明不要删除。

@@ -38,18 +38,18 @@ const Compatible_With_Bettbox = {
  *
  *  来源：
  *    JS 脚本：
- *    https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/01-ebpf/script_override.js
+ *    https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/listener(eBPF)/script_override.js
  *    YAML 模板：
- *    https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/01-ebpf/mihomo.yaml
+ *    https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/refs/heads/listener(eBPF)/mihomo.yaml
  *    仓库：
  *    https://github.com/XVSVTsama/XVSVT-Clash-Config
  *    作者：
  *    https://github.com/XVSVTsama
- *    版本：上一提交 a978b1a0ed47a155675b37a280ad09b7fd137af1，本提交时间 2026-11-28 21:43:00 +0800
+ *    版本：上一提交 ccf9147ed1714a1556457545ff041a329052c02e，本提交时间 2026-11-28 23:01:00 +0800
  *    用法：本脚本可直接作为 Bettbox / FlClash 系客户端的远程覆写脚本加载
  *         （文件首行为 Bettbox 兼容声明，请勿删除）。
  *
- *    本分支：01-ebpf（派生自 main，只保留 eBPF 透明入站的差异，其余内容与 main 相同）
+ *    本分支：listener(eBPF)（派生自 main，只保留 eBPF 透明入站的差异，其余内容与 main 相同）
  *
  *  eBPF 入站（本分支特有）：
  *    tun 收敛为 { enable: false }，其余 TUN 字段全部删除；入站由 listeners 的 ebpf 项提供
