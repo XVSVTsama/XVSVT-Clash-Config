@@ -101,8 +101,6 @@ const ruleOptionsEnable = {
 
   'QUIC阻断': false,
 
-  'UDP节点平铺': false,
-
   'TUN MTU改为9000': false,
 
   '开启端点独立NAT': false,
@@ -1418,7 +1416,6 @@ const FEATURE_SWITCH_ICONS = {
   '剔除免费': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-free.svg',
   '关闭WebRTC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-webrtc-block.svg',
   'QUIC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Quic.svg',
-  'UDP节点平铺': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-udp.svg',
   'TUN MTU改为9000': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-mtu.svg',
   '开启端点独立NAT': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-einat.svg',
 };
@@ -1490,10 +1487,6 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     {
       name: 'QUIC阻断',
       icon: FEATURE_SWITCH_ICONS['QUIC阻断']
-    },
-    {
-      name: 'UDP节点平铺',
-      icon: FEATURE_SWITCH_ICONS['UDP节点平铺']
     },
     {
       name: 'TUN MTU改为9000',
@@ -3341,20 +3334,6 @@ function main(config, profileName) {
 
   removeUnusedRuleProviders(result);
 
-  // UDP 节点平铺开关：默认关闭时不做任何处理；打开后在 MATCH,🌍 PROXY 之后
-  // 平铺订阅顶层节点中明确写了 udp: true 的节点，供 UDP 请求继续向下命中，
-  // 仍无可用节点时由其后的 NETWORK,UDP,REJECT 拒绝。
-  if (ruleOptionsEnable['UDP节点平铺'] === true && Array.isArray(result.rules) && Array.isArray(result.proxies)) {
-    const matchIndex = result.rules.indexOf('MATCH,🌍 PROXY');
-    if (matchIndex !== -1) {
-      const udpNodeRules = result.proxies
-        .filter((proxy) => proxy && proxy.udp === true && typeof proxy.name === 'string' && !proxy.name.includes(','))
-        .map((proxy) => `MATCH,${proxy.name}`);
-      if (udpNodeRules.length > 0) {
-        result.rules.splice(matchIndex + 1, 0, ...udpNodeRules);
-      }
-    }
-  }
 
   return result;
 }
