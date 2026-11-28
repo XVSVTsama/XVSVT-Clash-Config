@@ -45,7 +45,7 @@ const Compatible_With_Bettbox = {
  *    https://github.com/XVSVTsama/XVSVT-Clash-Config
  *    作者：
  *    https://github.com/XVSVTsama
- *    版本：上一提交 49f01f7c2d3ec73620f2a5706064f954236ada94，本提交时间 2026-11-28 17:40:00 +0800
+ *    版本：上一提交 6fbd42544b53b87806949278bbd453c59348f8fb，本提交时间 2026-11-28 22:51:00 +0800
  *    用法：本脚本可直接作为 Bettbox / FlClash 系客户端的远程覆写脚本加载
  *         （文件首行为 Bettbox 兼容声明，请勿删除）。
  *
@@ -56,7 +56,7 @@ const Compatible_With_Bettbox = {
  *    1. 除下面第 2、3、4 条特别说明的部分外，最终配置以 TEMPLATE
  *       （对应 mihomo.yaml 模板）为准，即模板中已经写好的字段会替换掉订阅原始配置里
  *       的同名字段（例如 dns 的各项细节、rules、rule-providers、sniffer、
- *       tun、proxy-groups 的分组结构等）。订阅原始配置里模板未定义的顶层字段不会被保留
+ *       listeners、proxy-groups 的分组结构等）。订阅原始配置里模板未定义的顶层字段不会被保留
  *       （比如某些订阅自带的 allow-lan、bind-address），唯一的例外是 proxy-providers：
  *       若订阅自带 proxy-providers，会保留并注入最终配置；仅在相关节点级开关开启时
  *       合并 provider.override 字段（见下），其余内容不改。
@@ -398,9 +398,13 @@ const TEMPLATE = {
     "store-selected": true,
     "store-fake-ip": true
   },
-  "tun": {
-    "enable": true,
+  "listeners": [{
+    "name": "tun-in",
+    "type": "tun",
     "device": "XVSVT",
+    "inet4-address": [
+      "198.18.0.1/30"
+    ],
     // exclude-uid / interface-name 属于客户端侧数据：按实际应用名单与出口网卡注入，不写死
     "mtu": 1500,
     "endpoint-independent-nat": false,
@@ -436,7 +440,7 @@ const TEMPLATE = {
       "224.0.0.0/4",
       "240.0.0.0/4"
     ]
-  },
+  }],
   "ntp": {
     "enable": true,
     "write-to-system": false,
@@ -4437,6 +4441,10 @@ function main(config, profileName) {
   // ---- 2. 以模板为主体，深拷贝一份出来当作最终结果 ----
   const result = deepClone(TEMPLATE);
 
+  const tunListener = Array.isArray(result.listeners)
+    ? result.listeners.find((listener) => listener && listener.type === 'tun')
+    : null;
+
   if (ruleOptionsEnable['代理节点 DNS 使用国内'] === true && result.dns) {
     result.dns['proxy-server-nameserver'] = [
       '114.114.114.114',
@@ -4466,18 +4474,20 @@ function main(config, profileName) {
       result.dns.ipv6 = false;
       delete result.dns['fake-ip-range6'];
     }
-    delete result.tun['inet6-address'];
-    result.tun['route-address'] = (result.tun['route-address'] || []).filter(
-      (address) => address.indexOf(':') < 0
-    );
+    if (tunListener) {
+      delete tunListener['inet6-address'];
+      tunListener['route-address'] = (tunListener['route-address'] || []).filter(
+        (address) => address.indexOf(':') < 0
+      );
+    }
   }
 
-  if (ruleOptionsEnable['TUN MTU改为9000'] === true && result.tun) {
-    result.tun.mtu = 9000;
+  if (ruleOptionsEnable['TUN MTU改为9000'] === true && tunListener) {
+    tunListener.mtu = 9000;
   }
 
-  if (ruleOptionsEnable['开启端点独立NAT'] === true && result.tun) {
-    result.tun['endpoint-independent-nat'] = true;
+  if (ruleOptionsEnable['开启端点独立NAT'] === true && tunListener) {
+    tunListener['endpoint-independent-nat'] = true;
   }
 
   // ---- 2.5 TGDC 实验分流（默认关闭；由 UI 开关控制） ----

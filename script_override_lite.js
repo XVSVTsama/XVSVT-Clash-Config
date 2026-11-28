@@ -249,9 +249,13 @@ const TEMPLATE = {
     "store-selected": true,
     "store-fake-ip": true
   },
-  "tun": {
-    "enable": true,
+  "listeners": [{
+    "name": "tun-in",
+    "type": "tun",
     "device": "XVSVT",
+    "inet4-address": [
+      "198.18.0.1/30"
+    ],
     "mtu": 1500,
     "endpoint-independent-nat": false,
     "inet6-address": [
@@ -319,7 +323,7 @@ const TEMPLATE = {
       "::/1",
       "8000::/1"
     ]
-  },
+  }],
   "ntp": {
     "enable": true,
     "write-to-system": false,
@@ -3227,28 +3231,32 @@ function main(config, profileName) {
 
   const result = deepClone(TEMPLATE);
 
+  const tunListener = Array.isArray(result.listeners)
+    ? result.listeners.find((listener) => listener && listener.type === 'tun')
+    : null;
+
   if (ruleOptionsEnable['IPv6优先'] !== true) {
     result.ipv6 = false;
     if (result.dns) {
       result.dns.ipv6 = false;
       delete result.dns['fake-ip-range6'];
     }
-    if (result.tun) {
-      delete result.tun['inet6-address'];
-      if (Array.isArray(result.tun['route-address'])) {
-        result.tun['route-address'] = result.tun['route-address'].filter(
+    if (tunListener) {
+      delete tunListener['inet6-address'];
+      if (Array.isArray(tunListener['route-address'])) {
+        tunListener['route-address'] = tunListener['route-address'].filter(
           (address) => address !== '::/1' && address !== '8000::/1'
         );
       }
     }
   }
 
-  if (ruleOptionsEnable['TUN MTU改为9000'] === true && result.tun) {
-    result.tun.mtu = 9000;
+  if (ruleOptionsEnable['TUN MTU改为9000'] === true && tunListener) {
+    tunListener.mtu = 9000;
   }
 
-  if (ruleOptionsEnable['开启端点独立NAT'] === true && result.tun) {
-    result.tun['endpoint-independent-nat'] = true;
+  if (ruleOptionsEnable['开启端点独立NAT'] === true && tunListener) {
+    tunListener['endpoint-independent-nat'] = true;
   }
 
   applyTelegramDcExperiment(result, originalProxies);

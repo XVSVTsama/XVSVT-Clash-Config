@@ -6,7 +6,7 @@
 #   https://github.com/XVSVTsama/XVSVT-Clash-Config
 #   作者：
 #   https://github.com/XVSVTsama
-#   版本：上一提交 5307103b16dfed5b2eb3fedc8599752482a2c4b5，本提交时间 2026-11-27 03:44:00 +0800
+#   版本：上一提交 6fbd42544b53b87806949278bbd453c59348f8fb，本提交时间 2026-11-28 22:51:00 +0800
 
 .templates:
   # proxy-groups 共享片段
@@ -66,43 +66,46 @@ keep-alive-interval: 15
 profile:
   store-selected: true
   store-fake-ip: true
-tun:                                                    
-  enable: true 
-  device: XVSVT
-  mtu: 1500
-  endpoint-independent-nat: false
-  inet6-address:
-    - "fdfe:dcba:9876::1/126"
-  auto-detect-interface: true
-  auto-route: true 
-  auto-redirect: true
-  strict-route: true
-  stack: mips
-  dns-mode: hijack
-  dns-hijack:
-    - "any:53"  
-    - "udp://any:53"
-    - "tcp://any:53"                                                             
-  # 只接管公网单播：私网、保留、组播与 CGNAT 段由 route-exclude-address 排除，
-  # 不进 tun（否则局域网访问、热点下联、运营商内网会被一并路由进来）
-  route-address:
-  - "0.0.0.0/1"
-  - "128.0.0.0/1"
-  # IPv6 只接管公网单播与 fake-ip6 所在网段（fdfe:dcba:9876::/64），
-  # 链路本地、组播与 ULA 内网留给系统；fake-ip-range6 改动时这里要同步
-  - "2000::/3"
-  - "fdfe:dcba:9876::/64"
-  route-exclude-address:
-  - "0.0.0.0/8"
-  - "10.0.0.0/8"
-  - "100.64.0.0/10"
-  - "127.0.0.0/8"
-  - "169.254.0.0/16"
-  - "172.16.0.0/12"
-  - "192.168.0.0/16"
-  - "224.0.0.0/4"
-  - "240.0.0.0/4"
-  
+listeners:
+  - name: tun-in
+    type: tun
+    device: XVSVT
+    inet4-address:
+      - "198.18.0.1/30"
+    mtu: 1500
+    endpoint-independent-nat: false
+    inet6-address:
+      - "fdfe:dcba:9876::1/126"
+    auto-detect-interface: true
+    auto-route: true
+    auto-redirect: true
+    strict-route: true
+    stack: mips
+    dns-mode: hijack
+    dns-hijack:
+      - "any:53"
+      - "udp://any:53"
+      - "tcp://any:53"
+    # 只接管公网单播：私网、保留、组播与 CGNAT 段由 route-exclude-address 排除，
+    # 不进 tun（否则局域网访问、热点下联、运营商内网会被一并路由进来）
+    route-address:
+      - "0.0.0.0/1"
+      - "128.0.0.0/1"
+    # IPv6 只接管公网单播与 fake-ip6 所在网段（fdfe:dcba:9876::/64），
+    # 链路本地、组播与 ULA 内网留给系统；fake-ip-range6 改动时这里要同步
+      - "2000::/3"
+      - "fdfe:dcba:9876::/64"
+    route-exclude-address:
+      - "0.0.0.0/8"
+      - "10.0.0.0/8"
+      - "100.64.0.0/10"
+      - "127.0.0.0/8"
+      - "169.254.0.0/16"
+      - "172.16.0.0/12"
+      - "192.168.0.0/16"
+      - "224.0.0.0/4"
+      - "240.0.0.0/4"
+
 ntp:
   enable: true              
   write-to-system: false      
