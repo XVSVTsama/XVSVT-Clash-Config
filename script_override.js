@@ -45,7 +45,7 @@ const Compatible_With_Bettbox = {
  *    https://github.com/XVSVTsama/XVSVT-Clash-Config
  *    作者：
  *    https://github.com/XVSVTsama
- *    版本：上一提交 49f01f7c2d3ec73620f2a5706064f954236ada94，本提交时间 2026-11-28 17:40:00 +0800
+ *    版本：上一提交 ad987ab133b123bb4e348045e8cd90cbc57941be，本提交时间 2026-11-29 00:20:00 +0800
  *    用法：本脚本可直接作为 Bettbox / FlClash 系客户端的远程覆写脚本加载
  *         （文件首行为 Bettbox 兼容声明，请勿删除）。
  *
@@ -247,8 +247,6 @@ const ruleOptionsEnable = {
   // 打开后保留模板 sniffer。
   '开启Sniffer': false,
   '代理组interval改为5': false,
-  'TUN MTU改为9000': false,
-  '开启端点独立NAT': false,
 };
 
 // 关闭这些业务组时删除指向它们的路由规则，而不是把规则改写到全局兜底。
@@ -403,6 +401,7 @@ const TEMPLATE = {
     "device": "XVSVT",
     // exclude-uid / interface-name 属于客户端侧数据：按实际应用名单与出口网卡注入，不写死
     "mtu": 1500,
+    "inet4-address": ["198.18.0.1/30"],
     "endpoint-independent-nat": false,
     "inet6-address": [
       "fdfe:dcba:9876::1/126"
@@ -1740,8 +1739,6 @@ const FEATURE_SWITCH_ICONS = {
   'UDP节点平铺': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-udp.svg',
   '开启Sniffer': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Tracking.svg',
   '代理组interval改为5': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-DustinWin-ruleset_geodata-auto.png',
-  'TUN MTU改为9000': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-mtu.svg',
-  '开启端点独立NAT': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-einat.svg',
   '使用AIsouler直连规则': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-AIsouler-MyClash-China.svg',
 };
 
@@ -1844,14 +1841,6 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     {
       name: '代理组interval改为5',
       icon: FEATURE_SWITCH_ICONS['代理组interval改为5']
-    },
-    {
-      name: 'TUN MTU改为9000',
-      icon: FEATURE_SWITCH_ICONS['TUN MTU改为9000']
-    },
-    {
-      name: '开启端点独立NAT',
-      icon: FEATURE_SWITCH_ICONS['开启端点独立NAT']
     }
   ]);
 
@@ -4470,14 +4459,6 @@ function main(config, profileName) {
     result.tun['route-address'] = (result.tun['route-address'] || []).filter(
       (address) => address.indexOf(':') < 0
     );
-  }
-
-  if (ruleOptionsEnable['TUN MTU改为9000'] === true && result.tun) {
-    result.tun.mtu = 9000;
-  }
-
-  if (ruleOptionsEnable['开启端点独立NAT'] === true && result.tun) {
-    result.tun['endpoint-independent-nat'] = true;
   }
 
   // ---- 2.5 TGDC 实验分流（默认关闭；由 UI 开关控制） ----

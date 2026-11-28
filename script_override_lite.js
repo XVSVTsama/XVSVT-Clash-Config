@@ -101,10 +101,6 @@ const ruleOptionsEnable = {
 
   'QUIC阻断': false,
 
-  'TUN MTU改为9000': false,
-
-  '开启端点独立NAT': false,
-
 };
 
 const REMOVE_ROUTING_RULES_FOR_DISABLED_GROUPS = new Set([
@@ -253,6 +249,7 @@ const TEMPLATE = {
     "enable": true,
     "device": "XVSVT",
     "mtu": 1500,
+    "inet4-address": ["198.18.0.1/30"],
     "endpoint-independent-nat": false,
     "inet6-address": [
       "fdfe:dcba:9876::1/126"
@@ -1460,12 +1457,6 @@ const serviceConfigs = TEMPLATE['proxy-groups']
     },
     {
       name: 'QUIC阻断'
-    },
-    {
-      name: 'TUN MTU改为9000'
-    },
-    {
-      name: '开启端点独立NAT'
     },
   ]);
 
@@ -3241,14 +3232,6 @@ function main(config, profileName) {
         );
       }
     }
-  }
-
-  if (ruleOptionsEnable['TUN MTU改为9000'] === true && result.tun) {
-    result.tun.mtu = 9000;
-  }
-
-  if (ruleOptionsEnable['开启端点独立NAT'] === true && result.tun) {
-    result.tun['endpoint-independent-nat'] = true;
   }
 
   applyTelegramDcExperiment(result, originalProxies);

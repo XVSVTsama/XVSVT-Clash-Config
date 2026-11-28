@@ -6,7 +6,7 @@
 #   https://github.com/XVSVTsama/XVSVT-Clash-Config
 #   作者：
 #   https://github.com/XVSVTsama
-#   版本：上一提交 5307103b16dfed5b2eb3fedc8599752482a2c4b5，本提交时间 2026-11-27 03:44:00 +0800
+#   版本：上一提交 ad987ab133b123bb4e348045e8cd90cbc57941be，本提交时间 2026-11-29 00:20:00 +0800
 
 .templates:
   # proxy-groups 共享片段
@@ -71,6 +71,8 @@ tun:
   device: XVSVT
   mtu: 1500
   endpoint-independent-nat: false
+  inet4-address:
+    - "198.18.0.1/30"
   inet6-address:
     - "fdfe:dcba:9876::1/126"
   auto-detect-interface: true
