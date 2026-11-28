@@ -1364,17 +1364,6 @@ function findPriorityGroupInsertionIndex(proxyGroups) {
   return 1;
 }
 
-const FEATURE_SWITCH_ICONS = {
-  '强制证书验证': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-SSL.svg',
-  '关闭 Reality 增强': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Spark.svg',
-  '试开启节点UDP': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-udp.svg',
-  'IPv6优先': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-ipv6-prefer.svg',
-  '剔除≥2x': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-high.svg',
-  '剔除≤0.5x': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-low.svg',
-  '剔除免费': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-filter-free.svg',
-  '关闭WebRTC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-webrtc-block.svg',
-  'QUIC阻断': 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Quic.svg',
-};
 
 const serviceConfigs = TEMPLATE['proxy-groups']
   .filter(
@@ -1389,60 +1378,46 @@ const serviceConfigs = TEMPLATE['proxy-groups']
   }))
   .concat([
     {
-      name: '关闭FCM直连',
-      icon: (TEMPLATE['proxy-groups'].find((group) => group && group.name === 'FCM') || {}).icon
+      name: '关闭FCM直连'
     },
     {
-      name: '强制证书验证',
-      icon: FEATURE_SWITCH_ICONS['强制证书验证']
+      name: '强制证书验证'
     },
     {
-      name: '关闭 Reality 增强',
-      icon: FEATURE_SWITCH_ICONS['关闭 Reality 增强']
+      name: '关闭 Reality 增强'
     },
     {
-      name: '试开启节点UDP',
-      icon: FEATURE_SWITCH_ICONS['试开启节点UDP']
+      name: '试开启节点UDP'
     },
     {
-      name: 'IPv6优先',
-      icon: FEATURE_SWITCH_ICONS['IPv6优先']
+      name: 'IPv6优先'
     },
     {
-      name: 'TGDC实验分流',
-      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Telegram.svg'
+      name: 'TGDC实验分流'
     },
     {
-      name: '使用SKK广告拦截',
-      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/self-adblock.svg'
+      name: '使用SKK广告拦截'
     },
     {
-      name: '国家/地区分组',
-      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Global.svg'
+      name: '国家/地区分组'
     },
     {
-      name: '剔除≥2x',
-      icon: FEATURE_SWITCH_ICONS['剔除≥2x']
+      name: '剔除≥2x'
     },
     {
-      name: '剔除≤0.5x',
-      icon: FEATURE_SWITCH_ICONS['剔除≤0.5x']
+      name: '剔除≤0.5x'
     },
     {
-      name: '剔除免费',
-      icon: FEATURE_SWITCH_ICONS['剔除免费']
+      name: '剔除免费'
     },
     {
-      name: '入口解析',
-      icon: 'https://gh-proxy.com/https://raw.githubusercontent.com/XVSVTsama/XVSVT-Clash-Config/main/assets/icons/upstream-Qure-Style-SVG-Domestic.svg'
+      name: '入口解析'
     },
     {
-      name: '关闭WebRTC阻断',
-      icon: FEATURE_SWITCH_ICONS['关闭WebRTC阻断']
+      name: '关闭WebRTC阻断'
     },
     {
-      name: 'QUIC阻断',
-      icon: FEATURE_SWITCH_ICONS['QUIC阻断']
+      name: 'QUIC阻断'
     },
   ]);
 
